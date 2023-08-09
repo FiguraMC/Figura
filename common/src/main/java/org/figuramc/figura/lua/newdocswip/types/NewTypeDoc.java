@@ -30,7 +30,7 @@ public class NewTypeDoc extends NewFiguraDoc<LuaTypeDoc> {
      */
     private final List<NewFieldDoc> fields = new ArrayList<>();
 
-    //Private constructor, prefer to use createForClass() instead.
+    // Private constructor, prefer to use createForClass() instead.
     private NewTypeDoc(Class<?> clazz) {
         documentedClass = clazz;
     }

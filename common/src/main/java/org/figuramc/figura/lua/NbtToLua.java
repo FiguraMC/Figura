@@ -10,7 +10,7 @@ import java.util.function.Function;
 public class NbtToLua {
 
     private static final HashMap<Class<?>, Function<Tag, LuaValue>> CONVERTERS = new HashMap<>() {{
-        //primitive types
+        // primitive types
         put(ByteTag.class, tag -> LuaValue.valueOf(((ByteTag) tag).getAsByte()));
         put(ShortTag.class, tag -> LuaValue.valueOf(((ShortTag) tag).getAsShort()));
         put(IntTag.class, tag -> LuaValue.valueOf(((IntTag) tag).getAsInt()));
@@ -18,7 +18,7 @@ public class NbtToLua {
         put(FloatTag.class, tag -> LuaValue.valueOf(((FloatTag) tag).getAsFloat()));
         put(DoubleTag.class, tag -> LuaValue.valueOf(((DoubleTag) tag).getAsDouble()));
 
-        //compound special :D
+        // compound special :D
         put(CompoundTag.class, tag -> {
             LuaTable table = new LuaTable();
             CompoundTag compound = (CompoundTag) tag;
@@ -29,7 +29,7 @@ public class NbtToLua {
             return table;
         });
 
-        //collection types
+        // collection types
         put(ByteArrayTag.class, tag -> fromCollection((CollectionTag<?>) tag));
         put(IntArrayTag.class, tag -> fromCollection((CollectionTag<?>) tag));
         put(LongArrayTag.class, tag -> fromCollection((CollectionTag<?>) tag));

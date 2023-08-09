@@ -7,6 +7,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
+import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.api.world.BlockStateAPI;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
@@ -15,7 +16,6 @@ import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.model.FiguraModelPart;
 import org.figuramc.figura.model.PartCustomization;
 import org.figuramc.figura.utils.LuaUtils;
-import org.figuramc.figura.avatar.Avatar;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -55,7 +55,7 @@ public class BlockTask extends RenderTask {
         return super.shouldRender() && block != null && !block.isAir();
     }
 
-    // -- lua -- //
+    // -- lua -- // 
 
 
     @LuaWhitelist

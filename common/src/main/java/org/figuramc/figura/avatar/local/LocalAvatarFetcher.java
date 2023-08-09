@@ -4,12 +4,12 @@ import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import org.figuramc.figura.gui.cards.CardBackground;
-import org.figuramc.figura.utils.FileTexture;
-import org.figuramc.figura.utils.IOUtils;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.Configs;
+import org.figuramc.figura.gui.cards.CardBackground;
 import org.figuramc.figura.parsers.AvatarMetadataParser;
+import org.figuramc.figura.utils.FileTexture;
+import org.figuramc.figura.utils.IOUtils;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -44,11 +44,11 @@ public class LocalAvatarFetcher {
         loaded = false;
         FiguraMod.debug("Reloading Avatar List...");
 
-        //load avatars
+        // load avatars
         FolderPath root = new FolderPath(getLocalAvatarDirectory());
         root.fetch();
 
-        //add new avatars
+        // add new avatars
         ALL_AVATARS.clear();
         ALL_AVATARS.addAll(root.getChildren());
         loaded = true;
@@ -111,7 +111,7 @@ public class LocalAvatarFetcher {
      */
     public static void load() {
         IOUtils.readCacheFile("avatars", nbt -> {
-            //loading
+            // loading
             ListTag list = nbt.getList("properties", Tag.TAG_COMPOUND);
             for (Tag tag : list) {
                 CompoundTag compound = (CompoundTag) tag;
@@ -196,12 +196,12 @@ public class LocalAvatarFetcher {
      */
     public static class AvatarPath {
 
-        //im going insane... or better saying, crazy, speaking of which, I was crazy once
+        // im going insane... or better saying, crazy, speaking of which, I was crazy once
         protected final Path path, folder, theActualPathForThis; // murder, why does everything needs to be protected/private :sob:
         protected final String name, description;
         protected final CardBackground background;
         protected Properties properties;
-        //icon
+        // icon
         protected final Path iconPath;
         protected boolean iconLoaded;
         protected FileTexture iconTexture;
@@ -236,7 +236,7 @@ public class LocalAvatarFetcher {
             Path iconPath = null;
 
             if (!(this instanceof FolderPath)) {
-                //metadata
+                // metadata
                 try {
                     String str = IOUtils.readFile(path.resolve("avatar.json"));
                     AvatarMetadataParser.Metadata metadata = AvatarMetadataParser.read(str);
@@ -248,7 +248,7 @@ public class LocalAvatarFetcher {
                     FiguraMod.LOGGER.error("Failed to load metadata for \"" + path + "\"", e);
                 }
 
-                //icon
+                // icon
                 Path p = path.resolve("avatar.png");
                 if (Files.exists(p))
                     iconPath = p;
@@ -370,8 +370,8 @@ public class LocalAvatarFetcher {
 
             Path folderPath = this.path.getFileSystem() == FileSystems.getDefault() ? path : this.folder;
 
-            //iterate over all files on this path
-            //but skip non-folders
+            // iterate over all files on this path
+            // but skip non-folders
             for (Path path : files) {
                 if (isAvatar(path)) {
                     children.add(new AvatarPath(path, folderPath));

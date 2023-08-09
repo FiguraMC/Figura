@@ -5,11 +5,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
+import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaTable;
-import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
@@ -19,6 +17,8 @@ import org.figuramc.figura.model.rendering.texture.FiguraTexture;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.LuaUtils;
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaTable;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
@@ -81,7 +81,7 @@ public class TextureAPI {
         }
 
         FiguraTexture texture = register(name, image, false);
-        texture.fill(0, 0, width, height, ColorUtils.Colors.PINK.vec.augmented(1d), null, null, null);
+        texture.fill(0, 0, width, height, ColorUtils.Colors.AWESOME_BLUE.vec.augmented(1d), null, null, null);
         return texture;
     }
 
@@ -167,11 +167,11 @@ public class TextureAPI {
         ResourceLocation resourceLocation = LuaUtils.parsePath(path);
         try {
             Optional<Resource> resource = Minecraft.getInstance().getResourceManager().getResource(resourceLocation);
-            //if the string is a valid resourceLocation but does not point to a valid resource, missingno
+            // if the string is a valid resourceLocation but does not point to a valid resource, missingno
             NativeImage image = resource.isPresent() ? NativeImage.read(resource.get().open()) : MissingTextureAtlasSpriteAccessor.generateImage(16, 16);
             return register(name, image, false);
         } catch (Exception e) {
-            //spit an error if the player inputs a resource location that does point to a thing, but not to an image
+            // spit an error if the player inputs a resource location that does point to a thing, but not to an image
             throw new LuaError(e.getMessage());
         }
     }

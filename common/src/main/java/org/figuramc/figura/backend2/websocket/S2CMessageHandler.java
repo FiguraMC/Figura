@@ -1,15 +1,15 @@
 package org.figuramc.figura.backend2.websocket;
 
 import net.minecraft.network.chat.Component;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
+import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.TextUtils;
-import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.backend2.NetworkStuff;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -59,7 +59,7 @@ public class S2CMessageHandler {
             return;
 
         int id = bytes.getInt();
-        bytes.get(); //sync value is ignored
+        bytes.get(); // sync value is ignored
 
         byte[] data = new byte[bytes.remaining()];
         bytes.get(data);
@@ -82,7 +82,7 @@ public class S2CMessageHandler {
 
     private static void chat(ByteBuffer bytes) {
         String message = StandardCharsets.UTF_8.decode(bytes).toString();
-        FiguraMod.sendChatMessage(Component.empty().append(Component.literal("-- " + FiguraMod.MOD_NAME + " backend message --\n\n").withStyle(ColorUtils.Colors.SKYE_BLUE.style)).append(TextUtils.tryParseJson(message)));
+        FiguraMod.sendChatMessage(Component.empty().append(Component.literal("-- " + FiguraMod.MOD_NAME + " backend message --\n\n").withStyle(ColorUtils.Colors.SOFT_BLUE.style)).append(TextUtils.tryParseJson(message)));
     }
 
     private static void notice(ByteBuffer bytes) {

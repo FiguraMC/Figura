@@ -12,13 +12,13 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import org.figuramc.figura.avatar.Avatar;
+import org.figuramc.figura.avatar.AvatarManager;
+import org.figuramc.figura.avatar.Badges;
 import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.gui.widgets.ContextMenu;
 import org.figuramc.figura.gui.widgets.Label;
 import org.figuramc.figura.gui.widgets.lists.PlayerList;
-import org.figuramc.figura.avatar.Avatar;
-import org.figuramc.figura.avatar.AvatarManager;
-import org.figuramc.figura.avatar.Badges;
 import org.figuramc.figura.lua.api.nameplate.NameplateCustomization;
 import org.figuramc.figura.permissions.PermissionManager;
 import org.figuramc.figura.permissions.PermissionPack;
@@ -47,7 +47,7 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
 
     public boolean disconnected = false;
 
-    //drag
+    // drag
     public boolean dragged = false;
     public int anchorX, anchorY, initialY;
     public int index;
@@ -66,7 +66,7 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
     }
 
     private void generateContext() {
-        //name uuid
+        // name uuid
         context.addAction(FiguraText.of("gui.context.copy_name"), null, button -> {
             Minecraft.getInstance().keyboardHandler.setClipboard(this.getName());
             FiguraToast.sendToast(FiguraText.of("toast.clipboard"));
@@ -76,13 +76,13 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
             FiguraToast.sendToast(FiguraText.of("toast.clipboard"));
         });
 
-        //reload
+        // reload
         context.addAction(FiguraText.of("gui.context.reload"), null, button -> {
             AvatarManager.reloadAvatar(owner);
             FiguraToast.sendToast(FiguraText.of("toast.reload"));
         });
 
-        //permissions
+        // permissions
         ContextMenu permissionsContext = new ContextMenu();
         for (Permissions.Category category : Permissions.Category.values()) {
             PermissionPack.CategoryPermissionPack categoryPack = PermissionManager.CATEGORIES.get(category);
@@ -128,23 +128,23 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
 
         animate(delta, (UIHelper.getContext() == this.context && this.context.isVisible()) || this.isMouseOver(mouseX, mouseY) || this.isFocused());
 
-        //fix x, y, mouse
+        // fix x, y, mouse
         int x = -width / 2;
         int y = -height / 2;
         mouseX = (int) ((mouseX - tx) / scale);
         mouseY = (int) ((mouseY - ty) / scale);
 
-        //selected overlay
+        // selected overlay
         if (this.parent.selectedEntry == this) {
             ArrayList<PermissionPack> list = new ArrayList<>(PermissionManager.CATEGORIES.values());
             int color = (dragged ? list.get(Math.min(index, list.size() - 1)) : pack).getColor();
             UIHelper.fillRounded(pose, x - 1, y - 1, width + 2, height + 2, color + (0xFF << 24));
         }
 
-        //background
+        // background
         UIHelper.renderHalfTexture(pose, x, y, width, height, 174, BACKGROUND);
 
-        //head
+        // head
         Component name = null;
         boolean head = false;
 
@@ -161,11 +161,11 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
 
         if (!head) {
             if (this.skin != null) {
-                //head
-                RenderSystem.enableBlend();
+                // head
+                UIHelper.setupTexture(this.skin);
                 blit(pose, x + 4, y + 4, 32, 32, 8f, 8f, 8, 8, 64, 64);
 
-                //hat
+                // hat
                 RenderSystem.enableBlend();
                 blit(pose, x + 4, y + 4, 32, 32, 40f, 8f, 8, 8, 64, 64);
                 RenderSystem.disableBlend();
@@ -174,7 +174,7 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
             }
         }
 
-        //name
+        // name
         Font font = Minecraft.getInstance().font;
         Component ogName = Component.literal(this.name);
 
@@ -185,7 +185,7 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
         name = TextUtils.splitText(name, "\n").get(0);
         name = Component.empty().append(name.copy().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(this.name + "\n" + this.owner)))));
 
-        //badges
+        // badges
         name = Badges.appendBadges(name, owner, false);
         Component badges = Badges.fetchBadges(owner);
         if (!badges.getString().isEmpty())
@@ -194,22 +194,22 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
         nameLabel.setText(TextUtils.trimToWidthEllipsis(font, name, width - 44 - font.width(badges), TextUtils.ELLIPSIS).copy().append(badges));
         nameLabel.setX(x + 40);
         nameLabel.setY(y + 4);
-        //nameLabel.setOutlineColor(ColorUtils.rgbToInt(ColorUtils.rainbow(2, 1, 0.5)) + ((int) (0.5f * 0xFF) << 24));
+        // nameLabel.setOutlineColor(ColorUtils.rgbToInt(ColorUtils.rainbow(2, 1, 0.5)) + ((int) (0.5f * 0xFF) << 24));
         nameLabel.render(pose, mouseX, mouseY, delta);
 
-        //status
+        // status
         if (avatar != null && avatar.nbt != null) {
-            status.tick(); //yes I know
+            status.tick(); // yes I know
             status.setX(x + 40);
             status.setY(y + 6 + font.lineHeight);
             status.render(pose, mouseX, mouseY, delta);
         }
 
-        //category
+        // category
         int textY = y + height - font.lineHeight - 4;
         drawString(pose, font, pack.getCategoryName().append(pack.hasChanges() ? "*" : ""), x + 40, textY, 0xFFFFFF);
 
-        //disconnected
+        // disconnected
         if (disconnected)
             drawString(pose, font, DC_TEXT, x + width - font.width(DC_TEXT) - 4, textY, 0xFFFFFF);
 
@@ -221,7 +221,7 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
         if (!this.isMouseOver(mouseX, mouseY))
             return false;
 
-        //context menu on right click
+        // context menu on right click
         if (button == 1) {
             context.setX((int) mouseX);
             context.setY((int) mouseY);
@@ -229,7 +229,7 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
             UIHelper.setContext(context);
             return true;
         }
-        //hide old context menu
+        // hide old context menu
         else if (UIHelper.getContext() == context) {
             context.setVisible(false);
         }

@@ -1,13 +1,13 @@
 package org.figuramc.figura.backend2.websocket;
 
 import net.minecraft.client.multiplayer.resolver.ServerAddress;
+import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.utils.FiguraText;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
-import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.backend2.NetworkStuff;
 
 import java.net.URI;
 import java.nio.ByteBuffer;
@@ -34,7 +34,7 @@ public class WebsocketThingy extends WebSocketClient {
         put(1015, "TLS Handshake");
         put(3000, "Unauthorized");
         put(4000, "Re-Auth");
-        put(4001, "Bananed ^.^");
+        put(4001, "Banned");
         put(4002, "Too Many Connections");
     }};
 
@@ -57,9 +57,9 @@ public class WebsocketThingy extends WebSocketClient {
 
     @Override
     public void onMessage(String message) {
-        //nope
-        //backend v2 do not have string messages
-        //this method is just an illusion
+        // nope
+        // backend v2 do not have string messages
+        // this method is just an illusion
     }
 
     @Override
@@ -78,7 +78,7 @@ public class WebsocketThingy extends WebSocketClient {
         reason = reason.isBlank() ? ERROR_CODES.getOrDefault(code, "Unknown") : reason;
         FiguraMod.LOGGER.info("Closed connection: " + reason + ", Code: " + code + ", Remote: " + remote);
 
-        handleClose(code, reason + (FiguraMod.DEBUG_MODE ? "\n\nCode: " + code + "\nRemote: " + remote : ""));
+        handleClose(code, reason + (FiguraMod.debugModeEnabled() ? "\n\nCode: " + code + "\nRemote: " + remote : ""));
     }
 
     @Override

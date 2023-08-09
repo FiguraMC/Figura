@@ -2,9 +2,9 @@ package org.figuramc.figura.avatar.local;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
-import org.figuramc.figura.utils.IOUtils;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.UserData;
+import org.figuramc.figura.utils.IOUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -103,7 +103,7 @@ public class CacheAvatarLoader {
         });
     }
 
-    //cache directory
+    // cache directory
     public static Path getAvatarCacheDirectory() {
         return IOUtils.getOrCreateDir(FiguraMod.getCacheDirectory(), "avatars");
     }

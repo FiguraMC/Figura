@@ -32,23 +32,20 @@
   "depends": {
     "java": ">=${java_version}",
     "minecraft": "${minecraft_version}",
-    "fabricloader": "*"
+    "fabricloader": ">=0.14.21"
   },
   "conflicts": {
     "immersive_portals": "*",
     "canvas": "*",
     "immediatelyfast":  "*"
   },
-  "breaks": {
-    "optifine": "*",
-    "optifabric": "*"
-  },
   "custom": {
     "assets_version": "${assets_version}",
     "modmenu": {
       "links": {
-        "Discord": "https://discord.gg/nbN8KZyhUq",
+        "Discord": "https://discord.gg/figuramc",
         "Ko-fi": "https://ko-fi.com/skyrina",
+        "Open Collective": "https://opencollective.com/figura",
         "Modrinth":  "https://modrinth.com/mod/figura/",
         "GitHub":  "https://github.com/FiguraMC/Figura"
       }

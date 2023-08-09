@@ -18,13 +18,11 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import org.figuramc.figura.avatar.Avatar;
+import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.NbtToLua;
 import org.figuramc.figura.lua.ReadOnlyLuaTable;
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaValue;
-import org.figuramc.figura.avatar.Avatar;
-import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.lua.api.world.ItemStackAPI;
 import org.figuramc.figura.lua.docs.LuaMetamethodDoc;
 import org.figuramc.figura.lua.docs.LuaMetamethodDoc.LuaMetamethodOverload;
@@ -36,6 +34,8 @@ import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.mixin.EntityAccessor;
 import org.figuramc.figura.utils.EntityUtils;
 import org.figuramc.figura.utils.LuaUtils;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +49,7 @@ import java.util.UUID;
 public class EntityAPI<T extends Entity> {
 
     protected final UUID entityUUID;
-    protected T entity; //We just do not care about memory anymore so, just have something not wrapped in a WeakReference
+    protected T entity; // We just do not care about memory anymore so, just have something not wrapped in a WeakReference
 
     private boolean thingy = true;
     private String cacheType;
@@ -138,12 +138,6 @@ public class EntityAPI<T extends Entity> {
     public String getType() {
         checkEntity();
         return cacheType != null ? cacheType : (cacheType = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString());
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc("entity.is_cute")
-    public boolean isCute() {
-        return true;
     }
 
     @LuaWhitelist

@@ -6,14 +6,14 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.entity.EntityType;
-import org.luaj.vm2.*;
-import org.luaj.vm2.lib.VarArgFunction;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.TextUtils;
+import org.luaj.vm2.*;
+import org.luaj.vm2.lib.VarArgFunction;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -51,7 +51,7 @@ public class FiguraLuaPrinter {
         runtime.setGlobal("logTable", printTable);
     }
 
-    //print a string either on chat or console
+    // print a string either on chat or console
     public static void sendLuaMessage(Object message, String owner) {
         MutableComponent component = Component.empty()
                 .append(Component.literal("[lua] ").withStyle(ColorUtils.Colors.LUA_LOG.style))
@@ -66,9 +66,9 @@ public class FiguraLuaPrinter {
             FiguraMod.LOGGER.info(component.getString());
     }
 
-    //print an error, errors should always show up on chat
+    // print an error, errors should always show up on chat
     public static void sendLuaError(LuaError error, Avatar owner) {
-        //Jank as hell
+        // Jank as hell
         String message = error.toString().replace("org.luaj.vm2.LuaError: ", "")
                 .replace("\n\t[Java]: in ?", "")
                 .replace("'<eos>' expected", "Expected end of script");
@@ -79,7 +79,7 @@ public class FiguraLuaPrinter {
                     .replaceFirst("attempt to call a nil value", "attempt to nil a call value");
         }
 
-        //get script line
+        // get script line
         line: {
             if (owner.minify) {
                 message += "\nscript:\n\tscript heavily minified! - cannot look for line numbers!";
@@ -91,7 +91,7 @@ public class FiguraLuaPrinter {
                 if (split.length <= 1 || owner.luaRuntime == null)
                     break line;
 
-                //name
+                // name
                 String left = "[string \"";
                 int sub = split[0].indexOf(left);
 
@@ -100,7 +100,7 @@ public class FiguraLuaPrinter {
                 if (src == null)
                     break line;
 
-                //line
+                // line
                 int line = Integer.parseInt(split[1].split("\\D", 2)[0]);
 
                 String str = src.split("\n")[line - 1].trim();
@@ -122,15 +122,15 @@ public class FiguraLuaPrinter {
         if ((owner.entityType == EntityType.PLAYER && !Configs.LOG_OTHERS.value && !FiguraMod.isLocal(owner.owner)) || owner.permissions.getCategory() == Permissions.Category.BLOCKED)
             return;
 
-        chatQueue.offer(component); //bypass the char limit filter
+        chatQueue.offer(component); // bypass the char limit filter
         FiguraMod.LOGGER.error("", error);
     }
 
-    //print an ping!
+    // print an ping!
     public static void sendPingMessage(Avatar owner, String ping, int size, LuaValue[] args) {
         int config = Configs.LOG_PINGS.value;
 
-        //no ping? *megamind.png*
+        // no ping? *megamind.png*
         if (config == 0 || config == 1 && !owner.isHost)
             return;
 
@@ -154,7 +154,7 @@ public class FiguraLuaPrinter {
             FiguraMod.LOGGER.info(text.getString());
     }
 
-    //print functions
+    // print functions
     private static final Function<FiguraLuaRuntime, LuaValue> PRINT_FUNCTION = runtime -> new VarArgFunction() {
         @Override
         public Varargs invoke(Varargs args) {
@@ -165,7 +165,7 @@ public class FiguraLuaPrinter {
             for (int i = 0; i < args.narg(); i++)
                 text.append(getPrintText(runtime.typeManager, args.arg(i + 1), true, false)).append("\t");
 
-            //prints the value, either on chat or console
+            // prints the value, either on chat or console
             sendLuaMessage(text, runtime.owner.entityName);
 
             return LuaValue.valueOf(text.getString());
@@ -235,15 +235,15 @@ public class FiguraLuaPrinter {
     };
 
     private static Component tableToText(LuaTypeManager typeManager, LuaValue value, int depth, int indent, boolean hasTooltip) {
-        //attempt to parse top
+        // attempt to parse top
         if (value.isuserdata())
             return userdataToText(typeManager, value, depth, indent, hasTooltip);
 
-        //normal print when invalid type or depth limit
+        // normal print when invalid type or depth limit
         if (!value.istable() || depth <= 0)
             return getPrintText(typeManager, value, hasTooltip, true);
 
-        //format text
+        // format text
         MutableComponent text = Component.empty()
                 .append(Component.literal("table:").withStyle(getTypeColor(value)))
                 .append(Component.literal(" {\n").withStyle(ChatFormatting.GRAY));
@@ -258,13 +258,13 @@ public class FiguraLuaPrinter {
         return text;
     }
 
-    //needs a special print because we want to also print NIL values
+    // needs a special print because we want to also print NIL values
     private static Component userdataToText(LuaTypeManager typeManager, LuaValue value, int depth, int indent, boolean hasTooltip) {
-        //normal print when failed to parse userdata or depth limit
+        // normal print when failed to parse userdata or depth limit
         if (!value.isuserdata() || depth <= 0)
             return getPrintText(typeManager, value, hasTooltip, true);
 
-        //format text
+        // format text
         MutableComponent text = Component.empty()
                 .append(Component.literal("userdata:").withStyle(getTypeColor(value)))
                 .append(Component.literal(" {\n").withStyle(ChatFormatting.GRAY));
@@ -274,7 +274,7 @@ public class FiguraLuaPrinter {
         Object data = value.checkuserdata();
         Class<?> clazz = data.getClass();
         if (clazz.isAnnotationPresent(LuaWhitelist.class)) {
-            //fields
+            // fields
             Set<String> fields = new HashSet<>();
             for (Field field : clazz.getFields()) {
                 String name = field.getName();
@@ -290,7 +290,7 @@ public class FiguraLuaPrinter {
                 }
             }
 
-            //methods
+            // methods
             Set<String> methods = new HashSet<>();
             for (Method method : clazz.getMethods()) {
                 String name = method.getName();
@@ -309,12 +309,12 @@ public class FiguraLuaPrinter {
         MutableComponent text = Component.empty()
                 .append(spacing).append("\t");
 
-        //key
+        // key
         text.append(Component.literal("[").withStyle(ChatFormatting.GRAY))
                 .append(getPrintText(typeManager, key, hasTooltip, true))
                 .append(Component.literal("] = ").withStyle(ChatFormatting.GRAY));
 
-        //value
+        // value
         if (value.istable() || value.isuserdata())
             text.append(tableToText(typeManager, value, depth - 1, indent + 1, hasTooltip));
         else
@@ -324,11 +324,11 @@ public class FiguraLuaPrinter {
         return text;
     }
 
-    //fancyString just means to add quotation marks around strings.
+    // fancyString just means to add quotation marks around strings.
     private static MutableComponent getPrintText(LuaTypeManager typeManager, LuaValue value, boolean hasTooltip, boolean quoteStrings) {
         String ret;
 
-        //format value
+        // format value
         if (!(value instanceof LuaString) && value.isnumber()) {
             Double d = value.checkdouble();
             ret = d == Math.rint(d) ? value.tojstring() : df.format(d);
@@ -340,7 +340,7 @@ public class FiguraLuaPrinter {
 
         MutableComponent text = Component.literal(ret).withStyle(getTypeColor(value));
 
-        //table tooltip
+        // table tooltip
         if (hasTooltip && (value.istable() || value.isuserdata())) {
             Component table = TextUtils.replaceTabs(tableToText(typeManager, value, 1, 1, false));
             text.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, table)));
@@ -351,9 +351,9 @@ public class FiguraLuaPrinter {
 
     private static Style getTypeColor(LuaValue value) {
         if (value.istable())
-            return ColorUtils.Colors.PINK.style;
+            return ColorUtils.Colors.AWESOME_BLUE.style;
         else if (!(value instanceof LuaString) && value.isnumber())
-            return ColorUtils.Colors.MAYA_BLUE.style;
+            return ColorUtils.Colors.BLUE.style;
         else if (value.isnil())
             return ColorUtils.Colors.LUA_ERROR.style;
         else if (value.isboolean())
@@ -368,9 +368,9 @@ public class FiguraLuaPrinter {
             return Style.EMPTY.withColor(ChatFormatting.WHITE);
     }
 
-    //-- SLOW PRINTING OF LOG --//
+    // -- SLOW PRINTING OF LOG --// 
 
-    //Log safety
+    // Log safety
     private static final LinkedList<Component> chatQueue = new LinkedList<>();
     private static final int MAX_CHARS_QUEUED = 10_000_000;
     private static int charsQueued = 0;

@@ -58,13 +58,13 @@ public class IOUtils {
 
     public static void readCacheFile(String name, Consumer<CompoundTag> consumer) {
         try {
-            //get file
+            // get file
             Path path = FiguraMod.getCacheDirectory().resolve(name + ".nbt");
 
             if (!Files.exists(path))
                 return;
 
-            //read file
+            // read file
             InputStream fis = Files.newInputStream(path);
             CompoundTag nbt = NbtIo.readCompressed(fis);
             consumer.accept(nbt);
@@ -76,17 +76,17 @@ public class IOUtils {
 
     public static void saveCacheFile(String name, Consumer<CompoundTag> consumer) {
         try {
-            //get nbt
+            // get nbt
             CompoundTag nbt = new CompoundTag();
             consumer.accept(nbt);
 
-            //create file
+            // create file
             Path path = FiguraMod.getCacheDirectory().resolve(name + ".nbt");
 
             if (!Files.exists(path))
                 Files.createFile(path);
 
-            //write file
+            // write file
             OutputStream fs = Files.newOutputStream(path);
             NbtIo.writeCompressed(nbt, fs);
             fs.close();

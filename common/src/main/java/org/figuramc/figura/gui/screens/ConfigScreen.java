@@ -51,7 +51,7 @@ public class ConfigScreen extends AbstractPanelScreen {
             l.centerVertically = true;
         }
 
-        // -- middle -- //
+        // -- middle -- // 
 
         int width = Math.min(this.width - 8, 420);
         list = new ConfigList((this.width - width) / 2, 52, width, height - 80, this);
@@ -59,16 +59,16 @@ public class ConfigScreen extends AbstractPanelScreen {
         this.addRenderableWidget(new SearchBar(this.width / 2 - 122, 28, 244, 20, query -> list.updateSearch(query.toLowerCase())));
         this.addRenderableWidget(list);
 
-        // -- bottom buttons -- //
+        // -- bottom buttons -- // 
 
-        //cancel
+        // cancel
         this.addRenderableWidget(cancel = new Button(this.width / 2 - 122, height - 24, 120, 20, FiguraText.of("gui.cancel"), null, button -> {
             ConfigManager.discardConfig();
             list.updateList();
         }));
         cancel.setActive(false);
 
-        //done
+        // done
         addRenderableWidget(new Button(this.width / 2 + 2, height - 24, 120, 20, FiguraText.of("gui.done"), null, button -> onClose()));
     }
 

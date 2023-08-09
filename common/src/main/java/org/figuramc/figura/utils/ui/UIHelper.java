@@ -21,14 +21,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL30;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
+import org.figuramc.figura.avatar.Badges;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.gui.screens.AbstractPanelScreen;
 import org.figuramc.figura.gui.screens.FiguraConfirmScreen;
@@ -38,13 +34,19 @@ import org.figuramc.figura.math.vector.FiguraVec4;
 import org.figuramc.figura.model.rendering.EntityRenderMode;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.TextUtils;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.Stack;
 
 public class UIHelper extends GuiComponent {
 
-    // -- Variables -- //
+    // -- Variables -- // 
 
     public static final ResourceLocation OUTLINE_FILL = new FiguraIdentifier("textures/gui/outline_fill.png");
     public static final ResourceLocation OUTLINE = new FiguraIdentifier("textures/gui/outline.png");
@@ -55,7 +57,7 @@ public class UIHelper extends GuiComponent {
     public static final Component UP_ARROW = Component.literal("^").withStyle(Style.EMPTY.withFont(UI_FONT));
     public static final Component DOWN_ARROW = Component.literal("V").withStyle(Style.EMPTY.withFont(UI_FONT));
 
-    //Used for GUI rendering
+    // Used for GUI rendering
     private static final CustomFramebuffer FIGURA_FRAMEBUFFER = new CustomFramebuffer();
     private static int previousFBO = -1;
     public static boolean paperdoll = false;
@@ -63,7 +65,7 @@ public class UIHelper extends GuiComponent {
     public static float dollScale = 1f;
     private static final Stack<FiguraVec4> SCISSORS_STACK = new Stack<>();
 
-    // -- Functions -- //
+    // -- Functions -- // 
 
     public static void useFiguraGuiFramebuffer() {
         previousFBO = GL30.glGetInteger(GL30.GL_DRAW_FRAMEBUFFER_BINDING);
@@ -72,13 +74,13 @@ public class UIHelper extends GuiComponent {
         int height = Minecraft.getInstance().getWindow().getHeight();
         FIGURA_FRAMEBUFFER.setSize(width, height);
 
-        //Enable stencil buffer during this phase of rendering
+        // Enable stencil buffer during this phase of rendering
         GL30.glEnable(GL30.GL_STENCIL_TEST);
         GlStateManager._stencilMask(0xFF);
-        //Bind custom GUI framebuffer to be used for rendering
+        // Bind custom GUI framebuffer to be used for rendering
         GlStateManager._glBindFramebuffer(GL30.GL_FRAMEBUFFER, FIGURA_FRAMEBUFFER.getFbo());
 
-        //Clear GUI framebuffer
+        // Clear GUI framebuffer
         GlStateManager._clearStencil(0);
         GlStateManager._clearColor(0f, 0f, 0f, 1f);
         GlStateManager._clearDepth(1);
@@ -90,17 +92,17 @@ public class UIHelper extends GuiComponent {
     }
 
     public static void useVanillaFramebuffer() {
-        //Reset state before we go back to normal rendering
+        // Reset state before we go back to normal rendering
         GlStateManager._enableDepthTest();
-        //Set a sensible default for stencil buffer operations
+        // Set a sensible default for stencil buffer operations
         GlStateManager._stencilFunc(GL11.GL_EQUAL, 0, 0xFF);
         GL30.glDisable(GL30.GL_STENCIL_TEST);
 
-        //Bind vanilla framebuffer again
+        // Bind vanilla framebuffer again
         GlStateManager._glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, previousFBO);
 
         RenderSystem.disableBlend();
-        //Draw GUI framebuffer -> vanilla framebuffer
+        // Draw GUI framebuffer -> vanilla framebuffer
         int windowWidth = Minecraft.getInstance().getWindow().getWidth();
         int windowHeight = Minecraft.getInstance().getWindow().getHeight();
 
@@ -112,29 +114,29 @@ public class UIHelper extends GuiComponent {
 
     @SuppressWarnings("deprecation")
     public static void drawEntity(float x, float y, float scale, float pitch, float yaw, LivingEntity entity, PoseStack stack, EntityRenderMode renderMode) {
-        //backup entity variables
+        // backup entity variables
         float headX = entity.getXRot();
         float headY = entity.yHeadRot;
         boolean invisible = entity.isInvisible();
 
-        float bodyY = entity.yBodyRot; //not truly a backup
+        float bodyY = entity.yBodyRot; // not truly a backup
         if (entity.getVehicle() instanceof LivingEntity l) {
-            //drawEntity(x, y, scale, pitch, yaw, l, stack, renderMode);
+            // drawEntity(x, y, scale, pitch, yaw, l, stack, renderMode);
             bodyY = l.yBodyRot;
         }
 
-        //setup rendering properties
+        // setup rendering properties
         float xRot, yRot;
         double xPos = 0d;
         double yPos = 0d;
 
         switch (renderMode) {
             case PAPERDOLL -> {
-                //rotations
+                // rotations
                 xRot = pitch;
                 yRot = yaw + bodyY + 180;
 
-                //positions
+                // positions
                 yPos--;
 
                 if (entity.isFallFlying())
@@ -145,15 +147,15 @@ public class UIHelper extends GuiComponent {
                     entity.setXRot(0f);
                 }
 
-                //lightning
+                // lightning
                 Lighting.setupForEntityInInventory();
 
-                //invisibility
+                // invisibility
                 if (Configs.PAPERDOLL_INVISIBLE.value)
                     entity.setInvisible(false);
             }
             case FIGURA_GUI -> {
-                //rotations
+                // rotations
                 xRot = pitch;
                 yRot = yaw + bodyY + 180;
 
@@ -162,18 +164,18 @@ public class UIHelper extends GuiComponent {
                     entity.yHeadRot = bodyY;
                 }
 
-                //positions
+                // positions
                 yPos--;
 
-                //set up lighting
+                // set up lighting
                 Lighting.setupForFlatItems();
                 RenderSystem.setShaderLights(Util.make(new Vector3f(-0.2f, -1f, -1f), Vector3f::normalize), Util.make(new Vector3f(-0.2f, 0.4f, -0.3f), Vector3f::normalize));
 
-                //invisibility
+                // invisibility
                 entity.setInvisible(false);
             }
             default -> {
-                //rotations
+                // rotations
                 float rot = (float) Math.atan(pitch / 40f) * 20f;
 
                 xRot = (float) Math.atan(yaw / 40f) * 20f;
@@ -182,18 +184,18 @@ public class UIHelper extends GuiComponent {
                 entity.setXRot(-xRot);
                 entity.yHeadRot = rot + bodyY;
 
-                //lightning
+                // lightning
                 Lighting.setupForEntityInInventory();
             }
         }
 
-        //apply matrix transformers
+        // apply matrix transformers
         stack.pushPose();
         stack.translate(x, y, renderMode == EntityRenderMode.MINECRAFT_GUI ? 250d : -250d);
         stack.scale(scale, scale, scale);
-        stack.last().pose().scale(1f, 1f, -1f); //Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
+        stack.last().pose().scale(1f, 1f, -1f); // Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
 
-        //apply rotations
+        // apply rotations
         Quaternionf quaternion = Axis.ZP.rotationDegrees(180f);
         Quaternionf quaternion2 = Axis.YP.rotationDegrees(yRot);
         Quaternionf quaternion3 = Axis.XP.rotationDegrees(xRot);
@@ -202,7 +204,7 @@ public class UIHelper extends GuiComponent {
         stack.mulPose(quaternion);
         quaternion3.conjugate();
 
-        //setup entity renderer
+        // setup entity renderer
         Minecraft minecraft = Minecraft.getInstance();
         EntityRenderDispatcher dispatcher = minecraft.getEntityRenderDispatcher();
         boolean renderHitboxes = dispatcher.shouldRenderHitBoxes();
@@ -211,7 +213,7 @@ public class UIHelper extends GuiComponent {
         dispatcher.overrideCameraOrientation(quaternion3);
         MultiBufferSource.BufferSource immediate = minecraft.renderBuffers().bufferSource();
 
-        //render
+        // render
         paperdoll = true;
         fireRot = -yRot;
         dollScale = scale;
@@ -226,15 +228,15 @@ public class UIHelper extends GuiComponent {
 
         paperdoll = false;
 
-        //restore entity rendering data
+        // restore entity rendering data
         dispatcher.setRenderHitBoxes(renderHitboxes);
         dispatcher.setRenderShadow(true);
 
-        //pop matrix
+        // pop matrix
         stack.popPose();
         Lighting.setupFor3DItems();
 
-        //restore entity data
+        // restore entity data
         entity.setXRot(headX);
         entity.yHeadRot = headY;
         entity.setInvisible(invisible);
@@ -313,25 +315,25 @@ public class UIHelper extends GuiComponent {
         float rWidthThird = regionWidth / 3f;
         float rHeightThird = regionHeight / 3f;
 
-        //top left
+        // top left
         quad(buffer, pose, x, y, rWidthThird, rHeightThird, u, v, rWidthThird, rHeightThird, textureWidth, textureHeight);
-        //top middle
+        // top middle
         quad(buffer, pose, x + rWidthThird, y, width - rWidthThird * 2, rHeightThird, u + rWidthThird, v, rWidthThird, rHeightThird, textureWidth, textureHeight);
-        //top right
+        // top right
         quad(buffer, pose, x + width - rWidthThird, y, rWidthThird, rHeightThird, u + rWidthThird * 2, v, rWidthThird, rHeightThird, textureWidth, textureHeight);
 
-        //middle left
+        // middle left
         quad(buffer, pose, x, y + rHeightThird, rWidthThird, height - rHeightThird * 2, u, v + rHeightThird, rWidthThird, rHeightThird, textureWidth, textureHeight);
-        //middle middle
+        // middle middle
         quad(buffer, pose, x + rWidthThird, y + rHeightThird, width - rWidthThird * 2, height - rHeightThird * 2, u + rWidthThird, v + rHeightThird, rWidthThird, rHeightThird, textureWidth, textureHeight);
-        //middle right
+        // middle right
         quad(buffer, pose, x + width - rWidthThird, y + rHeightThird, rWidthThird, height - rHeightThird * 2, u + rWidthThird * 2, v + rHeightThird, rWidthThird, rHeightThird, textureWidth, textureHeight);
 
-        //bottom left
+        // bottom left
         quad(buffer, pose, x, y + height - rHeightThird, rWidthThird, rHeightThird, u, v + rHeightThird * 2, rWidthThird, rHeightThird, textureWidth, textureHeight);
-        //bottom middle
+        // bottom middle
         quad(buffer, pose, x + rWidthThird, y + height - rHeightThird, width - rWidthThird * 2, rHeightThird, u + rWidthThird, v + rHeightThird * 2, rWidthThird, rHeightThird, textureWidth, textureHeight);
-        //bottom right
+        // bottom right
         quad(buffer, pose, x + width - rWidthThird, y + height - rHeightThird, rWidthThird, rHeightThird, u + rWidthThird * 2, v + rHeightThird * 2, rWidthThird, rHeightThird, textureWidth, textureHeight);
 
         tessellator.end();
@@ -344,11 +346,11 @@ public class UIHelper extends GuiComponent {
     public static void renderHalfTexture(PoseStack stack, int x, int y, int width, int height, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight, ResourceLocation texture) {
         setupTexture(texture);
 
-        //left
+        // left
         int w = width / 2;
         blit(stack, x, y, w, height, u, v, w, regionHeight, textureWidth, textureHeight);
 
-        //right
+        // right
         x += w;
         if (width % 2 == 1) w++;
         blit(stack, x, y, w, height, u + regionWidth - w, v, w, regionHeight, textureWidth, textureHeight);
@@ -421,7 +423,7 @@ public class UIHelper extends GuiComponent {
     }
 
     public static void highlight(PoseStack stack, FiguraWidget widget, Component text) {
-        //screen
+        // screen
         int screenW, screenH;
         if (Minecraft.getInstance().screen instanceof AbstractPanelScreen panel) {
             screenW = panel.width;
@@ -430,7 +432,7 @@ public class UIHelper extends GuiComponent {
             return;
         }
 
-        //draw
+        // draw
 
         int x = widget.getX();
         int y = widget.getY();
@@ -438,24 +440,24 @@ public class UIHelper extends GuiComponent {
         int height = widget.getHeight();
         int color = 0xDD000000;
 
-        //left
+        // left
         fill(stack, 0, 0, x, y + height, color);
-        //right
+        // right
         fill(stack, x + width, y, screenW, screenH, color);
-        //up
+        // up
         fill(stack, x, 0, screenW, y, color);
-        //down
+        // down
         fill(stack, 0, y + height, x + width, screenH, color);
 
-        //outline
+        // outline
         fillOutline(stack, Math.max(x - 1, 0), Math.max(y - 1, 0), Math.min(width + 2, screenW), Math.min(height + 2, screenH), 0xFFFFFFFF);
 
-        //text
+        // text
 
         if (text == null)
             return;
 
-        //Woolfy generated code
+        // Woolfy generated code
         int bottomDistance = screenH - (y + height);
         int rightDistance = screenW - (x + width);
         int verArea = y * screenW - bottomDistance * screenW;
@@ -476,11 +478,11 @@ public class UIHelper extends GuiComponent {
             }
         }
 
-        //fill(stack, (int) square.x, (int) square.y, (int) (square.x + square.z), (int) (square.y + square.w), 0xFFFF72AD);
-        //renderTooltip(stack, text, 0, 0, false);
+        // fill(stack, (int) square.x, (int) square.y, (int) (square.x + square.z), (int) (square.y + square.w), 0xFFFF72AD);
+        // renderTooltip(stack, text, 0, 0, false);
     }
 
-    //widget.isMouseOver() returns false if the widget is disabled or invisible
+    // widget.isMouseOver() returns false if the widget is disabled or invisible
     public static boolean isMouseOver(int x, int y, int width, int height, double mouseX, double mouseY) {
         return isMouseOver(x, y, width, height, mouseX, mouseY, false);
     }
@@ -499,22 +501,22 @@ public class UIHelper extends GuiComponent {
     public static void renderTooltip(PoseStack stack, Component tooltip, int mouseX, int mouseY, boolean background) {
         Minecraft minecraft = Minecraft.getInstance();
 
-        //window
+        // window
         int screenX = minecraft.getWindow().getGuiScaledWidth();
         int screenY = minecraft.getWindow().getGuiScaledHeight();
 
         boolean reduced = Configs.REDUCED_MOTION.value;
 
-        //calculate pos
+        // calculate pos
         int x = reduced ? 0 : mouseX;
         int y = reduced ? screenY : mouseY - 12;
 
-        //prepare text
+        // prepare text
         Font font = minecraft.font;
         List<FormattedCharSequence> text = TextUtils.wrapTooltip(tooltip, font, x, screenX, 12);
         int height = font.lineHeight * text.size();
 
-        //clamp position to bounds
+        // clamp position to bounds
         x += 12;
         y = Math.min(Math.max(y, 0), screenY - height);
         int width = TextUtils.getWidth(text, font);
@@ -527,7 +529,7 @@ public class UIHelper extends GuiComponent {
                 y -= 4;
         }
 
-        //render
+        // render
         stack.pushPose();
         stack.translate(0d, 0d, 999d);
 
@@ -547,16 +549,16 @@ public class UIHelper extends GuiComponent {
         int textWidth = font.width(text);
         int textX = x;
 
-        //the text fit :D
+        // the text fit :D
         if (textWidth <= width) {
             font.draw(stack, text, textX, y, color);
             return;
         }
 
-        //oh, no it doesn't fit
+        // oh, no it doesn't fit
         textX += getTextScrollingOffset(textWidth, width, false);
 
-        //draw text
+        // draw text
         setupScissor(x, y, width, font.lineHeight);
         font.draw(stack, text, textX, y, color);
         disableScissor();
@@ -568,16 +570,16 @@ public class UIHelper extends GuiComponent {
         int textX = x + width / 2;
         int textY = y + height / 2 - font.lineHeight / 2;
 
-        //the text fit :D
+        // the text fit :D
         if (textWidth <= width) {
             drawCenteredString(stack, font, text, textX, textY, color);
             return;
         }
 
-        //oh, no it doesn't fit
+        // oh, no it doesn't fit
         textX += getTextScrollingOffset(textWidth, width, true);
 
-        //draw text
+        // draw text
         setupScissor(x, y, width, height);
         drawCenteredString(stack, font, text, textX, textY, color);
         disableScissor();
@@ -603,6 +605,12 @@ public class UIHelper extends GuiComponent {
         return () -> minecraft.setScreen(new FiguraConfirmScreen.FiguraConfirmLinkScreen((bl) -> {
             if (bl) Util.getPlatform().openUri(url);
         }, url, minecraft.screen));
+    }
+
+    public static void renderLoading(PoseStack stack, int x, int y) {
+        Component text = Component.literal(Integer.toHexString(Math.abs(FiguraMod.ticks) % 16)).withStyle(Style.EMPTY.withFont(Badges.FONT));
+        Font font = Minecraft.getInstance().font;
+        font.drawShadow(stack, text, x - font.width(text) / 2, y - font.lineHeight / 2, -1);
     }
 
     public static void setContext(ContextMenu context) {

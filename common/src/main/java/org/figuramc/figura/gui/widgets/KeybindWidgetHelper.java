@@ -19,7 +19,7 @@ public class KeybindWidgetHelper {
     private boolean vanillaConflict, avatarConflict;
 
     public void renderConflictBars(PoseStack poseStack, int x, int y, int width, int height) {
-        //conflict bars
+        // conflict bars
         if (vanillaConflict || avatarConflict) {
             if (avatarConflict) {
                 UIHelper.fill(poseStack, x, y, x + width, y + height, ChatFormatting.YELLOW.getColor() | 0xFF000000);
@@ -41,17 +41,17 @@ public class KeybindWidgetHelper {
 
 
 
-    //must be called before getText()
+    // must be called before getText()
     public void setTooltip(FiguraKeybind keybind, List<FiguraKeybind> keyBindings) {
         MutableComponent text = Component.empty();
 
-        //avatar conflicts
+        // avatar conflicts
         Component avatar = checkForAvatarConflicts(keybind, keyBindings);
         boolean hasAvatarConflict = avatar != null && !avatar.getString().isBlank();
         if (hasAvatarConflict)
             text.append(avatar);
 
-        //vanilla conflicts
+        // vanilla conflicts
         Component vanilla = checkForVanillaConflicts(keybind);
         if (vanilla != null && !vanilla.getString().isBlank()) {
             if (hasAvatarConflict)
@@ -59,19 +59,19 @@ public class KeybindWidgetHelper {
             text.append(vanilla);
         }
 
-        //set tooltip
+        // set tooltip
         setTooltipTail(text);
     }
 
     public void setTooltip(KeyMapping keybind) {
         MutableComponent text = Component.empty();
 
-        //vanilla conflicts
+        // vanilla conflicts
         Component vanilla = checkForVanillaConflicts(keybind);
         if (vanilla != null && !vanilla.getString().isBlank())
             text.append(vanilla);
 
-        //set tooltip
+        // set tooltip
         setTooltipTail(text);
     }
 
@@ -84,7 +84,7 @@ public class KeybindWidgetHelper {
     }
 
     public Component getText(boolean isDefault, boolean isSelected, Component initialMessage) {
-        //button message
+        // button message
         MutableComponent message = initialMessage.copy();
         if (isDefault || isSelected) message.withStyle(ChatFormatting.WHITE);
         else message.withStyle(FiguraMod.getAccentColor());
@@ -97,7 +97,7 @@ public class KeybindWidgetHelper {
             message = left.append(message).append(right);
         }
 
-        //selected
+        // selected
         if (isSelected)
             message = Component.literal("> ").append(message).append(" <").withStyle(FiguraMod.getAccentColor());
 
