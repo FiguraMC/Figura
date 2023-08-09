@@ -6,13 +6,12 @@ import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.*;
 import org.figuramc.figura.math.matrix.FiguraMat3;
+import org.figuramc.figura.utils.LuaUtils;
+import org.figuramc.figura.utils.MathUtils;
 import org.joml.Vector3f;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
-import org.figuramc.figura.lua.docs.*;
-import org.figuramc.figura.utils.LuaUtils;
-import org.figuramc.figura.utils.MathUtils;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -31,7 +30,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @LuaFieldDoc("vector_n.z")
     public double z;
 
-    // -- cache -- //
+    // -- cache -- // 
 
     @LuaWhitelist
     @LuaMethodDoc(
@@ -53,7 +52,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
         return of().set(x, y, z);
     }
 
-    // -- basic math -- //
+    // -- basic math -- // 
 
     @Override
     public FiguraVec3 set(FiguraVec3 other) {
@@ -276,7 +275,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
         return new double[]{x, y, z};
     }
 
-    // -- utility methods -- //
+    // -- utility methods -- // 
 
     @Override
     @LuaWhitelist
@@ -489,7 +488,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
         return getString(x, y, z);
     }
 
-    // -- vec3 specific -- //
+    // -- vec3 specific -- // 
 
     @LuaWhitelist
     @LuaMethodDoc(
@@ -544,7 +543,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
         return !Double.isNaN(x) && !Double.isNaN(y) && !Double.isNaN(z);
     }
 
-    // -- metamethods -- //
+    // -- metamethods -- // 
 
     @LuaWhitelist
     @LuaMetamethodDoc(

@@ -1,11 +1,9 @@
 package org.figuramc.figura.lua.api;
 
-import org.figuramc.figura.lua.LuaWhitelist;
-import org.figuramc.figura.lua.NbtToLua;
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaValue;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.LuaNotNil;
+import org.figuramc.figura.lua.LuaWhitelist;
+import org.figuramc.figura.lua.NbtToLua;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
@@ -13,6 +11,8 @@ import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.LuaUtils;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -134,7 +134,7 @@ public class AvatarAPI {
     @LuaWhitelist
     @LuaMethodDoc("avatar.has_script_error")
     public boolean hasScriptError() {
-        //useless I know
+        // useless I know
         return avatar.scriptError;
     }
 

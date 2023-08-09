@@ -45,16 +45,16 @@ public class ContextMenu extends AbstractContainerElement {
     public void render(PoseStack poseStack, int mouseX, int mouseY, float delta) {
         if (!isVisible()) return;
 
-        //outline
+        // outline
         UIHelper.renderSliced(poseStack, getX(), getY(), getWidth(), getHeight(), 0f, 0f, 16, 16, 48, 16, BACKGROUND);
 
         for (int i = 0, y = getY() + 1; i < entries.size(); i++) {
             int height = entries.get(i).getHeight();
 
-            //background
+            // background
             UIHelper.renderSliced(poseStack, getX() + 1, y, getWidth() - 2, height, i % 2 == 1 ? 32f : 16f, 0f, 16, 16, 48, 16, BACKGROUND);
 
-            //button
+            // button
             entries.get(i).render(poseStack, mouseX, mouseY, delta);
 
             y += height;
@@ -76,21 +76,21 @@ public class ContextMenu extends AbstractContainerElement {
     }
 
     public void addTab(Component name, Component tooltip, ContextMenu context) {
-        //button
+        // button
         ContextButton button = new TabButton(getX(), getY() + getHeight(), name, tooltip, this, context);
         addElement(button);
 
-        //context
+        // context
         context.parent = button;
         this.children.add(context);
     }
 
     private void addElement(ContextButton element) {
-        //add element
+        // add element
         children.add(element);
         entries.add(element);
 
-        //update size
+        // update size
         updateDimensions();
     }
 
@@ -110,7 +110,7 @@ public class ContextMenu extends AbstractContainerElement {
             this.setHeight(getHeight() + entry.getHeight());
         }
 
-        //fix buttons width
+        // fix buttons width
         for (ContextButton entry : entries)
             entry.setWidth(getWidth() - 2);
     }
@@ -123,16 +123,16 @@ public class ContextMenu extends AbstractContainerElement {
 
     @Override
     public void setX(int x) {
-        //fix out of screen
+        // fix out of screen
         int realWidth = x + getWidth();
         int clientWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
         if (realWidth > clientWidth)
             x -= (realWidth - clientWidth);
 
-        //apply changes
+        // apply changes
         super.setX(x);
 
-        //children
+        // children
         for (ContextButton button : entries) {
             button.setX(x + 1);
             if (button instanceof TabButton tab)
@@ -142,16 +142,16 @@ public class ContextMenu extends AbstractContainerElement {
 
     @Override
     public void setY(int y) {
-        //fix out of screen
+        // fix out of screen
         int realHeight = y + getHeight();
         int clientHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
         if (realHeight > clientHeight)
             y -= (realHeight - clientHeight);
 
-        //apply changes
+        // apply changes
         super.setY(y);
 
-        //children
+        // children
         int heigth = y + 1;
         for (ContextButton button : entries) {
             button.setY(heigth);
@@ -191,7 +191,7 @@ public class ContextMenu extends AbstractContainerElement {
 
         @Override
         protected void renderText(PoseStack pose, float delta) {
-            //draw text
+            // draw text
             Font font = Minecraft.getInstance().font;
             font.drawShadow(
                     pose, getMessage(),
@@ -224,7 +224,7 @@ public class ContextMenu extends AbstractContainerElement {
 
         @Override
         public void renderWidget(PoseStack pose, int mouseX, int mouseY, float delta) {
-            //draw line
+            // draw line
             UIHelper.fill(pose,this.getX() + 4, getY() + 4, this.getX() + this.getWidth() - 4, getY() + 5, 0xFF000000 + ChatFormatting.DARK_GRAY.getColor());
         }
 
@@ -247,10 +247,10 @@ public class ContextMenu extends AbstractContainerElement {
 
         @Override
         public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float delta) {
-            //super
+            // super
             super.renderWidget(poseStack, mouseX, mouseY, delta);
 
-            //draw arrow
+            // draw arrow
             Font font = Minecraft.getInstance().font;
             font.drawShadow(
                     poseStack, ARROW,

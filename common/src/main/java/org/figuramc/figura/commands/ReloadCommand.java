@@ -1,11 +1,11 @@
 package org.figuramc.figura.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.utils.FiguraClientCommandSource;
 import org.figuramc.figura.utils.FiguraText;
-import org.figuramc.figura.FiguraMod;
 
 class ReloadCommand {
 

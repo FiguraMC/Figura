@@ -8,10 +8,10 @@ import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import org.figuramc.figura.gui.screens.WardrobeScreen;
-import org.figuramc.figura.gui.widgets.Button;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.config.Configs;
+import org.figuramc.figura.gui.screens.WardrobeScreen;
+import org.figuramc.figura.gui.widgets.Button;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.FiguraText;
 import org.spongepowered.asm.mixin.Mixin;
@@ -53,29 +53,29 @@ public class PauseScreenMixin extends Screen {
 
         int config = Configs.BUTTON_LOCATION.value;
         switch (config) {
-            case 1 -> { //top left
+            case 1 -> { // top left
                 x = 4;
                 y = 4;
             }
-            case 2 -> {//top right
+            case 2 -> {// top right
                 x = this.width - 68;
                 y = 4;
             }
-            case 3 -> { //bottom left
+            case 3 -> { // bottom left
                 x = 4;
                 y = this.height - 24;
             }
-            case 4 -> { //bottom right
+            case 4 -> { // bottom right
                 x = this.width - 68;
                 y = this.height - 24;
             }
-            default -> { //icon
+            default -> { // icon
                 x = lanButton == null ? this.width / 2 + 106 : lanButton.getX() + lanButton.getWidth() + 4;
                 y = lanButton == null ? this.height / 4 + 80 : lanButton.getY();
             }
         }
 
-        if (config > 0) { //button
+        if (config > 0) { // button
             addRenderableWidget(new Button(x, y, 64, 20, FiguraText.of(), null, btn -> this.minecraft.setScreen(new WardrobeScreen(this))) {
                 @Override
                 public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
@@ -96,7 +96,7 @@ public class PauseScreenMixin extends Screen {
                 @Override
                 protected void renderDefaultTexture(PoseStack gui, float delta) {}
             });
-        } else { //icon
+        } else { // icon
             addRenderableWidget(new Button(x, y, 20, 20, 0, 0, 20, FIGURA_ICON, 60, 20, null, btn -> this.minecraft.setScreen(new WardrobeScreen(this))) {
                 @Override
                 public void renderWidget(PoseStack gui, int mouseX, int mouseY, float delta) {

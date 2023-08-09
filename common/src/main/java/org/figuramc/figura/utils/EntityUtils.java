@@ -39,7 +39,7 @@ public class EntityUtils {
 
         Vec3 raycastEnd = entityEye.add(viewVec);
 
-        double raycastDistanceSquared; //Has to be squared for some reason, thanks minecraft for not making that clear
+        double raycastDistanceSquared; // Has to be squared for some reason, thanks minecraft for not making that clear
         BlockHitResult blockResult = ((EntityAccessor) entity).getLevel().clip(new ClipContext(entityEye, raycastEnd, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, entity));
         if (blockResult != null)
             raycastDistanceSquared = blockResult.getLocation().distanceToSqr(entityEye);

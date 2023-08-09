@@ -6,10 +6,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import org.figuramc.figura.config.ConfigType;
 import org.figuramc.figura.gui.widgets.AbstractContainerElement;
 import org.figuramc.figura.gui.widgets.Button;
 import org.figuramc.figura.gui.widgets.ParentedButton;
-import org.figuramc.figura.config.ConfigType;
 import org.figuramc.figura.gui.widgets.lists.ConfigList;
 import org.figuramc.figura.utils.ui.UIHelper;
 
@@ -34,7 +34,7 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
         this.parentCategory = parentCategory;
         this.initValue = config.value;
 
-        //reset button
+        // reset button
         children.add(resetButton = new ParentedButton(0, 0, 60, 20, Component.translatable("controls.reset"), this, button -> config.resetTemp()));
     }
 
@@ -42,18 +42,18 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
     public void render(PoseStack poseStack, int mouseX, int mouseY, float delta) {
         if (!this.isVisible()) return;
 
-        //vars
+        // vars
         Font font = Minecraft.getInstance().font;
         int textY = getY() + getHeight() / 2 - font.lineHeight / 2;
 
-        //hovered arrow
+        // hovered arrow
         setHovered(isMouseOver(mouseX, mouseY));
         if (isHovered()) font.draw(poseStack, HOVERED_ARROW, (int) (getX() + 8 - font.width(HOVERED_ARROW) / 2f), textY, 0xFFFFFF);
 
-        //render name
+        // render name
         renderTitle(poseStack, font, textY);
 
-        //render children
+        // render children
         super.render(poseStack, mouseX, mouseY, delta);
     }
 

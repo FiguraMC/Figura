@@ -7,12 +7,12 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import org.figuramc.figura.gui.screens.PermissionsScreen;
-import org.figuramc.figura.gui.widgets.SearchBar;
-import org.figuramc.figura.gui.widgets.SwitchButton;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
+import org.figuramc.figura.gui.screens.PermissionsScreen;
+import org.figuramc.figura.gui.widgets.SearchBar;
+import org.figuramc.figura.gui.widgets.SwitchButton;
 import org.figuramc.figura.gui.widgets.permissions.AbstractPermPackElement;
 import org.figuramc.figura.gui.widgets.permissions.CategoryPermPackElement;
 import org.figuramc.figura.gui.widgets.permissions.PlayerPermPackElement;
@@ -49,36 +49,36 @@ public class PlayerList extends AbstractList {
         this.parent = parent;
         this.entryWidth = Math.min(width - scrollBar.getWidth() - 12, 174);
 
-        //fix scrollbar y and height
+        // fix scrollbar y and height
         scrollBar.setY(y + 28);
         scrollBar.setHeight(height - 32);
 
-        //search bar
+        // search bar
         children.add(searchBar = new SearchBar(x + 4, y + 4, width - 56, 20, s -> {
             if (!filter.equals(s))
                 scrollBar.setScrollProgress(0f);
             filter = s;
         }));
 
-        //show figura only button
+        // show figura only button
         children.add(showFigura = new SwitchButton(x + width - 48, y + 4, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/show_figura.png"), 60, 40, FiguraText.of("gui.permissions.figura_only.tooltip"), button -> showFiguraBl = ((SwitchButton) button).isToggled()));
         showFigura.setToggled(showFiguraBl);
 
-        //show disconnected button
+        // show disconnected button
         children.add(showDisconnected = new SwitchButton(x + width - 24, y + 4, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/show_disconnected.png"), 60, 40, FiguraText.of("gui.permissions.disconnected.tooltip"), button -> showDisconnectedBl = ((SwitchButton) button).isToggled()));
         showDisconnected.setToggled(showDisconnectedBl);
 
-        //initial load
+        // initial load
         loadGroups();
         loadPlayers();
 
-        //select self
+        // select self
         selectLocalPlayer();
     }
 
     @Override
     public void tick() {
-        //update players
+        // update players
         loadPlayers();
         super.tick();
     }
@@ -90,7 +90,7 @@ public class PlayerList extends AbstractList {
         int width = getWidth();
         int height = getHeight();
 
-        //background
+        // background
         UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE_FILL);
 
         totalHeight = 0;
@@ -99,16 +99,16 @@ public class PlayerList extends AbstractList {
                 totalHeight += pack.getHeight() + 8;
         }
 
-        //scrollbar visible
+        // scrollbar visible
         boolean hasScrollbar = totalHeight > height - 32;
         scrollBar.setVisible(hasScrollbar);
         scrollBar.setScrollRatio(permissionsList.isEmpty() ? 0f : (float) totalHeight / permissionsList.size(), totalHeight - (height - 32));
 
-        //scissors
+        // scissors
         this.scissorsWidth = hasScrollbar ? -scrollBar.getWidth() - 5 : -2;
         UIHelper.setupScissor(x + scissorsX, y + scissorsY, width + scissorsWidth, height + scissorsHeight);
 
-        //render stuff
+        // render stuff
         int xOffset = (width - entryWidth - (scrollBar.isVisible() ? 13 : 0)) / 2;
         int playerY = scrollBar.isVisible() ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -32, totalHeight - height)) : 32;
 
@@ -127,10 +127,10 @@ public class PlayerList extends AbstractList {
             playerY += pack.getHeight() + 8;
         }
 
-        //reset scissor
+        // reset scissor
         UIHelper.disableScissor();
 
-        //render children
+        // render children
         super.render(stack, mouseX, mouseY, delta);
     }
 
@@ -149,29 +149,29 @@ public class PlayerList extends AbstractList {
     }
 
     private void loadPlayers() {
-        //reset missing players
+        // reset missing players
         missingPlayers.clear();
         missingPlayers.addAll(players.keySet());
 
-        //for all players
+        // for all players
         ClientPacketListener connection = Minecraft.getInstance().getConnection();
         List<UUID> playerList = connection == null ? List.of() : new ArrayList<>(connection.getOnlinePlayerIds());
         for (UUID uuid : playerList) {
-            //get player
+            // get player
             PlayerInfo player = connection.getPlayerInfo(uuid);
             if (player == null)
                 continue;
 
-            //get player data
+            // get player data
             String name = player.getProfile().getName();
             ResourceLocation skin = player.getSkinLocation();
             Avatar avatar = AvatarManager.getAvatarForPlayer(uuid);
 
-            //filter check
+            // filter check
             if ((!name.toLowerCase().contains(filter.toLowerCase()) && !uuid.toString().contains(filter.toLowerCase())) || (showFigura.isToggled() && !FiguraMod.isLocal(uuid) && (avatar == null || avatar.nbt == null)))
                 continue;
 
-            //player is not missing
+            // player is not missing
             missingPlayers.remove(uuid);
 
             PlayerPermPackElement element = players.computeIfAbsent(uuid, uuid1 -> {
@@ -206,7 +206,7 @@ public class PlayerList extends AbstractList {
             }
         }
 
-        //remove missing players
+        // remove missing players
         for (UUID missingID : missingPlayers) {
             PlayerPermPackElement entry = players.remove(missingID);
             permissionsList.remove(entry);
@@ -215,7 +215,7 @@ public class PlayerList extends AbstractList {
 
         sortList();
 
-        //select local if current selected is missing
+        // select local if current selected is missing
         if (selectedEntry instanceof PlayerPermPackElement player && missingPlayers.contains(player.getOwner()))
             selectLocalPlayer();
     }
@@ -241,17 +241,17 @@ public class PlayerList extends AbstractList {
     }
 
     public void updateScroll() {
-        //store old scroll pos
+        // store old scroll pos
         double pastScroll = (totalHeight - getHeight()) * scrollBar.getScrollProgress();
 
-        //get new height
+        // get new height
         totalHeight = 0;
         for (AbstractPermPackElement pack : permissionsList) {
             if (pack.isVisible())
                 totalHeight += pack.getHeight() + 8;
         }
 
-        //set new scroll percentage
+        // set new scroll percentage
         scrollBar.setScrollProgress(pastScroll / (totalHeight - getHeight()));
     }
 
@@ -275,7 +275,7 @@ public class PlayerList extends AbstractList {
     public void scrollToSelected() {
         double y = 0;
 
-        //get height
+        // get height
         totalHeight = 0;
         for (AbstractPermPackElement pack : permissionsList) {
             if (pack instanceof PlayerPermPackElement && !pack.isVisible())
@@ -287,7 +287,7 @@ public class PlayerList extends AbstractList {
                 totalHeight += pack.getHeight() + 8;
         }
 
-        //set scroll
+        // set scroll
         scrollBar.setScrollProgressNoAnim(y / totalHeight);
     }
 

@@ -6,9 +6,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import org.figuramc.figura.gui.widgets.Button;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.local.LocalAvatarFetcher;
+import org.figuramc.figura.font.Emojis;
+import org.figuramc.figura.gui.widgets.Button;
 import org.figuramc.figura.gui.widgets.lists.AvatarList;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.FileTexture;
@@ -23,23 +24,23 @@ public class AvatarWidget extends AbstractAvatarWidget {
         super(depth, width, 24, avatar, parent);
 
         AvatarWidget instance = this;
-        Component description = Component.literal(avatar.getDescription());
+        Component description = Emojis.applyEmojis(Component.literal(avatar.getDescription()));
         this.button = new Button(getX(), getY(), width, 24, getName(), null, button -> {
             AvatarManager.loadLocalAvatar(avatar.getPath());
-            AvatarList.selectedEntry = instance;
+            AvatarList.selectedEntry = avatar.getTheActualPathForThis();
         }) {
             @Override
             public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float delta) {
                 super.renderWidget(poseStack, mouseX, mouseY, delta);
 
-                //selected border
-                if (instance.equals(AvatarList.selectedEntry))
+                // selected border
+                if (instance.isOf(AvatarList.selectedEntry))
                     UIHelper.fillOutline(poseStack, getX(), getY(), getWidth(), getHeight(), 0xFFFFFFFF);
             }
 
             @Override
             protected void renderText(PoseStack pose, float delta) {
-                //variables
+                // variables
                 Font font = Minecraft.getInstance().font;
 
                 int space = SPACING * depth;
@@ -47,20 +48,20 @@ public class AvatarWidget extends AbstractAvatarWidget {
                 int x = getX() + 2 + space;
                 int y = getY() + 2;
 
-                //icon
+                // icon
                 FileTexture texture = avatar.getIcon();
                 ResourceLocation icon = texture == null ? MISSING_ICON : texture.getLocation();
                 UIHelper.renderTexture(pose, x, y, 20, 20, icon);
 
-                //name
+                // name
                 Component parsedName = TextUtils.trimToWidthEllipsis(font, getMessage(), width, TextUtils.ELLIPSIS.copy().withStyle(getMessage().getStyle()));
                 font.drawShadow(pose, parsedName, x + 22, y, -1);
 
-                //description
+                // description
                 Component parsedDescription = TextUtils.trimToWidthEllipsis(font, description, width, TextUtils.ELLIPSIS.copy().withStyle(description.getStyle()));
                 font.drawShadow(pose, parsedDescription, x + 22, y + font.lineHeight + 1, ChatFormatting.GRAY.getColor());
 
-                //tooltip
+                // tooltip
                 if (parsedName != getMessage() || parsedDescription != description) {
                     Component tooltip = instance.getName();
                     if (!description.getString().isBlank())

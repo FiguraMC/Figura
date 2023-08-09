@@ -6,17 +6,17 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import org.figuramc.figura.utils.FiguraClientCommandSource;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.resources.FiguraRuntimeResources;
+import org.figuramc.figura.utils.FiguraClientCommandSource;
 
 public class BackendCommands {
 
     public static LiteralArgumentBuilder<FiguraClientCommandSource> getCommand() {
-        //root
+        // root
         LiteralArgumentBuilder<FiguraClientCommandSource> backend = LiteralArgumentBuilder.literal("backend2");
 
-        //force backend connection
+        // force backend connection
         LiteralArgumentBuilder<FiguraClientCommandSource> connect = LiteralArgumentBuilder.literal("connect");
         connect.executes(context -> {
             NetworkStuff.reAuth();
@@ -25,7 +25,7 @@ public class BackendCommands {
 
         backend.then(connect);
 
-        //run
+        // run
         LiteralArgumentBuilder<FiguraClientCommandSource> run = LiteralArgumentBuilder.literal("run");
         run.executes(context -> runRequest(context, ""));
 
@@ -35,7 +35,7 @@ public class BackendCommands {
         run.then(request);
         backend.then(run);
 
-        //debug mode
+        // debug mode
         LiteralArgumentBuilder<FiguraClientCommandSource> debug = LiteralArgumentBuilder.literal("debug");
         debug.executes(context -> {
             NetworkStuff.debug = !NetworkStuff.debug;
@@ -45,7 +45,7 @@ public class BackendCommands {
 
         backend.then(debug);
 
-        //check resources
+        // check resources
         LiteralArgumentBuilder<FiguraClientCommandSource> resources = LiteralArgumentBuilder.literal("checkResources");
         resources.executes(context -> {
             context.getSource().figura$sendFeedback(Component.literal("Checking for resources..."));
@@ -55,7 +55,7 @@ public class BackendCommands {
 
         backend.then(resources);
 
-        //return
+        // return
         return backend;
     }
 

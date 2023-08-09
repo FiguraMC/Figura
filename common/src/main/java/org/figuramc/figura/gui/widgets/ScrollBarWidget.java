@@ -45,7 +45,7 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
             return false;
 
         if (button == 0) {
-            //jump to pos when not clicking on head
+            // jump to pos when not clicking on head
             double scrollPos = Mth.lerp(scrollPrecise, 0d, (vertical ? getHeight() - headHeight : getWidth() - headWidth) + 2d);
 
             if (vertical && mouseY < getY() + scrollPos || mouseY > getY() + scrollPos + headHeight)
@@ -74,7 +74,7 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         if (isScrolling) {
-            //vertical drag
+            // vertical drag
             if (vertical) {
                 if (Math.signum(deltaY) == -1) {
                     if (mouseY <= this.getY() + this.getHeight()) {
@@ -87,7 +87,7 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
                     return true;
                 }
             }
-            //horizontal drag
+            // horizontal drag
             else if (Math.signum(deltaX) == -1) {
                 if (mouseX <= this.getX() + this.getWidth()) {
                     scroll(deltaX);
@@ -126,13 +126,13 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
         return UIHelper.isMouseOver(getX(), getY(), getWidth(), getHeight(), mouseX, mouseY);
     }
 
-    //apply scroll value
+    // apply scroll value
     protected void scroll(double amount) {
         scrollPrecise += amount / ((vertical ? getHeight() - headHeight : getWidth() - headWidth) + 2d);
         setScrollProgress(scrollPrecise);
     }
 
-    //animate scroll head
+    // animate scroll head
     protected void lerpPos(float delta) {
         float lerpDelta = MathUtils.magicDelta(0.2f, delta);
         scrollPos = Mth.lerp(lerpDelta, scrollPos, getScrollProgress());
@@ -147,7 +147,7 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
         renderWidget(poseStack, mouseX, mouseY, delta);
     }
 
-    //render the scroll
+    // render the scroll
     @Override
     public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
         UIHelper.setupTexture(SCROLLBAR_TEXTURE);
@@ -156,12 +156,12 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
         int width = getWidth();
         int height = getHeight();
 
-        //render bar
+        // render bar
         blit(stack, x, y, width, 1, 10f, isScrolling ? 20f : 0f, 10, 1, 20, 40);
         blit(stack, x, y + 1, width, height - 2, 10f, isScrolling ? 21f : 1f, 10, 18, 20, 40);
         blit(stack, x, y + height - 1, width, 1, 10f, isScrolling ? 39f : 19f, 10, 1, 20, 40);
 
-        //render head
+        // render head
         lerpPos(delta);
         blit(stack, x, (int) (y + Math.round(Mth.lerp(scrollPos, 0, height - headHeight))), 0f, isHoveredOrFocused() || isScrolling ? headHeight : 0f, headWidth, headHeight, 20, 40);
     }
@@ -217,7 +217,7 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
         return super.getHeight();
     }
 
-    //set scrollbar height
+    // set scrollbar height
     @Override
     public void setHeight(int height) {
         this.height = height;
@@ -232,12 +232,12 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
         this.active = active;
     }
 
-    //get scroll value
+    // get scroll value
     public double getScrollProgress() {
         return scrollPrecise;
     }
 
-    //manually set scroll
+    // manually set scroll
     public void setScrollProgress(double amount) {
         setScrollProgress(amount, false);
     }
@@ -247,7 +247,7 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
         scrollPos = scrollPrecise;
     }
 
-    //manually set scroll with optional clamping
+    // manually set scroll with optional clamping
     public void setScrollProgress(double amount, boolean force) {
         amount = Double.isNaN(amount) ? 0 : amount;
         scrollPrecise = force ? amount : Mth.clamp(amount, 0d, 1d);
@@ -256,17 +256,17 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
             onPress.onPress(this);
     }
 
-    //set button action
+    // set button action
     public void setAction(OnPress onPress) {
         this.onPress = onPress;
     }
 
-    //set scroll ratio
+    // set scroll ratio
     public void setScrollRatio(double entryHeight, double heightDiff) {
         scrollRatio = (getHeight() + entryHeight) / (heightDiff / 2d);
     }
 
-    //press action
+    // press action
     public interface OnPress {
         void onPress(ScrollBarWidget scrollbar);
     }

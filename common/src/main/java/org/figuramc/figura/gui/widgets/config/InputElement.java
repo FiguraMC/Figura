@@ -3,12 +3,13 @@ package org.figuramc.figura.gui.widgets.config;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
+import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.config.ConfigType;
+import org.figuramc.figura.config.Configs;
+import org.figuramc.figura.config.InputType;
 import org.figuramc.figura.gui.widgets.ParentedButton;
 import org.figuramc.figura.gui.widgets.TextField;
 import org.figuramc.figura.gui.widgets.lists.ConfigList;
-import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.config.ConfigType;
-import org.figuramc.figura.config.InputType;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
 
@@ -22,22 +23,22 @@ public class InputElement extends AbstractConfigElement {
     public InputElement(int width, ConfigType.InputConfig<?> config, ConfigList parentList, CategoryWidget parentCategory) {
         super(width, config, parentList, parentCategory);
 
-        //get input type
+        // get input type
         this.inputType = config.inputType;
 
-        //text field
+        // text field
         textField = new InputField(0, 0, 90, 20, inputType.hint, this, text -> {
-            //only write config value if it's valid
+            // only write config value if it's valid
             if (inputType.validator.test(text))
                 config.setTempValue(text);
         });
         updateTextFieldText(formatText(config.tempValue));
         textField.getField().moveCursorToStart();
-        textField.setEnabled(FiguraMod.DEBUG_MODE || !config.disabled);
+        textField.setEnabled(FiguraMod.debugModeEnabled() || !config.disabled);
 
         children.add(0, textField);
 
-        //overwrite reset button to update the text field
+        // overwrite reset button to update the text field
         children.remove(resetButton);
         children.add(resetButton = new ParentedButton(getX() + width - 60, getY(), 60, 20, Component.translatable("controls.reset"), this, button -> {
             config.resetTemp();
@@ -49,42 +50,42 @@ public class InputElement extends AbstractConfigElement {
     public void render(PoseStack poseStack, int mouseX, int mouseY, float delta) {
         if (!this.isVisible()) return;
 
-        //reset enabled
+        // reset enabled
         this.resetButton.setActive(!isDefault());
 
-        //text colour
+        // text colour
         int color = 0xFFFFFF;
 
-        //invalid config
+        // invalid config
         String text = textField.getField().getValue();
         if (!inputType.validator.test(text)) {
             color = 0xFF5555;
         }
-        //config was changed
+        // config was changed
         else if (!text.equals(formatText(initValue))) {
             TextColor textColor = FiguraMod.getAccentColor().getColor();
-            color = textColor == null ? ColorUtils.Colors.PINK.hex : textColor.getValue();
+            color = textColor == null ? ColorUtils.Colors.AWESOME_BLUE.hex : textColor.getValue();
         }
 
-        //set text colour
+        // set text colour
         textField.setColor(color);
         textField.setBorderColour(0xFF000000 + color);
 
-        //super render
+        // super render
         super.render(poseStack, mouseX, mouseY, delta);
 
-        //hex colour preview
+        // hex colour preview
         if (inputType == InputType.HEX_COLOR) {
             int x = this.getX() + getWidth() - 178;
             int y = this.getY();
 
-            //border
+            // border
             if (getTextField().isFocused())
                 UIHelper.fillRounded(poseStack, x, y, 20, 20, getTextField().getBorderColour());
             else
                 UIHelper.renderSliced(poseStack, x, y, 20, 20, UIHelper.OUTLINE);
 
-            //inside
+            // inside
             UIHelper.fillRounded(poseStack, x + 1, y + 1, 18, 18, (int) config.tempValue + (0xFF << 24));
         }
     }

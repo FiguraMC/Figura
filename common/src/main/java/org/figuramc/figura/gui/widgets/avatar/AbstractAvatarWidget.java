@@ -7,16 +7,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.avatar.local.LocalAvatarFetcher;
 import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.gui.widgets.AbstractContainerElement;
 import org.figuramc.figura.gui.widgets.Button;
 import org.figuramc.figura.gui.widgets.ContextMenu;
-import org.jetbrains.annotations.NotNull;
-import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.avatar.local.LocalAvatarFetcher;
 import org.figuramc.figura.gui.widgets.lists.AvatarList;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.ui.UIHelper;
+import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 
@@ -92,7 +92,7 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
         if (super.mouseClicked(mouseX, mouseY, button))
             return true;
 
-        //context menu on right click
+        // context menu on right click
         if (button == 1) {
             context.setX((int) mouseX);
             context.setY((int) mouseY);
@@ -100,7 +100,7 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
             UIHelper.setContext(context);
             return true;
         }
-        //hide old context menu
+        // hide old context menu
         else if (UIHelper.getContext() == context) {
             context.setVisible(false);
         }
@@ -145,19 +145,19 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
 
     @Override
     public int compareTo(@NotNull AbstractAvatarWidget other) {
-        //compare favourite
+        // compare favourite
         if (this.favourite && !other.favourite)
             return -1;
         else if (other.favourite && !this.favourite)
             return 1;
 
-        //compare types
+        // compare types
         if (this instanceof AvatarFolderWidget && other instanceof AvatarWidget)
             return -1;
         else if (this instanceof AvatarWidget && other instanceof AvatarFolderWidget)
             return 1;
 
-        //then compare names
+        // then compare names
         else return this.getName().getString().toLowerCase().compareTo(other.getName().getString().toLowerCase());
     }
 

@@ -8,18 +8,18 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import org.figuramc.figura.gui.ActionWheel;
-import org.figuramc.figura.gui.FiguraToast;
-import org.figuramc.figura.gui.PopupMenu;
-import org.figuramc.figura.gui.screens.WardrobeScreen;
-import org.figuramc.figura.lua.FiguraLuaPrinter;
-import org.jetbrains.annotations.Nullable;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.config.Configs;
+import org.figuramc.figura.gui.ActionWheel;
+import org.figuramc.figura.gui.FiguraToast;
+import org.figuramc.figura.gui.PopupMenu;
+import org.figuramc.figura.gui.screens.WardrobeScreen;
+import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.utils.FiguraText;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -44,21 +44,21 @@ public abstract class MinecraftMixin {
 
     @Inject(at = @At("RETURN"), method = "handleKeybinds")
     private void handleKeybinds(CallbackInfo ci) {
-        //dont handle keybinds on panic
+        // don't handle keybinds on panic
         if (AvatarManager.panic)
             return;
 
-        //reload avatar button
+        // reload avatar button
         if (Configs.RELOAD_BUTTON.keyBind.consumeClick()) {
             AvatarManager.reloadAvatar(FiguraMod.getLocalPlayerUUID());
             FiguraToast.sendToast(FiguraText.of("toast.reload"));
         }
 
-        //reload avatar button
+        // reload avatar button
         if (Configs.WARDROBE_BUTTON.keyBind.consumeClick())
             this.setScreen(new WardrobeScreen(null));
 
-        //action wheel button
+        // action wheel button
         Boolean wheel = null;
         if (Configs.ACTION_WHEEL_MODE.value % 2 == 1) {
             if (Configs.ACTION_WHEEL_BUTTON.keyBind.consumeClick())
@@ -80,7 +80,7 @@ public abstract class MinecraftMixin {
             }
         }
 
-        //popup menu button
+        // popup menu button
         if (Configs.POPUP_BUTTON.keyBind.isDown()) {
             PopupMenu.setEnabled(true);
 
@@ -96,7 +96,7 @@ public abstract class MinecraftMixin {
             PopupMenu.run();
         }
 
-        //unlock cursor :p
+        // unlock cursor :p
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (avatar != null && avatar.luaRuntime != null && avatar.luaRuntime.host.unlockCursor) {
             this.mouseHandler.releaseMouse();

@@ -8,6 +8,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
+import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
@@ -18,15 +20,13 @@ import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.math.vector.FiguraVec4;
 import org.figuramc.figura.mixin.render.TextureManagerAccessor;
+import org.figuramc.figura.utils.ColorUtils;
+import org.figuramc.figura.utils.FiguraIdentifier;
+import org.figuramc.figura.utils.LuaUtils;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
 import org.lwjgl.BufferUtils;
-import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.avatar.Avatar;
-import org.figuramc.figura.utils.ColorUtils;
-import org.figuramc.figura.utils.FiguraIdentifier;
-import org.figuramc.figura.utils.LuaUtils;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -60,7 +60,7 @@ public class FiguraTexture extends SimpleTexture {
     public FiguraTexture(Avatar owner, String name, byte[] data) {
         super(new FiguraIdentifier("avatar_tex/" + owner.owner + "/" + UUID.randomUUID()));
 
-        //Read image from wrapper
+        // Read image from wrapper
         NativeImage image;
         try {
             ByteBuffer wrapper = BufferUtils.createByteBuffer(data.length);
@@ -96,12 +96,12 @@ public class FiguraTexture extends SimpleTexture {
 
     @Override
     public void close() {
-        //Make sure it doesn't close twice (minecraft tries to close the texture when reloading textures
+        // Make sure it doesn't close twice (minecraft tries to close the texture when reloading textures
         if (isClosed) return;
 
         isClosed = true;
 
-        //Close native images
+        // Close native images
         texture.close();
         if (backup != null)
             backup.close();
@@ -120,7 +120,7 @@ public class FiguraTexture extends SimpleTexture {
             dirty = false;
 
             RenderCall runnable = () -> {
-                //Upload texture to GPU.
+                // Upload texture to GPU.
                 TextureUtil.prepareImage(this.getId(), texture.getWidth(), texture.getHeight());
                 texture.upload(0, 0, 0, false);
             };
@@ -162,7 +162,7 @@ public class FiguraTexture extends SimpleTexture {
     }
 
 
-    // -- lua stuff -- //
+    // -- lua stuff -- // 
 
 
     private FiguraVec4 parseColor(String method, Object r, Double g, Double b, Double a) {

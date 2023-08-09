@@ -15,6 +15,7 @@ import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.config.Configs;
+import org.figuramc.figura.font.Emojis;
 import org.figuramc.figura.lua.api.action_wheel.Action;
 import org.figuramc.figura.lua.api.action_wheel.Page;
 import org.figuramc.figura.math.vector.FiguraVec3;
@@ -36,7 +37,7 @@ public class ActionWheel {
     private static boolean enabled = false;
     private static int selected = -1;
 
-    //rendering data
+    // rendering data
     private static Minecraft minecraft;
     private static int slots, leftSlots, rightSlots;
     private static float scale;
@@ -51,7 +52,7 @@ public class ActionWheel {
         x = (int) (window.getGuiScaledWidth() / 2d);
         y = (int) (window.getGuiScaledHeight() / 2d);
 
-        //rendering
+        // rendering
         stack.pushPose();
         stack.translate(x, y, 0d);
 
@@ -61,12 +62,12 @@ public class ActionWheel {
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         Page currentPage;
         if (avatar == null || avatar.luaRuntime == null || (currentPage = avatar.luaRuntime.action_wheel.currentPage) == null) {
-            //this also pops the stack
+            // this also pops the stack
             renderEmpty(stack, avatar == null);
             return;
         }
 
-        //get left and right slots, right side have preference when the slots its odd
+        // get left and right slots, right side have preference when the slots its odd
         slots = currentPage.getSize();
         leftSlots = (int) Math.floor(slots / 2d);
         rightSlots = (int) Math.ceil(slots / 2d);
@@ -74,31 +75,31 @@ public class ActionWheel {
         mouseX = minecraft.mouseHandler.xpos() * window.getGuiScaledWidth() / window.getScreenWidth();
         mouseY = minecraft.mouseHandler.ypos() * window.getGuiScaledHeight() / window.getScreenHeight();
 
-        //calculate selected slot
+        // calculate selected slot
         FiguraMod.pushProfiler("selectedSlot");
         calculateSelected();
 
-        //render overlays
+        // render overlays
         FiguraMod.popPushProfiler("wheel");
         renderTextures(stack, currentPage);
 
-        //reset colours
+        // reset colours
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 
-        //render items
+        // render items
         FiguraMod.popPushProfiler("items");
         renderItemsAndIcons(stack, currentPage);
 
         stack.popPose();
 
-        //render title
+        // render title
         FiguraMod.popPushProfiler("texts");
         renderTexts(stack, currentPage);
 
         FiguraMod.popProfiler();
     }
 
-    // -- render helpers -- //
+    // -- render helpers -- // 
 
     private static double getAngle(int i) {
         double angle;
@@ -111,14 +112,14 @@ public class ActionWheel {
     }
 
     private static void renderEmpty(PoseStack stack, boolean avatar) {
-        //render empty wheel
+        // render empty wheel
         TextureData data = OverlayTexture.values()[0].data[0];
         data.render(stack, null, false);
         data.render(stack, null, true);
 
-        stack.popPose(); //previous stack
+        stack.popPose(); // previous stack
 
-        //warning text
+        // warning text
         Component component = FiguraText.of("gui.error." + (avatar ? "no_avatar" : "no_wheel_page")).withStyle(ChatFormatting.YELLOW);
         Font font = minecraft.font;
 
@@ -126,20 +127,20 @@ public class ActionWheel {
     }
 
     private static void calculateSelected() {
-        //get the total mouse distance from the center of the wheel
+        // get the total mouse distance from the center of the wheel
         double mouseDistance = Math.sqrt(Math.pow(x - mouseX, 2) + Math.pow(y - mouseY, 2));
 
-        //no need to sum left side because if the right side is 0, the left side will also be 0
+        // no need to sum left side because if the right side is 0, the left side will also be 0
         if (rightSlots == 0 || mouseDistance < (DEADZONE * scale)) {
             selected = -1;
             return;
         }
 
-        //get the mouse angle in degrees from middle of the wheel, starting at top, clockwise
+        // get the mouse angle in degrees from middle of the wheel, starting at top, clockwise
         double angle = Math.toDegrees(Math.atan2(mouseY - y, mouseX - x)) + 90;
         if (angle < 0) angle += 360;
 
-        //get the selected slot
+        // get the selected slot
         if (angle < 180)
             selected = (int) Math.floor((rightSlots / 180d) * angle);
         else
@@ -153,22 +154,22 @@ public class ActionWheel {
             int type = left ? leftSlots : rightSlots;
             int relativeIndex = left ? i - rightSlots : i;
 
-            //get color
+            // get color
             FiguraVec3 color = action == null ? null : action.getColor(selected == i);
 
-            //render background texture
+            // render background texture
             OverlayTexture.values()[type - 1].data[relativeIndex].render(stack, color, left);
 
-            //no icon for null action
+            // no icon for null action
             if (action == null)
                 continue;
 
-            //convert angle to x and y coordinates
+            // convert angle to x and y coordinates
             double angle = getAngle(i);
             double x = Math.cos(angle) * 15 - 4;
             double y = Math.sin(angle) * 15 - 4;
 
-            //render icon
+            // render icon
             UIHelper.setupTexture(ICONS);
 
             if (color != null)
@@ -191,12 +192,12 @@ public class ActionWheel {
 
             boolean isSelected = selected == i;
 
-            //convert angle to x and y coordinates
+            // convert angle to x and y coordinates
             double angle = getAngle(i);
             double xOff = Math.cos(angle) * DISTANCE;
             double yOff = Math.sin(angle) * DISTANCE;
 
-            //texture
+            // texture
             Action.TextureData texture = action.getTexture(isSelected);
             if (texture != null) {
                 UIHelper.setupTexture(texture.texture.getLocation());
@@ -209,12 +210,12 @@ public class ActionWheel {
                         texture.texture.getWidth(), texture.texture.getHeight());
             }
 
-            //no item, no render
+            // no item, no render
             ItemStack item = action.getItem(isSelected);
             if (item == null || item.isEmpty())
                 continue;
 
-            //render
+            // render
             minecraft.getItemRenderer().renderGuiItem(stack, item, (int) Math.round(xOff - 8), (int) Math.round(yOff - 8));
             if (Configs.ACTION_WHEEL_DECORATIONS.value)
                 minecraft.getItemRenderer().renderGuiItemDecorations(stack, minecraft.font, item, (int) Math.round(xOff - 8), (int) Math.round(yOff - 8));
@@ -229,7 +230,7 @@ public class ActionWheel {
         Action selectedTitleAction = selected == -1 ? null : page.slots()[selected];
         String selectedTitle = selectedTitleAction == null ? null : selectedTitleAction.getTitle();
 
-        //page indicator
+        // page indicator
         int groupCount = page.getGroupCount();
         if (groupCount > 1 && (selectedTitle == null || indicatorPosition != titlePosition - 2)) {
             stack.pushPose();
@@ -240,31 +241,31 @@ public class ActionWheel {
             MutableComponent indicator = Component.empty();
             int extraWidth = 0;
 
-            //down arrow
+            // down arrow
             if (index > 1) {
                 Component arrow = UIHelper.UP_ARROW.copy().append(" ");
                 indicator.append(arrow);
                 extraWidth -= font.width(arrow);
             }
-            //text
+            // text
             indicator.append(FiguraText.of("gui.action_wheel.slots_indicator",
                     Component.literal(String.valueOf((index - 1) * 8 + 1)).withStyle(FiguraMod.getAccentColor()),
                     Component.literal(String.valueOf(Math.min(index * 8, greatest))).withStyle(FiguraMod.getAccentColor()),
                     Component.literal(String.valueOf(greatest)).withStyle(FiguraMod.getAccentColor())
             ));
-            //up arrow
+            // up arrow
             if (index < groupCount) {
                 Component arrow = Component.literal(" ").append(UIHelper.DOWN_ARROW);
                 indicator.append(arrow);
                 extraWidth += font.width(arrow);
             }
 
-            //draw
+            // draw
             font.drawShadow(stack, indicator, x - (int) ((font.width(indicator) - extraWidth) / 2f), (int) Position.index(indicatorPosition).apply(font.lineHeight), 0xFFFFFF);
             stack.popPose();
         }
 
-        //all titles
+        // all titles
         if (titlePosition >= 5) {
             boolean internal = titlePosition == 5;
             double distance = (internal ? DISTANCE : 66) * scale;
@@ -279,12 +280,12 @@ public class ActionWheel {
                 if (title == null)
                     continue;
 
-                //convert angle to x and y coordinates
+                // convert angle to x and y coordinates
                 double angle = getAngle(i);
                 double xOff = Math.cos(angle) * distance;
                 double yOff = Math.sin(angle) * distance;
 
-                //render text
+                // render text
                 int textX = x + (int) (Math.round(xOff));
                 int textY = y + (int) (Math.round(yOff + (internal ? 9 * scale : -font.lineHeight / 2f)));
 
@@ -307,19 +308,19 @@ public class ActionWheel {
             return;
         }
 
-        //title
+        // title
         if (selectedTitle == null)
             return;
 
-        //vars
+        // vars
         Component text = Emojis.applyEmojis(TextUtils.tryParseJson(selectedTitle));
         List<Component> list = TextUtils.splitText(text, "\n");
         int height = font.lineHeight * list.size();
 
-        //render
-        if (titlePosition < 2) { //tooltip
+        // render
+        if (titlePosition < 2) { // tooltip
             UIHelper.renderTooltip(stack, text, (int) mouseX, (int) mouseY, titlePosition == 0);
-        } else { //anchored
+        } else { // anchored
             stack.pushPose();
             stack.translate(0d, 0d, 999d);
 
@@ -342,11 +343,11 @@ public class ActionWheel {
             return;
         }
 
-        //wheel click action
+        // wheel click action
         if (avatar.luaRuntime.action_wheel.execute(avatar, left))
             return;
 
-        //execute action
+        // execute action
         Page currentPage;
         if (index < 0 || index > 7 || avatar.luaRuntime == null || (currentPage = avatar.luaRuntime.action_wheel.currentPage) == null) {
             selected = -1;
@@ -368,11 +369,11 @@ public class ActionWheel {
         if (!isEnabled() || (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) == null || avatar.luaRuntime == null)
             return;
 
-        //wheel scroll action
+        // wheel scroll action
         if (avatar.luaRuntime.action_wheel.mouseScroll(avatar, delta))
             return;
 
-        //scroll action
+        // scroll action
         Page currentPage = avatar.luaRuntime.action_wheel.currentPage;
         if (currentPage == null)
             return;
@@ -385,7 +386,7 @@ public class ActionWheel {
             }
         }
 
-        //page scroll
+        // page scroll
         currentPage.setSlotsShift(currentPage.getSlotsShift() - (int) Math.signum(delta));
     }
 
@@ -448,9 +449,11 @@ public class ActionWheel {
         public TextureData(int y, float u, float v, int rotation) {
             this(false, y, u, v, rotation);
         }
+
         public TextureData(float u, float v, int rotation) {
             this(-64, u, v, rotation);
         }
+
         public TextureData(float u, float v) {
             this(u, v, 0);
         }

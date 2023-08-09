@@ -27,12 +27,12 @@ public class Animation {
     @LuaFieldDoc("animation.name")
     public final String name;
 
-    // -- keyframes -- //
+    // -- keyframes -- // 
 
     protected final List<Map.Entry<FiguraModelPart, List<Animation.AnimationChannel>>> animationParts = new ArrayList<>();
     private final Map<Float, String> codeFrames = new HashMap<>();
 
-    // -- player variables -- //
+    // -- player variables -- // 
 
     private final TimeController controller = new TimeController();
     public PlayState playState = PlayState.STOPPED;
@@ -41,7 +41,7 @@ public class Animation {
     private float lastTime = 0f;
     protected float frameTime = 0f;
 
-    // -- data variables -- //
+    // -- data variables -- // 
 
     protected float length, blend, offset;
     protected float speed = 1f;
@@ -50,7 +50,7 @@ public class Animation {
     protected int priority = 0;
     protected LoopMode loop;
 
-    // -- java methods -- //
+    // -- java methods -- // 
 
     public Animation(Avatar owner, String modelName, String name, LoopMode loop, boolean override, float length, float offset, float blend, float startDelay, float loopDelay) {
         this.owner = owner;
@@ -84,12 +84,12 @@ public class Animation {
     }
 
     public void tick() {
-        //tick time
+        // tick time
         this.controller.tick();
 
         this.time += controller.getDiff() * speed;
 
-        //loop checks
+        // loop checks
         switch (this.loop) {
             case ONCE -> {
                 if ((!inverted && time >= length) || (inverted && time <= 0))
@@ -107,7 +107,7 @@ public class Animation {
         this.lastTime = this.frameTime;
         this.frameTime = Math.max(this.time, this.offset);
 
-        //code events
+        // code events
         if (inverted)
             playCode(this.frameTime, this.lastTime);
         else
@@ -137,7 +137,7 @@ public class Animation {
     }
 
 
-    // -- lua methods -- //
+    // -- lua methods -- // 
 
 
     @LuaWhitelist
@@ -593,7 +593,7 @@ public class Animation {
         return name + " (Animation)";
     }
 
-    // -- other classes -- //
+    // -- other classes -- // 
 
     public enum PlayState {
         STOPPED,

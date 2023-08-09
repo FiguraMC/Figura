@@ -6,12 +6,12 @@ import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
+import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.math.vector.FiguraVec4;
+import org.figuramc.figura.utils.LuaUtils;
 import org.joml.Matrix4d;
 import org.joml.Matrix4f;
 import org.luaj.vm2.LuaError;
-import org.figuramc.figura.math.vector.FiguraVec3;
-import org.figuramc.figura.utils.LuaUtils;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -56,9 +56,9 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
         );
     }
 
-    //----------------------------IMPLEMENTATION BELOW-----------------------//
+    // ----------------------------IMPLEMENTATION BELOW-----------------------// 
 
-    //Values are named as v(ROW)(COLUMN), both 1-indexed like in actual math
+    // Values are named as v(ROW)(COLUMN), both 1-indexed like in actual math
     public double v11 = 1, v12, v13, v14, v21, v22 = 1, v23, v24, v31, v32, v33 = 1, v34, v41, v42, v43, v44 = 1;
 
     public static FiguraMat4 of() {
@@ -79,7 +79,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
 
     @Override
     protected double calculateDeterminant() {
-        //https://stackoverflow.com/a/44446912
+        // https://stackoverflow.com/a/44446912
         var A2323 = v33 * v44 - v34 * v43 ;
         var A1323 = v32 * v44 - v34 * v42 ;
         var A1223 = v32 * v43 - v33 * v42 ;
@@ -326,7 +326,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
         temp = v23; v23 = v32; v32 = temp;
         temp = v24; v24 = v42; v42 = temp;
         temp = v34; v34 = v43; v43 = temp;
-        cachedInverse = null; //transposing doesn't invalidate the determinant
+        cachedInverse = null; // transposing doesn't invalidate the determinant
         return this;
     }
 
@@ -356,7 +356,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
             set(cachedInverse);
             cachedDeterminant = 1 / cachedDeterminant;
         } else {
-            //https://stackoverflow.com/a/44446912
+            // https://stackoverflow.com/a/44446912
 
             var A2323 = v33 * v44 - v34 * v43 ;
             var A1323 = v32 * v44 - v34 * v42 ;
@@ -382,7 +382,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
                     + v13 * ( v21 * A1323 - v22 * A0323 + v24 * A0123 )
                     - v14 * ( v21 * A1223 - v22 * A0223 + v23 * A0123 ) ;
             if (det == 0)
-                det = Double.MIN_VALUE; //Prevent divide by 0 errors
+                det = Double.MIN_VALUE; // Prevent divide by 0 errors
 
             det = 1 / det;
             cachedDeterminant = det;
@@ -691,7 +691,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
         return this;
     }
 
-    //Rotates using ZYX matrix order, meaning the X axis, then Y, then Z.
+    // Rotates using ZYX matrix order, meaning the X axis, then Y, then Z.
     public void rotateZYX(double x, double y, double z) {
         x = Math.toRadians(x);
         y = Math.toRadians(y);
@@ -839,7 +839,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
         return apply(FiguraVec4.of(vec.x, vec.y, vec.z, 0));
     }
 
-    //-----------------------------METAMETHODS-----------------------------------//
+    // -----------------------------METAMETHODS-----------------------------------// 
 
     @LuaWhitelist
     public FiguraMat4 __add(@LuaNotNil FiguraMat4 mat) {

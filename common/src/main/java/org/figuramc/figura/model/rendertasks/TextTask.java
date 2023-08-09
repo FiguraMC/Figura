@@ -7,7 +7,10 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
-import org.figuramc.figura.gui.Emojis;
+import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.avatar.Avatar;
+import org.figuramc.figura.avatar.Badges;
+import org.figuramc.figura.font.Emojis;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
@@ -21,9 +24,6 @@ import org.figuramc.figura.utils.LuaUtils;
 import org.figuramc.figura.utils.TextUtils;
 import org.joml.Matrix4f;
 import org.luaj.vm2.LuaError;
-import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.avatar.Avatar;
-import org.figuramc.figura.avatar.Badges;
 
 import java.util.List;
 
@@ -52,11 +52,13 @@ public class TextTask extends RenderTask {
 
     @Override
     public void render(PoseStack poseStack, MultiBufferSource buffer, int light, int overlay) {
-        //prepare matrices
+        if (opacity == 0) return; // lol
+
+        // prepare matrices
         Matrix4f matrix = poseStack.last().pose();
         matrix.scale(-1, -1, -1);
 
-        //prepare variables
+        // prepare variables
         Font font = Minecraft.getInstance().font;
         int l = this.customization.light != null ? this.customization.light : light;
         int bg = backgroundColor != null ? backgroundColor : background ? (int) (Minecraft.getInstance().options.getBackgroundOpacity(0.25f) * 0xFF) << 24 : 0;
@@ -65,7 +67,7 @@ public class TextTask extends RenderTask {
         Font.DisplayMode displayMode = seeThrough ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.POLYGON_OFFSET;
         float vertexOffset = outline ? FiguraMod.VERTEX_OFFSET : 0f;
 
-        //background
+        // background
         if (bg != 0) {
             int offset = alignment.apply(cacheWidth);
             float x1 = -1 - offset;
@@ -77,7 +79,7 @@ public class TextTask extends RenderTask {
             vertexConsumer.vertex(matrix, x2, -1f, vertexOffset).color(bg).uv2(l).endVertex();
         }
 
-        //text
+        // text
         for (int i = 0, j = 0; i < text.size(); i++, j += (font.lineHeight + 1)) {
             Component text = this.text.get(i);
             int x = -alignment.apply(font, text);
@@ -120,7 +122,7 @@ public class TextTask extends RenderTask {
     }
 
 
-    // -- lua -- //
+    // -- lua -- // 
 
 
     @LuaWhitelist
