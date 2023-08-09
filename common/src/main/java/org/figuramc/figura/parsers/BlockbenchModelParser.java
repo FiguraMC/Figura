@@ -147,7 +147,7 @@ public class BlockbenchModelParser {
                 source = IOUtils.readFileBytes(p);
                 path = avatar.relativize(p)
                         .toString()
-                        .replaceAll(p.getFileSystem().getSeparator(), ".");
+                        .replace(p.getFileSystem().getSeparator(), ".");
                 path = path.substring(0, path.length() - 4);
 
                 //fix name
