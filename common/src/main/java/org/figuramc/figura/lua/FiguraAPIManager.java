@@ -3,10 +3,11 @@ package org.figuramc.figura.lua;
 import org.figuramc.figura.animation.Animation;
 import org.figuramc.figura.entries.FiguraAPI;
 import org.figuramc.figura.lua.api.*;
-import org.figuramc.figura.lua.api.data.DataAPI;
-import org.figuramc.figura.lua.api.data.FiguraFuture;
-import org.figuramc.figura.lua.api.data.FiguraInputStream;
-import org.figuramc.figura.lua.api.data.FiguraOutputStream;
+import org.figuramc.figura.lua.api.data.*;
+import org.figuramc.figura.lua.api.data.json.FiguraJsonArray;
+import org.figuramc.figura.lua.api.data.json.FiguraJsonBuilder;
+import org.figuramc.figura.lua.api.data.json.FiguraJsonObject;
+import org.figuramc.figura.lua.api.data.json.FiguraJsonSerializer;
 import org.figuramc.figura.lua.api.data.providers.FiguraProvider;
 import org.figuramc.figura.lua.api.data.providers.StringProvider;
 import org.figuramc.figura.lua.api.data.readers.FiguraReader;
@@ -161,7 +162,15 @@ public class FiguraAPIManager {
         add(DataAPI.Readers.class);
         add(DataAPI.Providers.class);
 
+        add(StreamReader.class);
+        add(StreamWriter.class);
+
         add(FileAPI.class);
+
+        add(FiguraJsonBuilder.class);
+        add(FiguraJsonSerializer.class);
+        add(FiguraJsonArray.class);
+        add(FiguraJsonObject.class);
     }};
 
     public static final Map<String, Function<FiguraLuaRuntime, Object>> API_GETTERS = new LinkedHashMap<>() {{

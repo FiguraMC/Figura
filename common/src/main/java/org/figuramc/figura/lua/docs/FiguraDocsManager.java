@@ -15,10 +15,7 @@ import org.figuramc.figura.lua.api.*;
 import org.figuramc.figura.lua.api.action_wheel.Action;
 import org.figuramc.figura.lua.api.action_wheel.ActionWheelAPI;
 import org.figuramc.figura.lua.api.action_wheel.Page;
-import org.figuramc.figura.lua.api.data.DataAPI;
-import org.figuramc.figura.lua.api.data.FiguraFuture;
-import org.figuramc.figura.lua.api.data.FiguraInputStream;
-import org.figuramc.figura.lua.api.data.FiguraOutputStream;
+import org.figuramc.figura.lua.api.data.*;
 import org.figuramc.figura.lua.api.data.providers.FiguraProvider;
 import org.figuramc.figura.lua.api.data.providers.StringProvider;
 import org.figuramc.figura.lua.api.data.readers.FiguraReader;
@@ -245,7 +242,9 @@ public class FiguraDocsManager {
                 StringProvider.Providers.class,
                 FiguraInputStream.class,
                 FiguraOutputStream.class,
-                FiguraFuture.class
+                FiguraFuture.class,
+                StreamReader.class,
+                StreamWriter.class
         ));
 
         put("file", List.of(
