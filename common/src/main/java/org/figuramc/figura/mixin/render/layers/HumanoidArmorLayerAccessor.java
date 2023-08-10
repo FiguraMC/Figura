@@ -9,7 +9,6 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
-import net.minecraft.world.item.armortrim.ArmorTrim;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,10 +19,6 @@ public interface HumanoidArmorLayerAccessor<T extends LivingEntity, M extends Hu
     @Intrinsic
     @Invoker("renderModel")
     void renderModel(PoseStack matrices, MultiBufferSource vertexConsumers, int light, ArmorItem item, boolean usesSecondLayer, A model, boolean legs, float red, float green, float blue, @Nullable String overlay);
-
-    @Intrinsic
-    @Invoker("renderTrim")
-    void renderTrim(ArmorMaterial material, PoseStack matrices, MultiBufferSource vertexConsumers, int light, ArmorTrim permutation, boolean hasGlint, A model, boolean usesSecondLayer, float red, float green, float blue);
 
     @Intrinsic
     @Invoker("usesInnerModel")

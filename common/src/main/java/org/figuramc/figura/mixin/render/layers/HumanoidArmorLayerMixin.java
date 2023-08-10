@@ -19,7 +19,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.DyeableArmorItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.armortrim.ArmorTrim;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
@@ -39,10 +38,6 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
 
     @Shadow
     protected abstract A getArmorModel(EquipmentSlot slot);
-
-    @Shadow
-    @Final
-    private TextureAtlas armorTrimAtlas;
 
     @Shadow
     protected abstract void renderArmorPiece(PoseStack matrices, MultiBufferSource vertexConsumers, T entity, EquipmentSlot armorSlot, int light, A model);
@@ -111,7 +106,7 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
         ItemStack itemStack = entity.getItemBySlot(slot);
 
         // Make sure the item in the equipment slot is actually a piece of armor
-        if ((itemStack.getItem() instanceof ArmorItem armorItem && armorItem.getEquipmentSlot() == slot)) {
+        if ((itemStack.getItem() instanceof ArmorItem armorItem && armorItem.getSlot() == slot)) {
             A armorModel = getArmorModel(slot);
             armorModel.body.xRot = 0.0f;
             armorModel.rightLeg.z = 0.0f;
@@ -260,13 +255,6 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
             VertexConsumer overlaidArmorConsumer = vertexConsumers.getBuffer(RenderType.armorCutoutNoCull(this.getArmorLocation(armorItem, bl, "overlay")));
             modelPart.render(poseStack, overlaidArmorConsumer, light, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
         }
-
-        ArmorTrim.getTrim(entity.level.registryAccess(), itemStack).ifPresent((permutation) -> {
-            var armorMaterial = armorItem.getMaterial();
-            TextureAtlasSprite trimAtlas = this.armorTrimAtlas.getSprite(bl ? permutation.innerTexture(armorMaterial) : permutation.outerTexture(armorMaterial));
-            VertexConsumer trimConsumer = trimAtlas.wrap(vertexConsumers.getBuffer(Sheets.armorTrimsSheet()));
-            modelPart.render(poseStack, trimConsumer, light, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
-        });
 
         if (hasGlint) {
             modelPart.render(poseStack, vertexConsumers.getBuffer(RenderType.armorEntityGlint()), light, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);

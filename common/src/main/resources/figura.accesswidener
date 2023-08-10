@@ -6,3 +6,9 @@ accessible class net/minecraft/client/gui/screens/inventory/BookEditScreen$LineI
 
 accessible method net/minecraft/client/renderer/RenderType create (Ljava/lang/String;Lcom/mojang/blaze3d/vertex/VertexFormat;Lcom/mojang/blaze3d/vertex/VertexFormat$Mode;ILnet/minecraft/client/renderer/RenderType$CompositeState;)Lnet/minecraft/client/renderer/RenderType$CompositeRenderType;
 accessible method net/minecraft/client/renderer/RenderType create (Ljava/lang/String;Lcom/mojang/blaze3d/vertex/VertexFormat;Lcom/mojang/blaze3d/vertex/VertexFormat$Mode;IZZLnet/minecraft/client/renderer/RenderType$CompositeState;)Lnet/minecraft/client/renderer/RenderType$CompositeRenderType;
+accessible class net/minecraft/client/gui/components/MultiLineTextWidget
+extendable class net/minecraft/client/gui/components/MultiLineTextWidget
+accessible method net/minecraft/client/gui/components/MultiLineTextWidget <init> (Lnet/minecraft/client/gui/components/MultiLineLabel;Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;Z)V
+accessible field net/minecraft/client/gui/components/MultiLineLabel$TextWithWidth width I
+accessible field net/minecraft/client/gui/components/MultiLineLabel$TextWithWidth text Lnet/minecraft/util/FormattedCharSequence;
+accessible field net/minecraft/client/gui/components/MultiLineTextWidget multiLineLabel Lnet/minecraft/client/gui/components/MultiLineLabel;

@@ -58,7 +58,6 @@
     "render.MissingTextureAtlasSpriteAccessor",
     "render.ModelManagerAccessor",
     "render.PlayerModelMixin",
-    "TextDisplayMixin",
     "render.TextureAtlasAccessor",
     "render.TextureManagerAccessor",
     "render.layers.CapeLayerMixin",
