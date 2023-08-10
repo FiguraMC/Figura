@@ -22,13 +22,11 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import org.figuramc.figura.avatar.Avatar;
+import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.ReadOnlyLuaTable;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaTable;
-import org.figuramc.figura.avatar.Avatar;
-import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
 import org.figuramc.figura.lua.api.entity.PlayerAPI;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
@@ -37,6 +35,8 @@ import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.utils.EntityUtils;
 import org.figuramc.figura.utils.LuaUtils;
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaTable;
 
 import java.util.*;
 
@@ -369,7 +369,7 @@ public class WorldAPI {
         }
     }
 
-    //@LuaWhitelist
+    // @LuaWhitelist
     public HashMap<String, Object> raycastBlock(boolean fluid, Object x, Object y, Double z, Object w, Double t, Double h) {
         FiguraVec3 start, end;
 
@@ -390,7 +390,7 @@ public class WorldAPI {
         return map;
     }
 
-    //@LuaWhitelist
+    // @LuaWhitelist
     public HashMap<String, Object> raycastEntity(Object x, Object y, Double z, Object w, Double t, Double h) {
         FiguraVec3 start, end;
 

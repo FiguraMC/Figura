@@ -8,7 +8,10 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
-import org.figuramc.figura.gui.Emojis;
+import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.avatar.Avatar;
+import org.figuramc.figura.avatar.Badges;
+import org.figuramc.figura.font.Emojis;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
@@ -17,14 +20,10 @@ import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.math.vector.FiguraVec4;
 import org.figuramc.figura.model.FiguraModelPart;
-import org.figuramc.figura.model.PartCustomization;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.LuaUtils;
 import org.figuramc.figura.utils.TextUtils;
 import org.luaj.vm2.LuaError;
-import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.avatar.Avatar;
-import org.figuramc.figura.avatar.Badges;
 
 import java.util.List;
 
@@ -52,13 +51,15 @@ public class TextTask extends RenderTask {
     }
 
     @Override
-    public void render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
-        this.pushOntoStack(stack);
-        PoseStack poseStack = stack.peek().copyIntoGlobalPoseStack();
-        poseStack.scale(-1, -1, 1);
+    public void render(PoseStack poseStack, MultiBufferSource buffer, int light, int overlay) {
+        if (opacity == 0) return; // lol
 
-        Font font = Minecraft.getInstance().font;
+        // prepare matrices
         Matrix4f matrix = poseStack.last().pose();
+        matrix.scale(-1, -1, -1);
+
+        // prepare variables
+        Font font = Minecraft.getInstance().font;
         Matrix4f textMatrix = matrix;
         if (shadow) {
             poseStack.pushPose();
@@ -86,8 +87,6 @@ public class TextTask extends RenderTask {
                 font.drawInBatch(text, x, y, 0xFFFFFF, shadow, textMatrix, buffer, false, 0, l);
             }
         }
-
-        stack.pop();
     }
 
     @Override

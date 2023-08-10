@@ -11,11 +11,11 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
-import org.figuramc.figura.math.vector.FiguraVec4;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.config.Configs;
+import org.figuramc.figura.math.vector.FiguraVec4;
 import org.figuramc.figura.model.rendering.EntityRenderMode;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.RenderUtils;
@@ -54,7 +54,7 @@ public abstract class LevelRendererMixin {
                     i >> 16 & 0xFF,
                     i >> 8 & 0xFF,
                     i & 0xFF,
-                    0xFF //does nothing :(
+                    0xFF // does nothing :(
             );
         }
 
@@ -78,11 +78,11 @@ public abstract class LevelRendererMixin {
         if (avatar == null)
             return;
 
-        //first person world parts
+        // first person world parts
         MultiBufferSource.BufferSource bufferSource = this.renderBuffers.bufferSource();
         avatar.firstPersonWorldRender(e, bufferSource, stack, camera, tickDelta);
 
-        //first person matrices
+        // first person matrices
         if (!(e instanceof LivingEntity livingEntity) || !Configs.FIRST_PERSON_MATRICES.value)
             return;
 

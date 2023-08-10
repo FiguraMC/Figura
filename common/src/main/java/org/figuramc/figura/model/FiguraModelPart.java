@@ -3,6 +3,7 @@ package org.figuramc.figura.model;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaFieldDoc;
@@ -13,10 +14,6 @@ import org.figuramc.figura.math.matrix.FiguraMat3;
 import org.figuramc.figura.math.matrix.FiguraMat4;
 import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
-import org.figuramc.figura.model.rendertasks.*;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaFunction;
-import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.model.rendering.ImmediateAvatarRenderer;
 import org.figuramc.figura.model.rendering.Vertex;
 import org.figuramc.figura.model.rendering.texture.FiguraTexture;
@@ -25,6 +22,8 @@ import org.figuramc.figura.model.rendering.texture.RenderTypes;
 import org.figuramc.figura.model.rendertasks.*;
 import org.figuramc.figura.utils.LuaUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaFunction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +55,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     public Map<String, RenderTask> renderTasks = new ConcurrentHashMap<>();
 
     public List<FiguraTextureSet> textures;
-    public int textureWidth = -1, textureHeight = -1; //If the part has multiple textures, then these are -1.
+    public int textureWidth = -1, textureHeight = -1; // If the part has multiple textures, then these are -1.
 
     public boolean animated = false;
     public int animationOverride = 0;
@@ -68,13 +67,13 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
 
     @LuaWhitelist
     @LuaFieldDoc("model_part.pre_render")
-    public LuaFunction preRender; //before calculations
+    public LuaFunction preRender; // before calculations
     @LuaWhitelist
     @LuaFieldDoc("model_part.mid_render")
-    public LuaFunction midRender; //before pushing
+    public LuaFunction midRender; // before pushing
     @LuaWhitelist
     @LuaFieldDoc("model_part.post_render")
-    public LuaFunction postRender; //after children
+    public LuaFunction postRender; // after children
 
     public FiguraModelPart(Avatar owner, String name, PartCustomization customization, Map<Integer, List<Vertex>> vertices, List<FiguraModelPart> children) {
         this.owner = owner;
@@ -109,12 +108,12 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         if (vanillaModelData == null)
             return;
 
-        //get part data
+        // get part data
         VanillaModelData.PartData partData = vanillaModelData.partMap.get(this.parentType);
         if (partData == null)
             return;
 
-        //apply vanilla transforms
+        // apply vanilla transforms
         customization.vanillaVisible = partData.visible;
 
         FiguraVec3 defaultPivot = parentType.offset.copy();
@@ -131,7 +130,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             customization.offsetPos(defaultPivot);
         }
 
-        //customization.offsetPivot(pivot);
+        // customization.offsetPivot(pivot);
         if (!overrideVanillaRot())
             customization.offsetRot(partData.rot);
     }
@@ -172,7 +171,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         customization.setMatrix(prevPartToView);
     }
 
-    // -- animations -- //
+    // -- animations -- // 
 
     public void animPosition(FiguraVec3 vec, boolean merge) {
         if (merge) {
@@ -211,7 +210,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         }
     }
 
-    //-- LUA BUSINESS --//
+    // -- LUA BUSINESS --// 
 
 
     @LuaWhitelist
@@ -1372,7 +1371,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         return newer;
     }
 
-    //-- METAMETHODS --//
+    // -- METAMETHODS --// 
     @LuaWhitelist
     public Object __index(String key) {
         if (key == null) return null;

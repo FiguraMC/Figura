@@ -6,8 +6,8 @@ import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.math.vector.FiguraVec2;
-import org.luaj.vm2.LuaError;
 import org.figuramc.figura.utils.LuaUtils;
+import org.luaj.vm2.LuaError;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -16,7 +16,7 @@ import org.figuramc.figura.utils.LuaUtils;
 )
 public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
 
-    //Values are named as v(ROW)(COLUMN), both 1-indexed like in actual math
+    // Values are named as v(ROW)(COLUMN), both 1-indexed like in actual math
     public double v11 = 1, v12, v21, v22 = 1;
 
     public static FiguraMat2 of() {
@@ -198,7 +198,7 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
     public FiguraMat2 transpose() {
         double temp;
         temp = v12; v12 = v21; v21 = temp;
-        cachedInverse = null; //transposing doesn't invalidate the determinant
+        cachedInverse = null; // transposing doesn't invalidate the determinant
         return this;
     }
 
@@ -392,7 +392,7 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
         return apply(FiguraVec2.of(x, 0));
     }
 
-    //-----------------------------METAMETHODS-----------------------------------//
+    // -----------------------------METAMETHODS-----------------------------------// 
 
     @LuaWhitelist
     public FiguraMat2 __add(@LuaNotNil FiguraMat2 mat) {

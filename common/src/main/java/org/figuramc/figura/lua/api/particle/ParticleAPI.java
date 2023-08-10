@@ -5,18 +5,21 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.commands.arguments.ParticleArgument;
-import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.Registry;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.luaj.vm2.LuaError;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.ducks.ParticleEngineAccessor;
+import org.figuramc.figura.lua.LuaNotNil;
+import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.utils.LuaUtils;
+import org.luaj.vm2.LuaError;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -79,7 +82,7 @@ public class ParticleAPI {
     public LuaParticle newParticle(@LuaNotNil String id, Object x, Object y, Double z, Object w, Double t, Double h) {
         FiguraVec3 pos, vel;
 
-        //Parse pos and vel
+        // Parse pos and vel
         Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("newParticle", x, y, z, w, t, h);
         pos = pair.getFirst();
         vel = pair.getSecond();

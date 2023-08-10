@@ -2,6 +2,7 @@ package org.figuramc.figura.parsers;
 
 import com.google.gson.*;
 import net.minecraft.nbt.*;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.utils.IOUtils;
@@ -32,8 +33,8 @@ public class BlockbenchModelParser {
     private final HashMap<Integer, String> textureIdMap = new HashMap<>();
 
     //parser
-    public ModelData parseModel(String avatarFolder, Path sourceFile, String json, String modelName, String folders) throws Exception {
-        //parse json -> object
+    public ModelData parseModel(Path avatarFolder, Path sourceFile, String json, String modelName, String folders) throws Exception {
+        // parse json -> object
         BlockbenchModel model = GSON.fromJson(json, BlockbenchModel.class);
 
         //meta check
@@ -87,11 +88,9 @@ public class BlockbenchModelParser {
 
     // -- internal functions -- //
 
-    private void parseTextures(String avatar, Path sourceFile, String folders, String modelName, CompoundTag texturesNbt, BlockbenchModel.Texture[] textures, BlockbenchModel.Resolution resolution) throws Exception {
+    private void parseTextures(Path avatar, Path sourceFile, String folders, String modelName, CompoundTag texturesNbt, BlockbenchModel.Texture[] textures, BlockbenchModel.Resolution resolution) throws Exception {
         if (textures == null)
             return;
-
-        String pathRegex = Pattern.quote(avatar.isEmpty() ? avatar : avatar + sourceFile.getFileSystem().getSeparator());
 
         //temp lists
 
@@ -139,14 +138,16 @@ public class BlockbenchModelParser {
                     if (!f.exists()) throw new IllegalStateException("File do not exists!");
                 } else {
                     p = p.normalize();
+                    if (p.getFileSystem() != avatar.getFileSystem())
+                        throw new IllegalStateException("File from outside the avatar folder!");
                 }
-                if (!p.startsWith(avatar)) throw new IllegalStateException("File from outside the avatar folder!");
-
+                if (avatar.getNameCount() > 1) if (!p.startsWith(avatar)) throw new IllegalStateException("File from outside the avatar folder!");
+                FiguraMod.debug("path is {}", p.toString());
                 //load texture
                 source = IOUtils.readFileBytes(p);
-                path = p.toString()
-                        .replaceFirst(pathRegex, "")
-                        .replaceAll("[/\\\\]", ".");
+                path = avatar.relativize(p)
+                        .toString()
+                        .replace(p.getFileSystem().getSeparator(), ".");
                 path = path.substring(0, path.length() - 4);
 
                 //fix name

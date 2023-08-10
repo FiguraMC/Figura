@@ -3,13 +3,12 @@ package org.figuramc.figura.math.vector;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.*;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaFunction;
-import org.luaj.vm2.LuaValue;
-import org.figuramc.figura.lua.docs.*;
 import org.figuramc.figura.math.matrix.FiguraMat2;
 import org.figuramc.figura.utils.LuaUtils;
 import org.figuramc.figura.utils.MathUtils;
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaValue;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -25,7 +24,7 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2, FiguraMat2> {
     @LuaFieldDoc("vector_n.y")
     public double y;
 
-    // -- cache -- //
+    // -- cache -- // 
 
     @LuaWhitelist
     @LuaMethodDoc(
@@ -47,7 +46,7 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2, FiguraMat2> {
         return of().set(x, y);
     }
 
-    // -- basic math -- //
+    // -- basic math -- // 
 
     @Override
     public FiguraVec2 set(FiguraVec2 other) {
@@ -262,7 +261,7 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2, FiguraMat2> {
         return new double[]{x, y};
     }
 
-    // -- utility methods -- //
+    // -- utility methods -- // 
 
     @Override
     @LuaWhitelist
@@ -469,7 +468,7 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2, FiguraMat2> {
         return getString(x, y);
     }
 
-    // -- metamethods -- //
+    // -- metamethods -- // 
 
     @LuaWhitelist
     @LuaMetamethodDoc(

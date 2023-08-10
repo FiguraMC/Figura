@@ -2,9 +2,9 @@ package org.figuramc.figura.mixin.forge;
 
 import com.mojang.brigadier.StringReader;
 import net.minecraft.client.gui.components.CommandSuggestions;
-import org.figuramc.figura.gui.Emojis;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.ducks.SuggestionsListAccessor;
+import org.figuramc.figura.font.Emojis;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;

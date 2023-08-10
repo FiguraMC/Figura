@@ -11,22 +11,22 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
+import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.avatar.Avatar;
+import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.lua.api.ClientAPI;
 import org.figuramc.figura.math.matrix.FiguraMat3;
 import org.figuramc.figura.math.matrix.FiguraMat4;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.math.vector.FiguraVec4;
 import org.figuramc.figura.model.FiguraModelPart;
+import org.figuramc.figura.model.FiguraModelPartReader;
 import org.figuramc.figura.model.ParentType;
+import org.figuramc.figura.model.PartCustomization;
 import org.figuramc.figura.model.rendering.texture.FiguraTexture;
 import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
 import org.figuramc.figura.model.rendering.texture.RenderTypes;
 import org.figuramc.figura.model.rendertasks.RenderTask;
-import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.avatar.Avatar;
-import org.figuramc.figura.config.Configs;
-import org.figuramc.figura.model.FiguraModelPartReader;
-import org.figuramc.figura.model.PartCustomization;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
 
@@ -45,7 +45,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     public ImmediateAvatarRenderer(Avatar avatar) {
         super(avatar);
 
-        //Vertex data, read model parts
+        // Vertex data, read model parts
         root = FiguraModelPartReader.read(avatar, avatar.nbt.getCompound("models"), textureSets, false);
 
         sortParts();
@@ -68,22 +68,22 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
     @Override
     public void updateMatrices() {
-        //flag rendering state
+        // flag rendering state
         this.isRendering = true;
 
-        //setup root customizations
+        // setup root customizations
         PartCustomization customization = setupRootCustomization(1.5d);
 
-        //Push transform
+        // Push transform
         customizationStack.push(customization);
 
-        //world matrices
+        // world matrices
         VIEW_TO_WORLD_MATRIX.set(AvatarRenderer.worldToViewMatrix().invert());
 
-        //calculate each part matrices
+        // calculate each part matrices
         calculatePartMatrices(root);
 
-        //finish rendering
+        // finish rendering
         customizationStack.pop();
         checkEmpty();
 
@@ -91,36 +91,36 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     }
 
     protected int commonRender(double vertOffset) {
-        //flag rendering state
+        // flag rendering state
         this.isRendering = true;
 
-        //iris fix
+        // iris fix
         int irisConfig = UIHelper.paperdoll || !ClientAPI.hasIris() ? 0 : Configs.IRIS_COMPATIBILITY_FIX.value;
         doIrisEmissiveFix = (irisConfig >= 2 && ClientAPI.hasIrisShader()) || (avatar.renderMode != EntityRenderMode.RENDER && avatar.renderMode != EntityRenderMode.WORLD);
         offsetRenderLayers = irisConfig >= 1;
 
-        //custom textures
+        // custom textures
         for (FiguraTextureSet set : textureSets)
             set.uploadIfNeeded();
         for (FiguraTexture texture : customTextures.values())
             texture.uploadIfDirty();
 
-        //Set shouldRenderPivots
+        // Set shouldRenderPivots
         int config = Configs.RENDER_DEBUG_PARTS_PIVOT.value;
         if (!Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes() || (!avatar.isHost && config < 2))
             shouldRenderPivots = 0;
         else
             shouldRenderPivots = config;
 
-        //world matrices
+        // world matrices
         if (allowMatrixUpdate)
             VIEW_TO_WORLD_MATRIX.set(AvatarRenderer.worldToViewMatrix().invert());
 
-        //complexity
+        // complexity
         int prev = avatar.complexity.remaining;
         int[] remainingComplexity = new int[] {prev};
 
-        //render all model parts
+        // render all model parts
         if (root.customization.visible == null || root.customization.visible) {
             if (currentFilterScheme.parentType.isSeparate) {
                 List<FiguraModelPart> parts = separatedParts.get(currentFilterScheme.parentType);
@@ -128,8 +128,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                     boolean renderLayer = !currentFilterScheme.parentType.isRenderLayer;
                     if (renderLayer) {
                         PartCustomization customization = setupRootCustomization(vertOffset);
-                        customizationStack.push(customization); //push root
-                        customizationStack.push(root.customization); //push "models"
+                        customizationStack.push(customization); // push root
+                        customizationStack.push(root.customization); // push "models"
                     }
 
                     for (FiguraModelPart part : parts) {
@@ -148,8 +148,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                     }
 
                     if (renderLayer) {
-                        customizationStack.pop(); //pop "models"
-                        customizationStack.pop(); //pop root
+                        customizationStack.pop(); // pop "models"
+                        customizationStack.pop(); // pop root
                     }
                 }
             } else {
@@ -159,7 +159,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 customizationStack.pop();
             }
 
-            //push vertices to vertex consumer
+            // push vertices to vertex consumer
             FiguraMod.pushProfiler("draw");
             FiguraMod.pushProfiler("primary");
             VERTEX_BUFFER.consume(true, bufferSource);
@@ -167,7 +167,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             VERTEX_BUFFER.consume(false, bufferSource);
             FiguraMod.popProfiler(2);
 
-            //finish rendering
+            // finish rendering
             checkEmpty();
         }
 
@@ -208,7 +208,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         PartCustomization custom = part.customization;
 
-        //test the current filter scheme
+        // test the current filter scheme
         FiguraMod.pushProfiler("predicate");
         Boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, prevPredicate);
         if (thisPassedPredicate == null || (custom.visible != null && !custom.visible)) {
@@ -218,14 +218,14 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             return true;
         }
 
-        //calculate part transforms
+        // calculate part transforms
 
-        //calculate vanilla parent
+        // calculate vanilla parent
         FiguraMod.popPushProfiler("copyVanillaPart");
         part.applyVanillaTransforms(vanillaModelData);
         part.applyExtraTransforms(customizationStack.peek());
 
-        //visibility
+        // visibility
         FiguraMod.popPushProfiler("checkVanillaVisible");
         if (!ignoreVanillaVisibility && custom.vanillaVisible != null && !custom.vanillaVisible) {
             FiguraMod.popPushProfiler("removeVanillaTransforms");
@@ -234,18 +234,18 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             return true;
         }
 
-        //pre render function
+        // pre render function
         if (part.preRender != null) {
             FiguraMod.popPushProfiler("preRenderFunction");
             avatar.run(part.preRender, avatar.render, tickDelta, avatar.renderMode.name(), part);
         }
 
-        //recalculate stuff
+        // recalculate stuff
         FiguraMod.popPushProfiler("calculatePartMatrices");
         custom.recalculate();
 
-        //void blocked matrices
-        //that's right, check only for previous predicate
+        // void blocked matrices
+        // that's right, check only for previous predicate
         FiguraMat4 positionCopy = null;
         FiguraMat3 normalCopy = null;
         boolean voidMatrices = !allowHiddenTransforms && !prevPredicate;
@@ -257,11 +257,11 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             custom.normalMatrix.reset();
         }
 
-        //push stack
+        // push stack
         FiguraMod.popPushProfiler("pushCustomizationStack");
         customizationStack.push(custom);
 
-        //restore variables
+        // restore variables
         if (voidMatrices) {
             FiguraMod.popPushProfiler("restoreMatrices");
             custom.positionMatrix.set(positionCopy);
@@ -269,14 +269,14 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         }
 
         if (thisPassedPredicate) {
-            //recalculate world matrices
+            // recalculate world matrices
             FiguraMod.popPushProfiler("worldMatrices");
             if (allowMatrixUpdate) {
                 FiguraMat4 mat = partToWorldMatrices(custom);
                 part.savedPartToWorldMat.set(mat);
             }
 
-            //recalculate light
+            // recalculate light
             FiguraMod.popPushProfiler("calculateLight");
             Level l;
             if (custom.light != null)
@@ -289,17 +289,17 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             }
         }
 
-        //mid render function
+        // mid render function
         if (part.midRender != null) {
             FiguraMod.popPushProfiler("midRenderFunction");
             avatar.run(part.midRender, avatar.render, tickDelta, avatar.renderMode.name(), part);
         }
 
-        //render this
+        // render this
         FiguraMod.popPushProfiler("pushVertices");
         boolean breakRender = thisPassedPredicate && !part.pushVerticesImmediate(this, remainingComplexity);
 
-        //render extras
+        // render extras
         FiguraMod.popPushProfiler("extras");
         if (!breakRender && thisPassedPredicate) {
             boolean renderPivot = shouldRenderPivots > 0;
@@ -307,7 +307,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             boolean renderPivotParts = part.parentType.isPivot && allowPivotParts;
 
             if (renderPivot || renderTasks || renderPivotParts) {
-                //fix pivots
+                // fix pivots
                 FiguraMod.pushProfiler("fixMatricesPivot");
 
                 FiguraVec3 pivot = custom.getPivot();
@@ -317,13 +317,13 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
                 PartCustomization peek = customizationStack.peek();
 
-                //render pivot indicators
+                // render pivot indicators
                 if (renderPivot) {
                     FiguraMod.popPushProfiler("renderPivotCube");
                     renderPivot(part, peek);
                 }
 
-                //render tasks
+                // render tasks
                 if (renderTasks) {
                     FiguraMod.popPushProfiler("renderTasks");
                     int light = peek.light;
@@ -343,7 +343,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                     allowSkullRendering = true;
                 }
 
-                //render pivot parts
+                // render pivot parts
                 if (renderPivotParts && part.parentType.isPivot) {
                     FiguraMod.popPushProfiler("savePivotParts");
                     savePivotTransform(part.parentType, peek);
@@ -354,7 +354,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             }
         }
 
-        //render children
+        // render children
         FiguraMod.popPushProfiler("children");
         for (FiguraModelPart child : List.copyOf(part.children)) {
             if (!renderPart(child, remainingComplexity, thisPassedPredicate)) {
@@ -363,17 +363,17 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             }
         }
 
-        //reset the parent
+        // reset the parent
         FiguraMod.popPushProfiler("removeVanillaTransforms");
         part.resetVanillaTransforms();
 
-        //post render function
+        // post render function
         if (part.postRender != null) {
             FiguraMod.popPushProfiler("postRenderFunction");
             avatar.run(part.postRender, avatar.render, tickDelta, avatar.renderMode.name(), part);
         }
 
-        //pop
+        // pop
         customizationStack.pop();
         FiguraMod.popProfiler(2);
 
@@ -382,7 +382,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
     protected void renderPivot(FiguraModelPart part, PartCustomization customization) {
         boolean group = part.customization.partType == PartCustomization.PartType.GROUP;
-        FiguraVec3 color = group ? ColorUtils.Colors.MAYA_BLUE.vec : ColorUtils.Colors.PINK.vec;
+        FiguraVec3 color = group ? ColorUtils.Colors.BLUE.vec : ColorUtils.Colors.AWESOME_BLUE.vec;
         double boxSize = group ? 1 / 16d : 1 / 32d;
         boxSize /= Math.max(Math.cbrt(part.savedPartToWorldMat.det()), 0.02);
 
@@ -398,7 +398,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         FiguraMat4 currentPosMat = customization.getPositionMatrix();
         FiguraMat3 currentNormalMat = customization.getNormalMatrix();
         ConcurrentLinkedQueue<Pair<FiguraMat4, FiguraMat3>> queue = pivotCustomizations.computeIfAbsent(parentType, p -> new ConcurrentLinkedQueue<>());
-        queue.add(new Pair<>(currentPosMat, currentNormalMat)); //These are COPIES, so ok to add
+        queue.add(new Pair<>(currentPosMat, currentNormalMat)); // These are COPIES, so ok to add
     }
 
     protected FiguraMat4 partToWorldMatrices(PartCustomization cust) {
@@ -418,7 +418,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         PartCustomization custom = part.customization;
 
-        //Store old visibility, but overwrite it in case we only want to render certain parts
+        // Store old visibility, but overwrite it in case we only want to render certain parts
         FiguraMod.pushProfiler("predicate");
         Boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, true);
         if (thisPassedPredicate == null) {
@@ -426,42 +426,42 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             return;
         }
 
-        //calculate part transforms
+        // calculate part transforms
 
-        //calculate vanilla parent
+        // calculate vanilla parent
         FiguraMod.popPushProfiler("copyVanillaPart");
         part.applyVanillaTransforms(vanillaModelData);
         part.applyExtraTransforms(customizationStack.peek());
 
-        //push customization stack
+        // push customization stack
         FiguraMod.popPushProfiler("calculatePartMatrices");
         custom.recalculate();
         FiguraMod.popPushProfiler("applyOnStack");
         customizationStack.push(custom);
 
-        //render extras
+        // render extras
         if (thisPassedPredicate) {
-            //part to world matrices
+            // part to world matrices
             FiguraMod.popPushProfiler("worldMatrices");
             FiguraMat4 mat = partToWorldMatrices(custom);
             part.savedPartToWorldMat.set(mat);
         }
 
-        //render children
+        // render children
         FiguraMod.popPushProfiler("children");
         for (FiguraModelPart child : part.children)
             calculatePartMatrices(child);
 
-        //reset the parent
+        // reset the parent
         part.resetVanillaTransforms();
 
-        //pop
+        // pop
         customizationStack.pop();
         FiguraMod.popProfiler(2);
     }
 
     public void pushFaces(int faceCount, int[] remainingComplexity, FiguraTextureSet textureSet, List<Vertex> vertices) {
-        //Handle cases that we can quickly
+        // Handle cases that we can quickly
         if (faceCount == 0 || vertices.isEmpty())
             return;
 
@@ -489,16 +489,16 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         if (types == RenderTypes.NONE)
             return ret;
 
-        //get texture
+        // get texture
         ResourceLocation id = textureSet.getOverrideTexture(avatar.owner, texture);
 
-        //color
+        // color
         ret.color = primary ? customization.color : customization.color2;
 
-        //primary
+        // primary
         ret.primary = primary;
 
-        //get render type
+        // get render type
         if (id != null) {
             if (translucent) {
                 ret.renderType = RenderType.itemEntityTranslucentCull(id);
@@ -516,7 +516,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         if (offsetRenderLayers && !primary && types.isOffset())
             ret.vertexOffset = FiguraMod.VERTEX_OFFSET;
 
-        //Switch to cutout with fullbright if the iris emissive fix is enabled
+        // Switch to cutout with fullbright if the iris emissive fix is enabled
         if (doIrisEmissiveFix && types == RenderTypes.EMISSIVE) {
             ret.fullBright = true;
             ret.renderType = RenderTypes.TRANSLUCENT_CULL.get(id);
@@ -534,7 +534,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         int vertCount = faceCount * 4;
 
         FiguraVec3 uvFixer = FiguraVec3.of();
-        uvFixer.set(textureSet.getWidth(), textureSet.getHeight(), 1); //Dividing by this makes uv 0 to 1
+        uvFixer.set(textureSet.getWidth(), textureSet.getHeight(), 1); // Dividing by this makes uv 0 to 1
 
         int overlay = customization.overlay;
         int light = vertexData.fullBright ? LightTexture.FULL_BRIGHT : customization.light;

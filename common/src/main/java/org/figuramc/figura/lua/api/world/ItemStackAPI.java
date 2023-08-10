@@ -9,10 +9,10 @@ import net.minecraft.world.item.*;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.NbtToLua;
 import org.figuramc.figura.lua.ReadOnlyLuaTable;
-import org.luaj.vm2.LuaTable;
 import org.figuramc.figura.lua.docs.LuaFieldDoc;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
+import org.luaj.vm2.LuaTable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,8 +77,8 @@ public class ItemStackAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("itemstack.get_cooldown")
-    public int getCooldown() {
+    @LuaMethodDoc("itemstack.get_pop_time")
+    public int getPopTime() {
         return itemStack.getPopTime();
     }
 

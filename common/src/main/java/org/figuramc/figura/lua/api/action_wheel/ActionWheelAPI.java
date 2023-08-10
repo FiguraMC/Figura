@@ -1,5 +1,6 @@
 package org.figuramc.figura.lua.api.action_wheel;
 
+import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.gui.ActionWheel;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
@@ -11,7 +12,6 @@ import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.Varargs;
-import org.figuramc.figura.avatar.Avatar;
 
 import java.util.HashMap;
 
@@ -173,7 +173,7 @@ public class ActionWheelAPI {
     public boolean execute(Avatar avatar, boolean left) {
         LuaFunction function = left ? leftClick : rightClick;
 
-        //execute
+        // execute
         if (function != null) {
             Varargs result = avatar.run(function, avatar.tick);
             return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();

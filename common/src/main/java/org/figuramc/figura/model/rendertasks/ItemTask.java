@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.api.world.ItemStackAPI;
@@ -18,7 +19,6 @@ import org.figuramc.figura.model.FiguraModelPart;
 import org.figuramc.figura.model.PartCustomization;
 import org.figuramc.figura.utils.LuaUtils;
 import org.luaj.vm2.LuaError;
-import org.figuramc.figura.avatar.Avatar;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -37,9 +37,7 @@ public class ItemTask extends RenderTask {
     }
 
     @Override
-    public void render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
-        this.pushOntoStack(stack);
-        PoseStack poseStack = stack.peek().copyIntoGlobalPoseStack();
+    public void render(PoseStack poseStack, MultiBufferSource buffer, int light, int overlay) {
         poseStack.scale(-16, 16, -16);
 
         LivingEntity entity = owner.renderer.entity instanceof LivingEntity living ? living : null;
@@ -52,8 +50,6 @@ public class ItemTask extends RenderTask {
                 poseStack, buffer, WorldAPI.getCurrentWorld(),
                 newLight, newOverlay, seed
         );
-
-        stack.pop();
     }
 
     @Override
@@ -66,7 +62,7 @@ public class ItemTask extends RenderTask {
         return super.shouldRender() && item != null && !item.isEmpty();
     }
 
-    // -- lua -- //
+    // -- lua -- // 
 
 
     @LuaWhitelist

@@ -28,9 +28,9 @@ public class AvatarScreen extends AbstractPanelScreen {
     @Override
     protected void init() {
         super.init();
-        removeWidget(panels); //no panels :p
+        removeWidget(panels); // no panels :p
 
-        //entity
+        // entity
         EntityPreview widget = new EntityPreview(0, 0, width, height, scale, pitch, yaw, entity, parentScreen);
         widget.setToggled(true);
         addRenderableWidget(widget);

@@ -3,18 +3,18 @@ package org.figuramc.figura.parsers;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.nbt.*;
+import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.model.rendering.texture.RenderTypes;
 import org.figuramc.figura.utils.Version;
-import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.config.Configs;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-//parses a metadata json
-//and return a nbt compound of it
+// parses a metadata json
+// and return a nbt compound of it
 public class AvatarMetadataParser {
 
     private static final Gson GSON = new GsonBuilder().create();
@@ -26,13 +26,13 @@ public class AvatarMetadataParser {
     }
 
     public static CompoundTag parse(String json, String filename) {
-        //parse json -> object
+        // parse json -> object
         Metadata metadata = read(json);
 
-        //nbt
+        // nbt
         CompoundTag nbt = new CompoundTag();
 
-        //version
+        // version
         Version version = new Version(metadata.version);
         if (version.invalid)
             version = FiguraMod.VERSION;
@@ -104,7 +104,7 @@ public class AvatarMetadataParser {
         boolean remove = customization.remove != null && customization.remove;
         CompoundTag modelPart = getTag(models, path, remove);
 
-        //Add more of these later
+        // Add more of these later
         if (remove) {
             return;
         }
@@ -194,7 +194,7 @@ public class AvatarMetadataParser {
         }
     }
 
-    //json object class
+    // json object class
     public static class Metadata {
         public String name, description, author, version, color, background, id;
         public String[] authors, autoScripts, autoAnims, ignoredTextures;

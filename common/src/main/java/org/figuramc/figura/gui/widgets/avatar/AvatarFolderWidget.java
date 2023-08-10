@@ -3,6 +3,7 @@ package org.figuramc.figura.gui.widgets.avatar;
 import com.mojang.blaze3d.vertex.PoseStack;
 import org.figuramc.figura.gui.widgets.ContainerButton;
 import org.figuramc.figura.avatar.local.LocalAvatarFetcher;
+import org.figuramc.figura.gui.widgets.ContainerButton;
 import org.figuramc.figura.gui.widgets.lists.AvatarList;
 import org.figuramc.figura.utils.ui.UIHelper;
 
@@ -39,7 +40,7 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
                 setX(x);
                 setWidth(width);
 
-                //fix tooltip
+                // fix tooltip
                 if (getTooltip() == getMessage())
                     setTooltip(instance.getName());
             }
@@ -96,24 +97,24 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
         for (AbstractAvatarWidget value : entries.values())
             value.filter = this.filter;
 
-        //update children
+        // update children
         HashSet<String> missingPaths = new HashSet<>(entries.keySet());
         for (LocalAvatarFetcher.AvatarPath child : folderPath.getChildren()) {
             String str = child.getPath() + child.getName();
 
-            //skip unfiltered
+            // skip unfiltered
             if (!child.search(filter))
                 continue;
 
-            //update children
+            // update children
             AbstractAvatarWidget childEntry = entries.get(str);
             if (childEntry != null)
                 childEntry.update(child, filter);
 
-            //remove from exclusion list
+            // remove from exclusion list
             missingPaths.remove(str);
 
-            //add children
+            // add children
             this.entries.computeIfAbsent(str, s -> {
                 AbstractAvatarWidget entry = child instanceof LocalAvatarFetcher.FolderPath folder ? new AvatarFolderWidget(depth + 1, getWidth(), folder, parent) : new AvatarWidget(depth + 1, getWidth(), child, parent);
                 children.add(entry);
@@ -122,14 +123,14 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
             });
         }
 
-        //remove missing avatars
+        // remove missing avatars
         for (String str : missingPaths)
             children.remove(entries.remove(str));
 
         sortedEntries.clear();
         sortedEntries.addAll(entries.values());
 
-        //sort children
+        // sort children
         children.sort((children1, children2) -> {
             if (children1 instanceof AbstractAvatarWidget avatar1 && children2 instanceof AbstractAvatarWidget avatar2)
                 return avatar1.compareTo(avatar2);
@@ -137,7 +138,7 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
         });
         sortedEntries.sort(AbstractAvatarWidget::compareTo);
 
-        //update height
+        // update height
         updateHeight();
     }
 

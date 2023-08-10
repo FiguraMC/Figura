@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
@@ -14,7 +15,6 @@ import org.figuramc.figura.math.matrix.FiguraMat4;
 import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.model.FiguraModelPart;
-import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.model.PartCustomization;
 import org.figuramc.figura.utils.LuaUtils;
 
@@ -38,16 +38,19 @@ public abstract class RenderTask {
         this.customization.visible = true;
     }
 
-    public abstract void render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay);
+    public void render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
+        customization.recalculate();
+        stack.push(customization);
+        PoseStack poseStack = stack.peek().copyIntoGlobalPoseStack();
+        render(poseStack, buffer, light, overlay);
+        stack.pop();
+    }
+    public abstract void render(PoseStack stack, MultiBufferSource buffer, int light, int overlay);
     public abstract int getComplexity();
     public boolean shouldRender() {
         return customization.visible;
     }
 
-    public void pushOntoStack(PartCustomization.PartCustomizationStack stack) {
-        customization.recalculate();
-        stack.push(customization);
-    }
 
     // -- lua stuff -- //
 

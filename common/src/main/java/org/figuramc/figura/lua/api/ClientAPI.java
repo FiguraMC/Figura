@@ -1,5 +1,6 @@
 package org.figuramc.figura.lua.api;
 
+import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.ClientBrandRetriever;
@@ -20,6 +21,7 @@ import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.lua.LuaNotNil;
+import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
 import org.figuramc.figura.lua.api.entity.ViewerAPI;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
@@ -28,9 +30,15 @@ import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.mixin.gui.PlayerTabOverlayAccessor;
+import org.figuramc.figura.mixin.render.ModelManagerAccessor;
+import org.figuramc.figura.utils.*;
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaValue;
 
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Supplier;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -41,7 +49,30 @@ public class ClientAPI {
 
     public static final ClientAPI INSTANCE = new ClientAPI();
     private static final HashMap<String, Boolean> LOADED_MODS = new HashMap<>();
-    private static final boolean HAS_IRIS = PlatformUtils.isModLoaded("iris"); //separated to avoid indexing the list every frame
+    private static final boolean HAS_IRIS = PlatformUtils.isModLoaded("iris") || PlatformUtils.isModLoaded("oculus"); // separated to avoid indexing the list every frame
+    public static final Supplier<Boolean> OPTIFINE_LOADED = Suppliers.memoize(() ->
+    {
+        try
+        {
+            Class.forName("net.optifine.Config");
+            return true;
+        }
+        catch (ClassNotFoundException ignored)
+        {
+            return false;
+        }
+    });
+    public static boolean hasOptifineShader() {
+        try
+        {
+            Field shaderPackLoadedField = Class.forName("net.optifine.shaders.Shaders").getField("shaderPackLoaded");
+            Class<?> shaderClass = shaderPackLoadedField.getType();
+            if (shaderClass == boolean.class)
+                return shaderPackLoadedField.getBoolean(null);
+        }
+        catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException ignored) {}
+        return false;
+    }
 
     @LuaWhitelist
     @LuaMethodDoc("client.get_fps")
@@ -234,7 +265,6 @@ public class ClientAPI {
         return MathUtils.quaternionToYXZ(Minecraft.getInstance().gameRenderer.getMainCamera().rotation()).multiply(f, -f, f); //degrees, and negate y
     }
 
-
     @LuaWhitelist
     @LuaMethodDoc("client.get_camera_dir")
     public static FiguraVec3 getCameraDir() {
@@ -304,6 +334,9 @@ public class ClientAPI {
             value = "client.is_mod_loaded"
     )
     public static boolean isModLoaded(String id) {
+        if (Objects.equals(id, "optifine") || Objects.equals(id, "optifabric"))
+            return OPTIFINE_LOADED.get();
+
         LOADED_MODS.putIfAbsent(id, PlatformUtils.isModLoaded(id));
         return LOADED_MODS.get(id);
     }
@@ -311,13 +344,13 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.has_iris")
     public static boolean hasIris() {
-        return HAS_IRIS;
+        return HAS_IRIS || OPTIFINE_LOADED.get();
     }
 
     @LuaWhitelist
     @LuaMethodDoc("client.has_iris_shader")
     public static boolean hasIrisShader() {
-        return HAS_IRIS && net.irisshaders.iris.api.v0.IrisApi.getInstance().isShaderPackInUse();
+        return HAS_IRIS && net.irisshaders.iris.api.v0.IrisApi.getInstance().isShaderPackInUse() || OPTIFINE_LOADED.get() && hasOptifineShader();
     }
 
     @LuaWhitelist
@@ -508,20 +541,20 @@ public class ClientAPI {
         Map<String, Object> map = new HashMap<>();
         PlayerTabOverlayAccessor accessor = (PlayerTabOverlayAccessor) Minecraft.getInstance().gui.getTabList();
 
-        //header
+        // header
         Component header = accessor.getHeader();
         if (header != null) {
             map.put("header", header.getString());
             map.put("headerJson", header);
         }
 
-        //players
+        // players
         List<String> list = new ArrayList<>();
         for (PlayerInfo entry : EntityUtils.getTabList())
             list.add(entry.getTabListDisplayName() != null ? entry.getTabListDisplayName().getString() : entry.getProfile().getName());
         map.put("players", list);
 
-        //footer
+        // footer
         Component footer = accessor.getFooter();
         if (footer != null) {
             map.put("footer", footer.getString());

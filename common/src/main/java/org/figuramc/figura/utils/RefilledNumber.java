@@ -16,7 +16,7 @@ public class RefilledNumber {
 
     private double current;
 
-    //empty/dummy constructor
+    // empty/dummy constructor
     public RefilledNumber() {
         this(0d);
     }
@@ -25,35 +25,35 @@ public class RefilledNumber {
         this(max, max);
     }
 
-    //actual constructor
+    // actual constructor
     public RefilledNumber(double max, double initial) {
         set(max);
         current = initial;
     }
 
-    //update the current value
+    // update the current value
     public void tick() {
         current = Math.min(current + add, Math.ceil(max));
     }
 
-    //checks if the current value can be consumed and then consumes it if it can
+    // checks if the current value can be consumed and then consumes it if it can
     public boolean use() {
         boolean check = check();
         if (check) current--;
         return check;
     }
 
-    //checks if the current value can be consumed without consuming it
+    // checks if the current value can be consumed without consuming it
     public boolean check() {
         return current >= 1;
     }
 
-    //returns the current value, as integer, rounded down
+    // returns the current value, as integer, rounded down
     public int peek() {
         return (int) Math.floor(current);
     }
 
-    //updates the max value
+    // updates the max value
     public void set(double max) {
         this.max = max;
         this.add = max / SharedConstants.TICKS_PER_SECOND;

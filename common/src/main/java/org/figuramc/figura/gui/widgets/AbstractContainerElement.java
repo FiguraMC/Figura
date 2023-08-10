@@ -65,16 +65,16 @@ public abstract class AbstractContainerElement extends AbstractContainerEventHan
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        //yeet mouse 0 and isDragging check
+        // yeet mouse 0 and isDragging check
         return this.getFocused() != null && this.getFocused().mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        //better check for mouse released when outside node's boundaries
+        // better check for mouse released when outside node's boundaries
         boolean bool = this.getFocused() != null && this.getFocused().mouseReleased(mouseX, mouseY, button);
 
-        //remove focused when clicking
+        // remove focused when clicking
         if (bool) setFocused(null);
 
         this.setDragging(false);
@@ -83,7 +83,7 @@ public abstract class AbstractContainerElement extends AbstractContainerEventHan
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        //fix scrolling targeting only one child
+        // fix scrolling targeting only one child
         boolean ret = false;
         for (GuiEventListener child : this.children()) {
             if (child.isMouseOver(mouseX, mouseY))

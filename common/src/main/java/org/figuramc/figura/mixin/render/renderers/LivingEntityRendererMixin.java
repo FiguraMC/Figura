@@ -11,13 +11,13 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.world.entity.LivingEntity;
-import org.figuramc.figura.gui.PopupMenu;
-import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
-import org.figuramc.figura.math.matrix.FiguraMat4;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.config.Configs;
+import org.figuramc.figura.gui.PopupMenu;
+import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
+import org.figuramc.figura.math.matrix.FiguraMat4;
 import org.figuramc.figura.model.rendering.PartFilterScheme;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.RenderUtils;
@@ -89,7 +89,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         boolean glowing = !showBody && Minecraft.getInstance().shouldEntityAppearGlowing(entity);
         boolean invisible = !translucent && !showBody && !glowing;
 
-        //When viewed 3rd person, render all non-world parts.
+        // When viewed 3rd person, render all non-world parts.
         PartFilterScheme filter = invisible ? PartFilterScheme.PIVOTS : PartFilterScheme.MODEL;
         int overlay = getOverlayCoords(entity, getWhiteOverlayProgress(entity, delta));
 
@@ -122,7 +122,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         if (currentAvatar == null)
             return;
 
-        //Render avatar with params
+        // Render avatar with params
         if (currentAvatar.luaRuntime != null && currentAvatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1)
             currentAvatar.luaRuntime.vanilla_model.PLAYER.restore(getModel());
 

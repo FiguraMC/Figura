@@ -1,9 +1,9 @@
 package org.figuramc.figura.animation;
 
 import net.minecraft.util.Mth;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.model.FiguraModelPart;
-import org.figuramc.figura.FiguraMod;
 
 import java.util.List;
 import java.util.Map;

@@ -26,7 +26,7 @@ public class CustomFramebuffer {
      */
     public void setSize(int nWidth, int nHeight) {
 
-        //Minimized window, we don't even need the framebuffer, so...
+        // Minimized window, we don't even need the framebuffer, so...
         if (nWidth == 0 || nHeight == 0)
             return;
 
@@ -84,8 +84,8 @@ public class CustomFramebuffer {
         Minecraft minecraftClient = Minecraft.getInstance();
         ShaderInstance shader = minecraftClient.gameRenderer.blitShader;
         shader.setSampler("DiffuseSampler", colorAttachment);
-        //shader.addSampler("DiffuseSampler", MinecraftClient.getInstance().getFramebuffer().getColorAttachment());
-        //shader.addSampler("DiffuseSampler", MinecraftClient.getInstance().getTextureManager().getTexture(ClickableWidget.WIDGETS_TEXTURE).getGlId());
+        // shader.addSampler("DiffuseSampler", MinecraftClient.getInstance().getFramebuffer().getColorAttachment());
+        // shader.addSampler("DiffuseSampler", MinecraftClient.getInstance().getTextureManager().getTexture(ClickableWidget.WIDGETS_TEXTURE).getGlId());
         Matrix4f matrix4f = Matrix4f.orthographic((float) viewWidth, (float) (-viewHeight), 1000f, 3000f);
         RenderSystem.setProjectionMatrix(matrix4f);
         if (shader.MODEL_VIEW_MATRIX != null) {

@@ -13,14 +13,14 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
+import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.math.matrix.FiguraMat3;
 import org.figuramc.figura.math.matrix.FiguraMat4;
 import org.figuramc.figura.model.FiguraModelPart;
 import org.figuramc.figura.model.ParentType;
+import org.figuramc.figura.model.VanillaModelData;
 import org.figuramc.figura.model.rendering.texture.FiguraTexture;
 import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
-import org.figuramc.figura.avatar.Avatar;
-import org.figuramc.figura.model.VanillaModelData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,7 +44,7 @@ public abstract class AvatarRenderer {
 
     // -- rendering data -- //
 
-    //entity
+    // entity
     public Entity entity;
     public float yaw, tickDelta;
     public int light;
@@ -54,12 +54,12 @@ public abstract class AvatarRenderer {
     public FiguraMat4 posMat = FiguraMat4.of();
     public FiguraMat3 normalMat = FiguraMat3.of();
 
-    //matrices
+    // matrices
     public MultiBufferSource bufferSource;
     public VanillaModelData vanillaModelData = new VanillaModelData();
 
     public PartFilterScheme currentFilterScheme;
-    public final HashMap<ParentType, ConcurrentLinkedQueue<Pair<FiguraMat4, FiguraMat3>>> pivotCustomizations = new HashMap<>();
+    public final HashMap<ParentType, ConcurrentLinkedQueue<Pair<FiguraMat4, FiguraMat3>>> pivotCustomizations = new HashMap<>(ParentType.values().length);
     protected final List<FiguraTextureSet> textureSets = new ArrayList<>();
     public final HashMap<String, FiguraTexture> textures = new HashMap<>();
     public final HashMap<String, FiguraTexture> customTextures = new HashMap<>();
@@ -77,12 +77,12 @@ public abstract class AvatarRenderer {
     public AvatarRenderer(Avatar avatar) {
         this.avatar = avatar;
 
-        //textures
+        // textures
 
         CompoundTag nbt = avatar.nbt.getCompound("textures");
         CompoundTag src = nbt.getCompound("src");
 
-        //src files
+        // src files
         for (String key : src.getAllKeys()) {
             byte[] bytes = src.getByteArray(key);
             if (bytes.length > 0) {
@@ -93,7 +93,7 @@ public abstract class AvatarRenderer {
             }
         }
 
-        //data files
+        // data files
         ListTag texturesList = nbt.getList("data", Tag.TAG_COMPOUND);
         for (Tag t : texturesList) {
             CompoundTag tag = (CompoundTag) t;
@@ -231,14 +231,15 @@ public abstract class AvatarRenderer {
     }
 
     public void setMatrices(double camX, double camY, double camZ, PoseStack matrices) {
-        matrices.pushPose();
-        matrices.translate(-camX, -camY, -camZ);
-        matrices.scale(-1, -1, 1);
+        // pos
+        Matrix4d posMat = new Matrix4d(pose.pose());
+        posMat.translate(-camX, -camY, -camZ);
+        posMat.scale(-1, -1, 1);
+        this.posMat.set(posMat);
 
-        PoseStack.Pose pose = matrices.last();
-        this.posMat.set(pose.pose());
-        this.normalMat.set(pose.normal());
-
-        matrices.popPose();
+        // normal
+        Matrix3f normalMat = new Matrix3f(pose.normal());
+        normalMat.scale(-1, -1, 1);
+        this.normalMat.set(normalMat);
     }
 }
