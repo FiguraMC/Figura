@@ -202,7 +202,7 @@ public class LuaUtils {
             LuaTable table = value.checktable();
 
             // If it's an "array" (uses numbers as keys)
-            if (table.length() > 0) {
+            if (checkTableArray(table)) {
                 JsonArray arr = new JsonArray();
                 for (int i = 0; i < table.length(); i++) {
                     arr.add(asJsonValue(table.get(i+1)));
@@ -221,5 +221,13 @@ public class LuaUtils {
 
         // Fallback for things that shouldn't be converted (like functions)
         return null;
+    }
+
+    public static boolean checkTableArray(LuaTable table) {
+        for (LuaValue key : table.keys()) {
+            if (!key.isnumber()) return false;
+        }
+
+        return true;
     }
 }
