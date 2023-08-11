@@ -16,24 +16,24 @@ public class FiguraGui {
 
         FiguraMod.pushProfiler(FiguraMod.MOD_ID);
 
-        //render popup menu below everything, as if it were in the world
+        // render popup menu below everything, as if it were in the world
         FiguraMod.pushProfiler("popupMenu");
         PopupMenu.render(poseStack);
         FiguraMod.popProfiler();
 
-        //get avatar
+        // get avatar
         Entity entity = Minecraft.getInstance().getCameraEntity();
         Avatar avatar = entity == null ? null : AvatarManager.getAvatar(entity);
 
         if (avatar != null) {
-            //hud parent type
+            // hud parent type
             avatar.hudRender(poseStack, Minecraft.getInstance().renderBuffers().bufferSource(), entity, tickDelta);
 
-            //hud hidden by script
+            // hud hidden by script
             if (avatar.luaRuntime != null && !avatar.luaRuntime.renderer.renderHUD) {
-                //render figura overlays
+                // render figura overlays
                 renderOverlays(poseStack);
-                //cancel this method
+                // cancel this method
                 ci.cancel();
             }
         }
@@ -44,11 +44,11 @@ public class FiguraGui {
     public static void renderOverlays(PoseStack poseStack) {
         FiguraMod.pushProfiler(FiguraMod.MOD_ID);
 
-        //render aperdoll
+        // render paperdoll
         FiguraMod.pushProfiler("paperdoll");
         PaperDoll.render(poseStack, false);
 
-        //render wheel
+        // render wheel
         FiguraMod.popPushProfiler("actionWheel");
         ActionWheel.render(poseStack);
 

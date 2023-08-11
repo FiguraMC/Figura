@@ -13,7 +13,6 @@ import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.gui.widgets.*;
-import org.figuramc.figura.gui.widgets.*;
 import org.figuramc.figura.gui.widgets.lists.AvatarList;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.FiguraText;
@@ -28,17 +27,20 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
     private Label panic;
 
-    private Button upload, delete;
+    private Button upload, delete, back;
 
     public WardrobeScreen(Screen parentScreen) {
         super(parentScreen, new FiguraText("gui.panels.title.wardrobe"));
     }
 
+    private AvatarInfoWidget infoWidget;
+    private BackendMotdWidget motdWidget;
+
     @Override
     protected void init() {
         super.init();
 
-        //screen
+        // screen
         Minecraft minecraft = Minecraft.getInstance();
         int middle = width / 2;
         int panels = Math.min(width / 3, 256) - 8;
@@ -53,7 +55,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
         // -- middle -- //
 
-        //model
+        // model
         int entitySize = 11 * modelBgSize / 29;
         int entityX = middle - modelBgSize / 2;
         int entityY = this.height / 2 - modelBgSize / 2;
@@ -64,7 +66,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         int buttX = entity.getX() + entity.getWidth() / 2;
         int buttY = entity.getY() + entity.getHeight() + 4;
 
-        //upload
+        // upload
         addRenderableWidget(upload = new Button(buttX - 48, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/upload.png"), 72, 24, new FiguraText("gui.wardrobe.upload.tooltip"), button -> {
             Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
             try {
@@ -75,7 +77,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         }));
         upload.setActive(false);
 
-        //reload
+        // reload
         addRenderableWidget(new Button(buttX - 12, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/reload.png"), 72, 24, new FiguraText("gui.wardrobe.reload.tooltip"), button -> {
             AvatarManager.clearAvatars(FiguraMod.getLocalPlayerUUID());
             try {
@@ -86,7 +88,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
             NetworkStuff.auth();
         }));
 
-        //delete
+        // delete
         addRenderableWidget(delete = new Button(buttX + 24, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/delete.png"), 72, 24, new FiguraText("gui.wardrobe.delete.tooltip"), button ->
                 NetworkStuff.deleteAvatar(null))
         );
@@ -100,7 +102,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
         // -- bottom -- //
 
-        //version
+        // version
         MutableComponent versionText = new FiguraText().append(" " + FiguraMod.VERSION.noBuildString()).withStyle(ChatFormatting.ITALIC);
         int versionStatus = NetworkStuff.latestVersion != null ? NetworkStuff.latestVersion.compareTo(FiguraMod.VERSION) : 0;
         boolean oldVersion = versionStatus > 0;
@@ -133,15 +135,15 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
         int rightSide = Math.min(panels, 134);
 
-        //back
-        Button back = new Button(width - rightSide - 4, height - 24, rightSide, 20, new FiguraText("gui.done"), null, bx -> onClose());
+        // back
+        back = new Button(width - rightSide - 4, height - 24, rightSide, 20, new FiguraText("gui.done"), null, bx -> onClose());
         addRenderableWidget(back);
 
         // -- right side -- //
 
         rightSide = panels / 2 + 52;
 
-        //avatar settings
+        // avatar settings
         Button avatarSettings;
         addRenderableWidget(avatarSettings = new Button(
                 this.width - rightSide, 28, 24, 24,
@@ -153,22 +155,28 @@ public class WardrobeScreen extends AbstractPanelScreen {
         ));
         avatarSettings.setActive(false);
 
-        //sounds
+        // sounds
         Button sounds = new Button(this.width - rightSide + 36, 28, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/sound.png"), 72, 24, new FiguraText("gui.wardrobe.sound.tooltip"),
                 button -> Minecraft.getInstance().setScreen(new SoundScreen(this))
         );
         addRenderableWidget(sounds);
 
-        //keybinds
+        // keybinds
         Button keybinds = new Button(this.width - rightSide + 72, 28, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/keybind.png"), 72, 24, new FiguraText("gui.wardrobe.keybind.tooltip"),
                 button -> Minecraft.getInstance().setScreen(new KeybindScreen(this))
         );
         addRenderableWidget(keybinds);
 
-        //avatar metadata
-        addRenderableOnly(new AvatarInfoWidget(this.width - panels - 4, 56, panels, back.getY() - 60));
+        // avatar metadata
+        addRenderableOnly(infoWidget = new AvatarInfoWidget(this.width - panels - 4, 56, panels, back.getY() - 60));
 
-        //panic warning - always added last, on top
+        // backend MOTD
+        int motdHeight = back.getY() - (infoWidget.getY() + infoWidget.getHeight()) - 28;
+        if (NetworkStuff.motd != null && motdHeight > 32) {
+            addRenderableWidget(motdWidget = new BackendMotdWidget(this.width - panels, infoWidget.getY() + infoWidget.getHeight() + 2, panels - 8, motdHeight, NetworkStuff.motd, Minecraft.getInstance().font));
+        }
+
+        // panic warning - always added last, on top
         addRenderableWidget(panic = new Label(
                 new FiguraText("gui.panic", Configs.PANIC_BUTTON.keyBind.getTranslatedKeyMessage()).withStyle(ChatFormatting.YELLOW),
                 middle, version.getRawY(), TextUtils.Alignment.CENTER, 0)
@@ -179,16 +187,21 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
     @Override
     public void tick() {
-        //children tick
+        // children tick
         super.tick();
 
-        //panic visible
+        // panic visible
         panic.setVisible(AvatarManager.panic);
 
-        //backend buttons
+        // backend buttons
         Avatar avatar;
         upload.setActive(NetworkStuff.canUpload() && !AvatarManager.localUploaded && (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) != null && avatar.nbt != null && avatar.loaded);
         delete.setActive(NetworkStuff.isConnected() && AvatarManager.localUploaded);
+
+        if (motdWidget != null) {
+            motdWidget.y = infoWidget.getY() + infoWidget.getHeight() + 2;
+            motdWidget.setHeight(back.getY() - (infoWidget.getY() + infoWidget.getHeight()) - 28);
+        }
     }
 
     @Override

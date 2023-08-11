@@ -61,14 +61,14 @@ public class ConfigScreen extends AbstractPanelScreen {
 
         // -- bottom buttons -- //
 
-        //cancel
+        // cancel
         this.addRenderableWidget(cancel = new Button(this.width / 2 - 122, height - 24, 120, 20, new FiguraText("gui.cancel"), null, button -> {
             ConfigManager.discardConfig();
             list.updateList();
         }));
         cancel.setActive(false);
 
-        //done
+        // done
         addRenderableWidget(new Button(this.width / 2 + 2, height - 24, 120, 20, new FiguraText("gui.done"), null, button -> onClose()));
     }
 

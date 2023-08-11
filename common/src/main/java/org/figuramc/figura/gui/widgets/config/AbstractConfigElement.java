@@ -35,7 +35,7 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
         this.parentCategory = parentCategory;
         this.initValue = config.value;
 
-        //reset button
+        // reset button
         children.add(resetButton = new ParentedButton(0, 0, 60, 20, new TranslatableComponent("controls.reset"), this, button -> config.resetTemp()));
     }
 
@@ -43,18 +43,18 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
     public void render(PoseStack poseStack, int mouseX, int mouseY, float delta) {
         if (!this.isVisible()) return;
 
-        //vars
+        // vars
         Font font = Minecraft.getInstance().font;
         int textY = getY() + getHeight() / 2 - font.lineHeight / 2;
 
-        //hovered arrow
+        // hovered arrow
         setHovered(isMouseOver(mouseX, mouseY));
         if (isHovered()) font.draw(poseStack, HOVERED_ARROW, (int) (getX() + 8 - font.width(HOVERED_ARROW) / 2f), textY, 0xFFFFFF);
 
-        //render name
+        // render name
         renderTitle(poseStack, font, textY);
 
-        //render children
+        // render children
         super.render(poseStack, mouseX, mouseY, delta);
     }
 

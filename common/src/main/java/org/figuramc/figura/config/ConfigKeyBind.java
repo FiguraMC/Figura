@@ -15,7 +15,7 @@ public class ConfigKeyBind extends KeyMapping {
         super(translationKey, key.getType(), key.getValue(), FiguraMod.MOD_ID);
         this.config = config;
 
-        if (FiguraMod.DEBUG_MODE || !config.disabled)
+        if (FiguraMod.debugModeEnabled() || !config.disabled)
            addKeyBind(this);
     }
 

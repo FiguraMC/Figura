@@ -20,28 +20,28 @@ public class ContainerButton extends SwitchButton {
 
     @Override
     protected void renderText(PoseStack poseStack, float delta) {
-        //variables
+        // variables
         Font font = Minecraft.getInstance().font;
         int color = getTextColor();
         Component arrow = this.toggled ? UIHelper.DOWN_ARROW : UIHelper.UP_ARROW;
         int arrowWidth = font.width(arrow);
         Component message = TextUtils.trimToWidthEllipsis(font, getMessage(), this.getWidth() - arrowWidth - 6, TextUtils.ELLIPSIS.copy().withStyle(getMessage().getStyle()));
 
-        //draw text
+        // draw text
         font.drawShadow(
                 poseStack, message,
                 this.getX() + arrowWidth + 6, (int) (this.getY() + this.getHeight() / 2f - font.lineHeight / 2f),
                 color
         );
 
-        //draw arrow
+        // draw arrow
         font.drawShadow(
                 poseStack, arrow,
                 this.getX() + 3, (int) (this.getY() + this.getHeight() / 2f - font.lineHeight / 2f),
                 color
         );
 
-        //tooltip
+        // tooltip
         if (message != getMessage())
             this.setTooltip(getMessage());
     }

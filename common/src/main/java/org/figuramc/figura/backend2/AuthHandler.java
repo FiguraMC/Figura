@@ -31,7 +31,7 @@ public class AuthHandler {
                 FiguraMod.debug("Joining \"{}\" on server \"{}\"", username, serverID);
                 minecraft.getMinecraftSessionService().joinServer(user.getGameProfile(), user.getAccessToken(), serverID);
                 NetworkStuff.authSuccess(getToken(serverID));
-            //cringe exceptions
+            // cringe exceptions
             } catch (AuthenticationUnavailableException e) {
                 NetworkStuff.authFail(new TranslatableComponent("disconnect.loginFailedInfo.serversUnavailable").getString());
             } catch (InvalidCredentialsException e) {
@@ -44,7 +44,7 @@ public class AuthHandler {
         });
     }
 
-    // requests //
+    // requests // 
 
     protected static String request(HttpRequest request) throws Exception {
         HttpResponse<String> response = NetworkStuff.client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));

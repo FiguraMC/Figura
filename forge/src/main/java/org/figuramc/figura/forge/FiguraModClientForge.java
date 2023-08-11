@@ -8,18 +8,18 @@ import net.minecraftforge.client.gui.OverlayRegistry;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.forge.ModConfig;
 import org.figuramc.figura.gui.forge.GuiOverlay;
 import org.figuramc.figura.gui.forge.GuiUnderlay;
 import org.figuramc.figura.utils.forge.FiguraResourceListenerImpl;
-import org.figuramc.figura.FiguraMod;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Mod.EventBusSubscriber(modid = FiguraMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class FiguraModClientForge extends FiguraMod {
-    //keybinds stored here
+    // keybinds stored here
     public static List<KeyMapping> KEYBINDS = new ArrayList<>();
 
     @SubscribeEvent

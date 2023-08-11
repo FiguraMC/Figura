@@ -3,12 +3,13 @@ package org.figuramc.figura.gui.widgets.config;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.config.ConfigType;
+import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.gui.screens.ConfigScreen;
 import org.figuramc.figura.gui.widgets.AbstractContainerElement;
 import org.figuramc.figura.gui.widgets.ContainerButton;
 import org.figuramc.figura.gui.widgets.lists.ConfigList;
-import org.figuramc.figura.config.ConfigType;
-import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.utils.ui.UIHelper;
 
 import java.util.ArrayList;
@@ -39,20 +40,19 @@ public class CategoryWidget extends AbstractContainerElement {
         children.add(this.parentConfig);
     }
 
-
     @Override
     public void render(PoseStack poseStack, int mouseX, int mouseY, float delta) {
         if (!isVisible())
             return;
 
-        //children background
+        // children background
         if (parentConfig.isToggled() && entries.size() > 0)
             UIHelper.fill(poseStack, getX(), getY() + 21, getX() + getWidth(), getY() + getHeight(), 0x11FFFFFF);
 
         if (config == Configs.PAPERDOLL)
             parent.parentScreen.renderPaperdoll = parentConfig.isToggled() && parent.isMouseOver(mouseX, mouseY) && isMouseOver(mouseX, mouseY);
 
-        //children
+        // children
         super.render(poseStack, mouseX, mouseY, delta);
     }
 
@@ -62,7 +62,9 @@ public class CategoryWidget extends AbstractContainerElement {
     }
 
     public void addConfig(ConfigType<?> config) {
+        if (config.hidden && !FiguraMod.debugModeEnabled()) return;
         int width = getWidth();
+
         AbstractConfigElement element;
         if (config instanceof ConfigType.BoolConfig boolConfig) {
             element = new BooleanElement(width, boolConfig, parent, this);

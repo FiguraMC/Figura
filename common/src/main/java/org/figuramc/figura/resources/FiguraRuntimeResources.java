@@ -4,9 +4,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.server.packs.FolderPackResources;
-import org.figuramc.figura.backend2.NetworkStuff;
-import org.figuramc.figura.utils.IOUtils;
 import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.backend2.NetworkStuff;
+import org.figuramc.figura.config.Configs;
+import org.figuramc.figura.utils.IOUtils;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -41,7 +42,7 @@ public class FiguraRuntimeResources {
 
             JsonObject hashes, oldHashes;
 
-            //get old hashes
+            // get old hashes
             Path hashesPath = getRootDirectory().resolve("hashes.json");
             try (BufferedReader reader = Files.newBufferedReader(hashesPath)) {
                 oldHashes = JsonParser.parseReader(reader).getAsJsonObject();
@@ -49,13 +50,13 @@ public class FiguraRuntimeResources {
                 oldHashes = new JsonObject();
             }
 
-            //get new hashes
+            // get new hashes
             try (InputStream stream = NetworkStuff.getResourcesHashes(ASSETS_VERSION)) {
                 byte[] bytes = stream.readAllBytes();
                 String s = new String(bytes);
                 hashes = JsonParser.parseString(s).getAsJsonObject();
 
-                //save new hashes
+                // save new hashes
                 try (OutputStream fs = Files.newOutputStream(hashesPath)) {
                     fs.write(bytes);
                 } catch (Exception e) {
@@ -66,7 +67,7 @@ public class FiguraRuntimeResources {
                 return;
             }
 
-            //compare hashes
+            // compare hashes
             for (Map.Entry<String, JsonElement> entry : hashes.entrySet()) {
                 String key = entry.getKey();
                 JsonElement oldHash = oldHashes.get(key);
@@ -82,6 +83,7 @@ public class FiguraRuntimeResources {
     }
 
     private static void getAndSaveResource(String path) throws Exception {
+        if (Configs.LOCAL_ASSETS.value) return;
         Path target = getAssetsDirectory().resolve(path);
         IOUtils.createDirIfNeeded(target.getParent());
         try (InputStream resource = NetworkStuff.getResource(ASSETS_VERSION, path); OutputStream fs = Files.newOutputStream(target)) {

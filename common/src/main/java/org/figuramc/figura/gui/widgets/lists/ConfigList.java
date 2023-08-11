@@ -38,11 +38,11 @@ public class ConfigList extends AbstractList {
         int width = getWidth();
         int height = getHeight();
 
-        //background and scissors
+        // background and scissors
         UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE_FILL);
         UIHelper.setupScissor(x + scissorsX, y + scissorsY, width + scissorsWidth, height + scissorsHeight);
 
-        //scrollbar
+        // scrollbar
         totalHeight = -4;
         int visibleConfig = 0;
         for (CategoryWidget config : configs) {
@@ -56,7 +56,7 @@ public class ConfigList extends AbstractList {
         scrollBar.setVisible(totalHeight > height);
         scrollBar.setScrollRatio(entryHeight, totalHeight - height);
 
-        //render list
+        // render list
         int xOffset = scrollBar.isVisible() ? 4 : 11;
         int yOffset = scrollBar.isVisible() ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -4, totalHeight - height)) : 4;
         for (CategoryWidget config : configs) {
@@ -68,16 +68,16 @@ public class ConfigList extends AbstractList {
             yOffset += config.getHeight() + 8;
         }
 
-        //children
+        // children
         super.render(stack, mouseX, mouseY, delta);
 
-        //reset scissor
+        // reset scissor
         UIHelper.disableScissor();
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        //fix mojang focusing for text fields
+        // fix mojang focusing for text fields
         for (CategoryWidget categoryWidget : configs) {
             for (GuiEventListener children : categoryWidget.children()) {
                 if (children instanceof InputElement inputElement) {
@@ -91,12 +91,12 @@ public class ConfigList extends AbstractList {
     }
 
     public void updateList() {
-        //clear old widgets
+        // clear old widgets
         for (CategoryWidget config : configs)
             children.remove(config);
         configs.clear();
 
-        //add configs
+        // add configs
         for (ConfigType.Category category : ConfigManager.CATEGORIES_REGISTRY.values()) {
             CategoryWidget widget = new CategoryWidget(getWidth() - 22, category, this);
 
@@ -107,22 +107,22 @@ public class ConfigList extends AbstractList {
             children.add(widget);
         }
 
-        //fix expanded status
+        // fix expanded status
         for (CategoryWidget config : configs)
             config.setShowChildren(config.isShowingChildren());
     }
 
     public void updateScroll() {
-        //store old scroll pos
+        // store old scroll pos
         double pastScroll = (totalHeight - getHeight()) * scrollBar.getScrollProgress();
 
-        //get new height
+        // get new height
         totalHeight = -4;
         for (CategoryWidget config : configs)
             if (config.isVisible())
                 totalHeight += config.getHeight() + 8;
 
-        //set new scroll percentage
+        // set new scroll percentage
         scrollBar.setScrollProgress(pastScroll / (totalHeight - getHeight()));
     }
 

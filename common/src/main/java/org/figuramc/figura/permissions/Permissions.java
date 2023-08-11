@@ -10,7 +10,7 @@ import java.util.List;
 
 public class Permissions {
 
-    //default permissions
+    // default permissions
     public static final Permissions
             INIT_INST = new Permissions("INIT_INST", 0, 524287, 0, 32768, 65536, 262144, Integer.MAX_VALUE),
             WORLD_TICK_INST = new Permissions("WORLD_TICK_INST", 0, 32767, 0, 64, 128, 256, Integer.MAX_VALUE),
@@ -32,7 +32,7 @@ public class Permissions {
             VANILLA_MODEL_EDIT = new Permissions("VANILLA_MODEL_EDIT", 0, 0, 1, 1, 1),
             NAMEPLATE_EDIT = new Permissions("NAMEPLATE_EDIT", 0, 0, 0, 1, 1),
             OFFSCREEN_RENDERING = new Permissions("OFFSCREEN_RENDERING", 0, 0, 0, 1, 1),
-            //CUSTOM_SHADERS = new Permissions("CUSTOM_SHADERS", 0, 0, 1, 1, 1),
+            // CUSTOM_SHADERS = new Permissions("CUSTOM_SHADERS", 0, 0, 1, 1, 1),
             CUSTOM_SOUNDS = new Permissions("CUSTOM_SOUNDS", 0, 0, 1, 1, 1),
             CUSTOM_SKULL = new Permissions("CUSTOM_SKULL", 0, 0, 1, 1, 1);
 
@@ -57,27 +57,27 @@ public class Permissions {
     );
 
 
-    // -- permissions stuff -- //
+    // -- permissions stuff -- // 
 
 
-    //stuff
+    // stuff
     public final String name;
     private final List<Integer> defaults;
 
-    //toggle check
+    // toggle check
     public final boolean isToggle;
 
-    //used only for sliders
+    // used only for sliders
     public final Integer min;
     public final Integer max;
     public final int stepSize;
 
-    //toggle constructor
+    // toggle constructor
     public Permissions(String name, int blocked, int low, int def, int high, int max) {
         this(name, null, null, blocked, low, def, high, max);
     }
 
-    //slider constructor
+    // slider constructor
     public Permissions(String name, Integer sliderMin, Integer sliderMax, int blocked, int low, int def, int high, int max) {
         this(name, sliderMin, sliderMax, 1, blocked, low, def, high, max);
     }
@@ -90,17 +90,17 @@ public class Permissions {
         this.defaults = List.of(blocked, low, def, high, max);
     }
 
-    //infinity check :p
+    // infinity check :p
     public boolean checkInfinity(int value) {
         return max != null && value > max;
     }
 
-    //if this slider should show the steps
+    // if this slider should show the steps
     public boolean showSteps() {
         return stepSize > 1;
     }
 
-    //transform to boolean
+    // transform to boolean
     public boolean asBoolean(int value) {
         return value >= 1;
     }

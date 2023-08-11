@@ -51,9 +51,9 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
                 .put((float) v13).put((float) v23).put((float) v33);
     }
 
-    //----------------------------IMPLEMENTATION BELOW-----------------------//
+    // ----------------------------IMPLEMENTATION BELOW-----------------------//
 
-    //Values are named as v(ROW)(COLUMN), both 1-indexed like in actual math
+    // Values are named as v(ROW)(COLUMN), both 1-indexed like in actual math
     public double v11 = 1, v12, v13, v21, v22 = 1, v23, v31, v32, v33 = 1;
 
     public static FiguraMat3 of() {
@@ -272,7 +272,7 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
         temp = v12; v12 = v21; v21 = temp;
         temp = v13; v13 = v31; v31 = temp;
         temp = v23; v23 = v32; v32 = temp;
-        cachedInverse = null; //transposing doesn't invalidate the determinant
+        cachedInverse = null; // transposing doesn't invalidate the determinant
         return this;
     }
 
@@ -565,7 +565,7 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
         return this;
     }
 
-    //Rotates using ZYX matrix order, meaning the X axis, then Y, then Z.
+    // Rotates using ZYX matrix order, meaning the X axis, then Y, then Z.
     public void rotateZYX(double x, double y, double z) {
         x = Math.toRadians(x);
         y = Math.toRadians(y);
@@ -695,7 +695,7 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
         return apply(FiguraVec3.of(vec.x, vec.y, 0));
     }
 
-    //-----------------------------METAMETHODS-----------------------------------//
+    // -----------------------------METAMETHODS-----------------------------------//
 
     @LuaWhitelist
     public FiguraMat3 __add(@LuaNotNil FiguraMat3 mat) {

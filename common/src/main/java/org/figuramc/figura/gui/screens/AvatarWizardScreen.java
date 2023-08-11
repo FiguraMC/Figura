@@ -31,10 +31,10 @@ public class AvatarWizardScreen extends AbstractPanelScreen {
 
         // -- bottom buttons -- //
 
-        //cancel
+        // cancel
         this.addRenderableWidget(new Button(width / 2 - 122, height - 24, 120, 20, new FiguraText("gui.cancel"), null, button -> onClose()));
 
-        //done
+        // done
         addRenderableWidget(build = new Button(width / 2 + 4, height - 24, 120, 20, new FiguraText("gui.create"), null, button -> {
             try {
                 wizard.build();

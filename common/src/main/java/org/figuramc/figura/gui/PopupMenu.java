@@ -67,7 +67,7 @@ public class PopupMenu {
     );
     private static final int LENGTH = BUTTONS.size();
 
-    //runtime data
+    // runtime data
     private static int index = 0;
     private static boolean enabled = false;
     private static Entity entity;
@@ -92,12 +92,12 @@ public class PopupMenu {
         RenderSystem.disableDepthTest();
         stack.pushPose();
 
-        //world to screen space
+        // world to screen space
         FiguraVec3 worldPos = FiguraVec3.fromVec3(entity.getPosition(minecraft.getFrameTime()));
         worldPos.add(0f, entity.getBbHeight() + 0.1f, 0f);
 
         FiguraVec4 vec = MathUtils.worldToScreenSpace(worldPos);
-        if (vec.z < 1) return; //too close
+        if (vec.z < 1) return; // too close
 
         Window window = minecraft.getWindow();
         double w = window.getGuiScaledWidth();
@@ -107,20 +107,20 @@ public class PopupMenu {
         stack.translate((vec.x + 1) / 2 * w, (vec.y + 1) / 2 * h, -100);
         stack.scale((float) (s * 0.5), (float) (s * 0.5), 1);
 
-        //background
+        // background
         int width = LENGTH * 18;
 
         UIHelper.setupTexture(BACKGROUND);
         int frame = Configs.REDUCED_MOTION.value ? 0 : (int) ((FiguraMod.ticks / 5f) % 4);
         UIHelper.blit(stack, width / -2, -24, width, 26, 0, frame * 26, width, 26, width, 104);
 
-        //icons
+        // icons
         stack.translate(0f, 0f, -2f);
         UIHelper.setupTexture(ICONS);
         for (int i = 0; i < LENGTH; i++)
             UIHelper.blit(stack, width / -2 + (18 * i), -24, 18, 18, 18 * i, i == index ? 18 : 0, 18, 18, width, 36);
 
-        //texts
+        // texts
         Font font = minecraft.font;
 
         Component title = BUTTONS.get(index).getFirst();
@@ -145,7 +145,7 @@ public class PopupMenu {
             noPermissions = !avatar.noPermissions.isEmpty();
         }
 
-        //render texts
+        // render texts
         UIHelper.renderOutlineText(stack, font, name, -font.width(name) / 2, -36, 0xFFFFFF, 0x202020);
 
         stack.scale(0.5f, 0.5f, 0.5f);
@@ -161,7 +161,7 @@ public class PopupMenu {
         if (noPermissions)
             UIHelper.renderOutlineText(stack, font, PERMISSION_WARN, -font.width(PERMISSION_WARN) / 2, (error ? font.lineHeight : 0) + (version ? font.lineHeight : 0), 0xFFFFFF, 0x202020);
 
-        //finish rendering
+        // finish rendering
         stack.popPose();
     }
 

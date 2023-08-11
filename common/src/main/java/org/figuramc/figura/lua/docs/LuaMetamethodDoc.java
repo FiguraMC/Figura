@@ -18,7 +18,7 @@ public @interface LuaMetamethodDoc {
     @Retention(RetentionPolicy.RUNTIME)
     @interface LuaMetamethodOverload {
 
-        //First value is the result type, rest of values are the parameter types.
+        // First value is the result type, rest of values are the parameter types.
         Class<?>[] types();
 
         String comment() default "";

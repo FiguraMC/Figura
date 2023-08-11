@@ -1,13 +1,13 @@
 package org.figuramc.figura.lua.api.entity;
 
 import org.figuramc.figura.lua.LuaWhitelist;
-import org.luaj.vm2.LuaError;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
+import org.luaj.vm2.LuaError;
 
 @LuaWhitelist
 @LuaTypeDoc(
         name = "NullEntity",
-        value = "" //no docs, however the name field is required for the wrapper
+        value = "" // no docs, however the name field is required for the wrapper
 )
 public class NullEntity {
 

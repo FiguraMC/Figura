@@ -49,22 +49,22 @@ public class SoundsList extends AbstractList {
 
     @Override
     public void render(PoseStack pose, int mouseX, int mouseY, float delta) {
-        //background and scissors
+        // background and scissors
         UIHelper.renderSliced(pose, getX(), getY(), getWidth(), getHeight(), UIHelper.OUTLINE_FILL);
         UIHelper.setupScissor(getX() + scissorsX, getY() + scissorsY, getWidth() + scissorsWidth, getHeight() + scissorsHeight);
 
         if (!sounds.isEmpty())
             updateEntries();
 
-        //children
+        // children
         super.render(pose, mouseX, mouseY, delta);
 
-        //reset scissor
+        // reset scissor
         UIHelper.disableScissor();
     }
 
     private void updateEntries() {
-        //scrollbar
+        // scrollbar
         int totalHeight = -4;
         for (SoundElement sound : sounds)
             totalHeight += sound.getHeight() + 8;
@@ -73,7 +73,7 @@ public class SoundsList extends AbstractList {
         scrollBar.setVisible(totalHeight > getHeight());
         scrollBar.setScrollRatio(entryHeight, totalHeight - getHeight());
 
-        //render list
+        // render list
         int xOffset = scrollBar.isVisible() ? 4 : 11;
         int yOffset = scrollBar.isVisible() ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -4, totalHeight - getHeight())) : 4;
         for (SoundElement sound : sounds) {
@@ -84,10 +84,10 @@ public class SoundsList extends AbstractList {
     }
 
     private void updateList() {
-        //clear old widgets
+        // clear old widgets
         sounds.forEach(children::remove);
 
-        //add new sounds
+        // add new sounds
         if (owner == null)
             return;
 
@@ -127,7 +127,7 @@ public class SoundsList extends AbstractList {
             int len = owner.nbt.getCompound("sounds").getByteArray(name).length;
             this.size = new TextComponent("(" + MathUtils.asFileSize(len) + ")").withStyle(ChatFormatting.GRAY);
 
-            //play button
+            // play button
             children.add(0, play = new ParentedButton(0, 0, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/play.png"), 60, 20, new FiguraText("gui.sound.play"), this, button -> {}) {
                 @Override
                 public void playDownSound(SoundManager soundManager) {
@@ -136,7 +136,7 @@ public class SoundsList extends AbstractList {
                 }
             });
 
-            //stop button
+            // stop button
             children.add(stop = new ParentedButton(0, 0, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/stop.png"), 60, 20, new FiguraText("gui.sound.stop"), this,
                     button -> SoundAPI.getSoundEngine().figura$stopSound(owner.owner, name))
             );
@@ -151,25 +151,25 @@ public class SoundsList extends AbstractList {
             int width = getWidth();
             int height = getHeight();
 
-            //selected outline
+            // selected outline
             if (parent.selected == this)
                 UIHelper.fillOutline(stack, x - 1, y - 1, width + 2, height + 2, 0xFFFFFFFF);
 
-            //vars
+            // vars
             Font font = Minecraft.getInstance().font;
             int textY = y + height / 2 - font.lineHeight / 2;
 
-            //hovered arrow
+            // hovered arrow
             setHovered(isMouseOver(mouseX, mouseY));
             if (isHovered()) font.draw(stack, HOVERED_ARROW, x + 4, textY, 0xFFFFFF);
 
-            //render name
+            // render name
             font.draw(stack, this.name, x + 16, textY, 0xFFFFFF);
 
-            //render size
+            // render size
             font.draw(stack, size, x + width - 96 - font.width(size), textY, 0xFFFFFF);
 
-            //render children
+            // render children
             super.render(stack, mouseX, mouseY, delta);
         }
 

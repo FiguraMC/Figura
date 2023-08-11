@@ -20,7 +20,7 @@ import java.util.List;
 
 public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
 
-    //text
+    // text
     private final Font font;
     private Component rawText;
     private List<Component> formattedText;
@@ -34,7 +34,7 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
 
     private Style hovered;
 
-    //widget
+    // widget
     private int x, y;
     private int width, height;
     private float scale;
@@ -96,38 +96,38 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
         pose.translate(this.x, getY(), 0);
         pose.scale(scale, scale, scale);
 
-        //alpha
+        // alpha
         if (alpha != null) {
             float lerpDelta = MathUtils.magicDelta(0.6f, delta);
             alphaPrecise = (int) Mth.lerp(lerpDelta, alphaPrecise, isMouseOver(mouseX, mouseY) ? 0xFF : alpha);
         }
 
-        //prepare pos
+        // prepare pos
         int y = 0;
         int height = font.lineHeight;
 
         for (Component text : formattedText) {
-            //dimensions
+            // dimensions
             int x = -alignment.apply(font, text);
             int width = font.width(text);
 
-            //hovered
+            // hovered
             if (mouseX >= this.x + x * scale && mouseX < this.x + (x + width) * scale && mouseY >= this.y + y * scale && mouseY < this.y + (y + height) * scale) {
-                //get style at the mouse pos
+                // get style at the mouse pos
                 int pos = (int) ((mouseX - this.x - x * scale) / scale);
                 hovered = font.getSplitter().componentStyleAtWidth(text, pos);
 
-                //add underline for the text with the click event
+                // add underline for the text with the click event
                 ClickEvent event = hovered != null ? hovered.getClickEvent() : null;
                 if (event != null)
                     text = TextUtils.replaceStyle(text, Style.EMPTY.withUnderlined(true), style -> event.equals(style.getClickEvent()));
-                    //text = TextUtils.setStyleAtWidth(text, pos, font, Style.EMPTY.withUnderlined(true));
+                    // text = TextUtils.setStyleAtWidth(text, pos, font, Style.EMPTY.withUnderlined(true));
 
-                //set tooltip for hovered text, if any
+                // set tooltip for hovered text, if any
                 UIHelper.setTooltip(hovered);
             }
 
-            //render text
+            // render text
             if (outlineColor != null) {
                 UIHelper.renderOutlineText(pose, font, text, x, y, 0xFFFFFF, outlineColor);
             } else {

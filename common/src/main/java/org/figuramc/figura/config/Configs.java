@@ -3,20 +3,20 @@ package org.figuramc.figura.config;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.local.CacheAvatarLoader;
 import org.figuramc.figura.avatar.local.LocalAvatarFetcher;
+import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.gui.screens.ConfigScreen;
 import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.lua.api.ConfigAPI;
-import org.figuramc.figura.utils.ColorUtils;
-import org.figuramc.figura.utils.FiguraText;
-import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.permissions.PermissionManager;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.resources.FiguraRuntimeResources;
+import org.figuramc.figura.utils.ColorUtils;
+import org.figuramc.figura.utils.FiguraText;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,17 +24,17 @@ import java.util.List;
 
 public class Configs {
 
-    //mod config version
-    //only change this if you rename old configs
+    // mod config version
+    // only change this if you rename old configs
     public static final int CONFIG_VERSION = 1;
 
-    //config update hashmap; <version number, <actual config, old config name>>
+    // config update hashmap; <version number, <actual config, old config name>>
     public static final HashMap<Integer, HashMap<ConfigType<?>, String>> CONFIG_UPDATES = new HashMap<>();
 
-    //code to run when the config is initialized
+    // code to run when the config is initialized
     public static void init() {
-        //test for unused configs
-        if (FiguraMod.DEBUG_MODE) {
+        // test for unused configs
+        if (FiguraMod.debugModeEnabled()) {
             ConfigType.Category debug = new ConfigType.Category("debug");
             new ConfigType.ColorConfig("color_test", debug, 0xFF72AD);
             new ConfigType.StringConfig("string_test", debug, "text");
@@ -114,12 +114,12 @@ public class Configs {
             };
     public static final ConfigType.PositiveIntConfig
             LOG_NUMBER_LENGTH = new ConfigType.PositiveIntConfig("log_number_length", SCRIPT, 5) {
-                @Override
-                public void onChange() {
-                    super.onChange();
-                    FiguraLuaPrinter.updateDecimalFormatting();
-                }
-            };
+        @Override
+        public void onChange() {
+            super.onChange();
+            FiguraLuaPrinter.updateDecimalFormatting();
+        }
+    };
 
 
     // -- RENDERING -- //
@@ -128,10 +128,10 @@ public class Configs {
     public static final ConfigType.EnumConfig
             IRIS_COMPATIBILITY_FIX = new ConfigType.EnumConfig("iris_compatibility_fix", RENDERING, 1, 3),
             RENDER_DEBUG_PARTS_PIVOT = new ConfigType.EnumConfig("render_debug_parts_pivot", RENDERING, 1, 3) {{
-                    String tooltip = "config.render_debug_parts_pivot.tooltip";
-                    this.tooltip = new FiguraText(tooltip,
-                            new FiguraText(tooltip + ".cubes").setStyle(ColorUtils.Colors.PINK.style),
-                            new FiguraText(tooltip + ".groups").setStyle(ColorUtils.Colors.MAYA_BLUE.style));
+                String tooltip = "config.render_debug_parts_pivot.tooltip";
+                this.tooltip = new FiguraText(tooltip,
+                        new FiguraText(tooltip + ".cubes").setStyle(ColorUtils.Colors.AWESOME_BLUE.style),
+                        new FiguraText(tooltip + ".groups").setStyle(ColorUtils.Colors.BLUE.style));
             }};
     public static final ConfigType.BoolConfig
             ALLOW_FP_HANDS = new ConfigType.BoolConfig("allow_fp_hands", RENDERING, false),
@@ -210,14 +210,16 @@ public class Configs {
                     NetworkStuff.checkVersion();
                 }
             },
-            DEFAULT_PERMISSION_LEVEL = new ConfigType.EnumConfig("default_permission_level", MISC, 2, Permissions.Category.values().length) {{
-                List<Component> list = new ArrayList<>();
-                Permissions.Category[] categories = Permissions.Category.values();
-                for (Permissions.Category category : categories)
-                    list.add(category.text.copy());
-                this.enumList = list;
-                this.enumTooltip = null;
-            }
+            DEFAULT_PERMISSION_LEVEL = new ConfigType.EnumConfig("default_permission_level", MISC, 2, Permissions.Category.values().length) {
+                {
+                    List<Component> list = new ArrayList<>();
+                    Permissions.Category[] categories = Permissions.Category.values();
+                    for (Permissions.Category category : categories)
+                        list.add(category.text.copy());
+                    this.enumList = list;
+                    this.enumTooltip = null;
+                }
+
                 @Override
                 public void onChange() {
                     super.onChange();
@@ -230,7 +232,10 @@ public class Configs {
 
 
     // -- DEV -- //
-
+    public static final ConfigType.BoolConfig
+            DEBUG_MODE = new ConfigType.BoolConfig("debug_mode", DEV, false, false);
+    public static final ConfigType.BoolConfig
+            LOCAL_ASSETS = new ConfigType.BoolConfig("local_assets", DEV, false, false);
 
     public static final ConfigType.BoolConfig
             CONNECTION_TOASTS = new ConfigType.BoolConfig("connection_toasts", DEV, false),
@@ -239,11 +244,11 @@ public class Configs {
             LOG_PINGS = new ConfigType.EnumConfig("log_pings", DEV, 0, 3);
     public static final ConfigType.BoolConfig
             SYNC_PINGS = new ConfigType.BoolConfig("sync_pings", DEV, false) {{
-                String tooltip = "config.sync_pings.tooltip.";
-                this.tooltip = new FiguraText(tooltip + "1")
-                        .append("\n")
-                        .append(new FiguraText(tooltip + "2").withStyle(ChatFormatting.RED));
-            }},
+        String tooltip = "config.sync_pings.tooltip.";
+        this.tooltip = new FiguraText(tooltip + "1")
+                .append("\n")
+                .append(new FiguraText(tooltip + "2").withStyle(ChatFormatting.RED));
+    }},
             CHAT_MESSAGES = new ConfigType.BoolConfig("chat_messages", DEV, false) {{
                 this.name = this.name.copy().withStyle(ChatFormatting.RED);
                 String tooltip = "config.chat_messages.tooltip.";
@@ -255,30 +260,30 @@ public class Configs {
             }};
     public static final ConfigType.FolderConfig
             MAIN_DIR = new ConfigType.FolderConfig("main_dir", DEV, "") {
-                @Override
-                public void onChange() {
-                    super.onChange();
-                    PermissionManager.reinit();
-                    LocalAvatarFetcher.reinit();
-                }
+        @Override
+        public void onChange() {
+            super.onChange();
+            PermissionManager.reinit();
+            LocalAvatarFetcher.reinit();
+        }
     };
     public static final ConfigType.IPConfig
-            SERVER_IP = new ConfigType.IPConfig("server_ip", DEV, "cloud.figuramc.org") {
-                @Override
-                public void onChange() {
-                    super.onChange();
-                    NetworkStuff.reAuth();
-                }
-            };
+            SERVER_IP = new ConfigType.IPConfig("server_ip", DEV, "figura.moonlight-devs.org") {
+        @Override
+        public void onChange() {
+            super.onChange();
+            NetworkStuff.reAuth();
+        }
+    };
     @SuppressWarnings("unused")
     public static final ConfigType.ButtonConfig
             CLEAR_CACHE = new ConfigType.ButtonConfig("clear_cache", DEV, () -> {
-                CacheAvatarLoader.clearCache();
-                LocalAvatarFetcher.clearCache();
-                ConfigScreen.clearCache();
-                FiguraRuntimeResources.clearCache();
-                FiguraToast.sendToast(new FiguraText("toast.cache_clear"));
-            }),
+        CacheAvatarLoader.clearCache();
+        LocalAvatarFetcher.clearCache();
+        ConfigScreen.clearCache();
+        FiguraRuntimeResources.clearCache();
+        FiguraToast.sendToast(new FiguraText("toast.cache_clear"));
+    }),
             REDOWNLOAD_ASSETS = new ConfigType.ButtonConfig("redownload_assets", DEV, () -> {
                 FiguraRuntimeResources.init();
                 Minecraft.getInstance().reloadResourcePacks();

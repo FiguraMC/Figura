@@ -24,9 +24,9 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.AbstractSkullBlock;
 import net.minecraft.world.level.block.SkullBlock;
-import org.figuramc.figura.ducks.SkullBlockRendererAccessor;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
+import org.figuramc.figura.ducks.SkullBlockRendererAccessor;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.utils.RenderUtils;
 import org.spongepowered.asm.mixin.Final;
@@ -57,15 +57,15 @@ public abstract class CustomHeadLayerMixin<T extends LivingEntity, M extends Ent
         if (!RenderUtils.vanillaModel(avatar))
             return;
 
-        //script hide
+        // script hide
         if (avatar.luaRuntime != null && !avatar.luaRuntime.vanilla_model.HELMET_ITEM.checkVisible()) {
             ci.cancel();
             return;
         }
 
-        //pivot part
+        // pivot part
         if (itemStack.getItem() instanceof BlockItem block && block.getBlock() instanceof AbstractSkullBlock) {
-            //fetch skull data
+            // fetch skull data
             GameProfile gameProfile = null;
             if (itemStack.hasTag()) {
                 CompoundTag tag = itemStack.getTag();
@@ -77,13 +77,13 @@ public abstract class CustomHeadLayerMixin<T extends LivingEntity, M extends Ent
             SkullModelBase skullModelBase = this.skullModels.get(type);
             RenderType renderType = SkullBlockRenderer.getRenderType(type, gameProfile);
 
-            //render!!
+            // render!!
             if (avatar.pivotPartRender(ParentType.HelmetItemPivot, stack -> {
                 float s = 19f;
                 stack.scale(s, s, s);
                 stack.translate(-0.5d, 0d, -0.5d);
 
-                //set item context
+                // set item context
                 SkullBlockRendererAccessor.setItem(itemStack);
                 SkullBlockRendererAccessor.setEntity(livingEntity);
                 SkullBlockRendererAccessor.setRenderMode(SkullBlockRendererAccessor.SkullRenderMode.HEAD);

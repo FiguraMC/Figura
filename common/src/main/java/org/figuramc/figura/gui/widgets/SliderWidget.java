@@ -53,33 +53,33 @@ public class SliderWidget extends ScrollBarWidget {
 
     @Override
     protected void scroll(double amount) {
-        //normal scroll
+        // normal scroll
         super.scroll(amount);
 
-        //get the closest step
+        // get the closest step
         steppedPos = getClosestStep();
     }
 
     private double getClosestStep() {
-        //get closer steps
+        // get closer steps
         double lowest = scrollPrecise - scrollPrecise % stepSize;
         double highest = lowest + stepSize;
 
-        //get distance
+        // get distance
         double distanceLow = Math.abs(lowest - scrollPrecise);
         double distanceHigh = Math.abs(highest - scrollPrecise);
 
-        //return closest
+        // return closest
         return distanceLow < distanceHigh ? lowest : highest;
     }
 
     @Override
     public void render(PoseStack poseStack, int mouseX, int mouseY, float delta) {
         if (this.isVisible()) {
-            //set hovered
+            // set hovered
             this.isHovered = this.isMouseOver(mouseX, mouseY);
 
-            //render button
+            // render button
             this.renderButton(poseStack, mouseX, mouseY, delta);
         }
     }
@@ -91,17 +91,17 @@ public class SliderWidget extends ScrollBarWidget {
         int y = getY();
         int width = getWidth();
 
-        //draw bar
+        // draw bar
         blit(poseStack, x, y + 3, width, 5, isScrolling ? 10f : 0f, 0f, 5, 5, 33, 16);
 
-        //draw steps
+        // draw steps
         if (showSteps) {
             for (int i = 0; i < max; i++) {
                 blit(poseStack, (int) Math.floor(x + 3 + stepSize * i * (width - 11)), y + 3, 5, 5, isScrolling ? 15f : 5f, 0f, 5, 5, 33, 16);
             }
         }
 
-        //draw header
+        // draw header
         lerpPos(delta);
         blit(poseStack, (int) (x + Math.round(Mth.lerp(scrollPos, 0, width - headWidth))), y, isActive() ? (isHoveredOrFocused() || isScrolling ? headWidth * 2 : headWidth) : 0f, 5f, headWidth, headHeight, 33, 16);
     }
@@ -124,7 +124,7 @@ public class SliderWidget extends ScrollBarWidget {
     }
 
     public void setMax(int maxValue) {
-        //set steps data
+        // set steps data
         this.max = maxValue;
         this.stepSize = 1d / (maxValue - 1);
     }

@@ -5,9 +5,9 @@ import java.util.regex.Pattern;
 
 public class Version implements Comparable<Version> {
 
-    //slightly modified regex of semver
-    //difference only is that build metadata can be anything
-    //also minor and patch are optionals
+    // slightly modified regex of semver
+    // difference only is that build metadata can be anything
+    // also minor and patch are optionals
     private static final Pattern PATTERN = Pattern.compile("^(?<major>0|[1-9]\\d*)(?:\\.(?<minor>0|[1-9]\\d*)(?:\\.(?<patch>0|[1-9]\\d*))?)?(?:-(?<pre>(?:0|[1-9]\\d*|\\d*[a-zA-Z-][\\da-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][\\da-zA-Z-]*))*))?(?:\\+(?<build>[\\da-zA-Z-]+(?:\\.[\\da-zA-Z-]+)*))?$");
 
     private final String src;
@@ -17,12 +17,12 @@ public class Version implements Comparable<Version> {
     public final boolean invalid;
 
     public Version(String version) {
-        //temp vars
+        // temp vars
         int major = 0, minor = 0, patch = 0;
         String pre = null, build = null;
         boolean invalid = true;
 
-        //try parse version
+        // try parse version
         try {
             Matcher matcher = PATTERN.matcher(version);
             if (matcher.matches()) {
@@ -43,7 +43,7 @@ public class Version implements Comparable<Version> {
             }
         } catch (Exception ignored) {}
 
-        //store vars
+        // store vars
         this.src = version;
 
         this.major = major;

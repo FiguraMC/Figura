@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import org.figuramc.figura.ducks.SuggestionsListAccessor;
-import org.figuramc.figura.gui.Emojis;
+import org.figuramc.figura.font.Emojis;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -28,17 +28,17 @@ public class SuggestionsListMixin implements SuggestionsListAccessor {
             return x;
         Font font = Minecraft.getInstance().font;
 
-        //get emoji
+        // get emoji
         Component emoji = Emojis.applyEmojis(new TextComponent(text));
 
-        //dont render if no emoji was applied
+        // dont render if no emoji was applied
         if (emoji.getString().equals(text))
             return x;
 
-        //render emoji
+        // render emoji
         font.drawShadow(stack, emoji, x + 4 - (int) (font.width(emoji) / 2f), y, color);
 
-        //change text x
+        // change text x
         return (x + 8 + font.width(" "));
     }
 

@@ -51,9 +51,9 @@ public abstract class PlayerItemInHandLayerMixin <T extends Player, M extends En
         if (!RenderUtils.renderArmItem(avatar, left, ci))
             return;
 
-        //pivot part
+        // pivot part
         if (avatar.pivotPartRender(left ? ParentType.LeftSpyglassPivot : ParentType.RightSpyglassPivot, stack -> {
-            //spyglass code is weird - might need a fix, however it will break with non-humanoid avatars
+            // spyglass code is weird - might need a fix, however it will break with non-humanoid avatars
             float s = 10f;
             stack.scale(s, s, s);
             stack.translate(0, 0, 7 / 16f);

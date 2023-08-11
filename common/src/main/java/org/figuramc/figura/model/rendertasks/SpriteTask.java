@@ -7,6 +7,7 @@ import com.mojang.math.Matrix4f;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
+import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
@@ -16,14 +17,12 @@ import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.math.vector.FiguraVec4;
 import org.figuramc.figura.model.FiguraModelPart;
-import org.figuramc.figura.model.PartCustomization;
 import org.figuramc.figura.model.rendering.Vertex;
 import org.figuramc.figura.model.rendering.texture.FiguraTexture;
 import org.figuramc.figura.model.rendering.texture.RenderTypes;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.LuaUtils;
 import org.luaj.vm2.LuaError;
-import org.figuramc.figura.avatar.Avatar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,22 +48,21 @@ public class SpriteTask extends RenderTask {
     }
 
     @Override
-    public void render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
-        this.pushOntoStack(stack); //push
-        PoseStack poseStack = stack.peek().copyIntoGlobalPoseStack();
+    public void renderTask(PoseStack poseStack, MultiBufferSource buffer, int light, int overlay) {
+        if (a == 0) return;
         poseStack.scale(-1, -1, 1);
 
-        //prepare variables
+        // prepare variables
         Matrix4f pose = poseStack.last().pose();
         Matrix3f normal = poseStack.last().normal();
 
         int newLight = this.customization.light != null ? this.customization.light : light;
         int newOverlay = this.customization.overlay != null ? this.customization.overlay : overlay;
 
-        //setup texture render
+        // setup texture render
         VertexConsumer consumer = buffer.getBuffer(renderType.get(texture));
 
-        //create vertices
+        // create vertices
         for (Vertex v : vertices) {
             consumer.vertex(pose, v.x, v.y, v.z)
                     .color(r, g, b, a)
@@ -74,13 +72,11 @@ public class SpriteTask extends RenderTask {
                     .normal(normal, v.nx, v.ny, v.nz)
                     .endVertex();
         }
-
-        stack.pop(); //pop
     }
 
     @Override
     public int getComplexity() {
-        return 1; //1 face, 1 complexity
+        return 1; // 1 face, 1 complexity
     }
 
     @Override

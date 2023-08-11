@@ -14,7 +14,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.item.UseAnim;
-import org.figuramc.figura.utils.FiguraClientCommandSource;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.animation.Animation;
 import org.figuramc.figura.mixin.input.KeyMappingAccessor;
@@ -24,6 +23,7 @@ import org.figuramc.figura.model.rendering.EntityRenderMode;
 import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
 import org.figuramc.figura.model.rendering.texture.RenderTypes;
 import org.figuramc.figura.utils.ColorUtils;
+import org.figuramc.figura.utils.FiguraClientCommandSource;
 import org.figuramc.figura.utils.FiguraText;
 
 import java.util.*;
@@ -34,7 +34,7 @@ import java.util.function.Supplier;
  */
 public class FiguraListDocs {
 
-    //-- types --//
+    // -- types --//
 
     public static final LinkedHashSet<String> KEYBINDS = new LinkedHashSet<>();
     private static final LinkedHashMap<String, List<String>> PARENT_TYPES = new LinkedHashMap<>() {{
@@ -74,7 +74,7 @@ public class FiguraListDocs {
     }};
     private static final LinkedHashMap<String, List<String>> COLORS = new LinkedHashMap<>() {{
         for (ColorUtils.Colors value : ColorUtils.Colors.values())
-            put(value.name(), Arrays.asList(value.alias));
+            put(value.name(), List.of(value.name()));
     }};
     private static final LinkedHashSet<String> PLAYER_MODEL_PARTS = new LinkedHashSet<>() {{
         for (PlayerModelPart value : PlayerModelPart.values()) {
@@ -131,11 +131,11 @@ public class FiguraListDocs {
         private JsonElement generateJson(boolean translate) {
             JsonObject object = new JsonObject();
 
-            //list properties
+            // list properties
             object.addProperty("name", name);
             object.addProperty("description", translate ? Language.getInstance().getOrDefault(new FiguraText("docs.enum." + id).getString()) : FiguraMod.MOD_ID + "." + "docs.enum." + id);
 
-            //list entries
+            // list entries
             Collection<?> coll = get();
             if (coll.size() == 0)
                 return object;
@@ -156,10 +156,10 @@ public class FiguraListDocs {
         }
 
         private LiteralArgumentBuilder<FiguraClientCommandSource> generateCommand() {
-            //command
+            // command
             LiteralArgumentBuilder<FiguraClientCommandSource> command = LiteralArgumentBuilder.literal(id);
 
-            //display everything
+            // display everything
             command.executes(context -> {
                 Collection<?> coll = get();
                 if (coll.size() == 0) {
@@ -172,16 +172,16 @@ public class FiguraListDocs {
                         .append(new TextComponent("• ")
                                 .append(new FiguraText("docs.text.description"))
                                 .append(":")
-                                .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
+                                .withStyle(ColorUtils.Colors.PURPLE.style))
                         .append("\n\t")
                         .append(new TextComponent("• ")
                                 .append(new FiguraText("docs.enum." + id))
-                                .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+                                .withStyle(ColorUtils.Colors.BLUE.style))
                         .append("\n\n")
                         .append(new TextComponent("• ")
                                 .append(new FiguraText("docs.text.entries"))
                                 .append(":")
-                                .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style));
+                                .withStyle(ColorUtils.Colors.PURPLE.style));
 
                 int i = 0;
                 for (Object o : coll) {
@@ -206,13 +206,13 @@ public class FiguraListDocs {
                 return 1;
             });
 
-            //add collection as child for easy navigation
+            // add collection as child for easy navigation
             Collection<?> coll = get();
             for (Object o : coll) {
                 String text = o instanceof Map.Entry e ? e.getKey().toString() : o.toString();
                 LiteralArgumentBuilder<FiguraClientCommandSource> entry = LiteralArgumentBuilder.literal(text);
                 entry.executes(context -> {
-                    FiguraMod.sendChatMessage(new TextComponent(text).withStyle(ColorUtils.Colors.PINK.style));
+                    FiguraMod.sendChatMessage(new TextComponent(text).withStyle(ColorUtils.Colors.AWESOME_BLUE.style));
                     return 1;
                 });
 
@@ -220,7 +220,7 @@ public class FiguraListDocs {
                     for (String s : (List<String>) e.getValue()) {
                         LiteralArgumentBuilder<FiguraClientCommandSource> child = LiteralArgumentBuilder.literal(s);
                         child.executes(context -> {
-                            FiguraMod.sendChatMessage(new TextComponent(s).withStyle(ColorUtils.Colors.PINK.style));
+                            FiguraMod.sendChatMessage(new TextComponent(s).withStyle(ColorUtils.Colors.AWESOME_BLUE.style));
                             return 1;
                         });
                         entry.then(child);
@@ -230,7 +230,7 @@ public class FiguraListDocs {
                 command.then(entry);
             }
 
-            //return
+            // return
             return command;
         }
     }
@@ -238,7 +238,7 @@ public class FiguraListDocs {
     // -- doc methods -- //
 
     public static LiteralArgumentBuilder<FiguraClientCommandSource> getCommand() {
-        //self
+        // self
         LiteralArgumentBuilder<FiguraClientCommandSource> root = LiteralArgumentBuilder.literal("enums");
         root.executes(context -> {
             FiguraMod.sendChatMessage(FiguraDoc.HEADER.copy()
@@ -246,21 +246,21 @@ public class FiguraListDocs {
                     .append(new TextComponent("• ")
                             .append(new FiguraText("docs.text.type"))
                             .append(":")
-                            .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
+                            .withStyle(ColorUtils.Colors.PURPLE.style))
                     .append("\n\t")
                     .append(new TextComponent("• ")
                             .append(new TextComponent("enumerators"))
-                            .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+                            .withStyle(ColorUtils.Colors.BLUE.style))
 
                     .append("\n\n")
                     .append(new TextComponent("• ")
                             .append(new FiguraText("docs.text.description"))
                             .append(":")
-                            .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
+                            .withStyle(ColorUtils.Colors.PURPLE.style))
                     .append("\n\t")
                     .append(new TextComponent("• ")
                             .append(new FiguraText("docs.enum"))
-                            .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+                            .withStyle(ColorUtils.Colors.BLUE.style))
             );
             return 1;
         });

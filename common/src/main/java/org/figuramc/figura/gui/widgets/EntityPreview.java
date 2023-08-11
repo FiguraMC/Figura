@@ -18,24 +18,24 @@ public class EntityPreview extends AbstractContainerElement {
     public static final ResourceLocation UNKNOWN = new FiguraIdentifier("textures/gui/unknown_entity.png");
     public static final ResourceLocation OVERLAY = new FiguraIdentifier("textures/gui/entity_overlay.png");
 
-    //properties
+    // properties
     private LivingEntity entity;
     private final float pitch, yaw, scale;
     private SwitchButton button;
 
-    //transformation data
+    // transformation data
 
-    //rot
+    // rot
     private boolean isRotating = false;
     private float anchorX = 0f, anchorY = 0f;
     private float anchorAngleX = 0f, anchorAngleY = 0f;
     private float angleX, angleY;
 
-    //scale
+    // scale
     private float scaledValue = 0f, scaledPrecise = 0f;
     private static final float SCALE_FACTOR = 1.1F;
 
-    //pos
+    // pos
     private boolean isDragging = false;
     private int modelX, modelY;
     private float dragDeltaX, dragDeltaY;
@@ -54,7 +54,7 @@ public class EntityPreview extends AbstractContainerElement {
         angleX = pitch;
         angleY = yaw;
 
-        //button
+        // button
         children.add(button = new SwitchButton(
                 x + 4, y + 4, 16, 16,
                 0, 0, 16,
@@ -81,23 +81,23 @@ public class EntityPreview extends AbstractContainerElement {
         int height = getHeight();
 
         if (!button.isToggled()) {
-            //border
+            // border
             UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE_FILL);
-            //overlay
+            // overlay
             UIHelper.renderTexture(stack, x + 1, y + 1, width - 2, height - 2, OVERLAY);
         }
 
-        //scissors
+        // scissors
         UIHelper.setupScissor(x + 1, y + 1, width - 2, height - 2);
 
-        //render entity
+        // render entity
         if (entity != null) {
             stack.pushPose();
             scaledValue = Mth.lerp((float) (1f - Math.pow(0.5f, delta)), scaledValue, scaledPrecise);
             UIHelper.drawEntity(x + modelX, y + modelY, scale + scaledValue, angleX, angleY, entity, stack, EntityRenderMode.FIGURA_GUI);
             stack.popPose();
         } else {
-            //draw
+            // draw
             int s = Math.min(width, height) * 2 / 3;
             UIHelper.setupTexture(UNKNOWN);
             UIHelper.blit(stack, x + (width - s) / 2, y + (height - s) / 2, s, s, 0f, 64 * ((int) (FiguraMod.ticks / 3f) % 8), 64, 64, 64, 512);
@@ -117,15 +117,15 @@ public class EntityPreview extends AbstractContainerElement {
             return true;
 
         switch (button) {
-            //left click - rotate
+            // left click - rotate
             case 0 -> {
-                //set anchor rotation
+                // set anchor rotation
 
-                //get starter mouse pos
+                // get starter mouse pos
                 anchorX = (float) mouseX;
                 anchorY = (float) mouseY;
 
-                //get starter rotation angles
+                // get starter rotation angles
                 anchorAngleX = angleX;
                 anchorAngleY = angleY;
 
@@ -133,13 +133,13 @@ public class EntityPreview extends AbstractContainerElement {
                 return true;
             }
 
-            //right click - move
+            // right click - move
             case 1 -> {
-                //get starter mouse pos
+                // get starter mouse pos
                 dragDeltaX = (float) mouseX;
                 dragDeltaY = (float) mouseY;
 
-                //also get start node pos
+                // also get start node pos
                 dragAnchorX = modelX;
                 dragAnchorY = modelY;
 
@@ -147,7 +147,7 @@ public class EntityPreview extends AbstractContainerElement {
                 return true;
             }
 
-            //middle click - reset pos
+            // middle click - reset pos
             case 2 -> {
                 isRotating = false;
                 isDragging = false;
@@ -170,13 +170,13 @@ public class EntityPreview extends AbstractContainerElement {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        //left click - stop rotating
+        // left click - stop rotating
         if (button == 0) {
             isRotating = false;
             return true;
         }
 
-        //right click - stop dragging
+        // right click - stop dragging
         else if (button == 1) {
             isDragging = false;
             return true;
@@ -187,13 +187,13 @@ public class EntityPreview extends AbstractContainerElement {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        //left click - rotate
+        // left click - rotate
         if (isRotating) {
-            //get starter rotation angle then get hot much is moved and divided by a slow factor
+            // get starter rotation angle then get hot much is moved and divided by a slow factor
             angleX = (float) (anchorAngleX + (anchorY - mouseY) / (3 / Minecraft.getInstance().getWindow().getGuiScale()));
             angleY = (float) (anchorAngleY - (anchorX - mouseX) / (3 / Minecraft.getInstance().getWindow().getGuiScale()));
 
-            //cap to 360, so we don't get extremely high unnecessary rotation values
+            // cap to 360, so we don't get extremely high unnecessary rotation values
             if (angleX >= 360 || angleX <= -360) {
                 anchorY = (float) mouseY;
                 anchorAngleX = 0;
@@ -208,14 +208,14 @@ public class EntityPreview extends AbstractContainerElement {
             return true;
         }
 
-        //right click - move
+        // right click - move
         else if (isDragging) {
-            //get how much it should move
-            //get actual pos of the mouse, then subtract starter X,Y
+            // get how much it should move
+            // get actual pos of the mouse, then subtract starter X,Y
             float x = (float) (mouseX - dragDeltaX);
             float y = (float) (mouseY - dragDeltaY);
 
-            //move it
+            // move it
             modelX = (int) (dragAnchorX + x);
             modelY = (int) (dragAnchorY + y);
 
@@ -233,12 +233,12 @@ public class EntityPreview extends AbstractContainerElement {
         if (super.mouseScrolled(mouseX, mouseY, amount))
             return true;
 
-        //scroll - scale
+        // scroll - scale
 
-        //set scale direction
+        // set scale direction
         float scaleDir = (amount > 0) ? SCALE_FACTOR : 1 / SCALE_FACTOR;
 
-        //determine scale
+        // determine scale
         scaledPrecise = ((scale + scaledPrecise) * scaleDir) - scale;
 
         return true;

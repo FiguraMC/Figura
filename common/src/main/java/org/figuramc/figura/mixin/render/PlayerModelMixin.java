@@ -16,9 +16,9 @@ import java.util.Map;
 @Mixin(PlayerModel.class)
 public abstract class PlayerModelMixin<T extends LivingEntity> extends HumanoidModel<T> implements PlayerModelAccessor {
 
-    //Fake cape ModelPart which we set rotations of.
-    //This is because the internal cape renderer uses the matrix stack,
-    //instead of setting rotations like every single other ModelPart they render...
+    // Fake cape ModelPart which we set rotations of.
+    // This is because the internal cape renderer uses the matrix stack,
+    // instead of setting rotations like every single other ModelPart they render...
     @Unique
     public ModelPart fakeCloak = new ModelPart(List.of(), Map.of());
 

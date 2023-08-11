@@ -42,7 +42,7 @@ public class AvatarManager {
 
     public static final FiguraResourceListener RESOURCE_RELOAD_EVENT = FiguraResourceListener.createResourceListener("resource_reload_event", manager -> executeAll("resourceReloadEvent", Avatar::resourceReloadEvent));
 
-    public static boolean localUploaded = true; //init as true :3
+    public static boolean localUploaded = true; // init as true :3
     public static boolean panic = false;
 
     // -- panic mode -- //
@@ -60,7 +60,7 @@ public class AvatarManager {
         if (panic)
             return;
 
-        //tick the avatars
+        // tick the avatars
         for (UserData user : LOADED_USERS.values()) {
             Avatar avatar = user.getMainAvatar();
             if (avatar != null) {
@@ -70,11 +70,11 @@ public class AvatarManager {
             }
         }
 
-        //CEM
+        // CEM
         if (LOADED_CEM.isEmpty())
             return;
 
-        //unload entities
+        // unload entities
         Set<Entity> toBeRemoved = new HashSet<>();
 
         for (Entity entity : LOADED_CEM.keySet())
@@ -84,7 +84,7 @@ public class AvatarManager {
         for (Entity entity : toBeRemoved)
             LOADED_CEM.remove(entity);
 
-        //tick entities
+        // tick entities
         for (Avatar avatar : LOADED_CEM.values()) {
             if (avatar != null) {
                 FiguraMod.pushProfiler(avatar);
@@ -122,7 +122,7 @@ public class AvatarManager {
 
     // -- avatar getters -- //
 
-    //player will also attempt to load from network, if possible
+    // player will also attempt to load from network, if possible
     public static Avatar getAvatarForPlayer(UUID player) {
         if (panic || Minecraft.getInstance().level == null)
             return null;
@@ -134,33 +134,33 @@ public class AvatarManager {
     }
 
     private static Avatar getAvatarForEntity(Entity entity) {
-        //get loaded
+        // get loaded
         Avatar loaded = LOADED_CEM.get(entity);
         if (loaded != null)
             return loaded;
 
-        //new avatar
+        // new avatar
         ResourceLocation type = Registry.ENTITY_TYPE.getKey(entity.getType());
         CompoundTag nbt = LocalAvatarLoader.CEM_AVATARS.get(type);
         return nbt == null ? null : loadEntityAvatar(entity, nbt);
     }
 
-    //tries to get data from an entity
+    // tries to get data from an entity
     public static Avatar getAvatar(Entity entity) {
         if (panic || Minecraft.getInstance().level == null || entity == null)
             return null;
 
         UUID uuid = entity.getUUID();
 
-        //load from player (fetch backend) if is a player
+        // load from player (fetch backend) if is a player
         if (entity instanceof Player)
             return getAvatarForPlayer(uuid);
 
-        //otherwise check for CEM
+        // otherwise check for CEM
         return getAvatarForEntity(entity);
     }
 
-    //get a loaded avatar without fetching backend or creating a new one
+    // get a loaded avatar without fetching backend or creating a new one
     public static Avatar getLoadedAvatar(UUID owner) {
         if (panic || Minecraft.getInstance().level == null)
             return null;
@@ -169,7 +169,7 @@ public class AvatarManager {
         return user == null ? null : user.getMainAvatar();
     }
 
-    //get all main loaded avatars
+    // get all main loaded avatars
     public static List<Avatar> getLoadedAvatars() {
         List<Avatar> list = new ArrayList<>();
         for (UserData user : LOADED_USERS.values()) {
@@ -182,7 +182,7 @@ public class AvatarManager {
 
     // -- avatar management -- //
 
-    //removes an loaded avatar
+    // removes an loaded avatar
     public static void clearAvatars(UUID id) {
         FETCHED_USERS.remove(id);
 
@@ -199,7 +199,7 @@ public class AvatarManager {
         LOADED_CEM.clear();
     }
 
-    //clears ALL loaded avatars, including local
+    // clears ALL loaded avatars, including local
     public static void clearAllAvatars() {
         for (UUID id : LOADED_USERS.keySet())
             clearAvatars(id);
@@ -214,7 +214,7 @@ public class AvatarManager {
         FiguraMod.LOGGER.info("Cleared all avatars");
     }
 
-    //reloads an avatar
+    // reloads an avatar
     public static void reloadAvatar(UUID id) {
         if (!localUploaded && FiguraMod.isLocal(id))
             loadLocalAvatar(LocalAvatarLoader.getLastLoadedPath());
@@ -222,23 +222,23 @@ public class AvatarManager {
             clearAvatars(id);
     }
 
-    //load the local player avatar
+    // load the local player avatar
     public static void loadLocalAvatar(Path path) {
         UUID id = FiguraMod.getLocalPlayerUUID();
 
-        //clear
+        // clear
         clearAvatars(id);
         FETCHED_USERS.add(id);
 
-        //load
+        // load
         UserData user = LOADED_USERS.computeIfAbsent(id, UserData::new);
         LocalAvatarLoader.loadAvatar(path, user);
 
-        //mark as not uploaded
+        // mark as not uploaded
         localUploaded = false;
     }
 
-    //load CEM avatar
+    // load CEM avatar
     public static Avatar loadEntityAvatar(Entity entity, CompoundTag nbt) {
         Avatar targetAvatar = new Avatar(entity);
         targetAvatar.load(nbt);
@@ -246,7 +246,7 @@ public class AvatarManager {
         return targetAvatar;
     }
 
-    //set an user's avatar
+    // set an user's avatar
     public static void setAvatar(UUID id, CompoundTag nbt) {
         try {
             UserData user = LOADED_USERS.computeIfAbsent(id, UserData::new);
@@ -257,7 +257,7 @@ public class AvatarManager {
         }
     }
 
-    //get avatar from the backend
+    // get avatar from the backend
     private static void fetchBackend(UUID id) {
         if (FETCHED_USERS.contains(id))
             return;
@@ -294,13 +294,13 @@ public class AvatarManager {
     // -- command -- //
 
     public static LiteralArgumentBuilder<FiguraClientCommandSource> getCommand() {
-        //root
+        // root
         LiteralArgumentBuilder<FiguraClientCommandSource> root = LiteralArgumentBuilder.literal("set_avatar");
 
-        //source
+        // source
         RequiredArgumentBuilder<FiguraClientCommandSource, String> target = RequiredArgumentBuilder.argument("target", StringArgumentType.word());
 
-        //target
+        // target
         RequiredArgumentBuilder<FiguraClientCommandSource, String> source = RequiredArgumentBuilder.argument("source", StringArgumentType.word());
         source.executes(context -> {
             String s = StringArgumentType.getString(context, "source");
@@ -339,7 +339,7 @@ public class AvatarManager {
         });
         target.then(source);
 
-        //build root
+        // build root
         root.then(target);
         return root;
     }

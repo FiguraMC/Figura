@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 
 public class PianoWidget extends AbstractContainerElement {
 
-    private static final int TOTAL_KEYS = 29; //includes "missing" black keys
+    private static final int TOTAL_KEYS = 29; // includes "missing" black keys
     private static final String[] NOTES = {"F", "G", "A", "B", "C", "D", "E"};
 
     private final List<Key> keys = new ArrayList<>();
@@ -36,19 +36,19 @@ public class PianoWidget extends AbstractContainerElement {
 
         List<Key> sharpKeys = new ArrayList<>();
         for (int i = 1, note = 0, count = 0; i <= TOTAL_KEYS; i++, j += 0.5f) {
-            //skip "empty" black keys
+            // skip "empty" black keys
             if (i % 2 == 1 && (i % 7 == 0 || (i + 1) % 7 == 0))
                 continue;
 
-            //variables
+            // variables
             boolean isSharp = i % 2 == 1;
             int keyX = x + 1 + (int) (keyWidth * j);
             if (!isSharp) note = (note + 1) % NOTES.length;
 
-            //create key
+            // create key
             Key key = new Key(keyX, y + 1, (int) Math.round(keyWidth), isSharp ? height / 2 : height - 2, NOTES[note] + (isSharp ? "#" : ""), (float) Math.pow(2, (count - 12) / 12f), isSharp, this);
 
-            //add key
+            // add key
             count++;
             if (!isSharp) children.add(key);
             else sharpKeys.add(key);
@@ -62,16 +62,16 @@ public class PianoWidget extends AbstractContainerElement {
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         this.setHovered(this.isMouseOver(mouseX, mouseY));
 
-        //background
+        // background
         UIHelper.renderSliced(stack, getX(), getY(), getWidth(), getHeight(), UIHelper.OUTLINE_FILL);
 
         Key lastHovered = hovered;
 
-        //define visible key
+        // define visible key
         for (Key key : keys)
             key.setHovered(key.isMouseOver(mouseX, mouseY));
 
-        //render children
+        // render children
         super.render(stack, mouseX, mouseY, delta);
 
         if (pressed && hovered != lastHovered && hovered != null)
@@ -106,7 +106,7 @@ public class PianoWidget extends AbstractContainerElement {
             if (!this.isVisible())
                 return;
 
-            //render button
+            // render button
             this.renderButton(poseStack, mouseX, mouseY, delta);
         }
 
@@ -131,27 +131,27 @@ public class PianoWidget extends AbstractContainerElement {
         public boolean isMouseOver(double mouseX, double mouseY) {
             boolean over = super.isMouseOver(mouseX, mouseY);
 
-            //checking against this
+            // checking against this
             if (parent.hovered == this) {
                 parent.hovered = over ? this : null;
                 return over;
             }
 
-            //not hovered, skip
+            // not hovered, skip
             if (!over) return false;
 
-            //checking against no one
+            // checking against no one
             if (parent.hovered == null) {
                 parent.hovered = this;
                 return true;
             }
 
-            //checking against sharp
+            // checking against sharp
             if (parent.hovered.isSharp) {
                 return false;
             }
 
-            //checking against whites
+            // checking against whites
             if (this.isSharp) {
                 parent.hovered.setHovered(false);
                 parent.hovered = this;

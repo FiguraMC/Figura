@@ -33,7 +33,7 @@ public class ProfileScreen extends AbstractPanelScreen {
 
     @Override
     public void renderOverlays(PoseStack gui, int mouseX, int mouseY, float delta) {
-        //UIHelper.highlight(stack, button, TextUtils.tryParseJson("{\"text\":\"🦐🦐🦐🦐\",\"font\":\"figura:emojis\"}"));
+        // UIHelper.highlight(stack, button, TextUtils.tryParseJson("{\"text\":\"🦐🦐🦐🦐\",\"font\":\"figura:emojis\"}"));
         super.renderOverlays(gui, mouseX, mouseY, delta);
     }
 }

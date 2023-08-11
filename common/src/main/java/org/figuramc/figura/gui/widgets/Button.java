@@ -11,10 +11,10 @@ import org.figuramc.figura.utils.ui.UIHelper;
 
 public class Button extends net.minecraft.client.gui.components.Button implements FiguraWidget {
 
-    //default textures
+    // default textures
     private static final ResourceLocation TEXTURE = new FiguraIdentifier("textures/gui/button.png");
 
-    //texture data
+    // texture data
     protected Integer u;
     protected Integer v;
 
@@ -23,11 +23,11 @@ public class Button extends net.minecraft.client.gui.components.Button implement
     protected final Integer regionSize;
     protected final ResourceLocation texture;
 
-    //extra fields
+    // extra fields
     protected Component tooltip;
     private boolean hasBackground = true;
 
-    //texture and text constructor
+    // texture and text constructor
     public Button(int x, int y, int width, int height, Integer u, Integer v, Integer regionSize, ResourceLocation texture, Integer textureWidth, Integer textureHeight, Component text, Component tooltip, OnPress pressAction) {
         super(x, y, width, height, text, pressAction);
 
@@ -40,12 +40,12 @@ public class Button extends net.minecraft.client.gui.components.Button implement
         this.tooltip = tooltip;
     }
 
-    //text constructor
+    // text constructor
     public Button(int x, int y, int width, int height, Component text, Component tooltip, OnPress pressAction) {
         this(x, y, width, height, null, null, null, null, null, null, text, tooltip, pressAction);
     }
 
-    //texture constructor
+    // texture constructor
     public Button(int x, int y, int width, int height, int u, int v, int regionSize, ResourceLocation texture, int textureWidth, int textureHeight, Component tooltip, OnPress pressAction) {
         this(x, y, width, height, u, v, regionSize, texture, textureWidth, textureHeight, TextComponent.EMPTY.copy(), tooltip, pressAction);
     }
@@ -55,23 +55,23 @@ public class Button extends net.minecraft.client.gui.components.Button implement
         if (!this.isVisible())
             return;
 
-        //update hovered
+        // update hovered
         this.setHovered(this.isMouseOver(mouseX, mouseY));
 
-        //render button
+        // render button
         this.renderButton(stack, mouseX, mouseY, delta);
     }
 
     @Override
     public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
-        //render texture
+        // render texture
         if (this.texture != null) {
             renderTexture(stack, delta);
         } else {
             renderDefaultTexture(stack, delta);
         }
 
-        //render text
+        // render text
         renderText(stack, delta);
     }
 
@@ -93,11 +93,11 @@ public class Button extends net.minecraft.client.gui.components.Button implement
     }
 
     protected void renderTexture(PoseStack stack, float delta) {
-        //uv transforms
+        // uv transforms
         int u = this.u + this.getU() * this.regionSize;
         int v = this.v + this.getV() * this.regionSize;
 
-        //draw texture
+        // draw texture
         UIHelper.setupTexture(this.texture);
 
         int size = this.regionSize;

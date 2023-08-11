@@ -40,7 +40,7 @@ public abstract class ParrotOnShoulderLayerMixin<T extends Player> extends Rende
         if (!RenderUtils.vanillaModel(avatar))
             return;
 
-        //script hide
+        // script hide
         if (avatar.luaRuntime != null &&
                 (leftShoulder && !avatar.luaRuntime.vanilla_model.LEFT_PARROT.checkVisible() ||
                 !leftShoulder && !avatar.luaRuntime.vanilla_model.RIGHT_PARROT.checkVisible())
@@ -49,7 +49,7 @@ public abstract class ParrotOnShoulderLayerMixin<T extends Player> extends Rende
             return;
         }
 
-        //pivot part
+        // pivot part
         CompoundTag compoundTag = leftShoulder ? player.getShoulderEntityLeft() : player.getShoulderEntityRight();
         EntityType.byString(compoundTag.getString("id")).filter((type) -> type == EntityType.PARROT).ifPresent((type) -> {
             VertexConsumer vertexConsumer = vertexConsumers.getBuffer(this.model.renderType(ParrotRenderer.PARROT_LOCATIONS[compoundTag.getInt("Variant")]));

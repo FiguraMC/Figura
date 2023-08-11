@@ -24,33 +24,33 @@ public class TextUtils {
     public static boolean allowScriptEvents;
 
     public static List<Component> splitText(FormattedText text, String regex) {
-        //list to return
+        // list to return
         ArrayList<Component> textList = new ArrayList<>();
 
-        //current line variable
+        // current line variable
         MutableComponent[] currentText = {TextComponent.EMPTY.copy()};
 
-        //iterate over the text
+        // iterate over the text
         text.visit((style, string) -> {
-            //split text based on regex
+            // split text based on regex
             String[] lines = string.split(regex, -1);
 
-            //iterate over the split text
+            // iterate over the split text
             for (int i = 0; i < lines.length; i++) {
-                //if it is not the first iteration, add to return list and reset the line variable
+                // if it is not the first iteration, add to return list and reset the line variable
                 if (i != 0) {
                     textList.add(currentText[0].copy());
                     currentText[0] = TextComponent.EMPTY.copy();
                 }
 
-                //append text with the line text
+                // append text with the line text
                 currentText[0].append(new TextComponent(lines[i]).withStyle(style));
             }
 
             return Optional.empty();
         }, Style.EMPTY);
 
-        //add the last text iteration then return
+        // add the last text iteration then return
         textList.add(currentText[0]);
         return textList;
     }
@@ -72,25 +72,25 @@ public class TextUtils {
         if (text == null)
             return TextComponent.EMPTY.copy();
 
-        //text to return
+        // text to return
         Component finalText;
 
         try {
-            //check if its valid json text
+            // check if its valid json text
             JsonParser.parseString(text);
 
-            //attempt to parse json
+            // attempt to parse json
             finalText = Component.Serializer.fromJsonLenient(text);
 
-            //if failed, throw a dummy exception
+            // if failed, throw a dummy exception
             if (finalText == null)
                 throw new Exception("Error parsing JSON string");
         } catch (Exception ignored) {
-            //on any exception, make the text as-is
+            // on any exception, make the text as-is
             finalText = new TextComponent(text);
         }
 
-        //return text
+        // return text
         return finalText;
     }
 
@@ -103,19 +103,19 @@ public class TextUtils {
     }
 
     public static Component replaceInText(FormattedText text, String regex, Object replacement, BiPredicate<String, Style> predicate, int beginIndex, int times) {
-        //fix replacement object
+        // fix replacement object
         Component replace = replacement instanceof Component c ? c : new TextComponent(replacement.toString());
         MutableComponent ret = TextComponent.EMPTY.copy();
 
         int[] ints = {beginIndex, times};
         text.visit((style, string) -> {
-            //test predicate
+            // test predicate
             if (!predicate.test(string, style)) {
                 ret.append(new TextComponent(string).withStyle(style));
                 return Optional.empty();
             }
 
-            //split
+            // split
             String[] split = string.split("((?<=" + regex + ")|(?=" + regex + "))");
             for (String s : split) {
                 if (!s.matches(regex)) {
@@ -140,16 +140,16 @@ public class TextUtils {
     }
 
     public static Component trimToWidthEllipsis(Font font, Component text, int width, Component ellipsis) {
-        //return text without changes if it is not larger than width
+        // return text without changes if it is not larger than width
         if (font.width(text.getVisualOrderText()) <= width)
             return text;
 
-        //add ellipsis
+        // add ellipsis
         return addEllipsis(font, text, width, ellipsis);
     }
 
     public static Component addEllipsis(Font font, FormattedText text, int width, Component ellipsis) {
-        //trim with the ellipsis size and return the modified text
+        // trim with the ellipsis size and return the modified text
         FormattedText trimmed = font.substrByWidth(text, width - font.width(ellipsis));
         return formattedTextToText(trimmed).copy().append(ellipsis);
     }
@@ -159,30 +159,30 @@ public class TextUtils {
     }
 
     public static List<FormattedCharSequence> wrapTooltip(FormattedText text, Font font, int mousePos, int screenWidth, int offset) {
-        //first split the new line text
+        // first split the new line text
         List<Component> splitText = TextUtils.splitText(text, "\n");
 
-        //get the possible tooltip width
+        // get the possible tooltip width
         int left = mousePos - offset;
         int right = screenWidth - mousePos - offset;
 
-        //get largest text size
+        // get largest text size
         int largest = getWidth(splitText, font);
 
-        //get the optimal side for warping
+        // get the optimal side for warping
         int side = largest <= right ? right : largest <= left ? left : Math.max(left, right);
 
-        //warp the unmodified text
+        // warp the unmodified text
         return wrapText(text, side, font);
     }
 
-    //get the largest text width from a list
+    // get the largest text width from a list
     public static int getWidth(List<?> text, Font font) {
         int width = 0;
 
         for (Object object : text) {
             int w;
-            if (object instanceof Component component) //instanceof switch case only for java 17 experimental ;-;
+            if (object instanceof Component component) // instanceof switch case only for java 17 experimental ;-;
                 w = font.width(component);
             else if (object instanceof FormattedCharSequence charSequence)
                 w = font.width(charSequence);
@@ -286,31 +286,31 @@ public class TextUtils {
         MutableComponent builder = TextComponent.EMPTY.copy();
         text.visit((style, string) -> {
             formatting: {
-                //check for the string have the formatting char
+                // check for the string have the formatting char
                 if (!string.contains("§"))
                     break formatting;
 
-                //split the string at the special char
+                // split the string at the special char
                 String[] split = string.split("§");
                 if (split.length < 2)
                     break formatting;
 
-                //creates a new text with the left part of the string
+                // creates a new text with the left part of the string
                 MutableComponent newText = new TextComponent(split[0]).withStyle(style);
 
-                //if right part has text
+                // if right part has text
                 for (int i = 1; i < split.length; i++) {
                     String s = split[i];
 
                     if (s.length() == 0)
                         continue;
 
-                    //get the formatting code and apply to the style
+                    // get the formatting code and apply to the style
                     ChatFormatting formatting = ChatFormatting.getByCode(s.charAt(0));
                     if (formatting != null)
                         style = style.applyLegacyFormat(formatting);
 
-                    //create right text, and yeet the formatting code
+                    // create right text, and yeet the formatting code
                     newText.append(new TextComponent(s.substring(1)).withStyle(style));
                 }
 
@@ -339,13 +339,13 @@ public class TextUtils {
         int start = 0;
         int end = string.length();
 
-        //trim
+        // trim
         while (start < end && string.charAt(start) <= ' ')
             start++;
         while (start < end && string.charAt(end - 1) <= ' ')
             end--;
 
-        //apply trim
+        // apply trim
         return substring(text, start, end);
     }
 

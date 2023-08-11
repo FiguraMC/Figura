@@ -11,6 +11,9 @@ import org.figuramc.figura.gui.widgets.ContextMenu;
 import org.figuramc.figura.gui.widgets.ParentedButton;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.ConfigType;
+import org.figuramc.figura.config.Configs;
+import org.figuramc.figura.gui.widgets.ContextMenu;
+import org.figuramc.figura.gui.widgets.ParentedButton;
 import org.figuramc.figura.gui.widgets.lists.ConfigList;
 import org.figuramc.figura.utils.ui.UIHelper;
 
@@ -27,7 +30,7 @@ public class EnumElement extends AbstractConfigElement {
 
         names = config.enumList;
 
-        //toggle button
+        // toggle button
         int selectedIndex = (int) this.config.tempValue % this.names.size();
         children.add(0, button = new ParentedButton(0, 0, 90, 20, names.get(selectedIndex), this, button -> {
             this.context.setVisible(!this.context.isVisible());
@@ -46,11 +49,11 @@ public class EnumElement extends AbstractConfigElement {
                 Component message = getMessage();
                 int textWidth = font.width(message);
 
-                //draw text
+                // draw text
                 int color = getTextColor();
                 UIHelper.renderCenteredScrollingText(pose, message, getX() + 1, getY(), getWidth() - (textWidth <= getWidth() - arrowWidth - 9 ? 0 : arrowWidth + 1) - 2, getHeight(), color);
 
-                //draw arrow
+                // draw arrow
                 font.drawShadow(pose, arrow, getX() + getWidth() - arrowWidth - 3, (int) (getY() + getHeight() / 2f - font.lineHeight / 2f), color);
             }
 
@@ -62,11 +65,11 @@ public class EnumElement extends AbstractConfigElement {
                 super.setHovered(hovered);
             }
         });
-        button.setActive(FiguraMod.DEBUG_MODE || !config.disabled);
+        button.setActive(FiguraMod.debugModeEnabled() || !config.disabled);
         if (config.enumTooltip != null)
             button.setTooltip(config.enumTooltip.get(selectedIndex));
 
-        //context menu
+        // context menu
         context = new ContextMenu(button, button.getWidth());
         for (int i = 0; i < names.size(); i++) {
             int finalI = i;
@@ -79,66 +82,66 @@ public class EnumElement extends AbstractConfigElement {
     public void render(PoseStack poseStack, int mouseX, int mouseY, float delta) {
         if (!this.isVisible()) return;
 
-        //reset enabled
+        // reset enabled
         this.resetButton.setActive(!this.isDefault());
 
-        //button text
+        // button text
         int selectedIndex = (int) this.config.tempValue % this.names.size();
         Component text = names.get(selectedIndex);
 
-        //edited colour
+        // edited colour
         if (this.isChanged())
             text = text.copy().setStyle(FiguraMod.getAccentColor());
 
-        //set text
+        // set text
         this.button.setMessage(text);
 
-        //set tooltip
+        // set tooltip
         List<Component> tooltip = ((ConfigType.EnumConfig) this.config).enumTooltip;
         if (tooltip != null)
             button.setTooltip(tooltip.get(selectedIndex));
 
-        //super render
+        // super render
         super.render(poseStack, mouseX, mouseY, delta);
     }
 
     @Override
     public void setX(int x) {
-        //update self pos
+        // update self pos
         super.setX(x);
-        //update button pos
+        // update button pos
         this.button.setX(x + getWidth() - 154);
-        //update context pos
+        // update context pos
         this.context.setX(this.button.getX() + this.button.getWidth() / 2 - this.context.getWidth() / 2);
     }
 
     @Override
     public void setY(int y) {
-        //update self pos
+        // update self pos
         super.setY(y);
 
-        //update button pos
+        // update button pos
         this.button.setY(y);
 
-        //update context pos
+        // update context pos
         this.context.setY(this.button.getY() + 20);
     }
 
     private void updateContextText() {
-        //cache entries
+        // cache entries
         List<? extends AbstractWidget> entries = context.getEntries();
 
-        //entries should have the same size as names
-        //otherwise something went really wrong
+        // entries should have the same size as names
+        // otherwise something went really wrong
         for (int i = 0; i < names.size(); i++) {
-            //get text
+            // get text
             Component text = names.get(i);
 
-            //selected entry
+            // selected entry
             if (i == (int) this.config.tempValue % this.names.size())
                 text = TextComponent.EMPTY.copy().setStyle(FiguraMod.getAccentColor()).withStyle(ChatFormatting.UNDERLINE).append(text);
 
-            //apply text
+            // apply text
             entries.get(i).setMessage(text);
         }
     }

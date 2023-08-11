@@ -57,7 +57,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
     public void tick() {
         if (!isVisible()) return;
 
-        //update status indicators
+        // update status indicators
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         boolean empty = avatar == null || avatar.nbt == null;
 
@@ -87,14 +87,14 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         int height = getHeight();
         boolean background = hasBackground();
 
-        //background
+        // background
         if (background)
             UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE_FILL);
 
-        //hover
+        // hover
         boolean hovered = this.isMouseOver(mouseX, mouseY);
 
-        //text and tooltip
+        // text and tooltip
         double spacing = (double) width / count;
         double hSpacing = spacing * 0.5;
         for (int i = 0; i < count; i++) {
@@ -113,7 +113,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
     }
 
     public Component getTooltipFor(int i) {
-        //get name and color
+        // get name and color
         int color = status >> (i * 2) & 3;
         String part = "gui.status." + STATUS_NAMES.get(i);
 
@@ -127,11 +127,11 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
 
         MutableComponent text = new FiguraText(part).append("\n• ").append(info).setStyle(TEXT_COLORS.get(color));
 
-        //script error
+        // script error
         if (i == 2 && color == 1 && scriptError != null)
             text.append("\n\n").append(new FiguraText("gui.status.reason")).append("\n• ").append(scriptError);
 
-        //get backend disconnect reason
+        // get backend disconnect reason
         if (i == 3 && disconnectedReason != null)
             text.append("\n\n").append(new FiguraText("gui.status.reason")).append("\n• ").append(disconnectedReason);
 

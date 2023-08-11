@@ -1,6 +1,16 @@
 accessWidener v2 named
 
 accessible class net/minecraft/world/level/biome/Biome$ClimateSettings
+accessible class net/minecraft/client/gui/font/providers/BitmapProvider$Glyph
+accessible class net/minecraft/client/gui/screens/inventory/BookEditScreen$LineInfo
 
 accessible method net/minecraft/client/renderer/RenderType create (Ljava/lang/String;Lcom/mojang/blaze3d/vertex/VertexFormat;Lcom/mojang/blaze3d/vertex/VertexFormat$Mode;ILnet/minecraft/client/renderer/RenderType$CompositeState;)Lnet/minecraft/client/renderer/RenderType$CompositeRenderType;
 accessible method net/minecraft/client/renderer/RenderType create (Ljava/lang/String;Lcom/mojang/blaze3d/vertex/VertexFormat;Lcom/mojang/blaze3d/vertex/VertexFormat$Mode;IZZLnet/minecraft/client/renderer/RenderType$CompositeState;)Lnet/minecraft/client/renderer/RenderType$CompositeRenderType;
+accessible field net/minecraft/client/gui/components/MultiLineLabel$TextWithWidth width I
+accessible field net/minecraft/client/gui/components/MultiLineLabel$TextWithWidth text Lnet/minecraft/util/FormattedCharSequence;
+
+accessible field com/mojang/blaze3d/vertex/PoseStack$Pose pose Lcom/mojang/math/Matrix4f;
+accessible field com/mojang/blaze3d/vertex/PoseStack$Pose normal Lcom/mojang/math/Matrix3f;
+mutable field com/mojang/blaze3d/vertex/PoseStack$Pose pose Lcom/mojang/math/Matrix4f;
+mutable field com/mojang/blaze3d/vertex/PoseStack$Pose normal Lcom/mojang/math/Matrix3f;
+accessible method net/minecraft/client/gui/components/MultiLineLabel$TextWithWidth <init> (Lnet/minecraft/util/FormattedCharSequence;I)V

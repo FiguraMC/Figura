@@ -1,12 +1,12 @@
 package org.figuramc.figura.animation;
 
 import com.mojang.datafixers.util.Pair;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
-import org.figuramc.figura.FiguraMod;
 
 public class Keyframe implements Comparable<Keyframe> {
 
@@ -61,7 +61,7 @@ public class Keyframe implements Comparable<Keyframe> {
                 if (args.isnumber(1))
                     return FiguraMod.popReturnProfiler(args.tofloat(1));
                 else
-                    throw new Exception(); //dummy exception
+                    throw new Exception(); // dummy exception
             } catch (Exception ignored2) {
                 try {
                     LuaValue val = owner.loadScript(chunkName, data);

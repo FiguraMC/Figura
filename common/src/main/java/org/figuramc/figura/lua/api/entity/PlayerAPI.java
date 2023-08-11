@@ -4,18 +4,20 @@ import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelPart;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.scores.PlayerTeam;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.NbtToLua;
 import org.figuramc.figura.lua.ReadOnlyLuaTable;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaTable;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
+import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.utils.EntityUtils;
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaTable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -187,11 +189,20 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
         return map;
     }
 
-    private static final String[] IP_MESSAGES = {":trol:", "lol", "cope", "ratio'd", "192.168.0.1", "doxxed", "IP grabbed!"};
     @LuaWhitelist
-    @LuaMethodDoc("player.get_ip_address")
-    public String getIPAddress() {
-        return IP_MESSAGES[(int) (Math.random() * IP_MESSAGES.length)];
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = {ItemStack.class, Float.class},
+                            argumentNames = {"stack", "delta"}
+                    ),
+            },
+            value = "player.get_cooldown_percent"
+    )
+    public float getCoolDownPercent(@LuaNotNil ItemStack stack, Float delta) {
+        checkEntity();
+        if (delta == null) delta = 0f;
+        return this.entity.getCooldowns().getCooldownPercent(stack.getItem(), delta);
     }
 
     @Override

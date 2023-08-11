@@ -6,6 +6,7 @@ import net.minecraft.client.gui.components.PlayerTabOverlay;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -14,6 +15,7 @@ import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.Badges;
 import org.figuramc.figura.config.Configs;
+import org.figuramc.figura.lua.api.nameplate.NameplateCustomization;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.TextUtils;
 import org.spongepowered.asm.mixin.Final;
@@ -36,12 +38,12 @@ public class PlayerTabOverlayMixin {
 
     @Inject(at = @At("RETURN"), method = "getNameForDisplay", cancellable = true)
     private void getPlayerName(PlayerInfo playerInfo, CallbackInfoReturnable<Component> cir) {
-        //get config
+        // get config
         int config = Configs.LIST_NAMEPLATE.value;
         if (config == 0 || AvatarManager.panic)
             return;
 
-        //apply customization
+        // apply customization
         Component text = cir.getReturnValue();
         Component name = new TextComponent(playerInfo.getProfile().getName());
 
@@ -52,13 +54,13 @@ public class PlayerTabOverlayMixin {
         Component replacement = custom != null && custom.getJson() != null && avatar.permissions.get(Permissions.NAMEPLATE_EDIT) == 1 ?
                 TextUtils.replaceInText(custom.getJson().copy(), "\n|\\\\n", " ") : name;
 
-        //name
+        // name
         replacement = TextUtils.replaceInText(replacement, "\\$\\{name\\}", name);
 
-        //badges
+        // badges
         replacement = Badges.appendBadges(replacement, uuid, config > 1);
 
-        //trim
+        // trim
         replacement = TextUtils.trim(replacement);
 
         text = TextUtils.replaceInText(text, "\\b" + Pattern.quote(playerInfo.getProfile().getName()) + "\\b", replacement);
