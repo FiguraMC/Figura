@@ -1,6 +1,10 @@
 package org.figuramc.figura.gui.widgets;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.AbstractScrollWidget;
@@ -9,10 +13,14 @@ import net.minecraft.client.gui.components.MultiLineLabel;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import org.figuramc.figura.utils.ui.UIHelper;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.OptionalInt;
+import java.util.function.Function;
 
 public class BackendMotdWidget extends AbstractScrollWidget {
     private final Font font;
@@ -89,25 +97,29 @@ public class BackendMotdWidget extends AbstractScrollWidget {
 
     @Override
     public void updateNarration(NarrationElementOutput builder) {
-        
+
     }
 
     protected static class FiguraMuliLineTextWidget extends AbstractWidget {
         private int color = 0xFFFFFF;
         private OptionalInt maxWidth = OptionalInt.empty();
         private OptionalInt maxRows = OptionalInt.empty();
+        private Font font;
+        private final SingleKeyCache<CacheKey, MultiLineLabel> cache = new SingleKeyCache<>(key -> {
+            if (key.maxRows.isPresent()) {
+                return MultiLineLabel.create(font, key.message, key.maxWidth, key.maxRows.getAsInt());
+            }
+            return MultiLineLabel.create(font, key.message, key.maxWidth);
+        });
         private boolean centered = false;
-        private final Font font;
-        private final MultiLineLabel multiLineLabel;
         public FiguraMuliLineTextWidget(MultiLineLabel multiLineLabel, Font textRenderer, Component component, boolean bl) {
             super(0, 0, multiLineLabel.getWidth(), multiLineLabel.getLineCount() * textRenderer.lineHeight, component);
-            this.multiLineLabel = multiLineLabel;
             this.font = textRenderer;
         }
 
         @Override
         public void renderButton(PoseStack matrices, int mouseX, int mouseY, float delta) {
-            MultiLineLabel multiLineLabel = this.multiLineLabel;
+            MultiLineLabel multiLineLabel = this.cache.getValue(this.getFreshCacheKey());
             int i = this.x;
             int j = this.y;
             int k = this.font.lineHeight;
@@ -141,12 +153,39 @@ public class BackendMotdWidget extends AbstractScrollWidget {
 
         @Override
         public int getWidth() {
-            return maxWidth.isPresent() ? Math.min(super.getWidth(), maxWidth.getAsInt()) : super.getWidth();
+            return this.cache.getValue(this.getFreshCacheKey()).getWidth();
+        }
+
+        private CacheKey getFreshCacheKey() {
+            return new CacheKey(this.getMessage(), this.maxWidth.orElse(Integer.MAX_VALUE), this.maxRows);
         }
 
         @Override
         public int getHeight() {
-            return super.getHeight();
+            return this.cache.getValue(this.getFreshCacheKey()).getLineCount() * this.font.lineHeight;
+        }
+
+        public class SingleKeyCache<K, V> {
+            private final Function<K, V> computeValue;
+            @Nullable
+            private K cacheKey = null;
+            @Nullable
+            private V cachedValue;
+
+            public SingleKeyCache(Function<K, V> mapper) {
+                this.computeValue = mapper;
+            }
+
+            public V getValue(K key) {
+                if (this.cachedValue == null || !Objects.equals(this.cacheKey, key)) {
+                    this.cachedValue = this.computeValue.apply(key);
+                    this.cacheKey = key;
+                }
+                return this.cachedValue;
+            }
+        }
+        @Environment(value= EnvType.CLIENT)
+        record CacheKey(Component message, int maxWidth, OptionalInt maxRows) {
         }
 
         @Override
