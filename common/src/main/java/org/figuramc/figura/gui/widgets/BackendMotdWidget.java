@@ -240,6 +240,7 @@ public class BackendMotdWidget extends AbstractWidget implements Widget, GuiEven
         private OptionalInt maxWidth = OptionalInt.empty();
         private OptionalInt maxRows = OptionalInt.empty();
         private Font font;
+        private int multiLineWidth;
         private final SingleKeyCache<CacheKey, MultiLineLabel> cache = new SingleKeyCache<>(key -> {
             if (key.maxRows.isPresent()) {
                 return MultiLineLabel.create(font, key.message, key.maxWidth, key.maxRows.getAsInt());
@@ -250,6 +251,7 @@ public class BackendMotdWidget extends AbstractWidget implements Widget, GuiEven
         public FiguraMuliLineTextWidget(MultiLineLabel multiLineLabel, Integer width, Font textRenderer, Component component, boolean bl) {
             super(0, 0, width, multiLineLabel.getLineCount() * textRenderer.lineHeight, component);
             this.font = textRenderer;
+            this.multiLineWidth = width;
         }
 
         @Override
@@ -288,12 +290,13 @@ public class BackendMotdWidget extends AbstractWidget implements Widget, GuiEven
 
         @Override
         public int getWidth() {
-            return this.cache.getValue(this.getFreshCacheKey()).getWidth();
+            return multiLineWidth;
         }
 
         private CacheKey getFreshCacheKey() {
             return new CacheKey(this.getMessage(), this.maxWidth.orElse(Integer.MAX_VALUE), this.maxRows);
         }
+
 
         @Override
         public int getHeight() {
