@@ -6,7 +6,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Player;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.config.Configs;
-import org.joml.Quaternionf;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import com.mojang.math.Quaternion;
 
 @Pseudo
 @Mixin(targets = "de.maxhenkel.voicechat.voice.client.RenderEvents")
@@ -44,7 +44,7 @@ public class SimpleVCMixin {
         }
     }
 
-    @Redirect(method = "renderPlayerIcon", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(DDD)V",remap = true), slice = @Slice(from = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V",remap = true), to = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;mulPose(Lorg/joml/Quaternionf;)V", remap = true)), remap = false)
+    @Redirect(method = "renderPlayerIcon", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(DDD)V",remap = true), slice = @Slice(from = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V",remap = true), to = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;mulPose(Lcom/mojang/math/Quaternion;)V", remap = true)), remap = false)
     private void figuraPivot(PoseStack instance, double x, double y, double z, Player player){
         // return on config or high entity distance
         int config = Configs.ENTITY_NAMEPLATE.value;
@@ -53,8 +53,8 @@ public class SimpleVCMixin {
         }
     }
 
-    @Redirect(method = "renderPlayerIcon", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;mulPose(Lorg/joml/Quaternionf;)V", remap = true), remap = false)
-    private void cancelMul(PoseStack instance, Quaternionf quaternionIn, Player player){
+    @Redirect(method = "renderPlayerIcon", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;mulPose(Lcom/mojang/math/Quaternion;)V", remap = true), remap = false)
+    private void cancelMul(PoseStack instance, Quaternion quaternionIn, Player player){
         // return on config or high entity distance
         int config = Configs.ENTITY_NAMEPLATE.value;
         if (config == 0 || AvatarManager.panic || minecraft.getEntityRenderDispatcher().distanceToSqr(player) > 4096) {

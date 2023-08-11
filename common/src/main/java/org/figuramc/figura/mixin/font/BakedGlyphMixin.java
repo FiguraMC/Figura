@@ -1,13 +1,13 @@
 package org.figuramc.figura.mixin.font;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
 import net.minecraft.client.gui.font.glyphs.BakedGlyph;
 import org.figuramc.figura.ducks.BakedGlyphAccessor;
 import org.figuramc.figura.font.EmojiContainer;
 import org.figuramc.figura.font.EmojiMetadata;
 import org.figuramc.figura.font.Emojis;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

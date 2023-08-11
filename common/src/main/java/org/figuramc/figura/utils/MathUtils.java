@@ -95,11 +95,11 @@ public class MathUtils {
         Vec3 camPos = camera.getPosition();
         FiguraVec3 posDiff = worldSpace.copy().subtract(camPos.x, camPos.y, camPos.z);
         Vector3f camSpace = posDiff.asVec3f();
-        transformMatrix.transform(camSpace);
+        camSpace.transform(transformMatrix);
 
         Vector4f projectiveCamSpace = new Vector4f(camSpace);
         Matrix4f projMat = minecraft.gameRenderer.getProjectionMatrix(((GameRendererAccessor) minecraft.gameRenderer).figura$getFov(camera, minecraft.getFrameTime(), true));
-        projMat.transform(projectiveCamSpace);
+        projectiveCamSpace.transform(projMat);
         float w = projectiveCamSpace.w();
 
         return FiguraVec4.of(projectiveCamSpace.x() / w, projectiveCamSpace.y() / w, projectiveCamSpace.z() / w, Math.sqrt(posDiff.dot(posDiff)));

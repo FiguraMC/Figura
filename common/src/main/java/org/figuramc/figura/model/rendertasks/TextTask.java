@@ -56,7 +56,7 @@ public class TextTask extends RenderTask {
 
         // prepare matrices
         Matrix4f matrix = poseStack.last().pose();
-        matrix.scale(-1, -1, -1);
+        matrix.multiply(Matrix4f.createScaleMatrix(-1, -1, -1));
 
         // prepare variables
         Font font = Minecraft.getInstance().font;

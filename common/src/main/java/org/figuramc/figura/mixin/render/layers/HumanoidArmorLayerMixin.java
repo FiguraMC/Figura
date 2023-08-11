@@ -2,7 +2,7 @@ package org.figuramc.figura.mixin.render.layers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -149,8 +149,8 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
     @Unique
     private void figura$prepareArmorRender(PoseStack stack) {
         stack.scale(16, 16, 16);
-        stack.mulPose(Axis.XP.rotationDegrees(180f));
-        stack.mulPose(Axis.YP.rotationDegrees(180f));
+        stack.mulPose(Vector3f.XP.rotationDegrees(180f));
+        stack.mulPose(Vector3f.YP.rotationDegrees(180f));
     }
 
     @Unique

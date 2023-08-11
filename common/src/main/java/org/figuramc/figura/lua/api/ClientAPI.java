@@ -30,7 +30,6 @@ import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.mixin.gui.PlayerTabOverlayAccessor;
-import org.figuramc.figura.mixin.render.ModelManagerAccessor;
 import org.figuramc.figura.utils.*;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;

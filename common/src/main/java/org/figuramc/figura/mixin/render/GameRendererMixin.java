@@ -14,6 +14,8 @@ import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.ducks.GameRendererAccessor;
 import org.figuramc.figura.lua.api.ClientAPI;
+import org.figuramc.figura.math.matrix.FiguraMat3;
+import org.figuramc.figura.math.matrix.FiguraMat4;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
@@ -31,13 +33,16 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin implements GameRendererAccessor {
 
-    @Shadow @Final Minecraft minecraft;
-    @Shadow PostChain postEffect;
+    @Shadow @Final
+    private Minecraft minecraft;
+    @Shadow
+    private PostChain postEffect;
     @Shadow private boolean effectActive;
     @Shadow private float fov;
 
     @Shadow protected abstract double getFov(Camera camera, float tickDelta, boolean changingFov);
-    @Shadow abstract void loadEffect(ResourceLocation id);
+    @Shadow
+    protected abstract void loadEffect(ResourceLocation id);
     @Shadow public abstract void checkEntityPostEffect(Entity entity);
 
     @Unique
@@ -67,11 +72,11 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
 
         FiguraMat4 mat = avatar.luaRuntime.renderer.cameraMat;
         if (mat != null)
-            stack.last().pose().set(mat.toMatrix4f());
+            stack.last().pose = mat.toMatrix4f();
 
         FiguraMat3 normal = avatar.luaRuntime.renderer.cameraNormal;
         if (normal != null)
-            stack.last().normal().set(normal.toMatrix3f());
+            stack.last().normal = normal.toMatrix3f();
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;doEntityOutline()V", shift = At.Shift.AFTER))

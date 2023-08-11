@@ -4,13 +4,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.AbstractScrollWidget;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.MultiLineLabel;
-import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import org.figuramc.figura.utils.ui.UIHelper;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.OptionalInt;
@@ -50,11 +49,11 @@ public class BackendMotdWidget extends AbstractScrollWidget {
     }
 
     protected void renderBorder(PoseStack stack, int x, int y, int width, int height) {
-        UIHelper.renderSliced(stack, this.getX() - this.innerPadding(), this.getY() - this.innerPadding(), this.getWidth() + this.totalInnerPadding(), this.getHeight() + this.totalInnerPadding(), UIHelper.OUTLINE_FILL);
+        UIHelper.renderSliced(stack, this.x - this.innerPadding(), this.y - this.innerPadding(), this.getWidth() + this.totalInnerPadding(), this.getHeight() + this.totalInnerPadding(), UIHelper.OUTLINE_FILL);
     }
 
     protected void renderBackground(PoseStack pose) {
-        UIHelper.renderSliced(pose, this.getX() - this.innerPadding(), this.getY() - this.innerPadding(), this.getWidth() + this.totalInnerPadding(), this.getHeight() + this.totalInnerPadding(), UIHelper.OUTLINE_FILL);
+        UIHelper.renderSliced(pose, this.x - this.innerPadding(), this.y - this.innerPadding(), this.getWidth() + this.totalInnerPadding(), this.getHeight() + this.totalInnerPadding(), UIHelper.OUTLINE_FILL);
     }
 
     @Override
@@ -63,7 +62,7 @@ public class BackendMotdWidget extends AbstractScrollWidget {
             if (!this.scrollbarVisible()) {
                 this.renderBackground(pose);
                 pose.pushPose();
-                pose.translate((float)this.getX(), (float)this.getY(), 0.0F);
+                pose.translate((float)this.x, (float)this.y, 0.0F);
                 this.multilineWidget.render(pose, mouseX, mouseY, delta);
                 pose.popPose();
             } else {
@@ -75,7 +74,7 @@ public class BackendMotdWidget extends AbstractScrollWidget {
 
     protected void renderContents(PoseStack pose, int mouseX, int mouseY, float delta) {
         pose.pushPose();
-        pose.translate((float)(this.getX() + this.innerPadding()), (float)(this.getY() + this.innerPadding()), 0.0F);
+        pose.translate((float)(this.x + this.innerPadding()), (float)(this.y + this.innerPadding()), 0.0F);
         this.multilineWidget.render(pose, mouseX, mouseY, delta);
         pose.popPose();
     }
@@ -88,22 +87,29 @@ public class BackendMotdWidget extends AbstractScrollWidget {
         this.height = height;
     }
 
-    protected static class FiguraMuliLineTextWidget extends MultiLineTextWidget {
+    @Override
+    public void updateNarration(NarrationElementOutput builder) {
+        
+    }
+
+    protected static class FiguraMuliLineTextWidget extends AbstractWidget {
         private int color = 0xFFFFFF;
         private OptionalInt maxWidth = OptionalInt.empty();
         private OptionalInt maxRows = OptionalInt.empty();
         private boolean centered = false;
         private final Font font;
+        private final MultiLineLabel multiLineLabel;
         public FiguraMuliLineTextWidget(MultiLineLabel multiLineLabel, Font textRenderer, Component component, boolean bl) {
-            super(multiLineLabel, textRenderer, component, bl);
+            super(0, 0, multiLineLabel.getWidth(), multiLineLabel.getLineCount() * textRenderer.lineHeight, component);
+            this.multiLineLabel = multiLineLabel;
             this.font = textRenderer;
         }
 
         @Override
         public void renderButton(PoseStack matrices, int mouseX, int mouseY, float delta) {
             MultiLineLabel multiLineLabel = this.multiLineLabel;
-            int i = this.getX();
-            int j = this.getY();
+            int i = this.x;
+            int j = this.y;
             int k = this.font.lineHeight;
             int l = this.color;
             if (this.centered) {
@@ -141,6 +147,11 @@ public class BackendMotdWidget extends AbstractScrollWidget {
         @Override
         public int getHeight() {
             return super.getHeight();
+        }
+
+        @Override
+        public void updateNarration(NarrationElementOutput builder) {
+
         }
     }
 }

@@ -3,6 +3,8 @@ package org.figuramc.figura.model.rendering;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Matrix3f;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -232,14 +234,14 @@ public abstract class AvatarRenderer {
 
     public void setMatrices(double camX, double camY, double camZ, PoseStack matrices) {
         // pos
-        Matrix4d posMat = new Matrix4d(pose.pose());
-        posMat.translate(-camX, -camY, -camZ);
-        posMat.scale(-1, -1, 1);
+        Matrix4f posMat = new Matrix4f(matrices.last().pose());
+        posMat.translate(new Vector3f((float) -camX, (float) -camY, (float) -camZ));
+        posMat.multiply(Matrix4f.createScaleMatrix(-1, -1, 1));
         this.posMat.set(posMat);
 
         // normal
-        Matrix3f normalMat = new Matrix3f(pose.normal());
-        normalMat.scale(-1, -1, 1);
+        Matrix3f normalMat = new Matrix3f(matrices.last().normal());
+        normalMat.mul(Matrix3f.createScaleMatrix(-1, -1, 1));
         this.normalMat.set(normalMat);
     }
 }

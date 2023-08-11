@@ -202,7 +202,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         delete.setActive(NetworkStuff.isConnected() && AvatarManager.localUploaded);
 
         if (motdWidget != null) {
-            motdWidget.setY(infoWidget.getY() + infoWidget.getHeight() + 2);
+            motdWidget.y = infoWidget.getY() + infoWidget.getHeight() + 2;
             motdWidget.setHeight(back.getY() - (infoWidget.getY() + infoWidget.getHeight()) - 28);
         }
     }
