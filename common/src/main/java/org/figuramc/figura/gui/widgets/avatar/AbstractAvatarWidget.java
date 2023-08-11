@@ -80,7 +80,7 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
             font.draw(poseStack, FAVOURITE, x, y, 0xFFFFFF);
 
             if (mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + font.lineHeight)
-                UIHelper.setTooltip(FiguraText.of("poseStack.favorited").append(" ").append(FAVOURITE));
+                UIHelper.setTooltip(FiguraText.of("gui.favorited").append(" ").append(FAVOURITE));
         }
     }
 
