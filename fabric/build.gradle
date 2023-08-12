@@ -19,11 +19,12 @@ configurations {
     developmentFabric.extendsFrom common
 }
 
-repositories {
-    maven { url 'https://jitpack.io' }
-}
-
 dependencies {
+    mappings loom.layered {
+        mappings("org.quiltmc:quilt-mappings:$minecraft_version+build.$mappings:intermediary-v2")
+        officialMojangMappings()
+    }
+
     // Libraries
     include(implementation("com.github.FiguraMC.LuaJ:luaj-core:$luaj-figura"))
     include(implementation("com.github.FiguraMC.LuaJ:luaj-jse:$luaj-figura"))
@@ -58,10 +59,12 @@ dependencies {
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 }
 
+
+
 processResources {
     Map<String, Object> properties = new HashMap<>()
 
-    properties.put("version", project.version + "-" + 'git rev-parse --short HEAD'.execute().getText().trim())
+    properties.put("version", project.jarVersion)
     properties.put("java_version", rootProject.java_version)
     properties.put("minecraft_version", rootProject.minecraft_version)
     properties.put("assets_version", rootProject.assets_version)
@@ -106,14 +109,30 @@ components.java {
 
 publishing {
     publications {
-        mavenFabric(MavenPublication) {
-            artifactId = rootProject.archives_base_name + "-" + project.name
-            from components.java
+        maven(MavenPublication) {
+            artifactId = "${project.archivesBaseName}-${project.name}"
+            version = project.version
+            artifact(remapJar) {
+                builtBy remapJar
+                classifier ''
+            }
+            artifact(sourcesJar) {
+                builtBy sourcesJar
+                classifier 'sources'
+            }
         }
     }
+    setupRepositories(repositories)
+}
 
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-    repositories {
-        // Add repositories to publish to here.
+void setupRepositories(RepositoryHandler repositories) {
+    if (project.hasProperty("mavenUrl")) {
+        repositories.maven {
+            url project.mavenUrl
+            credentials {
+                username project.mavenUsername
+                password project.mavenPassword
+            }
+        }
     }
 }
