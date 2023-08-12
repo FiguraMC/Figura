@@ -7,13 +7,17 @@ loom {
 }
 
 repositories {
-    maven { url 'https://jitpack.io' }
     flatDir {
         dirs "$rootProject.projectDir/libs"
     }
 }
 
 dependencies {
+    mappings loom.layered {
+        mappings("org.quiltmc:quilt-mappings:$minecraft_version+build.$mappings:intermediary-v2")
+        officialMojangMappings()
+    }
+
     // Libraries
     implementation("com.github.FiguraMC.LuaJ:luaj-core:$luaj-figura")
     implementation("com.github.FiguraMC.LuaJ:luaj-jse:$luaj-figura")
@@ -29,14 +33,31 @@ dependencies {
 
 publishing {
     publications {
-        mavenCommon(MavenPublication) {
-            artifactId = rootProject.archives_base_name
-            from components.java
+        maven(MavenPublication) {
+            artifactId = "${project.archivesBaseName}-common-intermediary"
+            version = project.version
+            artifact(remapJar) {
+                builtBy remapJar
+                classifier ''
+            }
+            artifact(sourcesJar) {
+                builtBy sourcesJar
+                classifier 'sources'
+            }
         }
     }
+    setupRepositories(repositories)
+}
 
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-    repositories {
-        // Add repositories to publish to here.
+void setupRepositories(RepositoryHandler repositories) {
+    if (project.hasProperty("mavenUrl")) {
+        repositories.maven {
+            url project.mavenUrl
+            credentials {
+                username project.mavenUsername
+                password project.mavenPassword
+            }
+        }
     }
 }
+

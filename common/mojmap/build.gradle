@@ -1,0 +1,74 @@
+import net.fabricmc.loom.api.mappings.layered.MappingsNamespace
+import net.fabricmc.loom.task.RemapJarTask
+import net.fabricmc.loom.task.RemapSourcesJarTask
+
+apply plugin: "dev.architectury.loom"
+
+evaluationDependsOn ':common'
+
+dependencies {
+	minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+	mappings loom.officialMojangMappings()
+
+	// Libraries
+	implementation("com.github.FiguraMC.LuaJ:luaj-core:$luaj-figura")
+	implementation("com.github.FiguraMC.LuaJ:luaj-jse:$luaj-figura")
+	implementation("org.java-websocket:Java-WebSocket:$websocket")
+}
+
+task mojmapJar(type: RemapJarTask) {
+	classpath.from loom.getMinecraftJarsCollection(MappingsNamespace.INTERMEDIARY)
+	dependsOn project(':common').remapJar
+	
+	inputFile = project(':common').remapJar.archiveFile
+	sourceNamespace = 'intermediary'
+	targetNamespace = 'named'
+	
+	remapperIsolation = true
+}
+
+task mojmapSourcesJar(type: RemapSourcesJarTask) {
+	classpath.from loom.getMinecraftJarsCollection(MappingsNamespace.INTERMEDIARY)
+	dependsOn project(':common').sourcesJar
+	
+	archiveClassifier = 'sources'
+	
+	inputFile = project(':common').sourcesJar.archiveFile
+	sourceNamespace = 'intermediary'
+	targetNamespace = 'named'
+	
+	remapperIsolation = true
+}
+
+build.dependsOn mojmapJar
+build.dependsOn mojmapSourcesJar
+
+publishing {
+	publications {
+		maven(MavenPublication) {
+			artifactId = "${project.archivesBaseName}-common-mojmap"
+			version = project.version
+			artifact(mojmapJar) {
+				builtBy mojmapJar
+				classifier ''
+			}
+			artifact(mojmapSourcesJar) {
+				builtBy mojmapSourcesJar
+				classifier 'sources'
+			}
+		}
+	}
+	setupRepositories(repositories)
+}
+
+void setupRepositories(RepositoryHandler repositories) {
+	if (project.hasProperty("mavenUrl")) {
+		repositories.maven {
+			url project.mavenUrl
+			credentials {
+				username project.mavenUsername
+				password project.mavenPassword
+			}
+		}
+	}
+}
