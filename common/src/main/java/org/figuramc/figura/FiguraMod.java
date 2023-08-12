@@ -11,6 +11,8 @@ import org.figuramc.figura.avatar.local.CacheAvatarLoader;
 import org.figuramc.figura.avatar.local.LocalAvatarFetcher;
 import org.figuramc.figura.avatar.local.LocalAvatarLoader;
 import org.figuramc.figura.backend2.NetworkStuff;
+import org.figuramc.figura.compat.GeckoLibCompat;
+import org.figuramc.figura.compat.SimpleVCCompat;
 import org.figuramc.figura.config.ConfigManager;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.entries.EntryPointManager;
@@ -64,6 +66,8 @@ public class FiguraMod {
         CacheAvatarLoader.init();
         FiguraDocsManager.init();
         FiguraRuntimeResources.init();
+
+        GeckoLibCompat.init();
     }
 
     public static List<FiguraResourceListener> getResourceListeners() {
