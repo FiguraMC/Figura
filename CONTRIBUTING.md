@@ -5,39 +5,39 @@ When contributing to Figura, please first discuss and/or interact with our commu
 Please note we have a code of conduct, please follow it in all your interactions with the project.
 
 ## Pull Request Process
-note - do not merge upstream into your pr branch if a clean rebase is possible
+Note - do not merge upstream into your pr branch if a clean rebase is possible.
 
-1. Ensure the feature is In demand via the `📧丨mod-suggestions` channel in our [Discord](https://discord.gg/figuramc) or has the [Enhancment]([https://github.com/FiguraMC/Figura/labels/enhancement](https://github.com/FiguraMC/Figura/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement+)) tag in the Issues tab 
+1. Ensure the feature has not been denied and is in demand via the `📧丨mod-suggestions` channel in our [Discord](https://discord.gg/figuramc) or has the [Enhancment]([https://github.com/FiguraMC/Figura/labels/enhancement](https://github.com/FiguraMC/Figura/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement+)) tag in the Issues tab.
    
     OR:
 
-   Ensure what you are doing is actually a bug via the `👾丨bug-reports` channel in our [Discord](https://discord.gg/figuramc) or has the [Bug]([https://github.com/FiguraMC/Figura/issues](https://github.com/FiguraMC/Figura/issues?q=is%3Aissue+is%3Aopen+label%3Abug+)) tag in the Issues tab 
+   Ensure what you are doing is actually a bug via the `👾丨bug-reports` channel in our [Discord](https://discord.gg/figuramc) or has the [Bug]([https://github.com/FiguraMC/Figura/issues](https://github.com/FiguraMC/Figura/issues?q=is%3Aissue+is%3Aopen+label%3Abug+)) tag in the Issues tab.
 
-3. Communicate with Devs and other contributors about what you are building and adding. This helps keep multiple people from working on the same thing alone.
+3. Communicate with developers and other contributors about what you are building and adding. This helps keep multiple people from working on the same thing alone.
 
 4. Clearly and extensively document everything you've added/changed in the pull request. This helps when compiling all the changes into full release patch notes.
 
 5. You may merge the Pull Request in once you have the sign-off of another developer, or if you do not have permission to do that, you may request the second reviewer to merge it for you.
 
 ## Translation Contributing Process 
-note - Translations are not located in this repository but in [Figuramc/Assets](https://github.com/FiguraMC/Assets)
-1. You must be fluent and/or competent in the language you are translating to.
+Note - Translations are not located in this repository but in [Figuramc/Assets](https://github.com/FiguraMC/Assets)
+1. You must be fluent and/or knowledgeable in the language you are translating to.
 
 2. Please use our Localization solution located [here](https://localization.figuramc.org). This makes it much eaiser for other contributors to view the progress on a specific language.
 
 ## Art Contribution Process
-1. follow the color pallete and style; provided here: [future link here.. sort out before pulling]
+1. Follow the color pallete and style provided here: [future link here.. sort out before pulling]
 
-2. document the additions and changes made with your contribution.
+2. Document the additions and changes made with your contribution.
 
 ## Credits
-1. We credit our cobtributors for working on our projects, and as such we would like to credit them appropriately
+1. We credit our contributors for working on our projects, and as such we would like to credit them appropriately.
 
-2. what contribution you made, such as a link to a commit, translations, textures, etc.
+2. What contribution you made, such as a link to a commit, translations, textures, etc.
 
-3. include the name you would like to be used for the credits page (optional)
+3. Include the name you would like to be used for the credits page. (optional)
 
-4. contact information (optional)
+4. Contact information. (optional)
 
 should we implement a solution like: https://github.com/all-contributors/all-contributors ?
 
