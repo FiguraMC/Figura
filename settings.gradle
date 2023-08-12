@@ -8,6 +8,7 @@ pluginManagement {
 }
 
 include("common")
+include("common:mojmap")
 include("fabric")
 include("forge")
 
