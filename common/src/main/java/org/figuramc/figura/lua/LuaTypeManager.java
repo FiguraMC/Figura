@@ -105,6 +105,10 @@ public class LuaTypeManager {
         }
     }
 
+    public Map<Class<?>, LuaTable> getMetatables() {
+        return metatables;
+    }
+
     private final Map<Class<?>, String> namesCache = new HashMap<>();
     public String getTypeName(Class<?> clazz) {
         return namesCache.computeIfAbsent(clazz, someClass -> {

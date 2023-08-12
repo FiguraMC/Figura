@@ -5,10 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityDimensions;
-import net.minecraft.world.entity.HasCustomInventoryScreen;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
@@ -50,12 +47,15 @@ public class EntityAPI<T extends Entity> {
 
     protected final UUID entityUUID;
     protected T entity; // We just do not care about memory anymore so, just have something not wrapped in a WeakReference
+    protected EntityType<T> type;
 
     private boolean thingy = true;
     private String cacheType;
 
     public EntityAPI(T entity) {
         this.entity = entity;
+        //noinspection unchecked
+        this.type   = (EntityType<T>) entity.getType();
         entityUUID = entity.getUUID();
     }
 
@@ -71,10 +71,14 @@ public class EntityAPI<T extends Entity> {
 
     protected final void checkEntity() {
         if (entity.isRemoved() || getLevel() != Minecraft.getInstance().level) {
-            T newEntityInstance = (T) EntityUtils.getEntityByUUID(entityUUID);
-            thingy = newEntityInstance != null;
-            if (thingy)
-                entity = newEntityInstance;
+            Entity e = EntityUtils.getEntityByUUID(entityUUID);
+            thingy = e != null;
+            if (e != null && type.equals(e.getType())) {
+                //noinspection unchecked
+                T newEntityInstance = (T) e;
+                if (thingy)
+                    entity = newEntityInstance;
+            }
         }
     }
 
@@ -472,8 +476,12 @@ public class EntityAPI<T extends Entity> {
     public LuaValue getVariable(String key) {
         checkEntity();
         Avatar a = AvatarManager.getAvatar(entity);
-        LuaTable table = a == null || a.luaRuntime == null ? new LuaTable() : a.luaRuntime.avatar_meta.storedStuff;
-        table = new ReadOnlyLuaTable(table);
+        LuaTable table;
+        if (a == null || a.luaRuntime == null) {
+            table = new ReadOnlyLuaTable(new LuaTable());
+        } else {
+            table = new ReadOnlyLuaTable(a.luaRuntime.avatar_meta.storedStuff, a.luaRuntime.typeManager);
+        }
         return key == null ? table : table.get(key);
     }
 
