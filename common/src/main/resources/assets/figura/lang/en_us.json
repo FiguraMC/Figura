@@ -1134,6 +1134,8 @@
   "figura.docs.host.set_title": "Sets the current title to the given text\nThe text is given as json",
   "figura.docs.host.set_subtitle": "Sets the current subtitle to the given text\nThe text is given as json",
   "figura.docs.host.set_actionbar": "Sets the action bar message to the given text\nThe boolean parameter defaults to false",
+  "figura.docs.host.get_scoreboards": "Gets state of scoreboards currently loaded on client",
+  "figura.docs.host.get_objectives": "Gets info about scoreboard objectives currently loaded on client",
   "figura.docs.host.send_chat_message": "Sends the given message in the chat",
   "figura.docs.host.send_chat_command": "Sends the given command in the chat",
   "figura.docs.host.append_chat_history": "Appends the message on the recent chat history",

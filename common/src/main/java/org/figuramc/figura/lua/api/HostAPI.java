@@ -1,7 +1,9 @@
 package org.figuramc.figura.lua.api;
 
+import com.google.common.collect.Iterables;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.GuiMessage;
 import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.Minecraft;
@@ -12,12 +14,17 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.scores.Objective;
+import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.Score;
+import net.minecraft.world.scores.Scoreboard;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -188,6 +195,91 @@ public class HostAPI {
     @LuaWhitelist
     public HostAPI actionbar(@LuaNotNil String text, boolean animated) {
         return setActionbar(text, animated);
+    }
+
+    private static final HashMap<Integer, String> boardNames = new HashMap<>() {{
+       put(0, "list");
+       put(1, "sidebar");
+       put(2, "belowName");
+        for (int i = 0; i < 16; i++)
+            put(3 + i, "sidebar_team_" + ChatFormatting.getById(i).getSerializedName());
+    }};
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
+                            argumentTypes = Boolean.class,
+                            argumentNames = "jsonNames"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Boolean.class, Integer.class},
+                            argumentNames = {"jsonNames", "limit"}
+                    )
+            },
+            value = "host.get_scoreboards"
+    )
+    public HashMap<String, Map<String, Integer>> getScoreboards(boolean jsonNames, Integer limit) {
+        if (!isHost() || this.minecraft.level == null)
+            return null;
+        HashMap<String, Map<String, Integer>> map = new HashMap<>();
+        Scoreboard scoreboard = this.minecraft.level.getScoreboard();
+        for (int i = 0; i < 19; i ++) {
+            Objective objective = scoreboard.getDisplayObjective(i);
+            Collection<Score> scores = scoreboard.getPlayerScores(objective);
+            if (scores.isEmpty())
+                continue;
+            HashMap<String, Integer> objectiveMap = new HashMap<>();
+            int toSkip = limit == null ? 15 : limit;
+            toSkip = Math.min(toSkip, scores.size());
+            toSkip = limit == null || limit > 0 ? scores.size() - toSkip : 0;
+            for (Score score : Iterables.skip(scores, toSkip)) {
+                String scoreOwner = score.getOwner();
+                if (scoreOwner.startsWith("#"))
+                    objectiveMap.put(scoreOwner, score.getScore());
+                else {
+                    Component key = PlayerTeam.formatNameForTeam(scoreboard.getPlayersTeam(scoreOwner), Component.literal(scoreOwner));
+                    objectiveMap.put(jsonNames ? Component.Serializer.toJson(key) : key.getString(), score.getScore());
+                }
+            }
+            if (objectiveMap.isEmpty())
+                continue;
+            map.put(boardNames.getOrDefault(i, String.valueOf(i)), objectiveMap);
+        }
+        return map;
+    }
+    
+    
+    
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
+                            argumentTypes = Boolean.class,
+                            argumentNames = "jsonNames"
+                    )
+            },
+            value = "host.get_objectives"
+    )
+    public Object getObjectives(boolean jsonNames) {
+        if (!isHost() || this.minecraft.level == null)
+            return null;
+        HashMap<String, Map<String, String>> map = new HashMap<>();
+        Scoreboard scoreboard = this.minecraft.level.getScoreboard();
+        for (int i = 0; i < 19; i ++) {
+            Objective objective = scoreboard.getDisplayObjective(i);
+            if(objective == null)
+                continue;
+            map.put(boardNames.getOrDefault(i, String.valueOf(i)), new HashMap<>(){{
+                put("name", objective.getName());
+                put("displayName", jsonNames? Component.Serializer.toJson(objective.getDisplayName()) : objective.getDisplayName().getString());
+                put("criteria", objective.getCriteria().getName());
+                put("render_type", objective.getRenderType().getId());
+            }});
+        }
+        return map;
     }
 
     @LuaWhitelist
