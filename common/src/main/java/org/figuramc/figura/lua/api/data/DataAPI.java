@@ -22,10 +22,10 @@ public class DataAPI {
     @LuaFieldDoc("data.providers")
     public static final Providers providers = new Providers();
 
-    @LuaFieldDoc("data.stream_reader")
-    public static final StreamReader streamReader = new StreamReader();
-    @LuaFieldDoc("data.stream_provider")
-    public static final StreamReader streamWriter = new StreamReader();
+    @LuaFieldDoc("data.read_utils")
+    public static final ReadUtils readUtils = new ReadUtils();
+    @LuaFieldDoc("data.write_utils")
+    public static final WriteUtils writeUtils = new WriteUtils();
 
     @LuaWhitelist
     @LuaMethodDoc(
@@ -96,8 +96,8 @@ public class DataAPI {
         return switch (key.tojstring()) {
             case "readers" -> readers;
             case "providers" -> providers;
-            case "streamReader" -> streamReader;
-            case "streamWriter" -> streamWriter;
+            case "readUtils" -> readUtils;
+            case "writeUtils" -> writeUtils;
             default -> null;
         };
     }

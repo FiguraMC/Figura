@@ -16,6 +16,10 @@ import org.figuramc.figura.lua.api.action_wheel.Action;
 import org.figuramc.figura.lua.api.action_wheel.ActionWheelAPI;
 import org.figuramc.figura.lua.api.action_wheel.Page;
 import org.figuramc.figura.lua.api.data.*;
+import org.figuramc.figura.lua.api.json.FiguraJsonArray;
+import org.figuramc.figura.lua.api.json.FiguraJsonBuilder;
+import org.figuramc.figura.lua.api.json.FiguraJsonObject;
+import org.figuramc.figura.lua.api.json.FiguraJsonSerializer;
 import org.figuramc.figura.lua.api.data.providers.FiguraProvider;
 import org.figuramc.figura.lua.api.data.providers.StringProvider;
 import org.figuramc.figura.lua.api.data.readers.FiguraReader;
@@ -243,12 +247,19 @@ public class FiguraDocsManager {
                 FiguraInputStream.class,
                 FiguraOutputStream.class,
                 FiguraFuture.class,
-                StreamReader.class,
-                StreamWriter.class
+                ReadUtils.class,
+                WriteUtils.class
         ));
 
         put("file", List.of(
                 FileAPI.class
+        ));
+
+        put("json", List.of(
+                FiguraJsonBuilder.class,
+                FiguraJsonSerializer.class,
+                FiguraJsonObject.class,
+                FiguraJsonArray.class
         ));
     }};
     private static final Map<String, List<FiguraDoc>> GENERATED_CHILDREN = new HashMap<>();
