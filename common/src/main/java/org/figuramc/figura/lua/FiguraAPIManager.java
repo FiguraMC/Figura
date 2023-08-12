@@ -159,8 +159,7 @@ public class FiguraAPIManager {
         add(DataAPI.Readers.class);
         add(DataAPI.Providers.class);
 
-        add(ReadUtils.class);
-        add(WriteUtils.class);
+        add(FiguraBuffer.class);
 
         add(FileAPI.class);
 
@@ -190,7 +189,7 @@ public class FiguraAPIManager {
         put("pings", r -> r.ping = new PingAPI(r.owner));
         put("textures", r -> r.texture = new TextureAPI(r.owner));
         put("config", r -> new ConfigAPI(r.owner));
-        put("data", r -> new DataAPI());
+        put("data", r -> new DataAPI(r.owner));
         put("file", r -> new FileAPI(r.owner));
         put("json", r -> JsonAPI.INSTANCE);
     }};

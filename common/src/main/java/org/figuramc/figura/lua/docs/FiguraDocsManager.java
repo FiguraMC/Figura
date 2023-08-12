@@ -246,9 +246,8 @@ public class FiguraDocsManager {
                 StringProvider.Providers.class,
                 FiguraInputStream.class,
                 FiguraOutputStream.class,
-                FiguraFuture.class,
-                ReadUtils.class,
-                WriteUtils.class
+                FiguraBuffer.class,
+                FiguraFuture.class
         ));
 
         put("file", List.of(

@@ -1,5 +1,6 @@
 package org.figuramc.figura.lua.api.data;
 
+import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.api.data.providers.StringProvider;
 import org.figuramc.figura.lua.api.data.readers.StringReader;
@@ -17,45 +18,34 @@ import java.util.Base64;
 @LuaWhitelist
 @LuaTypeDoc(name = "DataAPI", value = "data")
 public class DataAPI {
+
+    private final Avatar parent;
+
     @LuaFieldDoc("data.readers")
     public static final Readers readers = new Readers();
     @LuaFieldDoc("data.providers")
     public static final Providers providers = new Providers();
 
-    @LuaFieldDoc("data.read_utils")
-    public static final ReadUtils readUtils = new ReadUtils();
-    @LuaFieldDoc("data.write_utils")
-    public static final WriteUtils writeUtils = new WriteUtils();
+    public DataAPI(Avatar parent) {
+        this.parent = parent;
+    }
 
     @LuaWhitelist
     @LuaMethodDoc(
-            value = "data.create_buffer_input_stream",
+            value = "data.create_buffer",
             overloads = {
                     @LuaMethodOverload(
-                            argumentTypes = String.class,
-                            argumentNames = "base64",
-                            returnType = FiguraInputStream.class
+                            returnType = FiguraBuffer.class
                     ),
                     @LuaMethodOverload(
-                            argumentTypes = LuaTable.class,
-                            argumentNames = "byte_table",
-                            returnType = FiguraInputStream.class
+                            returnType = FiguraBuffer.class,
+                            argumentNames = "capacity",
+                            argumentTypes = Integer.class
                     )
             }
     )
-    public static FiguraInputStream createBufferInputStream(Object data) {
-        byte[] streamData;
-        if (data instanceof String) {
-            streamData = Base64.getDecoder().decode((String) data);
-        }
-        else if (data instanceof LuaTable tbl) {
-            streamData = new byte[tbl.length()];
-            for(int i = 0; i < streamData.length; i++)
-                streamData[i] = (byte) tbl.get(i + 1).checkint();
-        }
-        else throw new LuaError("Invalid data type");
-
-        return new FiguraInputStream(new ByteArrayInputStream(streamData));
+    public FiguraBuffer createBuffer(Integer len) {
+        return len == null ? new FiguraBuffer(parent) : new FiguraBuffer(parent, len);
     }
 
     @LuaWhitelist
@@ -96,8 +86,6 @@ public class DataAPI {
         return switch (key.tojstring()) {
             case "readers" -> readers;
             case "providers" -> providers;
-            case "readUtils" -> readUtils;
-            case "writeUtils" -> writeUtils;
             default -> null;
         };
     }
