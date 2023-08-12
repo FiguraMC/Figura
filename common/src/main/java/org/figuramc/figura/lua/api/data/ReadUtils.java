@@ -12,83 +12,113 @@ import java.io.InputStream;
 public class ReadUtils {
     @LuaWhitelist
     @LuaMethodDoc("read_utils.read_short")
-    public static short readShort(InputStream stream) {
-        try {
-            return (short) (stream.read() | stream.read() >> 8);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public static int readShort(InputStream stream) throws IOException {
+        byte[] bytes = stream.readNBytes(2);
+        short v = 0;
+        for (int i = 0; i < bytes.length; i++) {
+            v |= (bytes[((bytes.length - 1) - i)] & 0xFF) << (i * 8);
         }
+        return v;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("read_utils.read_ushort")
-    public static int readUShort(InputStream stream) {
-        try {
-            return stream.read() | stream.read() >> 8;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public static int readUShort(InputStream stream) throws IOException {
+        byte[] bytes = stream.readNBytes(2);
+        int v = 0;
+        for (int i = 0; i < bytes.length; i++) {
+            v |= (bytes[((bytes.length - 1) - i)] & 0xFF) << (i * 8);
         }
+        return v;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("read_utils.read_int")
-    public static int readInt(InputStream stream) {
-        try {
-            return ((stream.read() | stream.read() >> 8 | stream.read() >> 16 | stream.read() >> 24));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public static int readInt(InputStream stream) throws IOException {
+        byte[] bytes = stream.readNBytes(4);
+        int v = 0;
+        for (int i = 0; i < bytes.length; i++) {
+            v |= (bytes[((bytes.length - 1) - i)] & 0xFF) << (i * 8);
         }
+        return v;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("read_utils.read_long")
-    public static long readLong(InputStream stream) {
-        try {
-            return ((stream.read() | stream.read() >> 8 | stream.read() >> 16 | stream.read() >> 24
-                    | (long) stream.read() >> 32 | (long) stream.read() >> 40 | (long) stream.read() >> 48 | (long) stream.read() >> 56));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public static long readLong(InputStream stream) throws IOException {
+        byte[] bytes = stream.readNBytes(8);
+        long v = 0;
+        for (int i = 0; i < bytes.length; i++) {
+            v |= (long) (bytes[((bytes.length - 1) - i)] & 0xFF) << (i * 8);
         }
+        return v;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("read_utils.read_float")
+    public static float readFloat(InputStream stream) throws IOException {
+        return Float.intBitsToFloat(readInt(stream));
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("read_utils.read_double")
+    public static double readDouble(InputStream stream) throws IOException {
+        return Double.longBitsToDouble(readLong(stream));
     }
 
     @LuaWhitelist
     @LuaMethodDoc("read_utils.read_short_le")
-    public static short readShortLE(InputStream stream) {
-        try {
-            return (short) (stream.read() >> 8 | stream.read());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public static int readShortLE(InputStream stream) throws IOException {
+        byte[] bytes = stream.readNBytes(2);
+        short v = 0;
+        for (int i = 0; i < bytes.length; i++) {
+            v |= (bytes[i] & 0xFF) << (i * 8);
         }
+        return v;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("read_utils.read_ushort_le")
-    public static int readUShortLE(InputStream stream) {
-        try {
-            return stream.read() >> 8 | stream.read();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public static int readUShortLE(InputStream stream) throws IOException {
+        byte[] bytes = stream.readNBytes(2);
+        int v = 0;
+        for (int i = 0; i < bytes.length; i++) {
+            v |= (bytes[i] & 0xFF) << (i * 8);
         }
+        return v;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("read_utils.read_int_le")
-    public static int readIntLE(InputStream stream) {
-        try {
-            return (stream.read() >> 24 | stream.read() >> 16 | stream.read() >> 8 | stream.read());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public static int readIntLE(InputStream stream) throws IOException {
+        byte[] bytes = stream.readNBytes(4);
+        int v = 0;
+        for (int i = 0; i < bytes.length; i++) {
+            v |= (bytes[i] & 0xFF) << (i * 8);
         }
+        return v;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("read_utils.read_long_le")
-    public static long readLongLE(InputStream stream) {
-        try {
-            return ((long) stream.read() >> 56 | (long) stream.read() >> 48 | (long) stream.read() >> 40 | (long) stream.read() >> 32 |
-                    stream.read() >> 24 | stream.read() >> 16 | stream.read() >> 8 | stream.read());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public static long readLongLE(InputStream stream) throws IOException {
+        byte[] bytes = stream.readNBytes(8);
+        long v = 0;
+        for (int i = 0; i < bytes.length; i++) {
+            v |= (long) (bytes[i] & 0xFF) << (i * 8);
         }
+        return v;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("read_utils.read_float_le")
+    public static float readFloatLE(InputStream stream) throws IOException {
+        return Float.intBitsToFloat(readIntLE(stream));
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("read_utils.read_double_le")
+    public static double readDoubleLE(InputStream stream) throws IOException {
+        return Double.longBitsToDouble(readLongLE(stream));
     }
 }
