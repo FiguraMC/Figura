@@ -1,6 +1,7 @@
 package org.figuramc.figura.lua.api.json;
 
 import com.google.gson.JsonArray;
+import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
@@ -24,7 +25,7 @@ public class FiguraJsonArray implements FiguraJsonSerializer.JsonValue {
             value = "json_array.get",
             overloads = @LuaMethodOverload(argumentTypes = Integer.class, argumentNames = "index", returnType = LuaValue.class)
     )
-    public LuaValue get(int i) {
+    public LuaValue get(@LuaNotNil Integer i) {
         return contents.get(i-1);
     }
 
@@ -39,7 +40,7 @@ public class FiguraJsonArray implements FiguraJsonSerializer.JsonValue {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            value = "json_array.size",
+            value = "json_array.contains",
             overloads = @LuaMethodOverload(argumentTypes = LuaValue.class, argumentNames = "elem", returnType = Boolean.class)
     )
     public boolean contains(LuaValue o) {
@@ -64,7 +65,7 @@ public class FiguraJsonArray implements FiguraJsonSerializer.JsonValue {
                     argumentNames = {"index", "elem"}
             )
     )
-    public void insert(int i, LuaValue o) {
+    public void insert(@LuaNotNil Integer i, LuaValue o) {
         if (!isSerializable(o)) throw new IllegalArgumentException("Type %s can't be serialized".formatted(o.typename()));
         contents.add(i-1, o);
     }
@@ -77,7 +78,7 @@ public class FiguraJsonArray implements FiguraJsonSerializer.JsonValue {
                     argumentNames = {"index", "elem"}
             )
     )
-    public void set(int i, LuaValue o) {
+    public void set(@LuaNotNil Integer i, LuaValue o) {
         if (!isSerializable(o)) throw new IllegalArgumentException("Type %s can't be serialized".formatted(o.typename()));
         contents.set(i-1, o);
     }
@@ -91,7 +92,7 @@ public class FiguraJsonArray implements FiguraJsonSerializer.JsonValue {
                     returnType = LuaValue.class
             )
     )
-    public LuaValue removeAt(int index) {
+    public LuaValue removeAt(@LuaNotNil Integer index) {
         return contents.remove(index-1);
     }
 
@@ -200,5 +201,10 @@ public class FiguraJsonArray implements FiguraJsonSerializer.JsonValue {
             LuaValue v = tbl.get(ind);
             return LuaValue.varargsOf(LuaValue.valueOf(ind), v);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "JsonArray";
     }
 }

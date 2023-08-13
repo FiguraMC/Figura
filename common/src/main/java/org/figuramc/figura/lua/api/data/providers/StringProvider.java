@@ -58,5 +58,15 @@ public class StringProvider extends FiguraProvider<String> {
                 default -> null;
             };
         }
+
+        @Override
+        public String toString() {
+            return "StringProviders";
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "StringProvider";
     }
 }

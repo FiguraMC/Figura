@@ -2,6 +2,7 @@ package org.figuramc.figura.lua.api.json;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
@@ -32,27 +33,40 @@ public class FiguraJsonObject implements FiguraJsonSerializer.JsonValue {
             value = "json_object.get",
             overloads = @LuaMethodOverload(argumentTypes = String.class, argumentNames = "key", returnType = LuaValue.class)
     )
-    public LuaValue get(String key) {
+    public LuaValue get(@LuaNotNil String key) {
         return contents.get(key);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(value = "json_object.contains_key")
-    public boolean containsKey(String key) {
+    @LuaMethodDoc(
+            value = "json_object.contains_key",
+            overloads = @LuaMethodOverload(argumentTypes = String.class, argumentNames = "key", returnType = Boolean.class)
+    )
+    public boolean containsKey(@LuaNotNil String key) {
         return contents.containsKey(key);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(value = "json_object.put")
-    public LuaValue put(String key, LuaValue value) {
+    @LuaMethodDoc(
+            value = "json_object.put",
+            overloads = @LuaMethodOverload(
+                    argumentTypes = {String.class, LuaValue.class},
+                    argumentNames = {"key", "value"},
+                    returnType = LuaValue.class
+            )
+    )
+    public LuaValue put(@LuaNotNil String key, LuaValue value) {
         if (!JsonAPI.isSerializable(value))
             throw new IllegalArgumentException("Type %s can't be serialized".formatted(value));
         return contents.put(key, value);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(value = "json_object.remove")
-    public LuaValue remove(String key) {
+    @LuaMethodDoc(
+            value = "json_object.remove",
+            overloads = @LuaMethodOverload(argumentTypes = String.class, argumentNames = "key", returnType = LuaValue.class)
+    )
+    public LuaValue remove(@LuaNotNil String key) {
         return contents.remove(key);
     }
 
@@ -63,7 +77,10 @@ public class FiguraJsonObject implements FiguraJsonSerializer.JsonValue {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(value = "json_object.containsValue")
+    @LuaMethodDoc(
+            value = "json_object.containsValue",
+            overloads = @LuaMethodOverload(argumentTypes = LuaValue.class, argumentNames = "value", returnType = boolean.class)
+    )
     public boolean containsValue(LuaValue value) {
         return contents.containsValue(value);
     }
@@ -137,5 +154,10 @@ public class FiguraJsonObject implements FiguraJsonSerializer.JsonValue {
         public Varargs invoke(Varargs args) {
             return LuaValue.NIL;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "JsonObject";
     }
 }

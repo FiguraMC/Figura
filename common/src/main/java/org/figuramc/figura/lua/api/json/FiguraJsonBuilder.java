@@ -47,4 +47,9 @@ public class FiguraJsonBuilder {
             }
         }
     }
+
+    @Override
+    public String toString() {
+        return "JsonBuilder";
+    }
 }

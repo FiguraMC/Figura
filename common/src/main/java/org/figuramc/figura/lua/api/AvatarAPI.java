@@ -325,6 +325,12 @@ public class AvatarAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("avatar.get_max_buffer_size")
+    public int getMaxBufferSize() {
+        return avatar.permissions.get(Permissions.BUFFER_SIZE);
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("avatar.can_edit_vanilla_model")
     public boolean canEditVanillaModel() {
         return bool(Permissions.VANILLA_MODEL_EDIT);

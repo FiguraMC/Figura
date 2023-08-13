@@ -2,6 +2,7 @@ package org.figuramc.figura.lua.api;
 
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
+import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.api.data.FiguraInputStream;
 import org.figuramc.figura.lua.api.data.FiguraOutputStream;
@@ -59,7 +60,7 @@ public class FileAPI {
 
     @LuaWhitelist
     @LuaMethodDoc("file.is_path_allowed")
-    public boolean isPathAllowed(String path) {
+    public boolean isPathAllowed(@LuaNotNil String path) {
         if (rootFolderPath == null) return false;
         return isPathAllowed(relativizePath(path));
     }
@@ -77,7 +78,7 @@ public class FileAPI {
 
     @LuaWhitelist
     @LuaMethodDoc("file.exists")
-    public boolean exists(String path) {
+    public boolean exists(@LuaNotNil String path) {
         Path p = securityCheck(path);
         File f = p.toFile();
         return f.exists();
@@ -85,7 +86,7 @@ public class FileAPI {
 
     @LuaWhitelist
     @LuaMethodDoc("file.is_file")
-    public boolean isFile(String path) {
+    public boolean isFile(@LuaNotNil String path) {
         Path p = securityCheck(path);
         File f = p.toFile();
         return f.exists() && f.isFile();
@@ -93,7 +94,7 @@ public class FileAPI {
 
     @LuaWhitelist
     @LuaMethodDoc("file.is_directory")
-    public boolean isDirectory(String path) {
+    public boolean isDirectory(@LuaNotNil String path) {
         Path p = securityCheck(path);
         File f = p.toFile();
         return f.exists() && f.isDirectory();
@@ -101,7 +102,7 @@ public class FileAPI {
 
     @LuaWhitelist
     @LuaMethodDoc("file.open_read_stream")
-    public FiguraInputStream openReadStream(String path) {
+    public FiguraInputStream openReadStream(@LuaNotNil String path) {
         try {
             Path p = securityCheck(path);
             File f = p.toFile();
@@ -114,7 +115,7 @@ public class FileAPI {
 
     @LuaWhitelist
     @LuaMethodDoc("file.open_write_stream")
-    public FiguraOutputStream openWriteStream(String path) {
+    public FiguraOutputStream openWriteStream(@LuaNotNil String path) {
         try {
             Path p = securityCheck(path);
             File f = p.toFile();
@@ -127,7 +128,7 @@ public class FileAPI {
 
     @LuaWhitelist
     @LuaMethodDoc("file.read")
-    public <T> T read(String path, FiguraReader<T> reader) {
+    public <T> T read(@LuaNotNil String path, @LuaNotNil FiguraReader<T> reader) {
         try (FiguraInputStream fis = openReadStream(path)) {
             return reader.readFrom(fis);
         } catch (IOException e) {
@@ -137,7 +138,7 @@ public class FileAPI {
 
     @LuaWhitelist
     @LuaMethodDoc("file.write")
-    public <T> void write(String path, FiguraProvider<T> provider, T data) {
+    public <T> void write(@LuaNotNil String path, @LuaNotNil FiguraProvider<T> provider, @LuaNotNil T data) {
         try (FiguraOutputStream fos = openWriteStream(path)) {
             FiguraInputStream fis = provider.getStream(data);
             fis.transferTo(fos);
@@ -149,7 +150,7 @@ public class FileAPI {
 
     @LuaWhitelist
     @LuaMethodDoc("file.mkdir")
-    public boolean mkdir(String path) {
+    public boolean mkdir(@LuaNotNil String path) {
         Path p = securityCheck(path);
         File f = p.toFile();
         return f.mkdir();
@@ -157,7 +158,7 @@ public class FileAPI {
 
     @LuaWhitelist
     @LuaMethodDoc("file.mkdirs")
-    public boolean mkdirs(String path) {
+    public boolean mkdirs(@LuaNotNil String path) {
         Path p = securityCheck(path);
         File f = p.toFile();
         return f.mkdirs();
@@ -165,7 +166,7 @@ public class FileAPI {
 
     @LuaWhitelist
     @LuaMethodDoc("file.delete")
-    public boolean delete(String path) {
+    public boolean delete(@LuaNotNil String path) {
         Path p = securityCheck(path);
         File f = p.toFile();
         return f.delete();
@@ -173,11 +174,16 @@ public class FileAPI {
 
     @LuaWhitelist
     @LuaMethodDoc("file.list")
-    public ArrayList<String> list(String path) {
+    public ArrayList<String> list(@LuaNotNil String path) {
         Path p = securityCheck(path);
         File f = p.toFile();
         ArrayList<String> s = new ArrayList<>();
         Arrays.stream(f.list()).forEach(str -> s.add(str));
         return s;
+    }
+
+    @Override
+    public String toString() {
+        return "FileAPI";
     }
 }

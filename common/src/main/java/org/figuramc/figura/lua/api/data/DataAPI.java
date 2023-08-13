@@ -62,6 +62,11 @@ public class DataAPI {
                 default -> null;
             };
         }
+
+        @Override
+        public String toString() {
+            return "Readers";
+        }
     }
 
     @LuaWhitelist
@@ -78,6 +83,11 @@ public class DataAPI {
                 default -> null;
             };
         }
+
+        @Override
+        public String toString() {
+            return "Providers";
+        }
     }
 
     @LuaWhitelist
@@ -88,5 +98,10 @@ public class DataAPI {
             case "providers" -> providers;
             default -> null;
         };
+    }
+
+    @Override
+    public String toString() {
+        return "DataAPI";
     }
 }

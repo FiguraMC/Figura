@@ -2,6 +2,7 @@ package org.figuramc.figura.lua.api.data;
 
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
+import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 
 import java.io.IOException;
@@ -26,7 +27,14 @@ public class FiguraInputStream extends InputStream {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc("input_stream.skip")
+    @LuaMethodDoc(
+            value = "input_stream.skip",
+            overloads = @LuaMethodOverload(
+                    argumentNames = "n",
+                    argumentTypes = Long.class,
+                    returnType = Long.class
+            )
+    )
     public long skip(long n) throws IOException {
         return sourceStream.skip(n);
     }
@@ -47,7 +55,13 @@ public class FiguraInputStream extends InputStream {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc("input_stream.mark")
+    @LuaMethodDoc(
+            value = "input_stream.mark",
+            overloads = @LuaMethodOverload(
+                    argumentNames = "readLimit",
+                    argumentTypes = Integer.class
+            )
+    )
     public void mark(int readlimit) {
         sourceStream.mark(readlimit);
     }
@@ -68,8 +82,20 @@ public class FiguraInputStream extends InputStream {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc("input_stream.transfer_to")
+    @LuaMethodDoc(
+            value = "input_stream.transfer_to",
+            overloads = @LuaMethodOverload(
+                    argumentNames = "out",
+                    argumentTypes = FiguraOutputStream.class,
+                    returnType = Long.class
+            )
+    )
     public long transferTo(OutputStream out) throws IOException {
         return sourceStream.transferTo(out);
+    }
+
+    @Override
+    public String toString() {
+        return "InputStream";
     }
 }

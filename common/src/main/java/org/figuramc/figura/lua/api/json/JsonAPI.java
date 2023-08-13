@@ -64,4 +64,9 @@ public class JsonAPI {
             default -> false;
         };
     }
+
+    @Override
+    public String toString() {
+        return "JsonAPI";
+    }
 }

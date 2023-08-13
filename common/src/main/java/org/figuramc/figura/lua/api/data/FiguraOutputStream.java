@@ -2,6 +2,7 @@ package org.figuramc.figura.lua.api.data;
 
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
+import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 
 import java.io.IOException;
@@ -19,7 +20,13 @@ public class FiguraOutputStream extends OutputStream {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc("output_stream.write")
+    @LuaMethodDoc(
+            value = "output_stream.write",
+            overloads = @LuaMethodOverload(
+                    argumentNames = "b",
+                    argumentTypes = Integer.class
+            )
+    )
     public void write(int b) throws IOException {
         destinationStream.write(b);
     }
@@ -38,4 +45,8 @@ public class FiguraOutputStream extends OutputStream {
         destinationStream.close();
     }
 
+    @Override
+    public String toString() {
+        return "OutputStream";
+    }
 }

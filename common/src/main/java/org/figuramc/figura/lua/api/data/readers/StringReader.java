@@ -67,5 +67,15 @@ public class StringReader extends FiguraReader<String> {
                 default -> null;
             };
         }
+
+        @Override
+        public String toString() {
+            return "StringReaders";
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "StringReader";
     }
 }

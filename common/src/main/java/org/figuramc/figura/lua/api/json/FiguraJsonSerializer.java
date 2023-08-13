@@ -84,4 +84,9 @@ public class FiguraJsonSerializer {
     public interface JsonValue {
         JsonElement getElement();
     }
+
+    @Override
+    public String toString() {
+        return "JsonSerializer";
+    }
 }
