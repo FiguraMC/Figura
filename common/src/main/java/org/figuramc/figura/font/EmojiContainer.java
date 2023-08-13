@@ -96,7 +96,7 @@ public class EmojiContainer {
         for (JsonElement element : aliasArray) {
             String alias = element.getAsString();
             if (alias.isBlank() || alias.indexOf(' ') != -1 || alias.indexOf(DELIMITER) != -1) {
-                FiguraMod.LOGGER.warn("Invalid emoji name \"{}\" in container: \"figura:emojis/{}.json\"", alias, containerName);
+                FiguraMod.LOGGER.warn("Invalid emoji name \"{}\" in container: {}", alias, containerName);
             } else {
                 consumer.accept(alias);
                 atLeastOne = true;
