@@ -64,7 +64,7 @@ public class EmojiContainer {
                     lookup.putMetadata(curUnicode.codePointAt(0), new EmojiMetadata(obj));
                 }
 
-                if (JsonUtils.validate(obj, JSON_KEY_SHORTCUTS, JsonElement::isJsonArray, ERROR_MSG, curUnicode.codePointAt(0), containerName, JSON_KEY_SHORTCUTS, "field must be an array")) {
+                if (obj.has(JSON_KEY_SHORTCUTS) && JsonUtils.validate(obj, JSON_KEY_SHORTCUTS, JsonElement::isJsonArray, ERROR_MSG, curUnicode.codePointAt(0), containerName, JSON_KEY_SHORTCUTS, "field must be an array")) {
                     shortcutsArray = obj.getAsJsonArray(JSON_KEY_SHORTCUTS);
                 }
             }
@@ -96,7 +96,7 @@ public class EmojiContainer {
         for (JsonElement element : aliasArray) {
             String alias = element.getAsString();
             if (alias.isBlank() || alias.indexOf(' ') != -1 || alias.indexOf(DELIMITER) != -1) {
-                FiguraMod.LOGGER.warn("Invalid emoji name \"{}\" @ \"{}\"", alias, containerName);
+                FiguraMod.LOGGER.warn("Invalid emoji name \"{}\" in container: \"figura:emojis/{}.json\"", alias, containerName);
             } else {
                 consumer.accept(alias);
                 atLeastOne = true;
@@ -142,6 +142,4 @@ public class EmojiContainer {
     public ResourceLocation getFont() {
         return font;
     }
-
-
 }
