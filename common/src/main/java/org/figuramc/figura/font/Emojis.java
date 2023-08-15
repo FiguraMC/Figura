@@ -224,6 +224,16 @@ public class Emojis {
         return null;
     }
 
+    public static Component getEmoji(String emojiAlias, MutableComponent hover) {
+        for (EmojiContainer container : EMOJIS.values()) {
+            Component emoji = container.getEmojiComponent(emojiAlias, hover);
+            if (emoji != null) {
+                return emoji;
+            }
+        }
+        return null;
+    }
+
     public static EmojiContainer getCategoryByFont(ResourceLocation location) {
         for (EmojiContainer container : EMOJIS.values()) {
             if (location.equals(container.getFont())) {
