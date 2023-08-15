@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.FiguraMod;
@@ -112,22 +113,26 @@ public class EmojiContainer {
     }
 
     public Component getEmojiComponent(String key) {
+        return getEmojiComponent(key, Component.literal(DELIMITER + key + DELIMITER));
+    }
+
+    public Component getEmojiComponent(String key, MutableComponent hover) {
         String unicode = lookup.getUnicode(key);
         if (unicode == null)
             return null;
-        return makeComponent(unicode, DELIMITER + key + DELIMITER);
+        return makeComponent(unicode, hover);
     }
 
     public Component getShortcutComponent(String shortcut) {
         String unicode = lookup.getUnicodeForShortcut(shortcut);
         if (unicode == null)
             return null;
-        return makeComponent(unicode, shortcut);
+        return makeComponent(unicode, Component.literal(shortcut));
     }
 
-    private Component makeComponent(String unicode, String hover) {
+    private Component makeComponent(String unicode, MutableComponent hover) {
         return Component.literal(unicode).withStyle(STYLE.withFont(font).withHoverEvent(
-                new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(hover)
+                new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover
                         .append("\n")
                         .append(FiguraText.of("emoji." + name).withStyle(ChatFormatting.DARK_GRAY)))
         ));
