@@ -128,10 +128,11 @@ publishing {
 void setupRepositories(RepositoryHandler repositories) {
     if (project.hasProperty("mavenUrl")) {
         repositories.maven {
+            name = "figuraMaven"
             url project.mavenUrl
-            credentials {
-                username project.mavenUsername
-                password project.mavenPassword
+            credentials(PasswordCredentials)
+            authentication {
+                basic(BasicAuthentication)
             }
         }
     }
