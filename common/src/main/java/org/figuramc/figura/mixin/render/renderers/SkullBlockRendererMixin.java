@@ -94,6 +94,6 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
 
     @Inject(at = @At("HEAD"), method = "getRenderType")
     private static void getRenderType(SkullBlock.Type type, GameProfile profile, CallbackInfoReturnable<RenderType> cir) {
-        avatar = profile != null && profile.getId() != null ? AvatarManager.getAvatarForPlayer(profile.getId()) : null;
+        avatar != null && profile != null && profile.getId() != null ? AvatarManager.getAvatarForPlayer(profile.getId()) : null;
     }
 }
