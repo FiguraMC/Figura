@@ -95,8 +95,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         this.isRendering = true;
 
         // iris fix
-        int irisConfig = UIHelper.paperdoll || !ClientAPI.hasIris() ? 0 : Configs.IRIS_COMPATIBILITY_FIX.value;
-        doIrisEmissiveFix = (irisConfig >= 2 && ClientAPI.hasIrisShader()) || (avatar.renderMode != EntityRenderMode.RENDER && avatar.renderMode != EntityRenderMode.WORLD);
+        int irisConfig = UIHelper.paperdoll || !ClientAPI.hasShaderPackMod() ? 0 : Configs.IRIS_COMPATIBILITY_FIX.value;
+        doIrisEmissiveFix = (irisConfig >= 2 && ClientAPI.hasShaderPack()) || (avatar.renderMode != EntityRenderMode.RENDER && avatar.renderMode != EntityRenderMode.WORLD);
         offsetRenderLayers = irisConfig >= 1;
 
         // custom textures
