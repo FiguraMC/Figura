@@ -3,6 +3,7 @@ package org.figuramc.figura.avatar;
 import com.mojang.blaze3d.audio.OggAudioStream;
 import com.mojang.blaze3d.audio.SoundBuffer;
 import com.mojang.blaze3d.platform.Lighting;
+import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
@@ -34,6 +35,7 @@ import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.lua.FiguraLuaRuntime;
+import org.figuramc.figura.lua.api.TextureAPI;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
 import org.figuramc.figura.lua.api.particle.ParticleAPI;
 import org.figuramc.figura.lua.api.ping.PingArg;
@@ -51,6 +53,7 @@ import org.figuramc.figura.model.rendering.AvatarRenderer;
 import org.figuramc.figura.model.rendering.EntityRenderMode;
 import org.figuramc.figura.model.rendering.ImmediateAvatarRenderer;
 import org.figuramc.figura.model.rendering.PartFilterScheme;
+import org.figuramc.figura.model.rendering.texture.FiguraTexture;
 import org.figuramc.figura.permissions.PermissionManager;
 import org.figuramc.figura.permissions.PermissionPack;
 import org.figuramc.figura.permissions.Permissions;
@@ -61,6 +64,7 @@ import org.figuramc.figura.utils.Version;
 import org.figuramc.figura.utils.ui.UIHelper;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 
@@ -1014,6 +1018,25 @@ public class Avatar {
             SoundBuffer sound = new SoundBuffer(oggAudioStream.readAll(), oggAudioStream.getFormat());
             this.customSounds.put(name, sound);
         }
+    }
+
+    public FiguraTexture registerTexture(String name, NativeImage image, boolean ignoreSize) {
+        int max = permissions.get(Permissions.TEXTURE_SIZE);
+        if (!ignoreSize && (image.getWidth() > max || image.getHeight() > max)) {
+            noPermissions.add(Permissions.TEXTURE_SIZE);
+            throw new LuaError("Texture exceeded max size of " + max + " x " + max + " resolution, got " + image.getWidth() + " x " + image.getHeight());
+        }
+
+        FiguraTexture oldText = renderer.customTextures.get(name);
+        if (oldText != null)
+            oldText.close();
+
+        if (renderer.customTextures.size() > TextureAPI.TEXTURE_LIMIT)
+            throw new LuaError("Maximum amount of textures reached!");
+
+        FiguraTexture texture = new FiguraTexture(this, name, image);
+        renderer.customTextures.put(name, texture);
+        return texture;
     }
 
     public static class Instructions {
