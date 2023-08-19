@@ -24,6 +24,8 @@ import org.figuramc.figura.utils.LuaUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -692,6 +694,40 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("model_part.get_primary_texture")
+    public Object getPrimaryTexture(Integer value) {
+        if (customization.primaryTexture == null) {
+            LuaTable tbl = new LuaTable();
+            FiguraTexture[] arr = this.textures.get(value).textures;
+            tbl.set("main", arr[0] == null ? LuaValue.NIL : LuaValue.userdataOf(arr[0]));
+            tbl.set("emissive", arr[1] == null ? LuaValue.NIL : LuaValue.userdataOf(arr[1]));
+            tbl.set("specular", arr[2] == null ? LuaValue.NIL : LuaValue.userdataOf(arr[2]));
+            tbl.set("normal", arr[3] == null ? LuaValue.NIL : LuaValue.userdataOf(arr[3]));
+            return tbl;
+        }
+        return new LuaTable() {{
+            set("main", LuaValue.userdataOf(customization.primaryTexture.getTexture(owner, textures.get(value == null ? 0 : value))));
+        }};
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("model_part.get_secondary_texture")
+    public Object getSecondaryTexture(Integer value) {
+        if (customization.secondaryTexture == null) {
+            LuaTable tbl = new LuaTable();
+            FiguraTexture[] arr = this.textures.get(value).textures;
+            tbl.set("main", arr[0] == null ? LuaValue.NIL : LuaValue.userdataOf(arr[0]));
+            tbl.set("emissive", arr[1] == null ? LuaValue.NIL : LuaValue.userdataOf(arr[1]));
+            tbl.set("specular", arr[2] == null ? LuaValue.NIL : LuaValue.userdataOf(arr[2]));
+            tbl.set("normal", arr[3] == null ? LuaValue.NIL : LuaValue.userdataOf(arr[3]));
+            return tbl;
+        }
+        return new LuaTable() {{
+            set("main", LuaValue.userdataOf(customization.secondaryTexture.getTexture(owner, textures.get(value == null ? 0 : value))));
+        }};
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaMethodOverload(
@@ -712,7 +748,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     )
     public FiguraModelPart setPrimaryTexture(String type, Object x) {
         try {
-            this.customization.primaryTexture = type == null ? null : Pair.of(FiguraTextureSet.OverrideType.valueOf(type.toUpperCase()), x);
+            this.customization.primaryTexture = type == null ? null : new TextureCustomization(FiguraTextureSet.OverrideType.valueOf(type.toUpperCase()), x);
             return this;
         } catch (Exception ignored) {
             throw new LuaError("Invalid texture override type: " + type);
@@ -740,7 +776,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     )
     public FiguraModelPart setSecondaryTexture(String type, Object x) {
         try {
-            this.customization.secondaryTexture = type == null ? null : Pair.of(FiguraTextureSet.OverrideType.valueOf(type.toUpperCase()), x);
+            this.customization.secondaryTexture = type == null ? null : new TextureCustomization(FiguraTextureSet.OverrideType.valueOf(type.toUpperCase()), x);
             return this;
         } catch (Exception ignored) {
             throw new LuaError("Invalid texture override type: " + type);
