@@ -7,7 +7,9 @@ import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.mixin.render.layers.elytra.ElytraLayerAccessor;
 import org.figuramc.figura.model.TextureCustomization;
+import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Type;
 import java.util.UUID;
 
 public class FiguraTextureSet {
@@ -100,11 +102,24 @@ public class FiguraTextureSet {
         SKIN,
         CAPE,
         ELYTRA,
-        RESOURCE,
+        RESOURCE(String.class, "String"),
         PRIMARY,
         SECONDARY,
         SPECULAR,
         NORMAL,
-        CUSTOM
+        CUSTOM(FiguraTexture.class, "Texture");
+
+        public final @Nullable Type argumentType;
+        public final @Nullable String typeName;
+
+        OverrideType() {
+            argumentType = null;
+            typeName = null;
+        }
+
+        OverrideType(@Nullable Type argumentType, String typeName) {
+            this.argumentType = argumentType;
+            this.typeName = typeName;
+        }
     }
 }
