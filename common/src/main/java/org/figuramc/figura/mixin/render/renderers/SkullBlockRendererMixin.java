@@ -53,7 +53,7 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
 
         // avatar
         Avatar localAvatar = avatar;
-        avatar = null;
+        SkullBlockRendererMixin.avatar = null;
 
         if (localAvatar == null || localAvatar.permissions.get(Permissions.CUSTOM_SKULL) == 0)
             return;
@@ -89,11 +89,24 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
 
     @Override
     public boolean shouldRenderOffScreen(SkullBlockEntity blockEntity) {
-        return avatar == null ? BlockEntityRenderer.super.shouldRenderOffScreen(blockEntity) : avatar.permissions.get(Permissions.OFFSCREEN_RENDERING) == 1;
+    	// if we have an avatar, check permissions
+    	if(SkullBlockRendererMixin.avatar != null  && SkullBlockRendererMixin.avatar.permissions != null) {
+    		if(SkullBlockRendererMixin.avatar.permissions.get(Permissions.OFFSCREEN_RENDERING) == 1) {
+    		    return true;
+    		}else {
+    			return false;
+    		}
+    	}
+    	//no avatar present, default rendering used.  
+    	return BlockEntityRenderer.super.shouldRenderOffScreen(blockEntity);
     }
 
     @Inject(at = @At("HEAD"), method = "getRenderType")
     private static void getRenderType(SkullBlock.Type type, GameProfile profile, CallbackInfoReturnable<RenderType> cir) {
-        avatar = profile != null && profile.getId() != null ? AvatarManager.getAvatarForPlayer(profile.getId()) : null;
+    	// set skull owner's avatar to be associated with this skull.
+    	SkullBlockRendererMixin.avatar = null;
+    	if(profile != null && profile.getId() != null) {
+    		SkullBlockRendererMixin.avatar = AvatarManager.getAvatarForPlayer(profile.getId());
+    	}
     }
 }
