@@ -53,7 +53,6 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
 
         // avatar
         Avatar localAvatar = avatar;
-        SkullBlockRendererMixin.avatar = null;
 
         if (localAvatar == null || localAvatar.permissions.get(Permissions.CUSTOM_SKULL) == 0)
             return;
