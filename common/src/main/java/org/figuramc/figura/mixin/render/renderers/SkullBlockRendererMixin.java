@@ -51,7 +51,7 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
         SkullBlockRendererAccessor.SkullRenderMode localMode = SkullBlockRendererAccessor.getRenderMode();
         SkullBlockRendererAccessor.setRenderMode(SkullBlockRendererAccessor.SkullRenderMode.OTHER);
 
-        // avatar
+        // avatar pointer incase avatar variable is set during render. (unlikely)
         Avatar localAvatar = avatar;
 
         if (localAvatar == null || localAvatar.permissions.get(Permissions.CUSTOM_SKULL) == 0)
@@ -89,12 +89,12 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
     @Override
     public boolean shouldRenderOffScreen(SkullBlockEntity blockEntity) {
     	// if we have an avatar, check permissions
-    	if(SkullBlockRendererMixin.avatar != null  && SkullBlockRendererMixin.avatar.permissions != null) {
-    		if(SkullBlockRendererMixin.avatar.permissions.get(Permissions.OFFSCREEN_RENDERING) == 1) {
+    	if(avatar != null  && avatar.permissions != null) {
+    		// if we have permissions to render, then we render, else we don't render.
+    		if(avatar.permissions.get(Permissions.OFFSCREEN_RENDERING) == 1) {
     		    return true;
-    		}else {
-    			return false;
     		}
+    		return false;
     	}
     	//no avatar present, default rendering used.  
     	return BlockEntityRenderer.super.shouldRenderOffScreen(blockEntity);
@@ -102,10 +102,11 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
 
     @Inject(at = @At("HEAD"), method = "getRenderType")
     private static void getRenderType(SkullBlock.Type type, GameProfile profile, CallbackInfoReturnable<RenderType> cir) {
+    	// reset avatar for skull
+    	avatar = null;
     	// set skull owner's avatar to be associated with this skull.
-    	SkullBlockRendererMixin.avatar = null;
     	if(profile != null && profile.getId() != null) {
-    		SkullBlockRendererMixin.avatar = AvatarManager.getAvatarForPlayer(profile.getId());
+    		avatar = AvatarManager.getAvatarForPlayer(profile.getId());
     	}
     }
 }
