@@ -96,7 +96,7 @@ Meet us on the [FiguraMC Discord Server](https://discord.gg/figuramc) for more i
 >   -- code to run once the ping is called
 > end
 > ```
-> And to execute the ping, it's as shrimple as calling a lua function:
+> And to execute the ping, it's as simple as calling a lua function:
 > ```lua
 > pings.myPing("Hello", "World")
 > ```
