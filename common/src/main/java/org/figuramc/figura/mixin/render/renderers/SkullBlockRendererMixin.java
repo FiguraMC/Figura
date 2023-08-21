@@ -88,15 +88,6 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
 
     @Override
     public boolean shouldRenderOffScreen(SkullBlockEntity blockEntity) {
-    	// if we have an avatar, check permissions
-    	if(avatar != null  && avatar.permissions != null) {
-    		// if we have permissions to render, then we render, else we don't render.
-    		if(avatar.permissions.get(Permissions.OFFSCREEN_RENDERING) == 1) {
-    		    return true;
-    		}
-    		return false;
-    	}
-    	//no avatar present, default rendering used.  
     	return avatar == null || avatar.permissions == null ? BlockEntityRenderer.super.shouldRenderOffScreen(blockEntity) : avatar.permissions.get(Permissions.OFFSCREEN_RENDERING) == 1;
     }
 
