@@ -38,8 +38,7 @@ Meet us on the [FiguraMC Discord Server](https://discord.gg/figuramc) for more i
 [curseforge]: https://img.shields.io/badge/CurseForge-f16436?logo=curseforge&logoColor=ffffff&labelColor=f16436
 [kofi]: https://img.shields.io/badge/Ko--fi-00b9fe?logo=kofi&logoColor=ffffff&labelColor=00b9fe
 [collective]: https://img.shields.io/badge/Open%20Collective-83b3fb?logo=opencollective&logoColor=ffffff&labelColor=83b3fb
-[wiki]: https://raster.shields.io/badge/Figura-Wiki-black?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAF9JREFUGJVjYEACRlv+/zfa8v8/AzZgtOX/f4ZLEIysiAmragzdPVCdcm7/jeTcIOweiCkETWA06vn/n0GDgeFNgjGKhMiCswwMNxgYWJAFzslBrXyEZIJY7l3s3oICAJ0SLBlvImigAAAAAElFTkSuQmCC&labelColor=166ddd&color=5ea5ff
-
+[wiki]: (https://img.shields.io/badge/Figura-Wiki-black?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAM5JREFUaIHtmbENAjEMRRPECIiSmvrYAZobggXoGIMhGOIa2IHUNDTU7HAsYBeWgh6W/isTx7knS5Z1qaUTwzTPkfg21trj3kWPJCQSoJEATbgTeN2mbYJ53vZ6tDulr4AEaCRAIwEaCdBIgMadO4aLM/PsnfjxELq4TTc7z92JP9szUvoKSIBGAjQSoJEAjQRoqjfzlK194HPc/fBzSlldH/bG015OXwEJ0EiAZhk94HWJXn+no6SvgARoJEBT16dX6IX930hfAQnQSIDmC5x4H/qkICDcAAAAAElFTkSuQmCC&labelColor=166ddd&color=5ea5ff)
 
 ## Social: [ ![discord][] ](https://discord.gg/figuramc)
 
