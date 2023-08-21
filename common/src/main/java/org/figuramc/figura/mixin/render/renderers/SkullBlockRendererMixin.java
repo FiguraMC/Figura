@@ -53,6 +53,7 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
 
         // avatar pointer incase avatar variable is set during render. (unlikely)
         Avatar localAvatar = avatar;
+        avatar = null;
 
         if (localAvatar == null || localAvatar.permissions.get(Permissions.CUSTOM_SKULL) == 0)
             return;
@@ -88,7 +89,8 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
 
     @Override
     public boolean shouldRenderOffScreen(SkullBlockEntity blockEntity) {
-    	return avatar == null || avatar.permissions == null ? BlockEntityRenderer.super.shouldRenderOffScreen(blockEntity) : avatar.permissions.get(Permissions.OFFSCREEN_RENDERING) == 1;
+    	Avatar localAvatar = avatar; // avatar pointer incase avatar variable is set during render.
+    	return localAvatar == null || localAvatar.permissions == null ? BlockEntityRenderer.super.shouldRenderOffScreen(blockEntity) : localAvatar.permissions.get(Permissions.OFFSCREEN_RENDERING) == 1;
     }
 
     @Inject(at = @At("HEAD"), method = "getRenderType")
