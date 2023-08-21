@@ -17,6 +17,7 @@ import org.figuramc.figura.avatar.local.CacheAvatarLoader;
 import org.figuramc.figura.backend2.websocket.C2SMessageHandler;
 import org.figuramc.figura.backend2.websocket.WebsocketThingy;
 import org.figuramc.figura.config.Configs;
+import org.figuramc.figura.font.Emojis;
 import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.permissions.PermissionManager;
 import org.figuramc.figura.permissions.Permissions;
@@ -204,7 +205,7 @@ public class NetworkStuff {
     private static void fetchMOTD() {
         queueString(Util.NIL_UUID, HttpAPI::getMotd, (code, data) -> {
             responseDebug("motd", code, data);
-            motd = TextUtils.tryParseJson(data);
+            if (data != null) motd = Emojis.applyEmojis(TextUtils.tryParseJson(data));
         });
     }
 

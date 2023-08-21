@@ -49,6 +49,7 @@ public class SpriteTask extends RenderTask {
 
     @Override
     public void render(PoseStack poseStack, MultiBufferSource buffer, int light, int overlay) {
+        if (a == 0) return;
         poseStack.scale(-1, -1, 1);
 
         // prepare variables

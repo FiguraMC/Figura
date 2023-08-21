@@ -183,7 +183,7 @@ public class FiguraLuaRuntime {
         public String tojstring() {
             return "function: loadstring";
         }
-        
+
         // Class that creates input stream from 
         private static class FuncStream extends InputStream {
             private final LuaFunction function;
@@ -214,12 +214,16 @@ public class FiguraLuaRuntime {
             }
         }
     };
+
     private void loadExtraLibraries() {
         // require
         userGlobals.set("require", requireFunction);
 
         // load print functions
         FiguraLuaPrinter.loadPrintFunctions(this);
+
+        // load extra functions
+        FiguraLuaExtras.loadFunctions(this);
 
         // custom loadstring
         LuaValue loadstring = LOADSTRING_FUNC.apply(this);
@@ -252,7 +256,7 @@ public class FiguraLuaRuntime {
             }
 
             @Override
-            public String tojstring(){
+            public String tojstring() {
                 return typename() + ": type";
             }
         });
@@ -358,6 +362,7 @@ public class FiguraLuaRuntime {
         loadingScripts.pop();
         return value;
     };
+
     public boolean init(ListTag autoScripts) {
         if (scripts.isEmpty())
             return false;
@@ -406,6 +411,7 @@ public class FiguraLuaRuntime {
             throw error;
         }
     };
+
     public void setInstructionLimit(int limit) {
         userGlobals.running.state.bytecodes = 0;
         setHookFunction.invoke(LuaValue.varargsOf(onReachedLimit, LuaValue.EMPTYSTRING, LuaValue.valueOf(Math.max(limit, 1))));

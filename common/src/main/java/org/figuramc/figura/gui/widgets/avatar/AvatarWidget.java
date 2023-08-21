@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.local.LocalAvatarFetcher;
+import org.figuramc.figura.font.Emojis;
 import org.figuramc.figura.gui.widgets.Button;
 import org.figuramc.figura.gui.widgets.lists.AvatarList;
 import org.figuramc.figura.utils.FiguraIdentifier;
@@ -23,7 +24,7 @@ public class AvatarWidget extends AbstractAvatarWidget {
         super(depth, width, 24, avatar, parent);
 
         AvatarWidget instance = this;
-        Component description = Component.literal(avatar.getDescription());
+        Component description = Emojis.applyEmojis(Component.literal(avatar.getDescription()));
         this.button = new Button(getX(), getY(), width, 24, getName(), null, button -> {
             AvatarManager.loadLocalAvatar(avatar.getPath());
             AvatarList.selectedEntry = avatar.getTheActualPathForThis();

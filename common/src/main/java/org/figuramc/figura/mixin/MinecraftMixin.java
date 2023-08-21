@@ -44,7 +44,7 @@ public abstract class MinecraftMixin {
 
     @Inject(at = @At("RETURN"), method = "handleKeybinds")
     private void handleKeybinds(CallbackInfo ci) {
-        // dont handle keybinds on panic
+        // don't handle keybinds on panic
         if (AvatarManager.panic)
             return;
 

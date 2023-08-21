@@ -11,6 +11,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.AvatarManager;
+import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.gui.widgets.Button;
 import org.figuramc.figura.gui.widgets.EntityPreview;
@@ -65,7 +66,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
         int listWidth = Math.min(middle - 6, 208);
         int lineHeight =  font.lineHeight;
 
-        int entitySize = (int) Math.min(height - 95 - lineHeight * 1.5 - (FiguraMod.DEBUG_MODE ? 24 : 0), listWidth);
+        int entitySize = (int) Math.min(height - 95 - lineHeight * 1.5 - (FiguraMod.debugModeEnabled() ? 24 : 0), listWidth);
         int modelSize = 11 * entitySize / 29;
         int entityX = Math.max(middle + (listWidth - entitySize) / 2 + 1, middle + 2);
 

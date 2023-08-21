@@ -1,29 +1,27 @@
-package org.figuramc.figura.gui;
+package org.figuramc.figura.font;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.FiguraResourceListener;
-import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.TextUtils;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.function.Function;
 
 public class Emojis {
 
-    private static final List<EmojiContainer> EMOJIS = new ArrayList<>();
+    private static final Map<String, EmojiContainer> EMOJIS = new HashMap<>();
+    private static final Map<String, EmojiContainer> SHORTCUT_LOOKUP = new HashMap<>();
+
     public static final char DELIMITER = ':';
     public static final char ESCAPE = '\\';
 
@@ -44,22 +42,57 @@ public class Emojis {
             try (InputStream stream = emojis.getValue().open()) {
                 // add emoji
                 JsonObject json = JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonObject();
-                EMOJIS.add(new EmojiContainer(name, json));
+                EmojiContainer container = new EmojiContainer(name, json);
+                EMOJIS.put(name, container);
+                container.getLookup().getShortcuts().forEach(shortcut -> SHORTCUT_LOOKUP.put(shortcut, container));
 
-                // check for duplicates
-                Set<String> set = new HashSet<>();
-                for (EmojiContainer emoji : EMOJIS) {
-                    for (String s : emoji.map.keySet()) {
-                        if (!set.add(s)) {
-                            FiguraMod.LOGGER.warn("Duplicate emoji id registered {}", s);
-                        }
-                    }
-                }
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("Failed to load {} emojis", name, e);
             }
         }
+
+        // check for duplicates
+        HashMap<String, List<String>> duplicates = new HashMap<>();
+        HashMap<String, String> map = new HashMap<>();
+        for (EmojiContainer curContainer : EMOJIS.values()) {
+            // For each emoji name in the current container
+            for (String curName : curContainer.getLookup().getNames()) {
+                // Check if there was already a value in the map
+                String prevValue = map.put(curName, curContainer.name);
+
+                // If there was, save the container it was found in for logging
+                if (prevValue != null) {
+                    List<String> list;
+                    if (!duplicates.containsKey(curName)) {
+                        list = new ArrayList<>();
+                        list.add(curContainer.name);
+                        duplicates.put(curName, list);
+                    } else {
+                        list = duplicates.get(curName);
+                    }
+
+                    list.add(prevValue);
+                }
+            }
+        }
+
+        // Print out each duplicate emoji and which containers it was found in.
+        for (String curName : duplicates.keySet()) {
+            FiguraMod.LOGGER.warn("Duplicate emoji \"{}\" found in containers: {}", curName, String.join(", ", duplicates.get(curName)));
+        }
     });
+
+    public static Collection<String> getCategoryNames() {
+        return EMOJIS.keySet();
+    }
+
+    public static EmojiContainer getCategory(String key) {
+        return EMOJIS.get(key);
+    }
+
+    public static boolean hasCategory(String key) {
+        return EMOJIS.containsKey(key);
+    }
 
     public static MutableComponent applyEmojis(Component text) {
         Component newText = TextUtils.parseLegacyFormatting(text);
@@ -72,9 +105,6 @@ public class Emojis {
     }
 
     private static MutableComponent convertEmoji(String string, Style style) {
-        // if the string does not contain the delimiter, then return
-        if (string.indexOf(DELIMITER) == -1)
-            return Component.literal(string).withStyle(style);
 
         // string lists, every odd index is an emoji
         List<String> strings = new ArrayList<>();
@@ -94,14 +124,14 @@ public class Emojis {
                 // append only if the next char is not the delimiter
                 if (i + 1 == string.length() || string.charAt(i + 1) != DELIMITER)
                     current.append(c);
-            // delimiter, only if not escaped
+                // delimiter, only if not escaped
             } else if (c == DELIMITER && !escaped) {
                 // toggle inside status
                 inside = !inside;
                 // and also append to the list
                 strings.add(current.toString());
                 current = new StringBuilder();
-            // otherwise just add to the queue
+                // otherwise just add to the queue
             } else {
                 escaped = false;
                 current.append(c);
@@ -126,7 +156,7 @@ public class Emojis {
                 int index = strings.size() - 1;
                 String s = strings.get(index) + DELIMITER + toAdd;
                 strings.set(index, s);
-            // otherwise just add what is remaining
+                // otherwise just add what is remaining
             } else {
                 strings.add(toAdd);
             }
@@ -137,31 +167,84 @@ public class Emojis {
         // now we parse the list
         for (int i = 0; i < strings.size(); i++) {
             String s = strings.get(i);
-            // even: append
+
+            // even: append text
             if (i % 2 == 0) {
-                result.append(s);
-            // odd: emoji
-            } else {
-                apply: {
-                    for (EmojiContainer container : EMOJIS) {
-                        Component emoji = container.getEmoji(s);
-                        if (emoji != null) {
-                            // emoji found, add it and break
-                            result.append(emoji);
-                            break apply;
+                // Find all emoji shortcuts in string
+                List<String> shortcuts = SHORTCUT_LOOKUP.keySet().stream().filter(s::contains).toList();
+
+                // Replace all shortcuts
+                if (shortcuts.size() > 0) {
+                    while (s.length() > 0) {
+                        boolean anyFound = false;
+                        for (String shortcut : shortcuts) {
+                            if (s.startsWith(shortcut)) {
+                                s = s.substring(shortcut.length());
+                                result.append(SHORTCUT_LOOKUP.get(shortcut).getShortcutComponent(shortcut));
+                                anyFound = true;
+                                break;
+                            }
+                        }
+                        if (!anyFound) {
+                            result.append(String.valueOf(s.charAt(0)));
+                            s = s.substring(1);
                         }
                     }
-                    // emoji not found, so we add the unformatted text
-                    result.append(DELIMITER + s + DELIMITER);
                 }
+                // Otherwise append as normal
+                else {
+                    result.append(s);
+                }
+            }
+            // odd: format and append emoji
+            else {
+                appendEmoji(result, s, Emojis::getEmoji);
             }
         }
 
         return result;
     }
 
+    private static void appendEmoji(MutableComponent result, String s, Function<String, Component> converter) {
+        Component emoji = converter.apply(s);
+        if (emoji != null) {
+            result.append(emoji);
+        } else {
+            result.append(DELIMITER + s + DELIMITER);
+        }
+    }
+
+    public static Component getEmoji(String emojiAlias) {
+        for (EmojiContainer container : EMOJIS.values()) {
+            Component emoji = container.getEmojiComponent(emojiAlias);
+            if (emoji != null) {
+                return emoji;
+            }
+        }
+        return null;
+    }
+
+    public static Component getEmoji(String emojiAlias, MutableComponent hover) {
+        for (EmojiContainer container : EMOJIS.values()) {
+            Component emoji = container.getEmojiComponent(emojiAlias, hover);
+            if (emoji != null) {
+                return emoji;
+            }
+        }
+        return null;
+    }
+
+    public static EmojiContainer getCategoryByFont(ResourceLocation location) {
+        for (EmojiContainer container : EMOJIS.values()) {
+            if (location.equals(container.getFont())) {
+                return container;
+            }
+        }
+        return null;
+    }
+
     public static Component removeBlacklistedEmojis(Component text) {
-        for (EmojiContainer container : EMOJIS)
+        for (EmojiContainer container : EMOJIS.values())
             text = container.blacklist(text);
         return text;
     }
@@ -173,8 +256,8 @@ public class Emojis {
         String name = query.substring(1);
         List<String> emojis = new ArrayList<>();
 
-        for (EmojiContainer container : EMOJIS) {
-            for (String s : container.map.keySet()) {
+        for (EmojiContainer container : EMOJIS.values()) {
+            for (String s : container.getLookup().getNames()) {
                 if (s.startsWith(name))
                     emojis.add(DELIMITER + s + DELIMITER);
             }
@@ -183,48 +266,9 @@ public class Emojis {
         return emojis;
     }
 
-    private static class EmojiContainer {
-        private static final Style STYLE = Style.EMPTY.withColor(ChatFormatting.WHITE);
-
-        private final String name;
-        private final ResourceLocation font;
-        private final Map<String, String> map = new HashMap<>(); // <EmojiName, Unicode>
-        private final String blacklist;
-
-        public EmojiContainer(String name, JsonObject data) {
-            this.name = name;
-            this.font = new FiguraIdentifier("emoji_" + name);
-            this.blacklist = data.get("blacklist").getAsString();
-
-            // key = emoji unicode, value = array of names
-            for (Map.Entry<String, JsonElement> emoji : data.get("emojis").getAsJsonObject().entrySet()) {
-                String unicode = emoji.getKey();
-                for (JsonElement element : emoji.getValue().getAsJsonArray()) {
-                    String key = element.getAsString();
-                    if (key.isBlank() || key.indexOf(' ') != -1 || key.indexOf(DELIMITER) != -1) {
-                        FiguraMod.LOGGER.warn("Invalid emoji name \"{}\" @ \"{}\"", key, name);
-                    } else {
-                        map.put(key, unicode);
-                    }
-                }
-            }
-        }
-
-        public Component getEmoji(String key) {
-            String emoji = map.get(key.toLowerCase());
-            if (emoji == null)
-                return null;
-            return Component.literal(emoji).withStyle(STYLE.withFont(font).withHoverEvent(
-                    new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(DELIMITER + key + DELIMITER)
-                            .append("\n")
-                            .append(FiguraText.of("emoji." + name).withStyle(ChatFormatting.DARK_GRAY)))
-            ));
-        }
-
-        public Component blacklist(Component text) {
-            if (blacklist.isBlank())
-                return text;
-            return TextUtils.replaceInText(text, "[" + blacklist + "]", TextUtils.UNKNOWN, (s, style) -> style.getFont().equals(font), Integer.MAX_VALUE);
+    public static void tickAnimations() {
+        for (EmojiContainer container : EMOJIS.values()) {
+            container.tickAnimations();
         }
     }
 }

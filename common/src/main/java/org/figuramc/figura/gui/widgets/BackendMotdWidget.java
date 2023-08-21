@@ -75,4 +75,12 @@ public class BackendMotdWidget extends AbstractScrollWidget {
     protected void updateWidgetNarration(NarrationElementOutput builder) {
         builder.add(NarratedElementType.TITLE, this.getMessage());
     }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public boolean shouldRender() {
+        return getScrollBarHeight() > 0 && this.height >= 48;
+    }
 }

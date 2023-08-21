@@ -365,7 +365,7 @@ public class HostAPI {
     @LuaWhitelist
     public HostAPI setBadge(int index, boolean value, boolean pride) {
         if (!isHost()) return this;
-        if (!FiguraMod.DEBUG_MODE)
+        if (!FiguraMod.debugModeEnabled())
             throw new LuaError("Congrats, you found this debug easter egg!");
 
         Pair<BitSet, BitSet> badges = AvatarManager.getBadges(owner.owner);

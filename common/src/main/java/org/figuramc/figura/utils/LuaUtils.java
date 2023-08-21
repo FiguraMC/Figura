@@ -1,5 +1,6 @@
 package org.figuramc.figura.utils;
 
+import com.google.gson.*;
 import com.mojang.brigadier.StringReader;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.commands.CommandBuildContext;
@@ -22,6 +23,10 @@ import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.math.vector.FiguraVec4;
 import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
+
+import javax.xml.validation.Validator;
 
 public class LuaUtils {
 
@@ -185,5 +190,44 @@ public class LuaUtils {
         } else {
             throw new LuaError("Invalid type for getSlot: " + slot.getClass().getSimpleName());
         }
+    }
+
+    public static JsonElement asJsonValue(LuaValue value) {
+        if (value.isnil()) return JsonNull.INSTANCE;
+        if (value.isboolean()) return new JsonPrimitive(value.checkboolean());
+        if (value.isint()) return new JsonPrimitive(value.checkint());
+        if (value.isnumber()) return new JsonPrimitive(value.checkdouble());
+        if (value.isstring()) return new JsonPrimitive(value.checkjstring());
+        if (value.istable()) {
+            LuaTable table = value.checktable();
+
+            // If it's an "array" (uses numbers as keys)
+            if (checkTableArray(table)) {
+                JsonArray arr = new JsonArray();
+                for (int i = 0; i < table.length(); i++) {
+                    arr.add(asJsonValue(table.get(i+1)));
+                }
+                return arr;
+            }
+            // Otherwise, if it's a proper key-value table
+            else {
+                JsonObject object = new JsonObject();
+                for (LuaValue key : table.keys()) {
+                    object.add(key.tojstring(), asJsonValue(table.get(key)));
+                }
+                return object;
+            }
+        }
+
+        // Fallback for things that shouldn't be converted (like functions)
+        return null;
+    }
+
+    public static boolean checkTableArray(LuaTable table) {
+        for (LuaValue key : table.keys()) {
+            if (!key.isnumber()) return false;
+        }
+
+        return true;
     }
 }
