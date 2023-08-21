@@ -342,15 +342,32 @@ public class ClientAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("client.has_iris")
-    public static boolean hasIris() {
+    @LuaMethodDoc("client.has_shader_pack_mod")
+    public static boolean hasShaderPackMod() {
         return HAS_IRIS || OPTIFINE_LOADED.get();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("client.has_iris_shader")
-    public static boolean hasIrisShader() {
+    @LuaMethodDoc("client.has_shader_pack")
+    public static boolean hasShaderPack() {
         return HAS_IRIS && net.irisshaders.iris.api.v0.IrisApi.getInstance().isShaderPackInUse() || OPTIFINE_LOADED.get() && hasOptifineShader();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_shader_pack_name")
+    public static String getShaderPackName() {
+        try {
+            if (HAS_IRIS) {
+                return net.coderbot.iris.Iris.getCurrentPackName();
+            } else if (OPTIFINE_LOADED.get()) {
+                Field shaderNameField = Class.forName("net.optifine.shaders.Shaders").getField("currentShaderName");
+                Class<?> shaderClass = shaderNameField.getType();
+                if (shaderClass == String.class)
+                    return (String) shaderNameField.get(null);
+            }
+        }catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException ignored) {
+        }
+        return "";
     }
 
     @LuaWhitelist
