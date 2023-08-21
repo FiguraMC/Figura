@@ -142,7 +142,7 @@ Meet us on the [FiguraMC Discord Server](https://discord.gg/figuramc) for more i
   Slyme has an [unofficial wiki](https://slymeball.github.io/Figura-Wiki) covering most of Figura's basics
 
 
-* If you want a more in-depth wiki, with the GitHub style, Katt made one [here](https://github.com/KitCat962/FiguraRewriteRewrite/wiki) 
+* If you want a more in-depth wiki, with the GitHub style, Katt made one [here](https://wiki.figuramc.org/) 
 
 
 * Do you use VSCode and wish Figura's documentation autocompleted in the editor? GrandpaScout saves the day with their [VSDocs](https://github.com/GrandpaScout/FiguraRewriteVSDocs/wiki)
