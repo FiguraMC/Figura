@@ -97,7 +97,7 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
     		return false;
     	}
     	//no avatar present, default rendering used.  
-    	return BlockEntityRenderer.super.shouldRenderOffScreen(blockEntity);
+    	return avatar == null || avatar.permissions == null ? BlockEntityRenderer.super.shouldRenderOffScreen(blockEntity) : avatar.permissions.get(Permissions.OFFSCREEN_RENDERING) == 1;
     }
 
     @Inject(at = @At("HEAD"), method = "getRenderType")
