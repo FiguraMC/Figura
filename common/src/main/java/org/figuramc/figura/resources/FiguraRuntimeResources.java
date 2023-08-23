@@ -83,7 +83,7 @@ public class FiguraRuntimeResources {
             File assetsDirectoryFile = getAssetsDirectory().toFile();
             JsonObject directoryJsonObject = constructAssetsDirectoryJsonObject(assetsDirectoryFile.listFiles());
             for (Map.Entry<String, JsonElement> entry : directoryJsonObject.entrySet()) {
-                if (!hashes.has(entry.getKey())) {
+                if (!hashes.has(entry.getKey()) && !Configs.LOCAL_ASSETS.value) {
                     IOUtils.deleteFile(getAssetsDirectory().resolve(entry.getKey()));
                 }
             }
