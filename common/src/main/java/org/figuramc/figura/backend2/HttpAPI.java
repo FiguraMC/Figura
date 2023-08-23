@@ -14,7 +14,7 @@ import java.util.function.BiConsumer;
 
 public class HttpAPI {
 
-    private final String token;
+    public final String token;
 
     public HttpAPI(String token) {
         this.token = token;
@@ -105,6 +105,7 @@ public class HttpAPI {
     }
 
     public HttpRequest getAvatar(UUID owner, String id) {
+        FiguraMod.LOGGER.info("UUID: "  + owner + " ID: " + id);
         return header(owner.toString() + '/' + id).build();
     }
 
