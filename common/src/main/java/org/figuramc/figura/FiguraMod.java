@@ -188,7 +188,14 @@ public class FiguraMod {
     }
 
     public enum Links {
-        Wiki("https://github.com/KitCat962/FiguraRewriteRewrite/wiki", ColorUtils.Colors.AWESOME_BLUE.style), Kofi("https://ko-fi.com/skyrina", ColorUtils.Colors.KOFI.style), OpenCollective("https://opencollective.com/figura", ColorUtils.Colors.KOFI.style), Discord("https://discord.gg/figuramc", ColorUtils.Colors.DISCORD.style), Github("https://github.com/FiguraMC/Figura", ColorUtils.Colors.GITHUB.style), Modrinth("https://modrinth.com/mod/figura", ColorUtils.Colors.MODRINTH.style), Curseforge("https://www.curseforge.com/minecraft/mc-mods/figura", ColorUtils.Colors.CURSEFORGE.style), LuaManual("https://www.lua.org/manual/5.2/manual.html", ColorUtils.Colors.LUA_LOG.style);
+        Wiki("https://wiki.figuramc.org/", ColorUtils.Colors.AWESOME_BLUE.style),
+        Kofi("https://ko-fi.com/skyrina", ColorUtils.Colors.KOFI.style),
+        OpenCollective("https://opencollective.com/figura", ColorUtils.Colors.KOFI.style),
+        Discord("https://discord.gg/figuramc", ColorUtils.Colors.DISCORD.style),
+        Github("https://github.com/FiguraMC/Figura", ColorUtils.Colors.GITHUB.style),
+        Modrinth("https://modrinth.com/mod/figura", ColorUtils.Colors.MODRINTH.style),
+        Curseforge("https://www.curseforge.com/minecraft/mc-mods/figura", ColorUtils.Colors.CURSEFORGE.style),
+        LuaManual("https://www.lua.org/manual/5.2/manual.html", ColorUtils.Colors.LUA_LOG.style);
 
         public final String url;
         public final Style style;

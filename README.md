@@ -38,12 +38,15 @@ Meet us on the [FiguraMC Discord Server](https://discord.gg/figuramc) for more i
 [curseforge]: https://img.shields.io/badge/CurseForge-f16436?logo=curseforge&logoColor=ffffff&labelColor=f16436
 [kofi]: https://img.shields.io/badge/Ko--fi-00b9fe?logo=kofi&logoColor=ffffff&labelColor=00b9fe
 [collective]: https://img.shields.io/badge/Open%20Collective-83b3fb?logo=opencollective&logoColor=ffffff&labelColor=83b3fb
+[wiki]: https://img.shields.io/badge/Figura-Wiki-black?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAM5JREFUaIHtmbENAjEMRRPECIiSmvrYAZobggXoGIMhGOIa2IHUNDTU7HAsYBeWgh6W/isTx7knS5Z1qaUTwzTPkfg21trj3kWPJCQSoJEATbgTeN2mbYJ53vZ6tDulr4AEaCRAIwEaCdBIgMadO4aLM/PsnfjxELq4TTc7z92JP9szUvoKSIBGAjQSoJEAjQRoqjfzlK194HPc/fBzSlldH/bG015OXwEJ0EiAZhk94HWJXn+no6SvgARoJEBT16dX6IX930hfAQnQSIDmC5x4H/qkICDcAAAAAElFTkSuQmCC&labelColor=166ddd&color=5ea5ff
 
 ## Social: [ ![discord][] ](https://discord.gg/figuramc)
 
 ## Download: [ ![modrinth] ](https://modrinth.com/mod/figura) [ ![curseforge][] ](https://curseforge.com/minecraft/mc-mods/figura)
 
 ## Donate: [ ![collective][] ](https://opencollective.com/figura) [ ![kofi][] ](https://ko-fi.com/skyrina)
+
+## Wiki: [ ![wiki][] ](https://wiki.figuramc.org/)
 
 # FAQ
 
@@ -138,11 +141,8 @@ Meet us on the [FiguraMC Discord Server](https://discord.gg/figuramc) for more i
 * Are you new to Figura and are looking for a video tutorial about how everything works? You should probably watch Chloe's [Figura tutorial series](https://www.youtube.com/playlist?list=PLNz7v2g2SFA8lOQUDS4z4-gIDLi_dWAhl) on YouTube
 
 
-* Do you wish there was a wiki for the rewrite?
+* Do you wish there was another wiki for the rewrite?
   Slyme has an [unofficial wiki](https://slymeball.github.io/Figura-Wiki) covering most of Figura's basics
-
-
-* If you want a more in-depth wiki, with the GitHub style, Katt made one [here](https://github.com/KitCat962/FiguraRewriteRewrite/wiki) 
 
 
 * Do you use VSCode and wish Figura's documentation autocompleted in the editor? GrandpaScout saves the day with their [VSDocs](https://github.com/GrandpaScout/FiguraRewriteVSDocs/wiki)
