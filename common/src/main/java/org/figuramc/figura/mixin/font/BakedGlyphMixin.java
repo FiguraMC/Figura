@@ -6,6 +6,7 @@ import org.figuramc.figura.ducks.BakedGlyphAccessor;
 import org.figuramc.figura.font.EmojiContainer;
 import org.figuramc.figura.font.EmojiMetadata;
 import org.figuramc.figura.font.Emojis;
+import org.figuramc.figura.utils.PlatformUtils;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
@@ -15,6 +16,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.lang.reflect.Field;
 
 @Mixin(BakedGlyph.class)
 public abstract class BakedGlyphMixin implements BakedGlyphAccessor {
@@ -54,7 +57,7 @@ public abstract class BakedGlyphMixin implements BakedGlyphAccessor {
         float m = italic ? 1.0f - 0.25f * h : 0f;
         float n = italic ? 1.0f - 0.25f * j : 0f;
 
-        final float singleWidth = 8f / 256.0f;
+        final float singleWidth = 8f / figura$getFontWidthIMF();
         float shift = singleWidth * figura$metadata.getCurrentFrame();
 
         float u = u0 + shift;
@@ -63,5 +66,32 @@ public abstract class BakedGlyphMixin implements BakedGlyphAccessor {
         vertexConsumer.vertex(matrix, x + figura$metadata.width + n, l, 0.0f).color(red, green, blue, alpha).uv(u + singleWidth, this.v1).uv2(light).endVertex();
         vertexConsumer.vertex(matrix, x + figura$metadata.width + m, k, 0.0f).color(red, green, blue, alpha).uv(u + singleWidth, this.v0).uv2(light).endVertex();
         ci.cancel();
+    }
+
+    @Unique
+    private float figura$getFontWidthIMF() {
+        if (PlatformUtils.isModLoaded("immediatelyfast")) {
+            String modVersion = PlatformUtils.getModVersion("immediatelyfast");
+            if (PlatformUtils.compareVersionTo(modVersion, "1.1.17") >= 0){
+                try {
+                    Class<?> modClass = Class.forName("net.raphimc.immediatelyfast.ImmediatelyFast");
+                    Field configField = modClass.getDeclaredField("runtimeConfig");
+                    Class<?> configClass = Class.forName("net.raphimc.immediatelyfast.feature.core.ImmediatelyFastRuntimeConfig");
+                    Field font_atlas_resizing = configClass.getDeclaredField("font_atlas_resizing");
+                    return font_atlas_resizing.getBoolean(configField.get(null)) ? 2048.0f : 256.0f;
+                } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException ignored) {
+                }
+            } else {
+                try {
+                    Class<?> modClass = Class.forName("net.raphimc.immediatelyfast.ImmediatelyFast");
+                    Field configField = modClass.getDeclaredField("config");
+                    Class<?> configClass = Class.forName("net.raphimc.immediatelyfast.feature.core.ImmediatelyFastConfig");
+                    Field font_atlas_resizing = configClass.getDeclaredField("font_atlas_resizing");
+                    return font_atlas_resizing.getBoolean(configField.get(null)) ? 2048.0f : 256.0f;
+                } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException ignored) {
+                }
+            }
+        }
+        return 256.0f;
     }
 }
