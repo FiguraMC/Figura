@@ -134,7 +134,10 @@ public class WorldAPI {
         if (!world.hasChunksAt(min, max))
             return list;
 
-        BlockPos.betweenClosedStream(min, max).forEach(blockPos -> list.add(new BlockStateAPI(world.getBlockState(blockPos), blockPos)));
+        BlockPos.betweenClosedStream(min, max).forEach(blockPos -> {
+            BlockPos pos = new BlockPos(blockPos);
+            list.add(new BlockStateAPI(world.getBlockState(pos), pos));
+        });
         return list;
     }
 
