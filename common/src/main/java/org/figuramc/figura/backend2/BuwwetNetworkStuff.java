@@ -118,8 +118,7 @@ public class BuwwetNetworkStuff extends NetworkStuff {
 
             // Get model.
 
-            CompoundTag modelNBT = (CompoundTag) nbt.get("models");
-            BlockBenchPart.parseNBTchildren(modelNBT);
+            BlockBenchPart.parseNBTchildren(nbt.getCompound("models"));
 
             CacheAvatarLoader.save(avatar.getFirst(), nbt);
         }

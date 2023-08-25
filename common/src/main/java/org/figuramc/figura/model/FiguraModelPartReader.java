@@ -399,7 +399,7 @@ public class FiguraModelPartReader {
         }
     }
 
-    private static void readMesh(List<Integer> facesByTexture, CompoundTag data, Map<Integer, List<Vertex>> vertices) {
+    public static void readMesh(List<Integer> facesByTexture, CompoundTag data, Map<Integer, List<Vertex>> vertices) {
         CompoundTag meshData = data.getCompound("mesh_data");
         // mesh_data:
         // "vtx": List<Float>, xyz

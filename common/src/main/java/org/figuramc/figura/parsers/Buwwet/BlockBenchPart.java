@@ -2,6 +2,7 @@ package org.figuramc.figura.parsers.Buwwet;
 
 import net.minecraft.nbt.*;
 import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
 import org.luaj.vm2.ast.Str;
 
 import java.util.ArrayList;
@@ -62,6 +63,7 @@ public class BlockBenchPart {
 
     // Iterates through the FiguraModel's model tag.
     public static BlockBenchPart parseNBTchildren(CompoundTag nbt) {
+
         // Check if this element has children of their own (is a group).
         if (nbt.contains("chld")) {
             // We're a group
@@ -116,8 +118,10 @@ public class BlockBenchPart {
         public float inflate = 0;
         public float[] from;
         public float[] to;
-
-        public FiguraModelParser.CubeData cubeData[];
+        // CubeData is simply an array of the faces
+        public FiguraModelParser.CubeData[] cubeData;
+        // Mesh data contains an array for the vertices and another for the faces.
+        public FiguraModelParser.MeshData meshData;
 
         public Element(CompoundTag nbt) {
             super(nbt);
@@ -137,7 +141,8 @@ public class BlockBenchPart {
                 cubeData = FiguraModelParser.CubeData.generateFromFiguraFaces(nbt.get("cube_data"));
             } else if (nbt.contains("mesh_data")) {
                 type = "mesh";
-                FiguraMod.LOGGER.info(nbt.get("mesh_data").getAsString());
+                //FiguraMod.LOGGER.info(nbt.get("mesh_data").getAsString());
+                FiguraModelParser.MeshData.generateFromElement(nbt);
             } else {
                 FiguraMod.LOGGER.error("Element is neither a mesh or cube.");
             }

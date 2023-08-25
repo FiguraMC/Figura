@@ -1,15 +1,35 @@
 package org.figuramc.figura.parsers.Buwwet;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.model.FiguraModelPartReader;
+import org.figuramc.figura.model.rendering.AvatarRenderer;
+import org.figuramc.figura.model.rendering.Vertex;
+import org.figuramc.figura.model.rendering.texture.FiguraTexture;
+import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
 import org.luaj.vm2.ast.Str;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /// Parses Figura models into blockbench models by performing all of the calculations already done previously but on reverse.
 public class FiguraModelParser {
+
+    public static void parseAvatar(CompoundTag nbt) {
+        // Get textures (required for some vector parsers).
+        CompoundTag texturesNbt = nbt.getCompound("textures");
+
+        //ListTag texturesList = texturesNbt.getList("data", Tag.TAG_COMPOUND);
+
+
+
+        BlockBenchPart rootFiguraModel = BlockBenchPart.parseNBTchildren(nbt.getCompound("models"));
+
+    }
     public static class CubeData {
         static final List<String> FACES = List.of("north", "south", "west", "east", "up", "down");
 
@@ -53,6 +73,37 @@ public class FiguraModelParser {
     }
 
     public class MeshData {
+        public HashMap<String, float[]> verticies;
+        public MeshFaceData[] faces;
 
+        public class MeshFaceData {
+            // uvs are sized 2
+            public HashMap<String, float[]> uv;
+            public String[] verticies;
+
+            public int texture;
+
+        }
+
+        public static void generateFromElement(CompoundTag element) {
+            List<Integer> facesByTexture = new ArrayList<>();
+            // Temp because we still aren't catching textures
+            facesByTexture.add(0);
+            facesByTexture.add(0);
+            facesByTexture.add(0);
+            facesByTexture.add(0);
+            facesByTexture.add(0);
+            facesByTexture.add(0);
+
+            Map<Integer, List<Vertex>> vertices = new HashMap<>();
+
+            FiguraModelPartReader.readMesh(facesByTexture, element, vertices);
+            for (Map.Entry<Integer, List<Vertex>> entry : vertices.entrySet()) {
+                FiguraMod.LOGGER.info(String.valueOf(entry.getKey()));
+                for (Vertex v : entry.getValue()) {
+                    FiguraMod.LOGGER.info(v.x + ", " + v.y + ", " + v.z);
+                }
+            }
+        }
     }
 }

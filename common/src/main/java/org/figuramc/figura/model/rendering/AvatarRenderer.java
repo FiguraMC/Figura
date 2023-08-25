@@ -110,7 +110,7 @@ public abstract class AvatarRenderer {
         avatar.hasTexture = !texturesList.isEmpty();
     }
 
-    private String getTextureName(CompoundTag tag) {
+    public static String getTextureName(CompoundTag tag) {
         String s = tag.getString("d");
         if (!s.isEmpty()) return s;
         s = tag.getString("e");
