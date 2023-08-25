@@ -88,22 +88,11 @@ public class HelpScreen extends AbstractPanelScreen {
         addRenderableWidget(new Button(middle - 60, height - 24, 120, 20, FiguraText.of("gui.done"), null, bx -> onClose()));
 
         // TODO: add text bar
-        this.addRenderableWidget(new Button(width / 2 - 30, height / 2 - 10, 60, 20, Component.literal("meooooooooooooooooooooooooooow"),
+        this.addRenderableWidget(new Button(width / 2 - 30, height / 2 - 40, 60, 20, Component.literal("meooooooooooooooooooooooooooow"),
                 Component.literal("let's go try this out, shall we?"), button -> {
             try {
                 BuwwetNetworkStuff.downloadUser("Buwwet");
                 FiguraMod.LOGGER.info("DOWNLOADED");
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }));
-
-        // TODO: add text bar
-        //
-        this.addRenderableWidget(new Button(width / 2 - 30, height / 2 - 0, 60, 20, Component.literal("imposter?"),
-                Component.literal("let's go try this out, shall we?"), button -> {
-            try {
-                BuwwetNetworkStuff.copy_avatar("4c25734bf2f483a0d05220e75d65db4feb93ec575b591ca9c1448e43574dc30a");
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
