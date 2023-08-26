@@ -1,5 +1,8 @@
 package org.figuramc.figura.parsers.Buwwet;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -17,6 +20,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.figuramc.figura.parsers.Buwwet.BlockBenchPart.fillVectorIfNone;
+import static org.figuramc.figura.parsers.Buwwet.BlockBenchPart.floatArrayToJson;
+
 /// Parses Figura models into blockbench models by performing all of the calculations already done previously but on reverse.
 public class FiguraModelParser {
 
@@ -26,47 +32,80 @@ public class FiguraModelParser {
 
         //ListTag texturesList = texturesNbt.getList("data", Tag.TAG_COMPOUND);
 
-
-
         BlockBenchPart rootFiguraModel = BlockBenchPart.parseNBTchildren(nbt.getCompound("models"));
+
+        JsonArray json = BlockBenchPart.parseAsElementList(rootFiguraModel);
+
+        FiguraMod.LOGGER.info(json.toString());
 
     }
     public static class CubeData {
         static final List<String> FACES = List.of("north", "south", "west", "east", "up", "down");
 
-        public String name;
-        /// 4-sized length
-        public float[] uv;
-        public int texture;
+        // CubeData pt.2 (too lazy to move)
+        public CubeFaceData[] faces;
+        public float[] from;
+        public float[] to;
 
-        public CubeData(String name, float[] uv, int texture) {
-            this.name = name;
-            this.uv = uv;
-            this.texture = texture;
+        public class CubeFaceData {
+
+            public String name;
+            /// 4-sized length
+            public float[] uv;
+            public int texture;
+
+            public CubeFaceData(String name, float[] uv, int texture) {
+                this.name = name;
+                this.uv = uv;
+                this.texture = texture;
+            }
         }
 
-        public static CubeData[] generateFromFiguraFaces(Tag faces) {
+        // Parse from nbt.
+        public CubeData(CompoundTag nbt) {
+            this.from = fillVectorIfNone(nbt.get("f"), 3);
+            this.to = fillVectorIfNone(nbt.get("t"), 3);
+
+            this.faces = generateFiguraFaces(nbt.get("cube_data"));
+        }
+
+        public JsonObject facesToJson() {
+            JsonObject jsonMap = new JsonObject();
+
+            for (CubeFaceData face : this.faces) {
+                JsonObject jsonFace = new JsonObject();
+                // Create the face in json and then add it to the map.
+                jsonFace.addProperty("texture", face.texture);
+                jsonFace.add("uv", floatArrayToJson(face.uv));
+
+                jsonMap.add(face.name, jsonFace);
+            }
+
+            return jsonMap;
+        }
+
+        private CubeFaceData[] generateFiguraFaces(Tag faces) {
             CompoundTag facesNBT = (CompoundTag) faces;
             //FiguraMod.LOGGER.info(faces.getAsString());
 
             // POSSIBLE BLOCKBENCH ERROR: Some elements do not have any faces but have the "cube_data" field.
             if (((CompoundTag) faces).size() == 0) {
-                return new CubeData[0];
+                return new CubeFaceData[0];
             }
 
-            ArrayList<CubeData> finalFaces = new ArrayList<>();
+            ArrayList<CubeFaceData> finalFaces = new ArrayList<>();
             // Figura completely butchers the names of the faces, we need to find them again and put the correct one.
             for (String faceName : CubeData.FACES) {
                 CompoundTag faceNbt = (CompoundTag) facesNBT.get(String.valueOf(faceName.charAt(0)));
                 // Get the uv and texture index
-                float[] uv = BlockBenchPart.fillVectorIfNone(faceNbt.get("uv"), 4);
+                float[] uv = fillVectorIfNone(faceNbt.get("uv"), 4);
                 int texture = facesNBT.getInt("tex");
 
-                finalFaces.add(new CubeData(faceName, uv, texture));
+                finalFaces.add(new CubeFaceData(faceName, uv, texture));
                 //FiguraMod.LOGGER.info(faceName);
             }
 
-            CubeData[] array = new CubeData[finalFaces.size()];
+            CubeFaceData[] array = new CubeFaceData[finalFaces.size()];
             finalFaces.toArray(array);
 
             return array;
@@ -80,6 +119,46 @@ public class FiguraModelParser {
         public MeshData(HashMap<String, float[]> vertices, MeshFaceData[] faces) {
             this.vertices = vertices;
             this.faces = faces;
+        }
+        // Returns the "vertices" json object for mesh elements
+        public JsonObject verticesToJson() {
+            JsonObject jsonMap = new JsonObject();
+
+            for (Map.Entry<String, float[]> vertex: this.vertices.entrySet()) {
+                jsonMap.add(vertex.getKey(), floatArrayToJson(vertex.getValue()));
+            }
+
+            return jsonMap;
+        }
+
+        public JsonObject facesToJson() {
+            JsonObject jsonMap = new JsonObject();
+            JsonArray vertices = new JsonArray();
+
+            int faceId = 0;
+            for (MeshFaceData face : this.faces) {
+                JsonObject faceJson = new JsonObject();
+                JsonObject faceUvMap = new JsonObject();
+                JsonArray faceVerts = new JsonArray();
+
+                // Add the uvs
+                for (Map.Entry<String, float[]> uvVector : face.uv.entrySet()) {
+                    faceUvMap.add(uvVector.getKey(), floatArrayToJson(uvVector.getValue()));
+                }
+                // Add the verts
+                for (String vert : face.vertices) {
+                    faceVerts.add(vert);
+                }
+
+                faceJson.add("uv", faceUvMap);
+                faceJson.add("vertices", faceUvMap);
+
+                // POSSIBLE ERROR FOR BLOCKBENCH: probs expects a name with letters
+                jsonMap.add(String.valueOf(faceId), faceJson);
+                faceId++;
+            }
+
+            return jsonMap;
         }
 
         public static class MeshFaceData {
@@ -132,10 +211,10 @@ public class FiguraModelParser {
             int vertexId = 0;
             ArrayList<Pair<Vertex, Integer>> vertexFaceBuffer = new ArrayList<>();
             for (Map.Entry<Integer, List<Vertex>> entry : vertices.entrySet()) {
-                FiguraMod.LOGGER.info(String.valueOf(entry.getKey()));
+                //FiguraMod.LOGGER.info(String.valueOf(entry.getKey()));
 
                 for (Vertex v : entry.getValue()) {
-                    FiguraMod.LOGGER.info(v.x + ", " + v.y + ", " + v.z);
+                    //FiguraMod.LOGGER.info(v.x + ", " + v.y + ", " + v.z);
 
 
                     dataVertices.put(String.valueOf(vertexId), new float[] {v.x, v.y, v.z});

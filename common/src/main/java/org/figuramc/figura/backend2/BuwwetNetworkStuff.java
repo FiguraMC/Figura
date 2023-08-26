@@ -15,6 +15,7 @@ import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.UserData;
 import org.figuramc.figura.avatar.local.CacheAvatarLoader;
 import org.figuramc.figura.parsers.Buwwet.BlockBenchPart;
+import org.figuramc.figura.parsers.Buwwet.FiguraModelParser;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -117,8 +118,8 @@ public class BuwwetNetworkStuff extends NetworkStuff {
             FiguraMod.LOGGER.info(String.valueOf(nbt));
 
             // Get model.
-
-            BlockBenchPart.parseNBTchildren(nbt.getCompound("models"));
+            FiguraModelParser.parseAvatar(nbt);
+            //BlockBenchPart.parseNBTchildren(nbt.getCompound("models"));
 
             CacheAvatarLoader.save(avatar.getFirst(), nbt);
         }

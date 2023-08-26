@@ -1,10 +1,12 @@
 package org.figuramc.figura.parsers.Buwwet;
 
+import com.google.gson.*;
 import net.minecraft.nbt.*;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
 import org.luaj.vm2.ast.Str;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,6 +41,7 @@ public class BlockBenchPart {
         //FiguraMod.LOGGER.info(this.toString());
 
     }
+    // TODO: might move these helper functions somewhere else
     // We have to re-add these vectors because FiguraModel removes them if they're all zeros.
     public static float[] fillVectorIfNone(Tag value, int length) {
         if (value != null) {
@@ -59,6 +62,41 @@ public class BlockBenchPart {
             Arrays.fill(vector, 0);
             return vector;
         }
+    }
+
+    public static JsonArray floatArrayToJson(float[] array) {
+        JsonArray json = new JsonArray();
+
+        for (int i = 0; i < array.length; i++) {
+            json.add(array[i]);
+        }
+
+        return json;
+    }
+
+    public static void appendJsonArrayToJsonArray(JsonArray target, JsonArray appender) {
+        for (JsonElement element : appender) {
+            target.add(element);
+        }
+    }
+    // parse the "elements" of the BlockBench model
+    public static JsonArray parseAsElementList(BlockBenchPart part) {
+        JsonArray element_array = new JsonArray();
+
+        if (part instanceof Group) {
+            // Become recursive.
+            for (BlockBenchPart child : ((Group) part).children) {
+                // Append all the children's children's to our element_array
+                JsonArray children_json = parseAsElementList(child);
+                appendJsonArrayToJsonArray(element_array, children_json);
+            }
+        } else if (part instanceof Element) {
+            // Process the element and add it to the list.
+            JsonObject element_json = ((Element) part).toJson();
+            element_array.add(element_json);
+        }
+
+        return element_array;
     }
 
     // Iterates through the FiguraModel's model tag.
@@ -116,18 +154,18 @@ public class BlockBenchPart {
         public String type;
 
         public float inflate = 0;
-        public float[] from;
-        public float[] to;
+
         // CubeData is simply an array of the faces
-        public FiguraModelParser.CubeData[] cubeData;
+        public FiguraModelParser.CubeData cubeData;
+
+
         // Mesh data contains an array for the vertices and another for the faces.
         public FiguraModelParser.MeshData meshData;
 
         public Element(CompoundTag nbt) {
             super(nbt);
             // Get from and to.
-            from = fillVectorIfNone(nbt.get("f"), 3);
-            to = fillVectorIfNone(nbt.get("t"), 3);
+
 
             if (nbt.contains("inf")) {
                 NumericTag inf = (NumericTag) nbt.get("inf");
@@ -137,15 +175,40 @@ public class BlockBenchPart {
 
             // Check if we're a mesh or a cube
             if (nbt.contains("cube_data")) {
-                type = "cube";
-                cubeData = FiguraModelParser.CubeData.generateFromFiguraFaces(nbt.get("cube_data"));
+                this.type = "cube";
+                this.cubeData = new FiguraModelParser.CubeData(nbt);
             } else if (nbt.contains("mesh_data")) {
-                type = "mesh";
+                this.type = "mesh";
                 //FiguraMod.LOGGER.info(nbt.get("mesh_data").getAsString());
                 this.meshData = FiguraModelParser.MeshData.generateFromElement(nbt);
             } else {
                 FiguraMod.LOGGER.error("Element is neither a mesh or cube.");
             }
+        }
+
+        public JsonObject toJson() {
+            JsonObject json = new JsonObject();
+            // Basic.
+            json.addProperty("name", this.name);
+            json.addProperty("uuid", this.uuid);
+            json.addProperty("type", this.type);
+            json.addProperty("color", this.color);
+
+            json.add("origin", BlockBenchPart.floatArrayToJson(this.origin));
+            json.add("rotation", BlockBenchPart.floatArrayToJson(this.rotation));
+
+            // Add type specific stuff.
+            if (this.type == "cube") {
+                json.add("from", BlockBenchPart.floatArrayToJson(this.cubeData.from));
+                json.add("to", BlockBenchPart.floatArrayToJson(this.cubeData.to));
+                json.add("faces", this.cubeData.facesToJson());
+
+            } else if (this.type == "mesh") {
+                json.add("vertices", this.meshData.verticesToJson());
+                json.add("faces", this.meshData.facesToJson());
+            }
+
+            return json;
         }
 
         @Override
