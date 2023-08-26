@@ -229,13 +229,26 @@ public class BlockBenchPart {
             json.addProperty("uuid", this.uuid);
             json.addProperty("type", this.type);
             json.addProperty("color", this.color);
+
             // ??? json.addProperty("inflate", this.inflate);
+
+
+            json.addProperty("visibility", true);
+            json.addProperty("locked", false);
+
+
 
             json.add("origin", BlockBenchPart.floatArrayToJson(this.origin));
             json.add("rotation", BlockBenchPart.floatArrayToJson(this.rotation));
 
             // Add type specific stuff.
             if (this.type == "cube") {
+                // Disable bad UVs
+                json.addProperty("autouv", 0);
+                json.addProperty("box_uv", false);
+                json.addProperty("rescale", false);
+
+
                 json.add("from", BlockBenchPart.floatArrayToJson(this.cubeData.from));
                 json.add("to", BlockBenchPart.floatArrayToJson(this.cubeData.to));
                 json.add("faces", this.cubeData.facesToJson());

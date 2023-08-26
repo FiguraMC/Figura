@@ -15,14 +15,10 @@ import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
 import org.figuramc.figura.utils.IOUtils;
 import org.luaj.vm2.ast.Str;
 
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.figuramc.figura.parsers.Buwwet.BlockBenchPart.fillVectorIfNone;
 import static org.figuramc.figura.parsers.Buwwet.BlockBenchPart.floatArrayToJson;
@@ -47,7 +43,25 @@ public class FiguraModelParser {
         // Save location
         Path avatarSavePath = IOUtils.getOrCreateDir(getDownloaderAvatarDirectory(), avatarName);
 
+        // Parse textures and save them, also generate a json object to be included in all BlockBench models
+        ArrayList<TextureData> textures = TextureData.fromAvatarTexturesNbt(nbt.getCompound("textures"));
+        JsonArray jsonModelTextures = new JsonArray();
+        for (TextureData texture : textures) {
+            // Save the image!
+            try {
+                // We do not have to do anything fancy as the byte[] contains headers (aka not raw)
+                OutputStream new_texture = new FileOutputStream(avatarSavePath.resolve(texture.name).toString(), false);
+                new_texture.write(texture.textureBytes);
+                new_texture.flush();
+                new_texture.close();
 
+            } catch (Exception e) {
+                FiguraMod.LOGGER.error("Failed to save texture: " + e);
+            }
+
+            // Add to the json array
+            jsonModelTextures.add(texture.toBlockBenchTextureJson());
+        }
 
         // Parse all the models
         // All models are clumped together at "models.MODEL_HERE", they require to be given their own separate file.
@@ -63,12 +77,40 @@ public class FiguraModelParser {
             // Get the outliner
             JsonObject outlinerJson = BlockBenchPart.Group.toJsonOutliner(rootFiguraModel).getAsJsonObject();
             modelJson.add("outliner", outlinerJson.get("children"));   // Get children to make the outliner an array, (also model shouldn't even be referenced in blockbench)
-
+            // Add the meta data
             JsonObject metaJson = new JsonObject();
             metaJson.addProperty("format_version", "4.5");
-            metaJson.addProperty("model_format", "modded_entity");
-            metaJson.addProperty("box_uv", "true");
+            metaJson.addProperty("model_format", "free");
+            metaJson.addProperty("box_uv", false); //no please
             modelJson.add("meta", metaJson);
+
+            // Add the resolution
+            // TODO: can figura models set this? should there be a check?
+            JsonObject resolutionJson = new JsonObject();
+            resolutionJson.addProperty("width", 64);
+            resolutionJson.addProperty("height", 64);
+            modelJson.add("resolution", resolutionJson);
+
+            // Add textures
+            modelJson.add("textures", jsonModelTextures);
+
+            //TODO animation
+            modelJson.add("animations", new JsonArray());
+            // Dummy data to make BlockBench not cry apparently
+            modelJson.addProperty("model_identifier", "");
+            modelJson.addProperty("variable_placeholders", "");
+            modelJson.add("variable_placeholder_buttons", new JsonArray());
+            modelJson.add("timeline_setups", new JsonArray());
+            modelJson.add("unhandled_root_fields", new JsonObject());
+
+
+            JsonArray visibleBoxJson = new JsonArray();
+            visibleBoxJson.add(1);
+            visibleBoxJson.add(1);
+            visibleBoxJson.add(0);
+            modelJson.add("visible_box", visibleBoxJson);
+
+
 
             try {
                 FileWriter modelFile = new FileWriter(avatarSavePath.resolve(model.get("name").getAsString() + ".bbmodel").toString(), false);
@@ -103,6 +145,59 @@ public class FiguraModelParser {
 
 
     }
+
+    public static class TextureData {
+        public String name;
+        public String id;
+        public String uuid;
+        public byte[] textureBytes;
+
+        public TextureData(String name, String id, byte[] bytes) {
+            this.name = name + ".png";
+            this.id = id;
+            this.uuid = UUID.randomUUID().toString();
+            this.textureBytes = bytes;
+        }
+
+        public JsonObject toBlockBenchTextureJson() {
+            JsonObject json = new JsonObject();
+
+            // TODO: omitting critical fields maybe.
+            json.addProperty("name", this.name);
+            json.addProperty("relative_path", "../" + this.name);
+            json.addProperty("id", this.id);
+            json.addProperty("uuid", this.uuid);
+
+            json.addProperty("saved", true);
+            json.addProperty("mode", "bitmap");
+            json.addProperty("visible", true);
+
+
+            return json;
+        }
+
+        public static ArrayList<TextureData> fromAvatarTexturesNbt(CompoundTag nbt) {
+            ArrayList<TextureData> textureData = new ArrayList<>();
+            // Names of textures are stored separately
+            //TODO: this id might be wrong!
+            int texId = 0;
+            for (Tag textureNameNbt : nbt.getList("data", Tag.TAG_COMPOUND)) {
+                CompoundTag textureNameCompound = (CompoundTag) textureNameNbt;
+                String textureName = textureNameCompound.getString("d");
+
+                // Get the bytes stored in the name of this texture
+                byte[] textureBytes = nbt.getCompound("src").getByteArray(textureName);
+
+                textureData.add(new TextureData(textureName, String.valueOf(texId), textureBytes));
+
+                texId++;
+            }
+
+            return textureData;
+        }
+
+    }
+
     public static class CubeData {
         static final List<String> FACES = List.of("north", "south", "west", "east", "up", "down");
 
@@ -163,6 +258,10 @@ public class FiguraModelParser {
                 CompoundTag faceNbt = (CompoundTag) facesNBT.get(String.valueOf(faceName.charAt(0)));
                 // Get the uv and texture index
                 float[] uv = fillVectorIfNone(faceNbt.get("uv"), 4);
+                // Divide uvs by two TODO: not right
+                //uv[0] = uv[0] / 2;
+                //uv[1] = uv[1] / 2;
+
                 int texture = facesNBT.getInt("tex");
 
                 finalFaces.add(new CubeFaceData(faceName, uv, texture));
@@ -208,6 +307,8 @@ public class FiguraModelParser {
                 for (Map.Entry<String, float[]> uvVector : face.uv.entrySet()) {
                     faceUvMap.add(uvVector.getKey(), floatArrayToJson(uvVector.getValue()));
                 }
+                // Add the texture
+
                 // Add the verts
                 for (String vert : face.vertices) {
                     faceVerts.add(vert);
@@ -215,6 +316,8 @@ public class FiguraModelParser {
 
                 faceJson.add("uv", faceUvMap);
                 faceJson.add("vertices", faceVerts);
+
+                faceJson.addProperty("texture", face.texture);
 
                 // POSSIBLE ERROR FOR BLOCKBENCH: probs expects a name with letters
                 jsonMap.add(String.valueOf(faceId), faceJson);
