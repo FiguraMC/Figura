@@ -344,10 +344,9 @@ public class FiguraModelParser {
                     new_verticies.add(v.getFirst().toString());
 
                     // Add the uv data of each vertex
-                    // TODO: fix uvs by dividing by FiguraVec3 uvFixer = FiguraVec3.of();`
                     float[] uvs = new float[] {
-                            v.getSecond().u / textureSize.get(texture)[0],
-                            v.getSecond().v / textureSize.get(texture)[1]
+                            v.getSecond().u / (textureSize.get(texture)[0] / 64),
+                            v.getSecond().v / (textureSize.get(texture)[1] / 64)
                     };
                     new_uv.put(v.getFirst(), uvs);
                 }
