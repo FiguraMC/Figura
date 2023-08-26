@@ -15,8 +15,12 @@ import org.figuramc.figura.model.rendering.AvatarRenderer;
 import org.figuramc.figura.model.rendering.Vertex;
 import org.figuramc.figura.model.rendering.texture.FiguraTexture;
 import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
+import org.figuramc.figura.utils.IOUtils;
 import org.luaj.vm2.ast.Str;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,9 +32,24 @@ import static org.figuramc.figura.parsers.Buwwet.BlockBenchPart.floatArrayToJson
 /// Parses Figura models into blockbench models by performing all of the calculations already done previously but on reverse.
 public class FiguraModelParser {
 
+    public static Path getDownloaderAvatarDirectory() {
+        return IOUtils.getOrCreateDir(FiguraMod.getFiguraDirectory(), "downloaded");
+    }
+
     public static void parseAvatar(CompoundTag nbt) {
         // Get textures (required for some vector parsers).
         CompoundTag texturesNbt = nbt.getCompound("textures");
+
+
+        // metadata
+        CompoundTag metadataNbt = nbt.getCompound("metadata");
+        String avatarName = metadataNbt.getString("name");
+        String avatarAuthor = metadataNbt.getString("author");
+
+        // Save location
+        Path avatarSavePath = IOUtils.getOrCreateDir(getDownloaderAvatarDirectory(), avatarName);
+
+
 
         //ListTag texturesList = texturesNbt.getList("data", Tag.TAG_COMPOUND);
         // All models are clumped together at "models.MODEL_HERE", they require to be given their own separate file.
@@ -53,6 +72,15 @@ public class FiguraModelParser {
             metaJson.addProperty("box_uv", "true");
             modelJson.add("meta", metaJson);
 
+            try {
+                FileWriter modelFile = new FileWriter(avatarSavePath.resolve(model.get("name").getAsString() + ".bbmodel").toString(), false);
+                modelFile.write(modelJson.toString());
+                modelFile.flush();
+                modelFile.close();
+            } catch (IOException e) {
+                FiguraMod.LOGGER.error("Error while saving to file a model: " + e);
+                //throw new RuntimeException(e);
+            }
             FiguraMod.LOGGER.info(modelJson.toString());
         }
 
