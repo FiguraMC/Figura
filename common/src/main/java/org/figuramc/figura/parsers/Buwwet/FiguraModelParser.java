@@ -4,10 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.nbt.ByteTag;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.*;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.model.FiguraModelPartReader;
@@ -20,6 +17,7 @@ import org.luaj.vm2.ast.Str;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,7 +49,7 @@ public class FiguraModelParser {
 
 
 
-        //ListTag texturesList = texturesNbt.getList("data", Tag.TAG_COMPOUND);
+        // Parse all the models
         // All models are clumped together at "models.MODEL_HERE", they require to be given their own separate file.
         for (Tag model_tag: nbt.getCompound("models").getList("chld", Tag.TAG_COMPOUND)) {
             CompoundTag model = (CompoundTag) model_tag;
@@ -81,8 +79,26 @@ public class FiguraModelParser {
                 FiguraMod.LOGGER.error("Error while saving to file a model: " + e);
                 //throw new RuntimeException(e);
             }
-            FiguraMod.LOGGER.info(modelJson.toString());
+            //FiguraMod.LOGGER.info(modelJson.toString());
         }
+
+        // Parse all the scripts
+        CompoundTag scriptsNbt = nbt.getCompound("scripts");
+        for (String scriptName : scriptsNbt.getAllKeys()) {
+            // Transform the bytes to a string
+            byte[] luaFileBytes = scriptsNbt.getByteArray(scriptName);
+            String luaScript = new String(luaFileBytes, StandardCharsets.UTF_8);
+
+            try {
+                FileWriter modelFile = new FileWriter(avatarSavePath.resolve(scriptName + ".lua").toString(), false);
+                modelFile.write(luaScript);
+                modelFile.flush();
+                modelFile.close();
+            } catch (IOException e) {
+                FiguraMod.LOGGER.error("Error while saving to file lua script: " + e);
+                //throw new RuntimeException(e);
+            }
+        };
 
 
 
@@ -238,17 +254,6 @@ public class FiguraModelParser {
         }
 
         public static MeshData generateFromElement(CompoundTag element, float[] origin) {
-            List<Integer> facesByTexture = new ArrayList<>();
-            // Temp because we still aren't catching textures
-            facesByTexture.add(0);
-            facesByTexture.add(0);
-            facesByTexture.add(0);
-            facesByTexture.add(0);
-            facesByTexture.add(0);
-            facesByTexture.add(0);
-
-
-
             // Holds all the positions of the vertices
             HashMap<String, float[]> dataVertices = new HashMap<>();
             // Holds the face data
@@ -259,7 +264,7 @@ public class FiguraModelParser {
             // String is the vertex id
             ArrayList<Pair<Integer, ArrayList<Pair<String, Vertex>>>> faces = new ArrayList<>();
             // Read the vertices of the mesh
-            readMesh(facesByTexture, element, faces);
+            readMesh(element, faces);
 
             for (Pair<Integer, ArrayList<Pair<String, Vertex>>> face : faces) {
                 //FiguraMod.LOGGER.info(String.valueOf(entry.getKey()));
@@ -283,7 +288,7 @@ public class FiguraModelParser {
         }
 
         // stolen straight from FiguraModelPartReader, because it doesn't include the face.
-        public static void readMesh(List<Integer> facesByTexture, CompoundTag data, ArrayList<Pair<Integer, ArrayList<Pair<String, Vertex>>>> faces) {
+        public static void readMesh(CompoundTag data, ArrayList<Pair<Integer, ArrayList<Pair<String, Vertex>>>> faces) {
             CompoundTag meshData = data.getCompound("mesh_data");
             // mesh_data:
             // "vtx": List<Float>, xyz
@@ -325,8 +330,6 @@ public class FiguraModelParser {
                 // Extract the texture ID and number of vertices from the packed data
                 int texId = packed >> 4;
                 int numVerts = packed & 0xf;
-                // Increment the number of faces for the current texture ID
-                facesByTexture.set(texId, facesByTexture.get(texId) + 1);
 
                 FiguraMod.LOGGER.info("new face " + String.valueOf(vi) + ", texid: " + texId);
 
