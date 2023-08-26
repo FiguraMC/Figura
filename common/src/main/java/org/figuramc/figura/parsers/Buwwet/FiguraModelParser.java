@@ -4,10 +4,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.model.FiguraModelPartReader;
 import org.figuramc.figura.model.rendering.AvatarRenderer;
 import org.figuramc.figura.model.rendering.Vertex;
@@ -32,11 +34,23 @@ public class FiguraModelParser {
 
         //ListTag texturesList = texturesNbt.getList("data", Tag.TAG_COMPOUND);
 
+
+        JsonObject modelJson = new JsonObject();
+        modelJson.addProperty("name", "test");
+
         BlockBenchPart rootFiguraModel = BlockBenchPart.parseNBTchildren(nbt.getCompound("models"));
+        JsonArray elementsJson = BlockBenchPart.parseAsElementList(rootFiguraModel);
+        modelJson.add("elements", elementsJson);
 
-        JsonArray json = BlockBenchPart.parseAsElementList(rootFiguraModel);
 
-        FiguraMod.LOGGER.info(json.toString());
+        JsonObject metaJson = new JsonObject();
+        metaJson.addProperty("format_version", "4.5");
+        metaJson.addProperty("model_format", "modded_entity");
+        metaJson.addProperty("box_uv", "true");
+        modelJson.add("meta", metaJson);
+
+
+        FiguraMod.LOGGER.info(modelJson.toString());
 
     }
     public static class CubeData {
@@ -133,7 +147,6 @@ public class FiguraModelParser {
 
         public JsonObject facesToJson() {
             JsonObject jsonMap = new JsonObject();
-            JsonArray vertices = new JsonArray();
 
             int faceId = 0;
             for (MeshFaceData face : this.faces) {
@@ -151,7 +164,7 @@ public class FiguraModelParser {
                 }
 
                 faceJson.add("uv", faceUvMap);
-                faceJson.add("vertices", faceUvMap);
+                faceJson.add("vertices", faceVerts);
 
                 // POSSIBLE ERROR FOR BLOCKBENCH: probs expects a name with letters
                 jsonMap.add(String.valueOf(faceId), faceJson);
@@ -168,18 +181,19 @@ public class FiguraModelParser {
 
             public int texture = 0;
 
-            public MeshFaceData(ArrayList<Pair<Vertex, Integer>> vertices, int texture) {
+            public MeshFaceData(ArrayList<Pair<String, Vertex>> vertices, int texture) {
                 ArrayList<String> new_verticies = new ArrayList<>();
                 HashMap<String, float[]> new_uv = new HashMap<>();
 
                 this.texture = texture;
 
-                for (Pair<Vertex, Integer> v : vertices) {
+                for (Pair<String, Vertex> v : vertices) {
                     // add this vertex's name to the list of vertices in the face
-                    new_verticies.add(v.getSecond().toString());
+                    new_verticies.add(v.getFirst().toString());
 
                     // Add the uv data of each vertex
-                    new_uv.put(v.getSecond().toString(), new float[] {v.getFirst().u, v.getFirst().v});
+                    // TODO: fix uvs by dividing by FiguraVec3 uvFixer = FiguraVec3.of();`
+                    new_uv.put(v.getFirst(), new float[] {v.getSecond().u, v.getSecond().v});
                 }
                 String[] vertex_array = new String[new_verticies.size()];
                 new_verticies.toArray(vertex_array);
@@ -203,36 +217,134 @@ public class FiguraModelParser {
             // Holds the face data
             ArrayList<MeshFaceData> faceData = new ArrayList<>();
 
-            Map<Integer, List<Vertex>> vertices = new HashMap<>();
+            // Lists all the vectors by their face and texture.
+            // Integer is the texture
+            // String is the vertex id
+            ArrayList<Pair<Integer, ArrayList<Pair<String, Vertex>>>> faces = new ArrayList<>();
             // Read the vertices of the mesh
-            FiguraModelPartReader.readMesh(facesByTexture, element, vertices);
+            readMesh(facesByTexture, element, faces);
 
-
-            int vertexId = 0;
-            ArrayList<Pair<Vertex, Integer>> vertexFaceBuffer = new ArrayList<>();
-            for (Map.Entry<Integer, List<Vertex>> entry : vertices.entrySet()) {
+            for (Pair<Integer, ArrayList<Pair<String, Vertex>>> face : faces) {
                 //FiguraMod.LOGGER.info(String.valueOf(entry.getKey()));
 
-                for (Vertex v : entry.getValue()) {
+                // Save the vertices
+                for (Pair<String, Vertex> v : face.getSecond()) {
                     //FiguraMod.LOGGER.info(v.x + ", " + v.y + ", " + v.z);
-
-
-                    dataVertices.put(String.valueOf(vertexId), new float[] {v.x, v.y, v.z});
-                    vertexFaceBuffer.add(new Pair<>(v, vertexId));
-                    // Check if buffer is ready to make a face.
-                    if (vertexId % 4 == 0 && vertexId != 0) {
-                        faceData.add(new MeshFaceData(vertexFaceBuffer, entry.getKey()));
-                        // Clear the buffer
-                        vertexFaceBuffer.clear();
-                    }
-
-                    vertexId++;
+                    // Store all the positions of the vertices with their unique name (for the mesh at least)
+                    Vertex vertex = v.getSecond();
+                    dataVertices.put(v.getFirst(), new float[] {vertex.x, vertex.y, vertex.z});
                 }
+                // Create the face data
+                faceData.add(new MeshFaceData(face.getSecond(), face.getFirst()));
             }
 
             MeshFaceData[] facesArray = new MeshFaceData[faceData.size()];
             faceData.toArray(facesArray);
             return new MeshData(dataVertices, facesArray);
+        }
+
+        // stolen straight from FiguraModelPartReader, because it doesn't include the face.
+        public static void readMesh(List<Integer> facesByTexture, CompoundTag data, ArrayList<Pair<Integer, ArrayList<Pair<String, Vertex>>>> faces) {
+            CompoundTag meshData = data.getCompound("mesh_data");
+            // mesh_data:
+            // "vtx": List<Float>, xyz
+            // "tex": List<Short>, (texID << 4) + numVerticesInFace
+            // "fac": List<Byte, Short, or Int>, just the indices of various vertices
+            // "uvs": List<Float>, uv for each vertex
+
+            // Get the vertex, UV, and texture lists from the mesh data
+            ListTag verts = meshData.getList("vtx", Tag.TAG_FLOAT);
+            ListTag uvs = meshData.getList("uvs", Tag.TAG_FLOAT);
+            ListTag tex = meshData.getList("tex", Tag.TAG_SHORT);
+
+            // Determine the best data type to use for the face list based on the size of the vertex list
+            int bestType = 0; // byte
+            if (verts.size() > 255 * 3) bestType = 1; // short
+            if (verts.size() > 32767 * 3) bestType = 2; // int
+
+            // Get the face list using the determined data type
+            ListTag fac = switch (bestType) {
+                case 0 -> meshData.getList("fac", Tag.TAG_BYTE);
+                case 1 -> meshData.getList("fac", Tag.TAG_SHORT);
+                default -> meshData.getList("fac", Tag.TAG_INT);
+            };
+
+            // Initialize counters for the vertex and UV lists
+            int vi = 0, uvi = 0;
+
+            // Create arrays to store temporary vertex and UV data
+            float[] posArr = new float[12];
+            float[] uvArr = new float[8];
+
+            // faces
+            ArrayList<Pair<String, Vertex>> verticeBuffer = new ArrayList<>();
+
+            // Iterate through the texture list
+            for (int ti = 0; ti < tex.size(); ti++) {
+                // Get the packed texture data for this iteration
+                short packed = tex.getShort(ti);
+                // Extract the texture ID and number of vertices from the packed data
+                int texId = packed >> 4;
+                int numVerts = packed & 0xf;
+                // Increment the number of faces for the current texture ID
+                facesByTexture.set(texId, facesByTexture.get(texId) + 1);
+
+                FiguraMod.LOGGER.info("new face " + String.valueOf(vi) + ", texid: " + texId);
+
+                // Extract the vertex and UV data for the current texture
+                for (int j = 0; j < numVerts; j++) {
+                    // Get the vertex ID based on the determined data type
+                    int vid = switch (bestType) {
+                        case 0 -> ((ByteTag) fac.get(vi + j)).getAsByte() & 0xff;
+                        case 1 -> fac.getShort(vi + j) & 0xffff;
+                        default -> fac.getInt(vi + j);
+                    };
+
+                    // Get the vertex position and UV data from the lists
+                    posArr[3 * j] = verts.getFloat(3 * vid);
+                    posArr[3 * j + 1] = verts.getFloat(3 * vid + 1);
+                    posArr[3 * j + 2] = verts.getFloat(3 * vid + 2);
+
+                    uvArr[2 * j] = uvs.getFloat(uvi + 2 * j);
+                    uvArr[2 * j + 1] = uvs.getFloat(uvi + 2 * j + 1);
+                }
+
+                // Calculate the normal vector for the current texture
+                FiguraVec3 p1 = FiguraVec3.of(posArr[0], posArr[1], posArr[2]);
+                FiguraVec3 p2 = FiguraVec3.of(posArr[3], posArr[4], posArr[5]);
+                FiguraVec3 p3 = FiguraVec3.of(posArr[6], posArr[7], posArr[8]);
+                p3.subtract(p2);
+                p1.subtract(p2);
+                p3.cross(p1);
+                p3.normalize();
+                // p3 now contains the normal vector
+
+                // Add the vertex data to the appropriate builder
+                for (int j = 0; j < numVerts; j++) {
+                    verticeBuffer.add(new Pair<>(String.valueOf(vi + j), new Vertex(
+                            posArr[3 * j], posArr[3 * j + 1], posArr[3 * j + 2],
+                            uvArr[2 * j], uvArr[2 * j + 1],
+                            (float) p3.x, (float) p3.y, (float) p3.z
+                    )));
+                }
+                // Add a vertex if necessary
+                if (numVerts == 3) {
+                    // TODO: might cause problems. Check later
+                    verticeBuffer.add(new Pair<>("extra", new Vertex(
+                            posArr[6], posArr[7], posArr[8],
+                            uvArr[4], uvArr[5],
+                            (float) p3.x, (float) p3.y, (float) p3.z
+                    )));
+                }
+
+                // Increment the counters for the vertex and UV lists
+                vi += numVerts;
+                uvi += 2 * numVerts;
+
+                // Clear the vertex buffer.
+                faces.add(new Pair<>(texId, (ArrayList<Pair<String, Vertex>>) verticeBuffer.clone()));
+                verticeBuffer.clear();
+            }
         }
     }
 }
