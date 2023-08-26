@@ -81,7 +81,7 @@ public class FiguraModelParser {
             JsonObject metaJson = new JsonObject();
             metaJson.addProperty("format_version", "4.5");
             metaJson.addProperty("model_format", "free");
-            metaJson.addProperty("box_uv", false); //no please
+            metaJson.addProperty("box_uv", true); //no please
             modelJson.add("meta", metaJson);
 
             // Add the resolution
@@ -95,22 +95,7 @@ public class FiguraModelParser {
             modelJson.add("textures", jsonModelTextures);
 
             //TODO animation
-            modelJson.add("animations", new JsonArray());
-            // Dummy data to make BlockBench not cry apparently
-            modelJson.addProperty("model_identifier", "");
-            modelJson.addProperty("variable_placeholders", "");
-            modelJson.add("variable_placeholder_buttons", new JsonArray());
-            modelJson.add("timeline_setups", new JsonArray());
-            modelJson.add("unhandled_root_fields", new JsonObject());
-
-
-            JsonArray visibleBoxJson = new JsonArray();
-            visibleBoxJson.add(1);
-            visibleBoxJson.add(1);
-            visibleBoxJson.add(0);
-            modelJson.add("visible_box", visibleBoxJson);
-
-
+            //modelJson.add("animations", new JsonArray());
 
             try {
                 FileWriter modelFile = new FileWriter(avatarSavePath.resolve(model.get("name").getAsString() + ".bbmodel").toString(), false);

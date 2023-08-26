@@ -111,7 +111,7 @@ public class BlockBenchPart {
             List<BlockBenchPart> children = new ArrayList<BlockBenchPart>();
 
             ListTag nbtChildren = (ListTag) nbt.get("chld");
-            for (Tag childNbtRaw: nbtChildren) {
+            for (Tag childNbtRaw : nbtChildren) {
                 CompoundTag nbtChild = (CompoundTag) childNbtRaw;
                 // Process the child and add it if it's valid.
                 BlockBenchPart child = parseNBTchildren(nbtChild);
@@ -129,7 +129,13 @@ public class BlockBenchPart {
         } else {
             // Are we an element then?
             if (nbt.contains("cube_data") || nbt.contains("mesh_data")) {
-                return new Element(nbt);
+                Element new_element = new Element(nbt);
+                // Check if it's valid.
+                if (new_element.type == null) {
+                    // No type, not valid.
+                    return null;
+                }
+                return new_element;
             }
         }
         return null;
@@ -211,14 +217,16 @@ public class BlockBenchPart {
 
             // Check if we're a mesh or a cube
             if (nbt.contains("cube_data")) {
-                this.type = "cube";
-                this.cubeData = new FiguraModelParser.CubeData(nbt);
-            } else if (nbt.contains("mesh_data")) {
+                // Check that cube data isn't empty
+                if (nbt.getCompound("cube_data").getAllKeys().size() > 0) {
+                    this.type = "cube";
+                    this.cubeData = new FiguraModelParser.CubeData(nbt);
+                }
+            }
+            if (nbt.contains("mesh_data")) {
                 this.type = "mesh";
                 //FiguraMod.LOGGER.info(nbt.get("mesh_data").getAsString());
                 this.meshData = FiguraModelParser.MeshData.generateFromElement(nbt, this.origin);
-            } else {
-                FiguraMod.LOGGER.error("Element is neither a mesh or cube.");
             }
         }
 
@@ -233,19 +241,20 @@ public class BlockBenchPart {
             // ??? json.addProperty("inflate", this.inflate);
 
 
-            json.addProperty("visibility", true);
+            //json.addProperty("visibility", true);
             json.addProperty("locked", false);
 
 
 
             json.add("origin", BlockBenchPart.floatArrayToJson(this.origin));
+            // weird
             json.add("rotation", BlockBenchPart.floatArrayToJson(this.rotation));
 
             // Add type specific stuff.
             if (this.type == "cube") {
                 // Disable bad UVs
                 json.addProperty("autouv", 0);
-                json.addProperty("box_uv", false);
+                json.addProperty("box_uv", true);
                 json.addProperty("rescale", false);
 
 
