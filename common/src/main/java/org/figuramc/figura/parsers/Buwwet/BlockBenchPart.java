@@ -7,10 +7,7 @@ import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
 import org.luaj.vm2.ast.Str;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /// A collection of all the recoverable BlockBench information from a FiguraModel
 public class BlockBenchPart {
@@ -100,7 +97,7 @@ public class BlockBenchPart {
     }
 
     // Iterates through the FiguraModel's model tag.
-    public static BlockBenchPart parseNBTchildren(CompoundTag nbt) {
+    public static BlockBenchPart parseNBTchildren(CompoundTag nbt, HashMap<Integer, Integer[]> textureSize) {
 
         // Check if this element has children of their own (is a group).
         if (nbt.contains("chld")) {
@@ -114,7 +111,7 @@ public class BlockBenchPart {
             for (Tag childNbtRaw : nbtChildren) {
                 CompoundTag nbtChild = (CompoundTag) childNbtRaw;
                 // Process the child and add it if it's valid.
-                BlockBenchPart child = parseNBTchildren(nbtChild);
+                BlockBenchPart child = parseNBTchildren(nbtChild, textureSize);
                 if (child != null) {
                     children.add(child);
                 }
@@ -129,7 +126,7 @@ public class BlockBenchPart {
         } else {
             // Are we an element then?
             if (nbt.contains("cube_data") || nbt.contains("mesh_data")) {
-                Element new_element = new Element(nbt);
+                Element new_element = new Element(nbt, textureSize);
                 // Check if it's valid.
                 if (new_element.type == null) {
                     // No type, not valid.
@@ -204,7 +201,7 @@ public class BlockBenchPart {
         // Mesh data contains an array for the vertices and another for the faces.
         public FiguraModelParser.MeshData meshData;
 
-        public Element(CompoundTag nbt) {
+        public Element(CompoundTag nbt, HashMap<Integer, Integer[]> textureSize) {
             super(nbt);
             // Get from and to.
 
@@ -220,13 +217,13 @@ public class BlockBenchPart {
                 // Check that cube data isn't empty
                 if (nbt.getCompound("cube_data").getAllKeys().size() > 0) {
                     this.type = "cube";
-                    this.cubeData = new FiguraModelParser.CubeData(nbt);
+                    this.cubeData = new FiguraModelParser.CubeData(nbt, textureSize);
                 }
             }
             if (nbt.contains("mesh_data")) {
                 this.type = "mesh";
                 //FiguraMod.LOGGER.info(nbt.get("mesh_data").getAsString());
-                this.meshData = FiguraModelParser.MeshData.generateFromElement(nbt, this.origin);
+                this.meshData = FiguraModelParser.MeshData.generateFromElement(nbt, this.origin, textureSize);
             }
         }
 
@@ -254,7 +251,7 @@ public class BlockBenchPart {
             if (this.type == "cube") {
                 // Disable bad UVs
                 json.addProperty("autouv", 0);
-                json.addProperty("box_uv", true);
+                json.addProperty("box_uv", false);
                 json.addProperty("rescale", false);
 
 

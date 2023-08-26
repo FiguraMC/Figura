@@ -15,6 +15,8 @@ import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
 import org.figuramc.figura.utils.IOUtils;
 import org.luaj.vm2.ast.Str;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -31,10 +33,6 @@ public class FiguraModelParser {
     }
 
     public static void parseAvatar(CompoundTag nbt) {
-        // Get textures (required for some vector parsers).
-        CompoundTag texturesNbt = nbt.getCompound("textures");
-
-
         // metadata
         CompoundTag metadataNbt = nbt.getCompound("metadata");
         String avatarName = metadataNbt.getString("name");
@@ -46,7 +44,12 @@ public class FiguraModelParser {
         // Parse textures and save them, also generate a json object to be included in all BlockBench models
         ArrayList<TextureData> textures = TextureData.fromAvatarTexturesNbt(nbt.getCompound("textures"));
         JsonArray jsonModelTextures = new JsonArray();
+        // id, width and height
+        HashMap<Integer, Integer[]> textureSize = new HashMap<>();
         for (TextureData texture : textures) {
+
+
+
             // Save the image!
             try {
                 // We do not have to do anything fancy as the byte[] contains headers (aka not raw)
@@ -55,6 +58,13 @@ public class FiguraModelParser {
                 new_texture.flush();
                 new_texture.close();
 
+                // Get width and height of texture.
+                InputStream in = new ByteArrayInputStream(texture.textureBytes);
+                BufferedImage buf = ImageIO.read(in);
+
+                textureSize.put(texture.id, new Integer[] {buf.getWidth(), buf.getHeight()});
+
+                FiguraMod.LOGGER.info("Texture " + texture.id + ": " +  buf.getWidth() + ", " + buf.getHeight());
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("Failed to save texture: " + e);
             }
@@ -70,7 +80,7 @@ public class FiguraModelParser {
             JsonObject modelJson = new JsonObject();
             modelJson.addProperty("name", model.get("name").getAsString());
             // Parse the figura model to our own types
-            BlockBenchPart rootFiguraModel = BlockBenchPart.parseNBTchildren(model);
+            BlockBenchPart rootFiguraModel = BlockBenchPart.parseNBTchildren(model, textureSize);
             // Get the elements list
             JsonArray elementsJson = BlockBenchPart.parseAsElementList(rootFiguraModel);
             modelJson.add("elements", elementsJson);
@@ -81,7 +91,7 @@ public class FiguraModelParser {
             JsonObject metaJson = new JsonObject();
             metaJson.addProperty("format_version", "4.5");
             metaJson.addProperty("model_format", "free");
-            metaJson.addProperty("box_uv", true); //no please
+            metaJson.addProperty("box_uv", false); //no please
             modelJson.add("meta", metaJson);
 
             // Add the resolution
@@ -133,11 +143,11 @@ public class FiguraModelParser {
 
     public static class TextureData {
         public String name;
-        public String id;
+        public Integer id;
         public String uuid;
         public byte[] textureBytes;
 
-        public TextureData(String name, String id, byte[] bytes) {
+        public TextureData(String name, Integer id, byte[] bytes) {
             this.name = name + ".png";
             this.id = id;
             this.uuid = UUID.randomUUID().toString();
@@ -173,7 +183,7 @@ public class FiguraModelParser {
                 // Get the bytes stored in the name of this texture
                 byte[] textureBytes = nbt.getCompound("src").getByteArray(textureName);
 
-                textureData.add(new TextureData(textureName, String.valueOf(texId), textureBytes));
+                textureData.add(new TextureData(textureName, texId, textureBytes));
 
                 texId++;
             }
@@ -206,11 +216,11 @@ public class FiguraModelParser {
         }
 
         // Parse from nbt.
-        public CubeData(CompoundTag nbt) {
+        public CubeData(CompoundTag nbt, HashMap<Integer, Integer[]> textureSize) {
             this.from = fillVectorIfNone(nbt.get("f"), 3);
             this.to = fillVectorIfNone(nbt.get("t"), 3);
 
-            this.faces = generateFiguraFaces(nbt.get("cube_data"));
+            this.faces = generateFiguraFaces(nbt.get("cube_data"), textureSize);
         }
 
         public JsonObject facesToJson() {
@@ -228,7 +238,7 @@ public class FiguraModelParser {
             return jsonMap;
         }
 
-        private CubeFaceData[] generateFiguraFaces(Tag faces) {
+        private CubeFaceData[] generateFiguraFaces(Tag faces, HashMap<Integer, Integer[]> textureSize) {
             CompoundTag facesNBT = (CompoundTag) faces;
             //FiguraMod.LOGGER.info(faces.getAsString());
 
@@ -242,12 +252,16 @@ public class FiguraModelParser {
             for (String faceName : CubeData.FACES) {
                 CompoundTag faceNbt = (CompoundTag) facesNBT.get(String.valueOf(faceName.charAt(0)));
                 // Get the uv and texture index
+                int texture = faceNbt.getInt("tex");
+
                 float[] uv = fillVectorIfNone(faceNbt.get("uv"), 4);
                 // Divide uvs by two TODO: not right
-                //uv[0] = uv[0] / 2;
-                //uv[1] = uv[1] / 2;
+                FiguraMod.LOGGER.info("texture id: " + texture + ", width: " + textureSize.get(texture)[0] + ", Face uv mult:" + (textureSize.get(texture)[0] / 64 * 4));
+                uv[0] = uv[0] / (textureSize.get(texture)[0] / 64);
+                uv[1] = uv[1] / (textureSize.get(texture)[1] / 64);
+                uv[2] = uv[2] / (textureSize.get(texture)[0] / 64);
+                uv[3] = uv[3] / (textureSize.get(texture)[1] / 64);
 
-                int texture = facesNBT.getInt("tex");
 
                 finalFaces.add(new CubeFaceData(faceName, uv, texture));
                 //FiguraMod.LOGGER.info(faceName);
@@ -317,9 +331,9 @@ public class FiguraModelParser {
             public HashMap<String, float[]> uv;
             public String[] vertices;
 
-            public int texture = 0;
+            public int texture;
 
-            public MeshFaceData(ArrayList<Pair<String, Vertex>> vertices, int texture) {
+            public MeshFaceData(ArrayList<Pair<String, Vertex>> vertices, int texture, HashMap<Integer, Integer[]> textureSize) {
                 ArrayList<String> new_verticies = new ArrayList<>();
                 HashMap<String, float[]> new_uv = new HashMap<>();
 
@@ -331,7 +345,10 @@ public class FiguraModelParser {
 
                     // Add the uv data of each vertex
                     // TODO: fix uvs by dividing by FiguraVec3 uvFixer = FiguraVec3.of();`
-                    float[] uvs = new float[] {v.getSecond().u / 2, v.getSecond().v / 2};
+                    float[] uvs = new float[] {
+                            v.getSecond().u / textureSize.get(texture)[0],
+                            v.getSecond().v / textureSize.get(texture)[1]
+                    };
                     new_uv.put(v.getFirst(), uvs);
                 }
                 String[] vertex_array = new String[new_verticies.size()];
@@ -341,7 +358,7 @@ public class FiguraModelParser {
             }
         }
 
-        public static MeshData generateFromElement(CompoundTag element, float[] origin) {
+        public static MeshData generateFromElement(CompoundTag element, float[] origin, HashMap<Integer, Integer[]> textureSize) {
             // Holds all the positions of the vertices
             HashMap<String, float[]> dataVertices = new HashMap<>();
             // Holds the face data
@@ -367,7 +384,7 @@ public class FiguraModelParser {
                     dataVertices.put(v.getFirst(), new float[] {vertex.x - origin[0], vertex.y - origin[1], vertex.z - origin[2]});
                 }
                 // Create the face data
-                faceData.add(new MeshFaceData(face.getSecond(), face.getFirst()));
+                faceData.add(new MeshFaceData(face.getSecond(), face.getFirst(), textureSize));
             }
 
             MeshFaceData[] facesArray = new MeshFaceData[faceData.size()];
@@ -419,7 +436,7 @@ public class FiguraModelParser {
                 int texId = packed >> 4;
                 int numVerts = packed & 0xf;
 
-                FiguraMod.LOGGER.info("new face " + String.valueOf(vi) + ", texid: " + texId);
+                //FiguraMod.LOGGER.info("new face " + String.valueOf(vi) + ", texid: " + texId);
 
                 // Extract the vertex and UV data for the current texture
                 for (int j = 0; j < numVerts; j++) {
