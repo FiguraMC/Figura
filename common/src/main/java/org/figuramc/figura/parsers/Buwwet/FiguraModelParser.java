@@ -1,5 +1,6 @@
 package org.figuramc.figura.parsers.Buwwet;
 
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -72,20 +73,43 @@ public class FiguraModelParser {
         }
     }
 
-    public class MeshData {
-        public HashMap<String, float[]> verticies;
+    public static class MeshData {
+        public HashMap<String, float[]> vertices;
         public MeshFaceData[] faces;
 
-        public class MeshFaceData {
-            // uvs are sized 2
-            public HashMap<String, float[]> uv;
-            public String[] verticies;
-
-            public int texture;
-
+        public MeshData(HashMap<String, float[]> vertices, MeshFaceData[] faces) {
+            this.vertices = vertices;
+            this.faces = faces;
         }
 
-        public static void generateFromElement(CompoundTag element) {
+        public static class MeshFaceData {
+            // uvs are sized 2
+            public HashMap<String, float[]> uv;
+            public String[] vertices;
+
+            public int texture = 0;
+
+            public MeshFaceData(ArrayList<Pair<Vertex, Integer>> vertices, int texture) {
+                ArrayList<String> new_verticies = new ArrayList<>();
+                HashMap<String, float[]> new_uv = new HashMap<>();
+
+                this.texture = texture;
+
+                for (Pair<Vertex, Integer> v : vertices) {
+                    // add this vertex's name to the list of vertices in the face
+                    new_verticies.add(v.getSecond().toString());
+
+                    // Add the uv data of each vertex
+                    new_uv.put(v.getSecond().toString(), new float[] {v.getFirst().u, v.getFirst().v});
+                }
+                String[] vertex_array = new String[new_verticies.size()];
+                new_verticies.toArray(vertex_array);
+                this.vertices = vertex_array;
+                this.uv = new_uv;
+            }
+        }
+
+        public static MeshData generateFromElement(CompoundTag element) {
             List<Integer> facesByTexture = new ArrayList<>();
             // Temp because we still aren't catching textures
             facesByTexture.add(0);
@@ -95,15 +119,41 @@ public class FiguraModelParser {
             facesByTexture.add(0);
             facesByTexture.add(0);
 
-            Map<Integer, List<Vertex>> vertices = new HashMap<>();
+            // Holds all the positions of the vertices
+            HashMap<String, float[]> dataVertices = new HashMap<>();
+            // Holds the face data
+            ArrayList<MeshFaceData> faceData = new ArrayList<>();
 
+            Map<Integer, List<Vertex>> vertices = new HashMap<>();
+            // Read the vertices of the mesh
             FiguraModelPartReader.readMesh(facesByTexture, element, vertices);
+
+
+            int vertexId = 0;
+            ArrayList<Pair<Vertex, Integer>> vertexFaceBuffer = new ArrayList<>();
             for (Map.Entry<Integer, List<Vertex>> entry : vertices.entrySet()) {
                 FiguraMod.LOGGER.info(String.valueOf(entry.getKey()));
+
                 for (Vertex v : entry.getValue()) {
                     FiguraMod.LOGGER.info(v.x + ", " + v.y + ", " + v.z);
+
+
+                    dataVertices.put(String.valueOf(vertexId), new float[] {v.x, v.y, v.z});
+                    vertexFaceBuffer.add(new Pair<>(v, vertexId));
+                    // Check if buffer is ready to make a face.
+                    if (vertexId % 4 == 0 && vertexId != 0) {
+                        faceData.add(new MeshFaceData(vertexFaceBuffer, entry.getKey()));
+                        // Clear the buffer
+                        vertexFaceBuffer.clear();
+                    }
+
+                    vertexId++;
                 }
             }
+
+            MeshFaceData[] facesArray = new MeshFaceData[faceData.size()];
+            faceData.toArray(facesArray);
+            return new MeshData(dataVertices, facesArray);
         }
     }
 }

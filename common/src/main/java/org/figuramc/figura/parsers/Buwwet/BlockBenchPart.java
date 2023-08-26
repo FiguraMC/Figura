@@ -142,7 +142,7 @@ public class BlockBenchPart {
             } else if (nbt.contains("mesh_data")) {
                 type = "mesh";
                 //FiguraMod.LOGGER.info(nbt.get("mesh_data").getAsString());
-                FiguraModelParser.MeshData.generateFromElement(nbt);
+                this.meshData = FiguraModelParser.MeshData.generateFromElement(nbt);
             } else {
                 FiguraMod.LOGGER.error("Element is neither a mesh or cube.");
             }
