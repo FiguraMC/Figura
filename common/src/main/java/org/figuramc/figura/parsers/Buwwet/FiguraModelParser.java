@@ -33,24 +33,30 @@ public class FiguraModelParser {
         CompoundTag texturesNbt = nbt.getCompound("textures");
 
         //ListTag texturesList = texturesNbt.getList("data", Tag.TAG_COMPOUND);
+        // All models are clumped together at "models.MODEL_HERE", they require to be given their own separate file.
+        for (Tag model_tag: nbt.getCompound("models").getList("chld", Tag.TAG_COMPOUND)) {
+            CompoundTag model = (CompoundTag) model_tag;
+            JsonObject modelJson = new JsonObject();
+            modelJson.addProperty("name", model.get("name").getAsString());
+            // Parse the figura model to our own types
+            BlockBenchPart rootFiguraModel = BlockBenchPart.parseNBTchildren(model);
+            // Get the elements list
+            JsonArray elementsJson = BlockBenchPart.parseAsElementList(rootFiguraModel);
+            modelJson.add("elements", elementsJson);
+            // Get the outliner
+            JsonObject outlinerJson = BlockBenchPart.Group.toJsonOutliner(rootFiguraModel).getAsJsonObject();
+            modelJson.add("outliner", outlinerJson.get("children"));   // Get children to make the outliner an array, (also model shouldn't even be referenced in blockbench)
+
+            JsonObject metaJson = new JsonObject();
+            metaJson.addProperty("format_version", "4.5");
+            metaJson.addProperty("model_format", "modded_entity");
+            metaJson.addProperty("box_uv", "true");
+            modelJson.add("meta", metaJson);
+
+            FiguraMod.LOGGER.info(modelJson.toString());
+        }
 
 
-        JsonObject modelJson = new JsonObject();
-        modelJson.addProperty("name", "test");
-
-        BlockBenchPart rootFiguraModel = BlockBenchPart.parseNBTchildren(nbt.getCompound("models"));
-        JsonArray elementsJson = BlockBenchPart.parseAsElementList(rootFiguraModel);
-        modelJson.add("elements", elementsJson);
-
-
-        JsonObject metaJson = new JsonObject();
-        metaJson.addProperty("format_version", "4.5");
-        metaJson.addProperty("model_format", "modded_entity");
-        metaJson.addProperty("box_uv", "true");
-        modelJson.add("meta", metaJson);
-
-
-        FiguraMod.LOGGER.info(modelJson.toString());
 
     }
     public static class CubeData {
@@ -193,7 +199,8 @@ public class FiguraModelParser {
 
                     // Add the uv data of each vertex
                     // TODO: fix uvs by dividing by FiguraVec3 uvFixer = FiguraVec3.of();`
-                    new_uv.put(v.getFirst(), new float[] {v.getSecond().u, v.getSecond().v});
+                    float[] uvs = new float[] {v.getSecond().u / 2, v.getSecond().v / 2};
+                    new_uv.put(v.getFirst(), uvs);
                 }
                 String[] vertex_array = new String[new_verticies.size()];
                 new_verticies.toArray(vertex_array);
@@ -202,7 +209,7 @@ public class FiguraModelParser {
             }
         }
 
-        public static MeshData generateFromElement(CompoundTag element) {
+        public static MeshData generateFromElement(CompoundTag element, float[] origin) {
             List<Integer> facesByTexture = new ArrayList<>();
             // Temp because we still aren't catching textures
             facesByTexture.add(0);
@@ -211,6 +218,8 @@ public class FiguraModelParser {
             facesByTexture.add(0);
             facesByTexture.add(0);
             facesByTexture.add(0);
+
+
 
             // Holds all the positions of the vertices
             HashMap<String, float[]> dataVertices = new HashMap<>();
@@ -230,9 +239,11 @@ public class FiguraModelParser {
                 // Save the vertices
                 for (Pair<String, Vertex> v : face.getSecond()) {
                     //FiguraMod.LOGGER.info(v.x + ", " + v.y + ", " + v.z);
+
                     // Store all the positions of the vertices with their unique name (for the mesh at least)
                     Vertex vertex = v.getSecond();
-                    dataVertices.put(v.getFirst(), new float[] {vertex.x, vertex.y, vertex.z});
+                    // Subtract the origin to fix height
+                    dataVertices.put(v.getFirst(), new float[] {vertex.x - origin[0], vertex.y - origin[1], vertex.z - origin[2]});
                 }
                 // Create the face data
                 faceData.add(new MeshFaceData(face.getSecond(), face.getFirst()));

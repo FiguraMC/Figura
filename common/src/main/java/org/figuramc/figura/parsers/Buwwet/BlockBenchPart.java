@@ -138,10 +138,46 @@ public class BlockBenchPart {
     public static class Group extends BlockBenchPart {
         public BlockBenchPart[] children;
 
-        public Boolean isOpen = true;
+        //public Boolean isOpen = true;
 
         public Group(CompoundTag nbt) {
             super(nbt);
+        }
+
+        public static JsonElement toJsonOutliner(BlockBenchPart part) {
+
+            if (part instanceof Element) {
+                // Only return the uuid of this element
+                return new JsonPrimitive(part.uuid);
+            } else if (part instanceof Group) {
+                // Create self and add children}
+                JsonObject groupJson = new JsonObject();
+
+                groupJson.addProperty("name", part.name);
+                groupJson.addProperty("uuid", part.uuid);
+                groupJson.addProperty("color", part.color);
+                groupJson.addProperty("visibility", part.visibility);
+
+                groupJson.add("origin", BlockBenchPart.floatArrayToJson(part.origin));
+
+                groupJson.addProperty("isOpen", false);
+                groupJson.addProperty("locked", false);
+                groupJson.addProperty("export", true);
+                groupJson.addProperty("autouv", 0);
+                groupJson.addProperty("mirror_uv", 0);
+
+                JsonArray children = new JsonArray();
+                // Iterate through children.
+                for (BlockBenchPart child : ((Group) part).children) {
+                    // Recursion
+                    children.add(toJsonOutliner(child));
+                }
+
+                groupJson.add("children", children);
+                return groupJson;
+            }
+            FiguraMod.LOGGER.error("Failed to identify root part!");
+            return null;
         }
 
         @Override
@@ -180,7 +216,7 @@ public class BlockBenchPart {
             } else if (nbt.contains("mesh_data")) {
                 this.type = "mesh";
                 //FiguraMod.LOGGER.info(nbt.get("mesh_data").getAsString());
-                this.meshData = FiguraModelParser.MeshData.generateFromElement(nbt);
+                this.meshData = FiguraModelParser.MeshData.generateFromElement(nbt, this.origin);
             } else {
                 FiguraMod.LOGGER.error("Element is neither a mesh or cube.");
             }
@@ -193,6 +229,7 @@ public class BlockBenchPart {
             json.addProperty("uuid", this.uuid);
             json.addProperty("type", this.type);
             json.addProperty("color", this.color);
+            // ??? json.addProperty("inflate", this.inflate);
 
             json.add("origin", BlockBenchPart.floatArrayToJson(this.origin));
             json.add("rotation", BlockBenchPart.floatArrayToJson(this.rotation));
