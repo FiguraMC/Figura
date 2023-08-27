@@ -112,6 +112,12 @@ public class FiguraModelParser {
             for (int i = 0; i < modelAnimRaw.size(); i++) {
                 //FiguraMod.LOGGER.info("anims: " + i);
                 animatorArray.put(i, new ArrayList<>());
+
+                // Check if they have any code.
+                if (modelAnimRaw.get(i).contains("code")) {
+                    JsonObject codeAnimator = FiguraAnimationParser.AnimatorGroupData.animatorFromCode(modelAnimRaw.get(i));
+                    animatorArray.get(i).add(new Pair<>("effects", codeAnimator));
+                }
             }
             // Get all the animators.
             if (rootFiguraModel instanceof BlockBenchPart.Group) {

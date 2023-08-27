@@ -34,6 +34,49 @@ public class FiguraAnimationParser {
             this.animation_id = animation_id;
             this.keyframes = keyframes;
         }
+
+        // Creates an Effects animator for code present within the animation.
+        public static JsonObject animatorFromCode(CompoundTag animationNbt) {
+            JsonObject effectAnimator = new JsonObject();
+
+            effectAnimator.addProperty("name", "Effects");
+            effectAnimator.addProperty("type", "effect");
+
+            JsonArray keyframesJsonArray = new JsonArray();
+            for (Tag codeTagRaw : animationNbt.getList("code", Tag.TAG_COMPOUND)) {
+                CompoundTag codeTag = (CompoundTag) codeTagRaw;
+
+                // Create basic keyframe with only the data provided
+                JsonObject keyframeJson = new JsonObject();
+
+                keyframeJson.addProperty("uuid", UUID.randomUUID().toString());
+                keyframeJson.addProperty("channel", "timeline");
+                keyframeJson.addProperty("time", codeTag.getFloat("time"));
+                keyframeJson.addProperty("color", -1);
+                keyframeJson.addProperty("interpolation", "linear");
+                // We must feed BlockBench an array with only one thing
+                JsonObject keyframeDataPoints = new JsonObject();
+                keyframeDataPoints.addProperty("script", codeTag.getString("src"));
+                JsonArray keyframeDataPointHolder = new JsonArray();
+                keyframeDataPointHolder.add(keyframeDataPoints);
+
+                keyframeJson.add("data_points", keyframeDataPointHolder);
+
+                keyframeJson.addProperty("bezier_linked", true);
+                keyframeJson.add("bezier_left_time", doubleArrayToJson(new double[] {-0.1, -0.1, -0.1}));
+                keyframeJson.add("bezier_right_time", doubleArrayToJson(new double[] {0.1, 0.1, 0.1}));
+                keyframeJson.add("bezier_left_value", doubleArrayToJson(new double[] {0.0, 0.0, 0.0}));
+                keyframeJson.add("bezier_right_value", doubleArrayToJson(new double[] {0.0, 0.0, 0.0}));
+
+                keyframesJsonArray.add(keyframeJson);
+            }
+
+            effectAnimator.add("keyframes", keyframesJsonArray);
+
+
+            return effectAnimator;
+        }
+
         // Returns the keyframes as BlockBench json.
         public JsonArray toKeyframesJson() {
             JsonArray keyframesJson = new JsonArray();
@@ -71,7 +114,7 @@ public class FiguraAnimationParser {
             return keyframesJson;
         }
 
-        private JsonElement doubleArrayToJson(double[] vec) {
+        private static JsonElement doubleArrayToJson(double[] vec) {
             JsonArray array = new JsonArray();
 
             for (double d : vec) {
@@ -80,6 +123,8 @@ public class FiguraAnimationParser {
 
             return array;
         }
+
+
 
         static ArrayList<AnimatorGroupData> parseNbt(CompoundTag nbt) {
             ArrayList<AnimatorGroupData> animations = new ArrayList<>();
