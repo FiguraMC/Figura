@@ -58,7 +58,7 @@ public class FiguraAnimationParser {
                 keyframeDataPointHolder.add(keyframeDataPoints);
                 keyframeJson.add("data_points", keyframeDataPointHolder);
 
-                keyframeJson.addProperty("bezier_lined", keyframeData.bezier_linked);
+                keyframeJson.addProperty("bezier_linked", keyframeData.bezier_linked);
                 keyframeJson.add("bezier_left_time", doubleArrayToJson(keyframeData.bezier_left_time));
                 keyframeJson.add("bezier_right_time", doubleArrayToJson(keyframeData.bezier_right_time));
                 keyframeJson.add("bezier_left_value", doubleArrayToJson(keyframeData.bezier_left_value));
@@ -288,13 +288,13 @@ public class FiguraAnimationParser {
             JsonObject animationJson = new JsonObject();
             animationJson.addProperty("name", modelAnimNbt.getString("name"));
             animationJson.addProperty("loop", checkIfEmpty(modelAnimNbt.getString("loop"), "once"));
-            animationJson.addProperty("override", checkIfNull(modelAnimNbt.getBoolean("override"), false));
+            animationJson.addProperty("override", checkIfNull(modelAnimNbt.getBoolean("ovr"), false));
 
             animationJson.addProperty("length", modelAnimNbt.getFloat("len"));
-            animationJson.addProperty("anim_time_update", modelAnimNbt.getFloat("off"));
-            animationJson.addProperty("blend_weight", modelAnimNbt.getFloat("bld"));
-            animationJson.addProperty("start_delay", modelAnimNbt.getFloat("sdel"));
-            animationJson.addProperty("loop_delay", modelAnimNbt.getFloat("lday"));
+            animationJson.addProperty("anim_time_update", "");
+            animationJson.addProperty("blend_weight", "");
+            animationJson.addProperty("start_delay", "");
+            animationJson.addProperty("loop_delay", "");
 
             // append all the animators
             JsonObject animatorsJson = new JsonObject();

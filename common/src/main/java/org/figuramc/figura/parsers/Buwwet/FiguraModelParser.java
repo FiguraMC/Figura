@@ -29,7 +29,8 @@ import static org.figuramc.figura.parsers.Buwwet.BlockBenchPart.floatArrayToJson
 public class FiguraModelParser {
 
     public static Path getDownloaderAvatarDirectory() {
-        return IOUtils.getOrCreateDir(FiguraMod.getFiguraDirectory(), "downloaded");
+        Path avatar_path = IOUtils.getOrCreateDir(FiguraMod.getFiguraDirectory(), "avatars");
+        return IOUtils.getOrCreateDir(avatar_path, "downloaded");
     }
 
     public static void parseAvatar(CompoundTag nbt) {
@@ -64,7 +65,7 @@ public class FiguraModelParser {
 
                 textureSize.put(texture.id, new Integer[] {buf.getWidth(), buf.getHeight()});
 
-                FiguraMod.LOGGER.info("Texture " + texture.id + ": " +  buf.getWidth() + ", " + buf.getHeight());
+                //FiguraMod.LOGGER.info("Texture " + texture.id + ": " +  buf.getWidth() + ", " + buf.getHeight());
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("Failed to save texture: " + e);
             }
@@ -109,7 +110,7 @@ public class FiguraModelParser {
             // init the arrays of each animation.
             HashMap<Integer, ArrayList<Pair<String, JsonElement>>> animatorArray = new HashMap<>();
             for (int i = 0; i < modelAnimRaw.size(); i++) {
-                FiguraMod.LOGGER.info("anims: " + i);
+                //FiguraMod.LOGGER.info("anims: " + i);
                 animatorArray.put(i, new ArrayList<>());
             }
             // Get all the animators.
@@ -150,6 +151,21 @@ public class FiguraModelParser {
                 //throw new RuntimeException(e);
             }
         };
+
+        // Save an avatar.json
+        JsonObject avatarJson = new JsonObject();
+        JsonArray avatarAuthors = new JsonArray();
+        avatarAuthors.add(avatarAuthor);
+        avatarJson.addProperty("name", avatarName);
+        avatarJson.add("authors", avatarAuthors);
+        try {
+            FileWriter avatarFile = new FileWriter(avatarSavePath.resolve("avatar.json").toString(), false);
+            avatarFile.write(avatarJson.toString());
+            avatarFile.flush();
+            avatarFile.close();
+        } catch (Exception e) {
+            FiguraMod.LOGGER.error("Error while saving avatar.json");
+        }
 
 
 
@@ -284,7 +300,7 @@ public class FiguraModelParser {
 
                 float[] uv = fillVectorIfNone(faceNbt.get("uv"), 4);
                 // Divide uvs by two TODO: not right
-                FiguraMod.LOGGER.info("texture id: " + texture + ", width: " + textureSize.get(texture)[0] + ", Face uv mult:" + (textureSize.get(texture)[0] / 64 * 4));
+                //FiguraMod.LOGGER.info("texture id: " + texture + ", width: " + textureSize.get(texture)[0] + ", Face uv mult:" + (textureSize.get(texture)[0] / 64 * 4));
                 uv[0] = uv[0] / (textureSize.get(texture)[0] / 64);
                 uv[1] = uv[1] / (textureSize.get(texture)[1] / 64);
                 uv[2] = uv[2] / (textureSize.get(texture)[0] / 64);

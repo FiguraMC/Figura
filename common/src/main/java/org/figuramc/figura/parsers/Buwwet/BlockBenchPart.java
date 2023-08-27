@@ -35,7 +35,7 @@ public class BlockBenchPart {
         rotation = fillVectorIfNone(nbt.get("rot"), 3);
 
 
-        FiguraMod.LOGGER.info(nbt.getAllKeys().toString());
+        //FiguraMod.LOGGER.info(nbt.getAllKeys().toString());
         //FiguraMod.LOGGER.info(this.toString());
 
     }
@@ -161,7 +161,7 @@ public class BlockBenchPart {
 
                     ArrayList<Pair<String, JsonElement>> modelAnimation = modelAnimations.get(animator.animation_id);
 
-                    FiguraMod.LOGGER.info("anim requested: " + animator.animation_id);
+                    //FiguraMod.LOGGER.info("anim requested: " + animator.animation_id);
 
 
                     JsonObject animatorJson = new JsonObject();

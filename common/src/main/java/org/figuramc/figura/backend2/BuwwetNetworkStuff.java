@@ -115,13 +115,11 @@ public class BuwwetNetworkStuff extends NetworkStuff {
             }
 
             CompoundTag nbt = NbtIo.readCompressed(inputStream);
-            FiguraMod.LOGGER.info(String.valueOf(nbt));
+            //FiguraMod.LOGGER.info(String.valueOf(nbt));
 
             // Get model.
             FiguraModelParser.parseAvatar(nbt);
             //BlockBenchPart.parseNBTchildren(nbt.getCompound("models"));
-
-            CacheAvatarLoader.save(avatar.getFirst(), nbt);
         }
 
 
