@@ -83,10 +83,12 @@ public class BlockBenchPart {
 
         if (part instanceof Group) {
             // Become recursive.
-            for (BlockBenchPart child : ((Group) part).children) {
-                // Append all the children's children's to our element_array
-                JsonArray children_json = parseAsElementList(child);
-                appendJsonArrayToJsonArray(element_array, children_json);
+            if (((Group) part).children != null) {
+                for (BlockBenchPart child : ((Group) part).children) {
+                    // Append all the children's children's to our element_array
+                    JsonArray children_json = parseAsElementList(child);
+                    appendJsonArrayToJsonArray(element_array, children_json);
+                }
             }
         } else if (part instanceof Element) {
             // Process the element and add it to the list.
@@ -136,6 +138,12 @@ public class BlockBenchPart {
                 return new_element;
             }
         }
+
+        // Check if we're just an empty group (sometimes useful you know)
+        if (nbt.contains("name")) {
+            return new Group(nbt);
+        }
+
         return null;
 
     }
@@ -214,9 +222,11 @@ public class BlockBenchPart {
 
                 JsonArray children = new JsonArray();
                 // Iterate through children.
-                for (BlockBenchPart child : ((Group) part).children) {
-                    // Recursion
-                    children.add(toJsonOutliner(child));
+                if (((Group) part).children != null) {
+                    for (BlockBenchPart child : ((Group) part).children) {
+                        // Recursion
+                        children.add(toJsonOutliner(child));
+                    }
                 }
 
                 groupJson.add("children", children);
