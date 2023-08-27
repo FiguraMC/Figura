@@ -73,7 +73,7 @@ public class FiguraModelParser {
             jsonModelTextures.add(texture.toBlockBenchTextureJson());
         }
 
-        // Parse all the models
+        // Model Parser
         // All models are clumped together at "models.MODEL_HERE", they require to be given their own separate file.
         for (Tag model_tag: nbt.getCompound("models").getList("chld", Tag.TAG_COMPOUND)) {
             CompoundTag model = (CompoundTag) model_tag;
@@ -104,7 +104,21 @@ public class FiguraModelParser {
             // Add textures
             modelJson.add("textures", jsonModelTextures);
 
-            //TODO animation
+            // Animations
+            ArrayList<CompoundTag> modelAnimRaw = getModelAnimations(nbt, model.getString("name"));
+            // init the arrays of each animation.
+            HashMap<Integer, ArrayList<Pair<String, JsonElement>>> animatorArray = new HashMap<>();
+            for (int i = 0; i < modelAnimRaw.size(); i++) {
+                FiguraMod.LOGGER.info("anims: " + i);
+                animatorArray.put(i, new ArrayList<>());
+            }
+            // Get all the animators.
+            if (rootFiguraModel instanceof BlockBenchPart.Group) {
+                ((BlockBenchPart.Group) rootFiguraModel).getAnimators(animatorArray);
+            }
+            JsonArray animations = FiguraAnimationParser.createJsonAnimations(animatorArray, modelAnimRaw);
+            modelJson.add("animations", animations);
+
             //modelJson.add("animations", new JsonArray());
 
             try {
@@ -139,6 +153,20 @@ public class FiguraModelParser {
 
 
 
+    }
+    // Get the animations exclusive to this model
+    public static ArrayList<CompoundTag> getModelAnimations(CompoundTag nbtRoot, String model_name) {
+        ArrayList<CompoundTag> array = new ArrayList<>();
+
+        for (Tag animRaw : nbtRoot.getList("animations", Tag.TAG_COMPOUND)) {
+            CompoundTag anim = (CompoundTag) animRaw;
+            if (model_name.equals(anim.getString("mdl"))) {
+
+                array.add(anim);
+            }
+        }
+
+        return array;
     }
 
     public static class TextureData {

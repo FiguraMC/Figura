@@ -1,6 +1,7 @@
 package org.figuramc.figura.parsers.Buwwet;
 
 import com.google.gson.*;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.nbt.*;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
@@ -140,11 +141,51 @@ public class BlockBenchPart {
     }
     public static class Group extends BlockBenchPart {
         public BlockBenchPart[] children;
+        // Has the animators of all the animations it is a part of.
+        public ArrayList<FiguraAnimationParser.AnimatorGroupData> animationAnimators;
 
         //public Boolean isOpen = true;
 
         public Group(CompoundTag nbt) {
             super(nbt);
+            // Check if it has animations.
+            if (nbt.contains("anim")) {
+                this.animationAnimators = FiguraAnimationParser.AnimatorGroupData.parseNbt(nbt);
+            }
+        }
+
+        public void getAnimators(HashMap<Integer, ArrayList<Pair<String, JsonElement>>> modelAnimations) {
+            // Get our animators
+            if (animationAnimators != null) {
+                for (FiguraAnimationParser.AnimatorGroupData animator : this.animationAnimators) {
+
+                    ArrayList<Pair<String, JsonElement>> modelAnimation = modelAnimations.get(animator.animation_id);
+
+                    FiguraMod.LOGGER.info("anim requested: " + animator.animation_id);
+
+
+                    JsonObject animatorJson = new JsonObject();
+                    animatorJson.addProperty("name", this.name);
+                    animatorJson.addProperty("type", "bone");
+
+                    // Get keyframes
+                    animatorJson.add("keyframes", animator.toKeyframesJson());
+
+                    // Append this group's animator to the master.
+
+                    modelAnimation.add(new Pair<>(this.uuid, animatorJson));
+                }
+            }
+            // Check if we have children
+            if (this.children != null) {
+                for (BlockBenchPart child : this.children) {
+                    if (child instanceof Group) {
+                        // Make them append their animators aswell.
+
+                        ((Group) child).getAnimators(modelAnimations);
+                    }
+                }
+            }
         }
 
         public static JsonElement toJsonOutliner(BlockBenchPart part) {
@@ -168,6 +209,8 @@ public class BlockBenchPart {
                 groupJson.addProperty("export", true);
                 groupJson.addProperty("autouv", 0);
                 groupJson.addProperty("mirror_uv", 0);
+
+                // Animations aren't stored here.
 
                 JsonArray children = new JsonArray();
                 // Iterate through children.
