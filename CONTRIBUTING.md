@@ -20,7 +20,7 @@ Note - do not merge upstream into your pr branch if a clean rebase is possible.
 5. You may merge the Pull Request in once you have the sign-off of another developer, or if you do not have permission to do that, you may request the second reviewer to merge it for you.
 
 ## Translation Contributing Process 
-Note - Translations are not located in this repository but in [Figuramc/Assets](https://github.com/FiguraMC/Assets)
+Note - Translations are not located in this repository but in [FiguraMC/Assets](https://github.com/FiguraMC/Assets)
 1. You must be fluent and/or knowledgeable in the language you are translating to.
 
 2. Please use our Localization solution located [here](https://localization.figuramc.org). This makes it much eaiser for other contributors to view the progress on a specific language.
