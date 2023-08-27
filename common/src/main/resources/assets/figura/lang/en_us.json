@@ -10,6 +10,9 @@
   "figura.backend.user_not_found": "User not found",
   "figura.backend.avatar_not_found": "Avatar not found",
 
+  "figura.backend.download_success": "Avatar downloaded!",
+  "figura.backend.download_failed": "Avatar failed to download.",
+
   "figura.backend.upload_success": "Avatar uploaded!",
   "figura.backend.upload_too_big": "Avatar is too big",
   "figura.backend.upload_too_many": "You have too many Avatars",

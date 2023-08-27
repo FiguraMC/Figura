@@ -13,9 +13,11 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.Badges;
+import org.figuramc.figura.backend2.BuwwetNetworkStuff;
 import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.gui.widgets.ContextMenu;
 import org.figuramc.figura.gui.widgets.Label;
@@ -32,6 +34,7 @@ import org.figuramc.figura.utils.ui.UIHelper;
 
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class PlayerPermPackElement extends AbstractPermPackElement {
 
@@ -81,6 +84,21 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
         context.addAction(FiguraText.of("gui.context.reload"), null, button -> {
             AvatarManager.reloadAvatar(owner);
             FiguraToast.sendToast(FiguraText.of("toast.reload"));
+        });
+
+        context.addAction(Component.literal("Download"), Component.literal("download avatar"), button -> {
+            FiguraMod.LOGGER.info(name);
+            CompletableFuture.runAsync(() -> {
+                try {
+                    BuwwetNetworkStuff.downloadUser(this.name);
+                } catch (Exception e) {
+                    FiguraMod.LOGGER.error("Encountered error while downloading user's avatar: " + e);
+                    FiguraToast.sendToast(FiguraText.of("backend.download_failed"));
+                }
+            }).thenRun(() -> {
+                FiguraMod.LOGGER.info("Completed downloading the avatar of " + this.name);
+                FiguraToast.sendToast(FiguraText.of("backend.download_success"));
+            });
         });
 
         // permissions
@@ -206,6 +224,8 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
             status.setY(y + 6 + font.lineHeight);
             status.render(gui, mouseX, mouseY, delta);
         }
+
+
 
         // category
         int textY = y + height - font.lineHeight - 4;

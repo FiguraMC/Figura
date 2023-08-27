@@ -37,7 +37,7 @@ public class FiguraModelParser {
         // metadata
         CompoundTag metadataNbt = nbt.getCompound("metadata");
         String avatarName = metadataNbt.getString("name");
-        String avatarAuthor = metadataNbt.getString("author");
+        String avatarAuthor = metadataNbt.getString("authors");
 
         // Save location
         Path avatarSavePath = IOUtils.getOrCreateDir(getDownloaderAvatarDirectory(), avatarName);
@@ -301,10 +301,10 @@ public class FiguraModelParser {
                 float[] uv = fillVectorIfNone(faceNbt.get("uv"), 4);
                 // Divide uvs by two TODO: not right
                 //FiguraMod.LOGGER.info("texture id: " + texture + ", width: " + textureSize.get(texture)[0] + ", Face uv mult:" + (textureSize.get(texture)[0] / 64 * 4));
-                uv[0] = uv[0] / (textureSize.get(texture)[0] / 64);
-                uv[1] = uv[1] / (textureSize.get(texture)[1] / 64);
-                uv[2] = uv[2] / (textureSize.get(texture)[0] / 64);
-                uv[3] = uv[3] / (textureSize.get(texture)[1] / 64);
+                uv[0] = uv[0] * 64 / textureSize.get(texture)[0];
+                uv[1] = uv[1] * 64 / textureSize.get(texture)[1];
+                uv[2] = uv[2] * 64 / textureSize.get(texture)[0];
+                uv[3] = uv[3] * 64 / textureSize.get(texture)[1];
 
 
                 finalFaces.add(new CubeFaceData(faceName, uv, texture));
