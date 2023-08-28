@@ -267,11 +267,8 @@ public class BlockBenchPart {
 
             // Check if we're a mesh or a cube
             if (nbt.contains("cube_data")) {
-                // Check that cube data isn't empty
-                if (nbt.getCompound("cube_data").getAllKeys().size() > 0) {
-                    this.type = "cube";
-                    this.cubeData = new FiguraModelParser.CubeData(nbt, textureSize);
-                }
+                this.type = "cube";
+                this.cubeData = new FiguraModelParser.CubeData(nbt, textureSize);
             }
             if (nbt.contains("mesh_data")) {
                 this.type = "mesh";

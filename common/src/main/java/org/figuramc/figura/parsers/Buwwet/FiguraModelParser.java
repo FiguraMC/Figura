@@ -301,19 +301,29 @@ public class FiguraModelParser {
             // Figura completely butchers the names of the faces, we need to find them again and put the correct one.
             for (String faceName : CubeData.FACES) {
                 CompoundTag faceNbt = (CompoundTag) facesNBT.get(String.valueOf(faceName.charAt(0)));
-                // Get the uv and texture index
-                int texture = faceNbt.getInt("tex");
+                // Does this cube have faces at all? Check that cube data isn't empty
+                if (faceNbt.getAllKeys().size() > 0) {
+                    // Good, parse them
+                    // Get the uv and texture index
+                    int texture = faceNbt.getInt("tex");
 
-                float[] uv = fillVectorIfNone(faceNbt.get("uv"), 4);
-                // Divide uvs by two TODO: not right
-                //FiguraMod.LOGGER.info("texture id: " + texture + ", width: " + textureSize.get(texture)[0] + ", Face uv mult:" + (textureSize.get(texture)[0] / 64 * 4));
-                uv[0] = uv[0] * 64 / textureSize.get(texture)[0];
-                uv[1] = uv[1] * 64 / textureSize.get(texture)[1];
-                uv[2] = uv[2] * 64 / textureSize.get(texture)[0];
-                uv[3] = uv[3] * 64 / textureSize.get(texture)[1];
+                    float[] uv = fillVectorIfNone(faceNbt.get("uv"), 4);
+                    // Divide uvs by two TODO: not right
+                    //FiguraMod.LOGGER.info("texture id: " + texture + ", width: " + textureSize.get(texture)[0] + ", Face uv mult:" + (textureSize.get(texture)[0] / 64 * 4));
+                    uv[0] = uv[0] * 64 / textureSize.get(texture)[0];
+                    uv[1] = uv[1] * 64 / textureSize.get(texture)[1];
+                    uv[2] = uv[2] * 64 / textureSize.get(texture)[0];
+                    uv[3] = uv[3] * 64 / textureSize.get(texture)[1];
 
 
-                finalFaces.add(new CubeFaceData(faceName, uv, texture));
+                    finalFaces.add(new CubeFaceData(faceName, uv, texture));
+                } else {
+                    // This cube has no faces! But we want to import it anyways to BlockBench because some scripts may use them.
+                    finalFaces.add(new CubeFaceData(faceName, new float[] {0.0f, 0.0f, 0.0f, 0.0f}, 0));
+                }
+
+
+
                 //FiguraMod.LOGGER.info(faceName);
             }
 
