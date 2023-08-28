@@ -285,6 +285,8 @@ public class BlockBenchPart {
             json.addProperty("type", this.type);
             json.addProperty("color", this.color);
 
+            json.addProperty("inflate", this.inflate);
+
             // ??? json.addProperty("inflate", this.inflate);
 
 
