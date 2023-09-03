@@ -331,10 +331,12 @@ public class FiguraModelParser {
                         float[] uv = fillVectorIfNone(faceNbt.get("uv"), 4);
                         // Divide uvs by two TODO: not right
                         //FiguraMod.LOGGER.info("texture id: " + texture + ", width: " + textureSize.get(texture)[0] + ", Face uv mult:" + (textureSize.get(texture)[0] / 64 * 4));
-                        uv[0] = uv[0] * 64 / textureSize.get(texture)[0];
-                        uv[1] = uv[1] * 64 / textureSize.get(texture)[1];
-                        uv[2] = uv[2] * 64 / textureSize.get(texture)[0];
-                        uv[3] = uv[3] * 64 / textureSize.get(texture)[1];
+                        if (textureSize.get(texture) != null) {
+                            uv[0] = uv[0] * 64 / textureSize.get(texture)[0];
+                            uv[1] = uv[1] * 64 / textureSize.get(texture)[1];
+                            uv[2] = uv[2] * 64 / textureSize.get(texture)[0];
+                            uv[3] = uv[3] * 64 / textureSize.get(texture)[1];
+                        }
 
                         finalFaces.add(new CubeFaceData(faceName, uv, texture));
                 }

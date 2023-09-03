@@ -155,11 +155,22 @@ public class FiguraAnimationParser {
                             float time = keyframeNbt.getFloat("time");
                             String interpolation = keyframeNbt.getString("int");
 
+                            // Check for pre first, else use end I guess
+                            // HORRIBLE CODE!!! BUT WHY WAS IT DESIGNED LIKE THAT IN THE FIRST PLACE?
+                            // This silly little guy can return null or contain a null in one of the pair parts.
                             Pair<FiguraVec3, String[]> pre = parseKeyframeData(keyframeNbt, "pre");
-                            if (pre == null) pre = Pair.of(FiguraVec3.of(), null);
-                            // TODO: haven't seen end, but pre seems to be the value thing
-                            Pair<FiguraVec3, String[]> end = parseKeyframeData(keyframeNbt, "end");
-                            //if (end == null) end = pre;
+                            if (pre == null) {
+                                pre = parseKeyframeData(keyframeNbt, "end");
+                            } else if (pre.getFirst() == null) {
+                                pre = parseKeyframeData(keyframeNbt, "end");
+                                if (pre == null) {
+                                    continue;
+                                } else if (pre.getFirst() == null) {
+                                    continue;
+                                }
+                            };
+
+
 
 
 
@@ -172,6 +183,7 @@ public class FiguraAnimationParser {
                             FiguraVec3 bezierRightTime = FiguraVec3.of(0.1, 0.1, 0.1);
                             readVec3(bezierLeftTime, keyframeNbt, "blt");
                             readVec3(bezierRightTime, keyframeNbt, "brt");
+
                             bezierLeftTime.add(1, 1, 1);
                             bezierLeftTime = MathUtils.clamp(bezierLeftTime, 0, 1);
                             bezierRightTime = MathUtils.clamp(bezierRightTime, 0, 1);
