@@ -2,9 +2,11 @@ package org.figuramc.figura.parsers.Buwwet;
 
 import com.google.gson.*;
 import com.mojang.datafixers.util.Pair;
+import kroppeb.stareval.function.Type;
 import net.minecraft.nbt.*;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
+import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.ast.Str;
 
 import java.lang.reflect.Array;
@@ -167,7 +169,12 @@ public class BlockBenchPart {
             if (animationAnimators != null) {
                 for (FiguraAnimationParser.AnimatorGroupData animator : this.animationAnimators) {
 
+
                     ArrayList<Pair<String, JsonElement>> modelAnimation = modelAnimations.get(animator.animation_id);
+                    if (modelAnimation == null) {
+                        FiguraMod.LOGGER.error("Has an animator for an invalid animation id: " + animator.animation_id);
+                        continue;
+                    }
 
                     //FiguraMod.LOGGER.info("anim requested: " + animator.animation_id);
 
@@ -236,6 +243,41 @@ public class BlockBenchPart {
             return null;
         }
 
+        public void getModelUsedTextures(ArrayList<Integer> usedTextures) {
+            if (this.children == null) {
+                return;
+            }
+            for (BlockBenchPart childPart : this.children) {
+                if (childPart instanceof Group) {
+                    ((Group) childPart).getModelUsedTextures(usedTextures);
+                }
+                if (childPart instanceof Element) {
+                    ArrayList<Integer> partTextures = ((Element) childPart).getTexture();
+                    // Add the textures that weren't yet there.
+                    for (Integer textureId : partTextures) {
+                        if (!usedTextures.contains(textureId)) {
+                            usedTextures.add(textureId);
+                        }
+                    }
+
+                }
+            }
+        }
+        // Overwrite the texture index of all the elements to match the ones the model has, instead of the whole avatar.
+        public void updateElementBlockBenchTexture(ArrayList<Integer> usedTextures) {
+            if (this.children == null) {
+                return;
+            }
+            for (BlockBenchPart childPart : this.children) {
+                if (childPart instanceof Group) {
+                    ((Group) childPart).updateElementBlockBenchTexture(usedTextures);
+                }
+                if (childPart instanceof Element) {
+                    ((Element) childPart).matchSetTexture(usedTextures);
+                }
+            }
+        }
+
         @Override
         public String toString() {
             return "Group: {name: " + name + ", uuid: " + uuid + ", piv: " + origin.toString() + "}";
@@ -274,6 +316,37 @@ public class BlockBenchPart {
                 this.type = "mesh";
                 //FiguraMod.LOGGER.info(nbt.get("mesh_data").getAsString());
                 this.meshData = FiguraModelParser.MeshData.generateFromElement(nbt, this.origin, textureSize);
+            }
+        }
+
+        @Nullable
+        public ArrayList<Integer> getTexture() {
+            ArrayList<Integer> usedTextures = new ArrayList<>();
+            if (cubeData != null) {
+                for (FiguraModelParser.CubeData.CubeFaceData cubeFaceData : cubeData.faces) {
+                    usedTextures.add(cubeFaceData.texture);
+                }
+            } else if (meshData != null) {
+                for (FiguraModelParser.MeshData.MeshFaceData meshFaceData : meshData.faces) {
+                    usedTextures.add(meshFaceData.texture);
+                }
+            }
+            return usedTextures;
+        }
+
+        // Overwrite the texture id of this element as BlockBench uses the index and not the ID for some reason.
+        public void matchSetTexture(ArrayList<Integer> modelTextures) {
+            if (cubeData != null) {
+                for (FiguraModelParser.CubeData.CubeFaceData cubeFaceData : cubeData.faces) {
+                    Integer blockBenchTextureID = modelTextures.indexOf(cubeFaceData.texture);
+                    cubeFaceData.texture = blockBenchTextureID;
+                }
+            }
+            if (meshData != null) {
+                for (FiguraModelParser.MeshData.MeshFaceData meshFaceData : meshData.faces) {
+                    Integer blockBenchTextureID = modelTextures.indexOf(meshFaceData.texture);
+                    meshFaceData.texture = blockBenchTextureID;
+                }
             }
         }
 

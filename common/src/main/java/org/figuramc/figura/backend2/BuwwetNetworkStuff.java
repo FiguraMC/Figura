@@ -18,10 +18,8 @@ import org.figuramc.figura.parsers.Buwwet.BlockBenchPart;
 import org.figuramc.figura.parsers.Buwwet.FiguraModelParser;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
+import java.io.*;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.http.HttpRequest;
@@ -86,7 +84,15 @@ public class BuwwetNetworkStuff extends NetworkStuff {
             avatars.add(Pair.of(entry.get("hash").getAsString(), Pair.of(entry.get("id").getAsString(), owner)));
         }
 
-        downloadAvatars(avatars);
+        try {
+            downloadAvatars(avatars);
+        } catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            String sStackTrace = sw.toString(); // stack trace as a string
+            FiguraMod.LOGGER.error(sStackTrace);
+        }
 
         FiguraMod.LOGGER.info("Downloaded " + username);
         return "Success";

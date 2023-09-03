@@ -44,13 +44,9 @@ public class FiguraModelParser {
 
         // Parse textures and save them, also generate a json object to be included in all BlockBench models
         ArrayList<TextureData> textures = TextureData.fromAvatarTexturesNbt(nbt.getCompound("textures"));
-        JsonArray jsonModelTextures = new JsonArray();
         // id, width and height
         HashMap<Integer, Integer[]> textureSize = new HashMap<>();
         for (TextureData texture : textures) {
-
-
-
             // Save the image!
             try {
                 // We do not have to do anything fancy as the byte[] contains headers (aka not raw)
@@ -70,8 +66,7 @@ public class FiguraModelParser {
                 FiguraMod.LOGGER.error("Failed to save texture: " + e);
             }
 
-            // Add to the json array
-            jsonModelTextures.add(texture.toBlockBenchTextureJson());
+
         }
 
         // Model Parser
@@ -81,10 +76,7 @@ public class FiguraModelParser {
             JsonObject modelJson = new JsonObject();
             modelJson.addProperty("name", model.get("name").getAsString());
             // Parse the figura model to our own types
-            BlockBenchPart rootFiguraModel = BlockBenchPart.parseNBTchildren(model, textureSize);
-            // Get the elements list
-            JsonArray elementsJson = BlockBenchPart.parseAsElementList(rootFiguraModel);
-            modelJson.add("elements", elementsJson);
+            BlockBenchPart.Group rootFiguraModel = (BlockBenchPart.Group) BlockBenchPart.parseNBTchildren(model, textureSize);
             // Get the outliner
             JsonObject outlinerJson = BlockBenchPart.Group.toJsonOutliner(rootFiguraModel).getAsJsonObject();
             modelJson.add("outliner", outlinerJson.get("children"));   // Get children to make the outliner an array, (also model shouldn't even be referenced in blockbench)
@@ -103,22 +95,49 @@ public class FiguraModelParser {
             modelJson.add("resolution", resolutionJson);
 
             // Add textures
+            JsonArray jsonModelTextures = new JsonArray();
+            ArrayList<Integer> usedModelTextures = new ArrayList<>();
+            // Get the textures used by the model
+            rootFiguraModel.getModelUsedTextures(usedModelTextures);
+            Collections.sort(usedModelTextures);
+            // Now that we have the textures used for the given model, update the index that references them in each part.
+            rootFiguraModel.updateElementBlockBenchTexture(usedModelTextures);
+
+            for (TextureData texture : textures) {
+                // Add to the json array
+                //TODO: only add them if they're used by this model
+                if (usedModelTextures.contains(texture.id)) {
+                    jsonModelTextures.add(texture.toBlockBenchTextureJson());
+                }
+            }
+
             modelJson.add("textures", jsonModelTextures);
 
+
+            // Get the elements in this model
+            JsonArray elementsJson = BlockBenchPart.parseAsElementList(rootFiguraModel);
+            modelJson.add("elements", elementsJson);
+
+
             // Animations
-            ArrayList<CompoundTag> modelAnimRaw = getModelAnimations(nbt, model.getString("name"));
+            HashMap<Integer, CompoundTag> modelAnimRaw = getModelAnimations(nbt, model.getString("name"));
+            int avatarAnimationCount = nbt.getList("animations", Tag.TAG_COMPOUND).size();
             // init the arrays of each animation.
             HashMap<Integer, ArrayList<Pair<String, JsonElement>>> animatorArray = new HashMap<>();
-            for (int i = 0; i < modelAnimRaw.size(); i++) {
+            for (int i = 0; i < avatarAnimationCount; i++) {
                 //FiguraMod.LOGGER.info("anims: " + i);
                 animatorArray.put(i, new ArrayList<>());
 
                 // Check if they have any code.
-                if (modelAnimRaw.get(i).contains("code")) {
-                    JsonObject codeAnimator = FiguraAnimationParser.AnimatorGroupData.animatorFromCode(modelAnimRaw.get(i));
-                    animatorArray.get(i).add(new Pair<>("effects", codeAnimator));
+                if (modelAnimRaw.containsKey(i)) {
+                    if (modelAnimRaw.get(i).contains("code")) {
+                        JsonObject codeAnimator = FiguraAnimationParser.AnimatorGroupData.animatorFromCode(modelAnimRaw.get(i));
+                        animatorArray.get(i).add(new Pair<>("effects", codeAnimator));
+                    }
                 }
             }
+            FiguraMod.LOGGER.info("Parsed the animations of the avatar.");
+
             // Get all the animators.
             if (rootFiguraModel instanceof BlockBenchPart.Group) {
                 ((BlockBenchPart.Group) rootFiguraModel).getAnimators(animatorArray);
@@ -176,16 +195,18 @@ public class FiguraModelParser {
 
 
     }
-    // Get the animations exclusive to this model
-    public static ArrayList<CompoundTag> getModelAnimations(CompoundTag nbtRoot, String model_name) {
-        ArrayList<CompoundTag> array = new ArrayList<>();
+    // Get the raw animations exclusive to this model
+    public static HashMap<Integer, CompoundTag> getModelAnimations(CompoundTag nbtRoot, String model_name) {
+        HashMap<Integer, CompoundTag> array = new HashMap<>();
 
+        int animationId = 0;
         for (Tag animRaw : nbtRoot.getList("animations", Tag.TAG_COMPOUND)) {
             CompoundTag anim = (CompoundTag) animRaw;
             if (model_name.equals(anim.getString("mdl"))) {
 
-                array.add(anim);
+                array.put(animationId, anim);
             }
+            animationId++;
         }
 
         return array;
@@ -224,7 +245,6 @@ public class FiguraModelParser {
         public static ArrayList<TextureData> fromAvatarTexturesNbt(CompoundTag nbt) {
             ArrayList<TextureData> textureData = new ArrayList<>();
             // Names of textures are stored separately
-            //TODO: this id might be wrong!
             int texId = 0;
             for (Tag textureNameNbt : nbt.getList("data", Tag.TAG_COMPOUND)) {
                 CompoundTag textureNameCompound = (CompoundTag) textureNameNbt;
@@ -300,23 +320,25 @@ public class FiguraModelParser {
             ArrayList<CubeFaceData> finalFaces = new ArrayList<>();
             // Figura completely butchers the names of the faces, we need to find them again and put the correct one.
             for (String faceName : CubeData.FACES) {
-                CompoundTag faceNbt = (CompoundTag) facesNBT.get(String.valueOf(faceName.charAt(0)));
-                // Does this cube have faces at all? Check that cube data isn't empty
-                if (faceNbt.getAllKeys().size() > 0) {
-                    // Good, parse them
-                    // Get the uv and texture index
-                    int texture = faceNbt.getInt("tex");
+                if (facesNBT.contains(String.valueOf(faceName.charAt(0)))) {
+                    CompoundTag faceNbt = (CompoundTag) facesNBT.get(String.valueOf(faceName.charAt(0)));
+                    // Does this cube have faces at all? Check that cube data isn't empty
+                    if (faceNbt.getAllKeys().size() > 0) {
+                        // Good, parse them
+                        // Get the uv and texture index
+                        int texture = faceNbt.getInt("tex");
 
-                    float[] uv = fillVectorIfNone(faceNbt.get("uv"), 4);
-                    // Divide uvs by two TODO: not right
-                    //FiguraMod.LOGGER.info("texture id: " + texture + ", width: " + textureSize.get(texture)[0] + ", Face uv mult:" + (textureSize.get(texture)[0] / 64 * 4));
-                    uv[0] = uv[0] * 64 / textureSize.get(texture)[0];
-                    uv[1] = uv[1] * 64 / textureSize.get(texture)[1];
-                    uv[2] = uv[2] * 64 / textureSize.get(texture)[0];
-                    uv[3] = uv[3] * 64 / textureSize.get(texture)[1];
+                        float[] uv = fillVectorIfNone(faceNbt.get("uv"), 4);
+                        // Divide uvs by two TODO: not right
+                        //FiguraMod.LOGGER.info("texture id: " + texture + ", width: " + textureSize.get(texture)[0] + ", Face uv mult:" + (textureSize.get(texture)[0] / 64 * 4));
+                        uv[0] = uv[0] * 64 / textureSize.get(texture)[0];
+                        uv[1] = uv[1] * 64 / textureSize.get(texture)[1];
+                        uv[2] = uv[2] * 64 / textureSize.get(texture)[0];
+                        uv[3] = uv[3] * 64 / textureSize.get(texture)[1];
 
+                        finalFaces.add(new CubeFaceData(faceName, uv, texture));
+                }
 
-                    finalFaces.add(new CubeFaceData(faceName, uv, texture));
                 } else {
                     // This cube has no faces! But we want to import it anyways to BlockBench because some scripts may use them.
                     finalFaces.add(new CubeFaceData(faceName, new float[] {0.0f, 0.0f, 0.0f, 0.0f}, 0));
@@ -375,12 +397,14 @@ public class FiguraModelParser {
 
                 faceJson.add("uv", faceUvMap);
                 faceJson.add("vertices", faceVerts);
-
                 faceJson.addProperty("texture", face.texture);
+
 
                 // POSSIBLE ERROR FOR BLOCKBENCH: probs expects a name with letters
                 jsonMap.add(String.valueOf(faceId), faceJson);
                 faceId++;
+
+                FiguraMod.LOGGER.info(faceJson.toString());
             }
 
             return jsonMap;

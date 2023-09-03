@@ -16,10 +16,7 @@ import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.model.FiguraModelPartReader;
 import org.figuramc.figura.utils.MathUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.figuramc.figura.model.FiguraModelPartReader.parseKeyframeData;
 import static org.figuramc.figura.model.FiguraModelPartReader.readVec3;
@@ -136,6 +133,8 @@ public class FiguraAnimationParser {
                     CompoundTag nbtAnimation = (CompoundTag) nbtAnimationRaw;
 
                     Integer animId = nbtAnimation.getInt("id");
+                    FiguraMod.LOGGER.info(animId.toString());
+
                     ArrayList<AnimationKeyframeData> keyframes = new ArrayList<>();
 
                     // Loop through all the channels of the animation.
@@ -324,11 +323,11 @@ public class FiguraAnimationParser {
 
     }
 
-    public static JsonArray createJsonAnimations(HashMap<Integer, ArrayList<Pair<String, JsonElement>>> animatorArray, ArrayList<CompoundTag> modelAnimRaw) {
+    public static JsonArray createJsonAnimations(HashMap<Integer, ArrayList<Pair<String, JsonElement>>> animatorArray, HashMap<Integer, CompoundTag> modelAnimRaw) {
         JsonArray animations = new JsonArray();
 
-        int animationId = 0;
-        for (CompoundTag modelAnimNbt : modelAnimRaw) {
+        for (Map.Entry<Integer, CompoundTag> modelAnim : modelAnimRaw.entrySet()) {
+            CompoundTag modelAnimNbt = modelAnim.getValue();
             // Create the animation
             JsonObject animationJson = new JsonObject();
             animationJson.addProperty("name", modelAnimNbt.getString("name"));
@@ -343,14 +342,13 @@ public class FiguraAnimationParser {
 
             // append all the animators
             JsonObject animatorsJson = new JsonObject();
-            for (Pair<String, JsonElement> animator : animatorArray.get(animationId)) {
+            for (Pair<String, JsonElement> animator : animatorArray.get(modelAnim.getKey())) {
                 animatorsJson.add(animator.getFirst(), animator.getSecond());
             }
             animationJson.add("animators", animatorsJson);
 
 
             animations.add(animationJson);
-            animationId++;
         }
 
         return animations;
