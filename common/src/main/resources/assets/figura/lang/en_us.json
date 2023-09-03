@@ -152,6 +152,36 @@
   "figura.badges.no_permissions.sounds": "Reached Sounds limit",
   "figura.badges.no_permissions.custom_sounds": "Could not use Custom Sounds",
   "figura.badges.no_permissions.vanilla_model_edit": "Tried to change the Vanilla Model",
+  
+  "figura.emoji.face_angry": "Angry",
+  "figura.emoji.face_biba": "Biba",
+  "figura.emoji.face_fear": "Fear",
+  "figura.emoji.face_happy": "Happy",
+  "figura.emoji.face_misc": "Miscellaneous Faces",
+  "figura.emoji.face_nervous": "Nervous",
+  "figura.emoji.face_sad": "Sad",
+  "figura.emoji.face_silly": "Silly",
+
+  "figura.emoji.animal": "Animals",
+  "figura.emoji.food": "Foods",
+  "figura.emoji.hand": "Hands",
+  "figura.emoji.heart": "Hearts",
+  "figura.emoji.nature": "Nature",
+
+  "figura.emoji.animated": "Animated",
+  "figura.emoji.symbol": "Symbols",
+  "figura.emoji.object": "Objects",
+  "figura.emoji.logo": "Logos",
+  "figura.emoji.misc": "Miscellaneous",
+
+  "figura.emoji.portrait": "Portraits",
+  "figura.emoji.pride": "Pride",
+
+  "figura.emoji.reference": "References",
+  "figura.emoji.reference_bloons": "Bloons References",
+  "figura.emoji.reference_logo": "Logo References",
+  "figura.emoji.reference_retro": "Retro References",
+  "figura.emoji.meme": "Memes",
 
   "figura.gui.on": "ON",
   "figura.gui.off": "OFF",
@@ -172,7 +202,7 @@
   "figura.gui.new_version.tooltip": "A new version of Figura is available! %s\nClick to download it in your browser!",
   "figura.gui.old_version.tooltip": "Are you a time traveler? The latest version is %s",
   "figura.gui.clear": "Clear",
-  "figura.gui.not_available_yet": "Not available yet ❤",
+  "figura.gui.not_available_yet": "Not available yet",
 
   "figura.gui.text_hint.any": "Text",
   "figura.gui.text_hint.int": "Integer",
@@ -316,8 +346,6 @@
   "figura.gui.help.external_wiki": "Online Wiki",
   "figura.gui.help.lua_version": "Lua Version: %s",
   "figura.gui.help.figura_version": "Figura Version: %s",
-  "figura.gui.help.credits": "Made with love ❤ - by %s",
-
 
   "figura.config.nameplate": "Nameplate",
   "figura.config.nameplate.tooltip": "Nameplate settings",
