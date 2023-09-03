@@ -100,14 +100,12 @@ public class HelpScreen extends AbstractPanelScreen {
                 null, button -> {
             CompletableFuture.runAsync(() -> {
                 try {
-                    BuwwetNetworkStuff.downloadUser(user.get());
+                    String avatarName = BuwwetNetworkStuff.downloadUser(user.get());
+                    FiguraToast.sendToast(Component.literal("Completed downloading the avatar of " + user.get() + ": " + avatarName));
                 } catch (Exception e) {
                     FiguraMod.LOGGER.error("Encountered error while downloading user's avatar: " + e);
                     FiguraToast.sendToast(FiguraText.of("backend.download_failed"));
                 }
-            }).thenRun(() -> {
-                FiguraMod.LOGGER.info("Completed downloading the avatar of " + user.get());
-                FiguraToast.sendToast(FiguraText.of("backend.download_success"));
             });
         }));
     }

@@ -133,7 +133,7 @@ public class FiguraAnimationParser {
                     CompoundTag nbtAnimation = (CompoundTag) nbtAnimationRaw;
 
                     Integer animId = nbtAnimation.getInt("id");
-                    FiguraMod.LOGGER.info(animId.toString());
+                    //FiguraMod.LOGGER.info(animId.toString());
 
                     ArrayList<AnimationKeyframeData> keyframes = new ArrayList<>();
 

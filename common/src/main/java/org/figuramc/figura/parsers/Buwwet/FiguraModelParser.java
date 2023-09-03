@@ -33,7 +33,7 @@ public class FiguraModelParser {
         return IOUtils.getOrCreateDir(avatar_path, "downloaded");
     }
 
-    public static void parseAvatar(CompoundTag nbt) {
+    public static String parseAvatar(CompoundTag nbt) {
         // metadata
         CompoundTag metadataNbt = nbt.getCompound("metadata");
         String avatarName = metadataNbt.getString("name");
@@ -192,7 +192,7 @@ public class FiguraModelParser {
             FiguraMod.LOGGER.error("Error while saving avatar.json");
         }
 
-
+        return avatarName;
 
     }
     // Get the raw animations exclusive to this model
@@ -406,7 +406,7 @@ public class FiguraModelParser {
                 jsonMap.add(String.valueOf(faceId), faceJson);
                 faceId++;
 
-                FiguraMod.LOGGER.info(faceJson.toString());
+                //FiguraMod.LOGGER.info(faceJson.toString());
             }
 
             return jsonMap;

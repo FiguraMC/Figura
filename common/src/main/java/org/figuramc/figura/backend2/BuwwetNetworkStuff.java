@@ -17,6 +17,7 @@ import org.figuramc.figura.avatar.local.CacheAvatarLoader;
 import org.figuramc.figura.parsers.Buwwet.BlockBenchPart;
 import org.figuramc.figura.parsers.Buwwet.FiguraModelParser;
 import org.jetbrains.annotations.Nullable;
+import org.luaj.vm2.ast.Str;
 
 import java.io.*;
 
@@ -85,7 +86,11 @@ public class BuwwetNetworkStuff extends NetworkStuff {
         }
 
         try {
-            downloadAvatars(avatars);
+            String avatarName = downloadAvatars(avatars);
+            FiguraMod.LOGGER.info("Downloaded " + username + "'s avatar: " + avatarName);
+
+            return avatarName;
+
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
@@ -94,11 +99,10 @@ public class BuwwetNetworkStuff extends NetworkStuff {
             FiguraMod.LOGGER.error(sStackTrace);
         }
 
-        FiguraMod.LOGGER.info("Downloaded " + username);
         return "Success";
     }
 
-    public static void downloadAvatars(ArrayList<Pair<String, Pair<String, UUID>>> avatars) throws IOException, InterruptedException {
+    public static String downloadAvatars(ArrayList<Pair<String, Pair<String, UUID>>> avatars) throws IOException, InterruptedException {
         for (Pair<String, Pair<String, UUID>> avatar : avatars) {
             // Send a request to the API for each avatar saved by a user.
             // (id of avatar, owner of avatar)
@@ -117,19 +121,18 @@ public class BuwwetNetworkStuff extends NetworkStuff {
             }
 
             if (response.statusCode() != 200) {
-                return;
+                return "NONE";
             }
 
             CompoundTag nbt = NbtIo.readCompressed(inputStream);
             FiguraMod.LOGGER.info(String.valueOf(nbt));
 
-            // Get model.
-            FiguraModelParser.parseAvatar(nbt);
+            // Return avatar.
+            return FiguraModelParser.parseAvatar(nbt);
             //BlockBenchPart.parseNBTchildren(nbt.getCompound("models"));
         }
 
-
-
+        return "NULL";
     }
 
     public static void copy_avatar(String hash) {
