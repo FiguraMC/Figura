@@ -25,7 +25,7 @@ import java.util.*;
 import static org.figuramc.figura.parsers.Buwwet.BlockBenchPart.fillVectorIfNone;
 import static org.figuramc.figura.parsers.Buwwet.BlockBenchPart.floatArrayToJson;
 
-/// Parses Figura models into blockbench models by performing all of the calculations already done previously but on reverse.
+/// Parses Figura models into blockbench models by performing all the calculations already done previously but on reverse.
 public class FiguraModelParser {
 
     public static Path getDownloaderAvatarDirectory() {
@@ -70,8 +70,17 @@ public class FiguraModelParser {
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("Failed to save texture: " + e);
             }
-
-
+        }
+        ArrayList<TextureData> emissiveTextures = TextureData.emisiveTexturesFromNbt(nbt.getCompound("textures"));
+        for (TextureData emissiveTex : emissiveTextures) {
+            try {
+                OutputStream new_texture = new FileOutputStream(avatarSavePath.resolve(emissiveTex.name).toString(), false);
+                new_texture.write(emissiveTex.textureBytes);
+                new_texture.flush();
+                new_texture.close();
+            } catch (Exception e) {
+                FiguraMod.LOGGER.error("Failed to save emissive texture: " + e);
+            }
         }
 
         // Texture appender
@@ -289,6 +298,27 @@ public class FiguraModelParser {
             return json;
         }
 
+        // Returns emissive textures without ids!
+        public static ArrayList<TextureData> emisiveTexturesFromNbt(CompoundTag nbt) {
+            ArrayList<TextureData> textureData = new ArrayList<>();
+
+            for (Tag textureNameNbt : nbt.getList("data", Tag.TAG_COMPOUND)) {
+                CompoundTag textureNameCompound = (CompoundTag) textureNameNbt;
+
+                if (!textureNameCompound.contains("e")) {
+                    continue;
+                }
+
+                String emisiveTextureName = textureNameCompound.getString("e");
+                byte[] textureBytes = nbt.getCompound("src").getByteArray(emisiveTextureName);
+
+                textureData.add(new TextureData(emisiveTextureName, null, textureBytes));
+
+            }
+
+            return textureData;
+        }
+
         public static ArrayList<TextureData> fromAvatarTexturesNbt(CompoundTag nbt) {
             ArrayList<TextureData> textureData = new ArrayList<>();
             // Names of textures are stored separately
@@ -302,7 +332,7 @@ public class FiguraModelParser {
                 }
 
                 String textureName = textureNameCompound.getString("d");
-                FiguraMod.LOGGER.info(textureName);
+                //FiguraMod.LOGGER.info("diffuse texture:" + textureName);
 
                 // Get the bytes stored in the name of this texture
                 byte[] textureBytes = nbt.getCompound("src").getByteArray(textureName);
