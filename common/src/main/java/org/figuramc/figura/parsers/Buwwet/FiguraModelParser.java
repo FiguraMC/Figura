@@ -60,6 +60,10 @@ public class FiguraModelParser {
                 InputStream in = new ByteArrayInputStream(texture.textureBytes);
                 BufferedImage buf = ImageIO.read(in);
 
+                if (buf == null) {
+                    FiguraMod.LOGGER.error("Error loading texture; Buffer is null for texture " + texture.name);
+                }
+
                 textureSize.put(texture.id, new Integer[] {buf.getWidth(), buf.getHeight()});
 
                 //FiguraMod.LOGGER.info("Texture " + texture.id + ": " +  buf.getWidth() + ", " + buf.getHeight());
@@ -291,7 +295,14 @@ public class FiguraModelParser {
             int texId = 0;
             for (Tag textureNameNbt : nbt.getList("data", Tag.TAG_COMPOUND)) {
                 CompoundTag textureNameCompound = (CompoundTag) textureNameNbt;
+
+                if (!textureNameCompound.contains("d")) {
+                    // Ignore textures that do not have a diffuse for now
+                    continue;
+                }
+
                 String textureName = textureNameCompound.getString("d");
+                FiguraMod.LOGGER.info(textureName);
 
                 // Get the bytes stored in the name of this texture
                 byte[] textureBytes = nbt.getCompound("src").getByteArray(textureName);
@@ -319,9 +330,9 @@ public class FiguraModelParser {
             public String name;
             /// 4-sized length
             public float[] uv;
-            public int texture;
+            public Integer texture;
 
-            public CubeFaceData(String name, float[] uv, int texture) {
+            public CubeFaceData(String name, float[] uv, Integer texture) {
                 this.name = name;
                 this.uv = uv;
                 this.texture = texture;
@@ -342,7 +353,9 @@ public class FiguraModelParser {
             for (CubeFaceData face : this.faces) {
                 JsonObject jsonFace = new JsonObject();
                 // Create the face in json and then add it to the map.
-                jsonFace.addProperty("texture", face.texture);
+                if (face.texture != null) {
+                    jsonFace.addProperty("texture", face.texture);
+                }
                 jsonFace.add("uv", floatArrayToJson(face.uv));
 
                 jsonMap.add(face.name, jsonFace);
@@ -357,7 +370,14 @@ public class FiguraModelParser {
 
             // POSSIBLE BLOCKBENCH ERROR: Some elements do not have any faces but have the "cube_data" field.
             if (((CompoundTag) faces).size() == 0) {
-                return new CubeFaceData[0];
+                // Create empty faces with 0 uvs and no assigned texture
+                ArrayList<CubeFaceData> finalSadFaces = new ArrayList<>();
+                for (String faceName : CubeData.FACES) {
+                    finalSadFaces.add(new CubeFaceData(faceName, new float[] {0.0f, 0.0f, 0.0f, 0.0f}, null));
+                }
+                CubeFaceData[] array = new CubeFaceData[finalSadFaces.size()];
+                finalSadFaces.toArray(array);
+                return array;
             }
 
             ArrayList<CubeFaceData> finalFaces = new ArrayList<>();
@@ -374,11 +394,13 @@ public class FiguraModelParser {
                         float[] uv = fillVectorIfNone(faceNbt.get("uv"), 4);
                         // Divide uvs by two TODO: not right
                         //FiguraMod.LOGGER.info("texture id: " + texture + ", width: " + textureSize.get(texture)[0] + ", Face uv mult:" + (textureSize.get(texture)[0] / 64 * 4));
-                        if (textureSize.get(texture) != null) {
+                        if (textureSize.get(texture) != null && textureSize.get(texture)[0] != 0 && textureSize.get(texture)[1] != 0) {
                             uv[0] = uv[0] * 64 / textureSize.get(texture)[0];
                             uv[1] = uv[1] * 64 / textureSize.get(texture)[1];
                             uv[2] = uv[2] * 64 / textureSize.get(texture)[0];
                             uv[3] = uv[3] * 64 / textureSize.get(texture)[1];
+                        } else {
+                            FiguraMod.LOGGER.error("TextureSize requested not found? Cube");
                         }
 
                         finalFaces.add(new CubeFaceData(faceName, uv, texture));
@@ -386,7 +408,7 @@ public class FiguraModelParser {
 
                 } else {
                     // This cube has no faces! But we want to import it anyways to BlockBench because some scripts may use them.
-                    finalFaces.add(new CubeFaceData(faceName, new float[] {0.0f, 0.0f, 0.0f, 0.0f}, 0));
+                    finalFaces.add(new CubeFaceData(faceName, new float[] {0.0f, 0.0f, 0.0f, 0.0f}, null));
                 }
 
 
@@ -474,9 +496,16 @@ public class FiguraModelParser {
 
                     // Add the uv data of each vertex
                     float[] uvs = new float[] {
-                            v.getSecond().u / (textureSize.get(texture)[0] / 64),
-                            v.getSecond().v / (textureSize.get(texture)[1] / 64)
+                            v.getSecond().u,
+                            v.getSecond().v,
                     };
+                    if (textureSize.get(texture) != null && textureSize.get(texture)[0] != 0 && textureSize.get(texture)[1] != 0) {
+                        uvs[0] = uvs[0] * 64 / textureSize.get(texture)[0];
+                        uvs[1] = uvs[1] * 64 / textureSize.get(texture)[1];
+                    } else {
+                        FiguraMod.LOGGER.error("TextureSize requested not found? Mesh");
+                    }
+
                     new_uv.put(v.getFirst(), uvs);
                 }
                 String[] vertex_array = new String[new_verticies.size()];

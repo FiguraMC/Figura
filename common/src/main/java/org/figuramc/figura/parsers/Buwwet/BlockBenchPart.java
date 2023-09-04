@@ -324,7 +324,9 @@ public class BlockBenchPart {
             ArrayList<Integer> usedTextures = new ArrayList<>();
             if (cubeData != null) {
                 for (FiguraModelParser.CubeData.CubeFaceData cubeFaceData : cubeData.faces) {
-                    usedTextures.add(cubeFaceData.texture);
+                    if (cubeFaceData.texture != null) {
+                        usedTextures.add(cubeFaceData.texture);
+                    }
                 }
             } else if (meshData != null) {
                 for (FiguraModelParser.MeshData.MeshFaceData meshFaceData : meshData.faces) {
