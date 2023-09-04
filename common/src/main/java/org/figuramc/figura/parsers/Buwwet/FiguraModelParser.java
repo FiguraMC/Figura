@@ -33,6 +33,7 @@ public class FiguraModelParser {
         return IOUtils.getOrCreateDir(avatar_path, "downloaded");
     }
 
+
     public static String parseAvatar(CompoundTag nbt) {
         // metadata
         CompoundTag metadataNbt = nbt.getCompound("metadata");
@@ -68,6 +69,48 @@ public class FiguraModelParser {
 
 
         }
+
+        // Texture appender
+        // Some models include textures in their files but do not apply them to anything, meaning that in our version we do not link them. Here we just add a bbmodel
+        // that has them all (no duplicate names though!)
+        {
+            JsonObject modelJson = new JsonObject();
+            JsonObject metaJson = new JsonObject();
+            metaJson.addProperty("format_version", "4.5");
+            metaJson.addProperty("model_format", "free");
+            metaJson.addProperty("box_uv", false); //no please
+            modelJson.add("meta", metaJson);
+
+            JsonObject resolutionJson = new JsonObject();
+            resolutionJson.addProperty("width", 64);
+            resolutionJson.addProperty("height", 64);
+            modelJson.add("resolution", resolutionJson);
+
+            modelJson.add("elements", new JsonArray());
+
+            JsonArray jsonModelTextures = new JsonArray();
+            ArrayList<String> includedTextures = new ArrayList<>();
+            for (TextureData texture : textures) {
+                if (!includedTextures.contains(texture.name)) {
+                    jsonModelTextures.add(texture.toBlockBenchTextureJson());
+                    includedTextures.add(texture.name);
+                }
+            }
+
+            modelJson.add("textures", jsonModelTextures);
+
+            // Write the file
+            try {
+                FileWriter modelFile = new FileWriter(avatarSavePath.resolve("buwwetTextures" + ".bbmodel").toString(), false);
+                modelFile.write(modelJson.toString());
+                modelFile.flush();
+                modelFile.close();
+            } catch (IOException e) {
+                FiguraMod.LOGGER.error("Error while saving to file a model: " + e);
+                //throw new RuntimeException(e);
+            }
+        }
+
 
         // Model Parser
         // All models are clumped together at "models.MODEL_HERE", they require to be given their own separate file.
