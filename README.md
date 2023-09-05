@@ -5,10 +5,6 @@
   <img alt="quilt" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/supported/quilt_vector.svg">
 </p>
 
-```diff
-- Notice: The previous owner has deleted everything. We are currently rebuilding.
-```
-
 ## A Minecraft Java client mod that allows you to extensively customize your player model and have other players see your Avatar without requiring any server mods!
 ![blockbench](https://github.com/Covkie/FiguraRME/assets/52550063/2f8bfff9-f5d6-46bd-a98c-7a9eed3faa7b)
 
