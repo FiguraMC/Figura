@@ -1195,8 +1195,8 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(overloads = @LuaMethodOverload(argumentTypes = RenderTask.class, argumentNames = "renderTask"), value = "model_part.new_task")
-    public RenderTask newTask(@LuaNotNil RenderTask renderTask) {
+    @LuaMethodDoc(overloads = @LuaMethodOverload(argumentTypes = RenderTask.class, argumentNames = "renderTask"), value = "model_part.add_task")
+    public RenderTask addTask(@LuaNotNil RenderTask renderTask) {
         this.renderTasks.put(renderTask.getName(), renderTask);
         return renderTask;
     }
@@ -1278,7 +1278,8 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             value = "model_part.move_to"
     )
     public FiguraModelPart moveTo(@LuaNotNil FiguraModelPart part) {
-        parent.children.remove(this);
+        if (parent != null)
+            parent.children.remove(this);
         part.children.add(this);
         this.parent = part;
         return this;
@@ -1314,8 +1315,10 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             value = "model_part.remove_child"
     )
     public FiguraModelPart removeChild(@LuaNotNil FiguraModelPart part) {
-        this.children.remove(part);
-        part.parent = null;
+        if (this.children.contains(part)) {
+            this.children.remove(part);
+            part.parent = null;
+        }
         return this;
     }
 
