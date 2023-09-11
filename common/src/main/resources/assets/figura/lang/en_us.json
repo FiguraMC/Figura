@@ -1375,6 +1375,7 @@
   "figura.docs.model_part.new_item": "Adds a new Item Render Task on this part",
   "figura.docs.model_part.new_block": "Adds a new Block Render Task on this part",
   "figura.docs.model_part.new_sprite": "Adds a new Sprite Render Task on this part",
+  "figura.docs.model_part.add_task": "Adds the given Render Task on this part",
   "figura.docs.model_part.get_task": "Gets the Render Task with the given name from this part\nReturns a table with all tasks if a name is not given",
   "figura.docs.model_part.remove_task": "Removes the Task with the given name from this part\nRemoves ALL tasks if a name is not given",
   "figura.docs.model_part.get_vertices": "Return a table with all vertices from the given texture id\nReturns nil if no vertices was found",

@@ -340,18 +340,20 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
             value = "matrix_n.rotate"
     )
     public FiguraMat2 rotate(Double degrees) {
-        degrees = Math.toRadians(degrees);
-        double c = Math.cos(degrees);
-        double s = Math.sin(degrees);
+        if (degrees != null) {
+            degrees = Math.toRadians(degrees);
+            double c = Math.cos(degrees);
+            double s = Math.sin(degrees);
 
-        double nv11 = c * v11 - s * v21;
-        double nv12 = c * v12 - s * v22;
+            double nv11 = c * v11 - s * v21;
+            double nv12 = c * v12 - s * v22;
 
-        v21 = c * v21 + s * v11;
-        v22 = c * v22 + s * v12;
+            v21 = c * v21 + s * v11;
+            v22 = c * v22 + s * v12;
 
-        v11 = nv11;
-        v12 = nv12;
+            v11 = nv11;
+            v12 = nv12;
+        }
         return this;
     }
 

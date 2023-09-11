@@ -61,7 +61,7 @@ public class LuaUtils {
             } else {
                 throw new LuaError("Illegal argument to " + methodName + "(): " + y);
             }
-        } else if (x == null || x instanceof Number && y == null || y instanceof Number) {
+        } else if (x instanceof Number && y == null || y instanceof Number) {
             a = parseVec3(methodName, x, (Number) y, z);
             if (w instanceof FiguraVec3 vec1) {
                 b = vec1.copy();
