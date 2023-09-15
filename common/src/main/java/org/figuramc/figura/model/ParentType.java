@@ -31,6 +31,7 @@ public enum ParentType {
     Skull(true, false, "SKULL", "☠"),
     Portrait(true, false, "PORTRAIT"),
     Arrow(true, false, "ARROW"),
+    Trident(true, false, "TRIDENT"),
     Item(true, false, "ITEM"),
 
     // Held items, birds, n stuff

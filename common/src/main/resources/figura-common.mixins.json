@@ -4,6 +4,7 @@
   "package": "org.figuramc.figura.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "render.renderers.TridentRendererMixin"
   ],
   "client": [
     "BiomeAccessor",
@@ -19,6 +20,7 @@
     "MinecraftMixin",
     "ReloadableResourceManagerMixin",
     "SkullBlockEntityAccessor",
+    "TextDisplayMixin",
     "font.BakedGlyphMixin",
     "font.BitmapGlyphMixin",
     "font.FontSetMixin",
@@ -58,7 +60,6 @@
     "render.MissingTextureAtlasSpriteAccessor",
     "render.ModelManagerAccessor",
     "render.PlayerModelMixin",
-    "TextDisplayMixin",
     "render.TextureAtlasAccessor",
     "render.TextureManagerAccessor",
     "render.layers.CapeLayerMixin",
@@ -72,6 +73,7 @@
     "render.layers.items.ItemInHandLayerMixin",
     "render.layers.items.PlayerItemInHandLayerMixin",
     "render.renderers.ArrowRendererMixin",
+    "render.renderers.TridentRendererMixin",
     "render.renderers.BlockEntityWithoutLevelRendererMixin",
     "render.renderers.EntityRendererMixin",
     "render.renderers.HandRenderSelectionAccessor",
