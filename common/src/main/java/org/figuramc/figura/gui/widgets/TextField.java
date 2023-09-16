@@ -40,7 +40,6 @@ public class TextField extends AbstractContainerElement {
 
     @Override
     public void tick() {
-        field.tick();
         super.tick();
     }
 

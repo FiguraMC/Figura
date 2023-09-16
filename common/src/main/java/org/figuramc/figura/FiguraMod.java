@@ -115,7 +115,7 @@ public class FiguraMod {
     // get local player uuid
     public static UUID getLocalPlayerUUID() {
         Entity player = Minecraft.getInstance().player;
-        return player != null ? player.getUUID() : Minecraft.getInstance().getUser().getGameProfile().getId();
+        return player != null ? player.getUUID() : Minecraft.getInstance().getUser().getProfileId();
     }
 
     public static boolean isLocal(UUID other) {

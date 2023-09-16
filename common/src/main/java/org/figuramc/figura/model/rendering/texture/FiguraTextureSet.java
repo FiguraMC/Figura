@@ -70,9 +70,9 @@ public class FiguraTextureSet {
                     yield null;
 
                 yield switch (type) {
-                    case CAPE -> info.getCapeLocation();
-                    case ELYTRA -> info.getElytraLocation() == null ? ElytraLayerAccessor.getWingsLocation() : info.getElytraLocation();
-                    default -> info.getSkinLocation();
+                    case CAPE -> info.getSkin().capeTexture();
+                    case ELYTRA -> info.getSkin().elytraTexture() == null ? ElytraLayerAccessor.getWingsLocation() : info.getSkin().elytraTexture();
+                    default -> info.getSkin().texture();
                 };
             }
             case RESOURCE -> {

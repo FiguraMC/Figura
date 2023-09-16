@@ -197,7 +197,7 @@ public abstract class AbstractPanelScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount, double d) {
         // hide previous context
         if (contextMenu != null)
             contextMenu.setVisible(false);
@@ -206,7 +206,7 @@ public abstract class AbstractPanelScreen extends Screen {
         boolean ret = false;
         for (GuiEventListener child : this.children()) {
             if (child.isMouseOver(mouseX, mouseY))
-                ret = ret || child.mouseScrolled(mouseX, mouseY, amount);
+                ret = ret || child.mouseScrolled(mouseX, mouseY, amount, d);
         }
         return ret;
     }
