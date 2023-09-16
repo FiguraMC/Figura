@@ -105,7 +105,7 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount, double d) {
         if (!this.isActive()) return false;
-        scroll(-amount * (vertical ? getHeight() : getWidth()) * 0.05d * scrollRatio);
+        scroll(-amount+d * (vertical ? getHeight() : getWidth()) * 0.05d * scrollRatio);
         return true;
     }
 
