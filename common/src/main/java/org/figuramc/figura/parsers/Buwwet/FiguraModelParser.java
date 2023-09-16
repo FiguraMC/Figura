@@ -19,7 +19,9 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 import static org.figuramc.figura.parsers.Buwwet.BlockBenchPart.fillVectorIfNone;
@@ -217,13 +219,28 @@ public class FiguraModelParser {
 
         // Parse all the scripts
         CompoundTag scriptsNbt = nbt.getCompound("scripts");
-        for (String scriptName : scriptsNbt.getAllKeys()) {
+        for (String scriptPath : scriptsNbt.getAllKeys()) {
             // Transform the bytes to a string
-            byte[] luaFileBytes = scriptsNbt.getByteArray(scriptName);
+            byte[] luaFileBytes = scriptsNbt.getByteArray(scriptPath);
             String luaScript = new String(luaFileBytes, StandardCharsets.UTF_8);
 
+            // Check if script is not in the root directory
+            String luaPathOS = scriptPath.replace(".", "/");
+            if (scriptPath.contains(".")) {
+                // We must create the directories in which this thing resides
+                String luaPathDirs = luaPathOS.substring(0, luaPathOS.lastIndexOf("/"));
+                try {
+                    Files.createDirectories(avatarSavePath.resolve(luaPathDirs));
+                } catch (IOException e) {
+                    FiguraMod.LOGGER.error("Failed to create folder for lua script.");
+                }
+
+            }
+
             try {
-                FileWriter modelFile = new FileWriter(avatarSavePath.resolve(scriptName + ".lua").toString(), false);
+                // Create required folders
+
+                FileWriter modelFile = new FileWriter(avatarSavePath.resolve( luaPathOS + ".lua").toString(), false);
                 modelFile.write(luaScript);
                 modelFile.flush();
                 modelFile.close();
