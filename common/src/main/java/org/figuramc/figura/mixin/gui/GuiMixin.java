@@ -58,7 +58,7 @@ public class GuiMixin {
         crosshairOffset = renderer.crosshairOffset;
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"), method = "renderCrosshair")
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V"), method = "renderCrosshair")
     private void blitRenderCrosshair(GuiGraphics guiGraphics, CallbackInfo ci) {
         if (crosshairOffset != null) {
             guiGraphics.pose().pushPose();
@@ -66,8 +66,22 @@ public class GuiMixin {
         }
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V", shift = At.Shift.AFTER), method = "renderCrosshair")
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V", shift = At.Shift.AFTER), method = "renderCrosshair")
     private void afterBlitRenderCrosshair(GuiGraphics guiGraphics, CallbackInfo ci) {
+        if (crosshairOffset != null)
+            guiGraphics.pose().popPose();
+    }
+
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIIIIIII)V"), method = "renderCrosshair")
+    private void blitRenderCrosshairSliced(GuiGraphics guiGraphics, CallbackInfo ci) {
+        if (crosshairOffset != null) {
+            guiGraphics.pose().pushPose();
+            guiGraphics.pose().translate(crosshairOffset.x, crosshairOffset.y, 0d);
+        }
+    }
+
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIIIIIII)V", shift = At.Shift.AFTER), method = "renderCrosshair")
+    private void afterBlitRenderCrosshairSliced(GuiGraphics guiGraphics, CallbackInfo ci) {
         if (crosshairOffset != null)
             guiGraphics.pose().popPose();
     }

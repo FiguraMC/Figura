@@ -228,11 +228,11 @@ public class EntityPreview extends AbstractContainerElement {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount, double d) {
         if (!this.isVisible())
             return false;
 
-        if (super.mouseScrolled(mouseX, mouseY, amount))
+        if (super.mouseScrolled(mouseX, mouseY, amount, d))
             return true;
 
         // scroll - scale

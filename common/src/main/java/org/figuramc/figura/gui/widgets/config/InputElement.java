@@ -1,6 +1,7 @@
 package org.figuramc.figura.gui.widgets.config;
 
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import org.figuramc.figura.FiguraMod;
@@ -33,7 +34,7 @@ public class InputElement extends AbstractConfigElement {
                 config.setTempValue(text);
         });
         updateTextFieldText(formatText(config.tempValue));
-        textField.getField().moveCursorToStart();
+        textField.getField().moveCursorToStart(Screen.hasShiftDown());
         textField.setEnabled(FiguraMod.debugModeEnabled() || !config.disabled);
 
         children.add(0, textField);

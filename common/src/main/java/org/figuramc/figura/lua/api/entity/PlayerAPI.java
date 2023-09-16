@@ -87,7 +87,7 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
     @LuaMethodDoc("player.get_model_type")
     public String getModelType() {
         checkEntity();
-        return (checkPlayerInfo() ? playerInfo.getModelName() : DefaultPlayerSkin.getSkinModelName(entity.getUUID())).toUpperCase();
+        return (checkPlayerInfo() ? playerInfo.getSkin().model().id().toUpperCase() : DefaultPlayerSkin.get(entity.getUUID()).model().id()).toUpperCase();
     }
 
     @LuaWhitelist
@@ -105,14 +105,14 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
     @LuaMethodDoc("player.has_cape")
     public boolean hasCape() {
         checkEntity();
-        return checkPlayerInfo() && playerInfo.isCapeLoaded();
+        return checkPlayerInfo() && playerInfo.getSkin().capeTexture() != null;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("player.has_skin")
     public boolean hasSkin() {
         checkEntity();
-        return checkPlayerInfo() && playerInfo.isSkinLoaded();
+        return checkPlayerInfo() && playerInfo.getSkin().texture() != null;
     }
 
     @LuaWhitelist

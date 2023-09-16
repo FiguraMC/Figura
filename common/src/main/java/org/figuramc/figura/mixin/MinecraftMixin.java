@@ -124,7 +124,7 @@ public abstract class MinecraftMixin {
             PopupMenu.run();
     }
 
-    @Inject(at = @At("RETURN"), method = "clearLevel(Lnet/minecraft/client/gui/screens/Screen;)V")
+    @Inject(at = @At("RETURN"), method = "clearClientLevel")
     private void clearLevel(Screen screen, CallbackInfo ci) {
         AvatarManager.clearAllAvatars();
         FiguraLuaPrinter.clearPrintQueue();

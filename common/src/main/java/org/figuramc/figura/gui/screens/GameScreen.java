@@ -94,7 +94,7 @@ public class GameScreen extends AbstractPanelScreen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount, double d) {
         scale = (int) Math.max(1, scale + Math.signum(amount));
         grid.init();
         return true;

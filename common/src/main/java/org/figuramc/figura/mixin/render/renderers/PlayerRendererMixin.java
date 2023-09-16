@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Score;
 import net.minecraft.world.scores.Scoreboard;
@@ -150,7 +151,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         if (this.entityRenderDispatcher.distanceToSqr(player) < 100) {
             // get scoreboard
             Scoreboard scoreboard = player.getScoreboard();
-            Objective scoreboardObjective = scoreboard.getDisplayObjective(2);
+            Objective scoreboardObjective = scoreboard.getDisplayObjective(DisplaySlot.BELOW_NAME);
             if (scoreboardObjective != null) {
                 hasScore = true;
 

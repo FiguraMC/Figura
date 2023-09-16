@@ -52,8 +52,8 @@ public abstract class AbstractList extends AbstractContainerElement {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        return scrollBar.mouseScrolled(mouseX, mouseY, amount) || super.mouseScrolled(mouseX, mouseY, amount);
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount, double d) {
+        return scrollBar.mouseScrolled(mouseX, mouseY, amount, d) || super.mouseScrolled(mouseX, mouseY, amount, d);
     }
 
     public List<? extends GuiEventListener> contents() {

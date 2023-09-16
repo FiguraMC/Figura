@@ -33,7 +33,7 @@ public class SliderWidget extends ScrollBarWidget {
     // -- methods -- // 
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount, double d) {
         if (!this.isActive()) return false;
         scroll(stepSize * Math.signum(-amount) * (getWidth() - headWidth + 2d));
         return true;

@@ -122,13 +122,13 @@ public class ClientAPI {
         if (Minecraft.getInstance().player == null)
             return null;
 
-        return Minecraft.getInstance().getSingleplayerServer() == null ? Minecraft.getInstance().player.getServerBrand() : "Integrated";
+        return Minecraft.getInstance().getSingleplayerServer() == null ? Minecraft.getInstance().player.connection.serverBrand() : "Integrated";
     }
 
     @LuaWhitelist
     @LuaMethodDoc("client.get_chunk_statistics")
     public static String getChunkStatistics() {
-        return Minecraft.getInstance().levelRenderer.getChunkStatistics();
+        return Minecraft.getInstance().levelRenderer.getSectionStatistics();
     }
 
     @LuaWhitelist
@@ -206,7 +206,7 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.is_debug_overlay_enabled")
     public static boolean isDebugOverlayEnabled() {
-        return Minecraft.getInstance().options.renderDebug;
+        return Minecraft.getInstance().getDebugOverlay().showDebugScreen();
     }
 
     @LuaWhitelist

@@ -164,7 +164,7 @@ public class PlayerList extends AbstractList {
 
             // get player data
             String name = player.getProfile().getName();
-            ResourceLocation skin = player.getSkinLocation();
+            ResourceLocation skin = player.getSkin().texture();
             Avatar avatar = AvatarManager.getAvatarForPlayer(uuid);
 
             // filter check

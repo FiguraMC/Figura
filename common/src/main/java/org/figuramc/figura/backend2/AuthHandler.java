@@ -29,7 +29,7 @@ public class AuthHandler {
                 String username = user.getName();
                 String serverID = getServerID(username);
                 FiguraMod.debug("Joining \"{}\" on server \"{}\"", username, serverID);
-                minecraft.getMinecraftSessionService().joinServer(user.getGameProfile(), user.getAccessToken(), serverID);
+                minecraft.getMinecraftSessionService().joinServer(user.getProfileId(), user.getAccessToken(), serverID);
                 NetworkStuff.authSuccess(getToken(serverID));
             // cringe exceptions
             } catch (AuthenticationUnavailableException e) {
