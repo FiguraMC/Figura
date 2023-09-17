@@ -13,6 +13,7 @@ import org.figuramc.figura.model.rendering.EntityRenderMode;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.ui.UIHelper;
+import org.joml.Vector3f;
 
 public class EntityPreview extends AbstractContainerElement {
 
@@ -96,7 +97,7 @@ public class EntityPreview extends AbstractContainerElement {
         if (entity != null) {
             pose.pushPose();
             scaledValue = Mth.lerp((float) (1f - Math.pow(0.5f, delta)), scaledValue, scaledPrecise);
-            UIHelper.drawEntity(x + modelX, y + modelY, scale + scaledValue, angleX, angleY, entity, gui, EntityRenderMode.FIGURA_GUI);
+            UIHelper.drawEntity(x + modelX, y + modelY, scale + scaledValue, angleX, angleY, entity, gui, new Vector3f(), EntityRenderMode.FIGURA_GUI);
             pose.popPose();
         } else {
             // draw
@@ -238,7 +239,7 @@ public class EntityPreview extends AbstractContainerElement {
         // scroll - scale
 
         // set scale direction
-        float scaleDir = (amount > 0) ? SCALE_FACTOR : 1 / SCALE_FACTOR;
+        float scaleDir = ((amount+d) > 0) ? SCALE_FACTOR : 1 / SCALE_FACTOR;
 
         // determine scale
         scaledPrecise = ((scale + scaledPrecise) * scaleDir) - scale;

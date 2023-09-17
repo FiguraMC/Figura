@@ -10,6 +10,7 @@ import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.model.rendering.EntityRenderMode;
 import org.figuramc.figura.utils.ui.UIHelper;
+import org.joml.Vector3f;
 
 public class PaperDoll {
 
@@ -62,7 +63,7 @@ public class PaperDoll {
                 x, y,
                 scale * 30f,
                 Configs.PAPERDOLL_PITCH.tempValue, Configs.PAPERDOLL_YAW.tempValue,
-                entity, gui, EntityRenderMode.PAPERDOLL
+                entity, gui, new Vector3f(), EntityRenderMode.PAPERDOLL
         );
     }
 }

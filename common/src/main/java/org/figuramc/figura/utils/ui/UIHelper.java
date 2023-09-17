@@ -113,7 +113,7 @@ public final class UIHelper {
     }
 
     @SuppressWarnings("deprecation")
-    public static void drawEntity(float x, float y, float scale, float pitch, float yaw, LivingEntity entity, GuiGraphics gui, EntityRenderMode renderMode) {
+    public static void drawEntity(float x, float y, float scale, float pitch, float yaw, LivingEntity entity, GuiGraphics gui, Vector3f offset, EntityRenderMode renderMode) {
         // backup entity variables
         float headX = entity.getXRot();
         float headY = entity.yHeadRot;
@@ -204,6 +204,7 @@ public final class UIHelper {
         quaternion.mul(quaternion3);
         pose.mulPose(quaternion);
         quaternion3.conjugate();
+        pose.translate(offset.x, offset.y, offset.z);
 
         // setup entity renderer
         Minecraft minecraft = Minecraft.getInstance();
