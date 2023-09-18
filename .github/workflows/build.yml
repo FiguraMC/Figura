@@ -15,9 +15,7 @@ jobs:
           java-version: 17
           check-latest: true
       - name: Build using Gradle
-        run: |
-         chmod +x gradlew
-         ./gradlew build
+        run: ./gradlew build
       - name: Merge Fabric and Forge JARs
         run: ./gradlew mergeJars
       - name: Upload Fabric artifacts to GitHub
