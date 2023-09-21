@@ -1781,7 +1781,8 @@
 
   "figura.docs.world": "A global API dedicated to reading information from the Minecraft world\nAccessed using the name \"world\"",
   "figura.docs.world.get_biome": "Gets the Biome located at the given position",
-  "figura.docs.world.get_block_state": "Gets the BlockState of the block at the given position",
+  "figura.docs.world.get_block_state": "Gets the BlockState of the block at the given position\nIf it is not loaded, returns void_air",
+  "figura.docs.world.is_loaded": "Checks if the position has a chunk loaded\nIf you need to access the block, it's usually more efficient to use getBlockState()",
   "figura.docs.world.get_blocks": "Gets a list of all BlockStates in the specified area\nThe maximum area size is 8 x 8 x 8",
   "figura.docs.world.get_redstone_power": "Gets the redstone power level of the block at the given position",
   "figura.docs.world.get_strong_redstone_power": "Gets the direct redstone power level of the block at the given position",
