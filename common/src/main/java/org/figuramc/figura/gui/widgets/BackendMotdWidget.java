@@ -99,6 +99,9 @@ public class BackendMotdWidget extends AbstractScrollWidget {
     public void updateNarration(NarrationElementOutput builder) {
 
     }
+    public boolean shouldRender() {
+        return getScrollBarHeight() > 0 && this.height >= 48;
+    }
 
     protected static class FiguraMuliLineTextWidget extends AbstractWidget {
         private int color = 0xFFFFFF;
@@ -192,9 +195,5 @@ public class BackendMotdWidget extends AbstractScrollWidget {
         public void updateNarration(NarrationElementOutput builder) {
 
         }
-    }
-
-    public boolean shouldRender() {
-        return getScrollBarHeight() > 0 && this.height >= 48;
     }
 }

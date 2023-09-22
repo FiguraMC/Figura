@@ -621,7 +621,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
             else if (b instanceof Number d)
                 return vec.scaled(d.doubleValue());
             else if (b instanceof FiguraMat3 mat)
-                return vec.transform(mat);
+                return vec.copy().transform(mat);
         } else if (a instanceof Number d && b instanceof FiguraVec3 vec) {
             return (vec.scaled(d.doubleValue()));
         }

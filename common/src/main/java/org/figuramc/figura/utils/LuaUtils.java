@@ -62,7 +62,7 @@ public class LuaUtils {
             } else {
                 throw new LuaError("Illegal argument to " + methodName + "(): " + y);
             }
-        } else if (x == null || x instanceof Number && y == null || y instanceof Number) {
+        } else if (x instanceof Number && y == null || y instanceof Number) {
             a = parseVec3(methodName, x, (Number) y, z);
             if (w instanceof FiguraVec3 vec1) {
                 b = vec1.copy();
@@ -205,8 +205,10 @@ public class LuaUtils {
             // If it's an "array" (uses numbers as keys)
             if (checkTableArray(table)) {
                 JsonArray arr = new JsonArray();
-                for (int i = 0; i < table.length(); i++) {
-                    arr.add(asJsonValue(table.get(i+1)));
+                LuaValue[] keys = table.keys();
+                int arrayLength = keys[keys.length-1].checkint();
+                for(int i = 1; i <= arrayLength; i++) {
+                    arr.add(asJsonValue(table.get(i)));
                 }
                 return arr;
             }

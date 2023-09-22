@@ -40,8 +40,10 @@ public class JsonUtils {
         } else if (value.isJsonArray()) {
             JsonArray arr = value.getAsJsonArray();
             LuaTable table = new LuaTable();
+            int i = 1;
             for (JsonElement element : arr) {
-                table.insert(table.length()+1, asLuaValue(element));
+                table.insert(i, asLuaValue(element));
+                i++;
             }
             return table;
         } else if (value.isJsonNull()) {

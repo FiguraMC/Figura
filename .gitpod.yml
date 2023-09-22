@@ -1,0 +1,11 @@
+image:
+  file: .gitpod.Dockerfile
+
+ports:
+  - port: 25565
+    onOpen: notify
+
+vscode:
+  extensions:
+    - richardwillis.vscode-gradle
+    - vscjava.vscode-java-pack

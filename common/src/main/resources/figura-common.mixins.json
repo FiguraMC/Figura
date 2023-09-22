@@ -18,6 +18,7 @@
     "MinecraftMixin",
     "ReloadableResourceManagerMixin",
     "SkullBlockEntityAccessor",
+    "TextDisplayMixin",
     "font.BakedGlyphMixin",
     "font.BitmapGlyphMixin",
     "font.FontSetMixin",

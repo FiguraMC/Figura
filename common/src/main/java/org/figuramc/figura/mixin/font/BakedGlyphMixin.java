@@ -3,10 +3,12 @@ package org.figuramc.figura.mixin.font;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix4f;
 import net.minecraft.client.gui.font.glyphs.BakedGlyph;
+import org.figuramc.figura.compat.ImmediatelyFastCompat;
 import org.figuramc.figura.ducks.BakedGlyphAccessor;
 import org.figuramc.figura.font.EmojiContainer;
 import org.figuramc.figura.font.EmojiMetadata;
 import org.figuramc.figura.font.Emojis;
+import org.figuramc.figura.utils.PlatformUtils;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,6 +17,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.lang.reflect.Field;
 
 @Mixin(BakedGlyph.class)
 public abstract class BakedGlyphMixin implements BakedGlyphAccessor {
@@ -54,7 +58,7 @@ public abstract class BakedGlyphMixin implements BakedGlyphAccessor {
         float m = italic ? 1.0f - 0.25f * h : 0f;
         float n = italic ? 1.0f - 0.25f * j : 0f;
 
-        final float singleWidth = 8f / 256.0f;
+        final float singleWidth = 8f / ImmediatelyFastCompat.getFontWidthIMF();
         float shift = singleWidth * figura$metadata.getCurrentFrame();
 
         float u = u0 + shift;
