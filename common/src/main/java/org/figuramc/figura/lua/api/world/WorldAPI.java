@@ -137,7 +137,10 @@ public class WorldAPI {
         if (!world.hasChunksAt(min, max))
             return list;
 
-        BlockPos.betweenClosedStream(min, max).forEach(blockPos -> list.add(new BlockStateAPI(world.getBlockState(blockPos), blockPos)));
+        BlockPos.betweenClosedStream(min, max).forEach(blockPos -> {
+            BlockPos pos = new BlockPos(blockPos);
+            list.add(new BlockStateAPI(world.getBlockState(pos), pos));
+        });
         return list;
     }
 
@@ -371,7 +374,29 @@ public class WorldAPI {
         }
     }
 
-    // @LuaWhitelist
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                    argumentTypes = {Boolean.class, FiguraVec3.class, FiguraVec3.class},
+                    argumentNames = {"fluid", "start", "end"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Boolean.class, Double.class, Double.class, Double.class, FiguraVec3.class},
+                            argumentNames = {"fluid", "startX", "startY", "startZ", "end"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Boolean.class, FiguraVec3.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"fluid", "start", "endX", "endY", "endZ"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Boolean.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"fluid", "startX", "startY", "startZ", "endX", "endY", "endZ"}
+                    )
+                }
+            ,
+            value = "world.raycast_block"
+    )
     public HashMap<String, Object> raycastBlock(boolean fluid, Object x, Object y, Double z, Object w, Double t, Double h) {
         FiguraVec3 start, end;
 
@@ -392,7 +417,29 @@ public class WorldAPI {
         return map;
     }
 
-    // @LuaWhitelist
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = {FiguraVec3.class, FiguraVec3.class},
+                            argumentNames = {"start", "end"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class, FiguraVec3.class},
+                            argumentNames = {"startX", "startY", "startZ", "end"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {FiguraVec3.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"start", "endX", "endY", "endZ"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"startX", "startY", "startZ", "endX", "endY", "endZ"}
+                    )
+            }
+            ,
+            value = "world.raycast_entity"
+    )
     public HashMap<String, Object> raycastEntity(Object x, Object y, Double z, Object w, Double t, Double h) {
         FiguraVec3 start, end;
 

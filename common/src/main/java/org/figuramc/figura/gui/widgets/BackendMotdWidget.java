@@ -129,6 +129,9 @@ public class BackendMotdWidget extends AbstractWidget implements Widget, GuiEven
     public void updateNarration(NarrationElementOutput builder) {
 
     }
+    public boolean shouldRender() {
+        return getScrollBarHeight() > 0 && this.height >= 48;
+    }
 
     protected double scrollAmount() {
         return this.scrollAmount;

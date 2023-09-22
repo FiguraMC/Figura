@@ -4,10 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.utils.FiguraIdentifier;
@@ -65,7 +62,7 @@ public class EmojiContainer {
                     lookup.putMetadata(curUnicode.codePointAt(0), new EmojiMetadata(obj));
                 }
 
-                if (JsonUtils.validate(obj, JSON_KEY_SHORTCUTS, JsonElement::isJsonArray, ERROR_MSG, curUnicode.codePointAt(0), containerName, JSON_KEY_SHORTCUTS, "field must be an array")) {
+                if (obj.has(JSON_KEY_SHORTCUTS) && JsonUtils.validate(obj, JSON_KEY_SHORTCUTS, JsonElement::isJsonArray, ERROR_MSG, curUnicode.codePointAt(0), containerName, JSON_KEY_SHORTCUTS, "field must be an array")) {
                     shortcutsArray = obj.getAsJsonArray(JSON_KEY_SHORTCUTS);
                 }
             }
@@ -97,7 +94,7 @@ public class EmojiContainer {
         for (JsonElement element : aliasArray) {
             String alias = element.getAsString();
             if (alias.isBlank() || alias.indexOf(' ') != -1 || alias.indexOf(DELIMITER) != -1) {
-                FiguraMod.LOGGER.warn("Invalid emoji name \"{}\" @ \"{}\"", alias, containerName);
+                FiguraMod.LOGGER.warn("Invalid emoji name \"{}\" in container: {}", alias, containerName);
             } else {
                 consumer.accept(alias);
                 atLeastOne = true;
@@ -113,22 +110,26 @@ public class EmojiContainer {
     }
 
     public Component getEmojiComponent(String key) {
+        return getEmojiComponent(key, new TextComponent(DELIMITER + key + DELIMITER));
+    }
+
+    public Component getEmojiComponent(String key, MutableComponent hover) {
         String unicode = lookup.getUnicode(key);
         if (unicode == null)
             return null;
-        return makeComponent(unicode, DELIMITER + key + DELIMITER);
+        return makeComponent(unicode, hover);
     }
 
     public Component getShortcutComponent(String shortcut) {
         String unicode = lookup.getUnicodeForShortcut(shortcut);
         if (unicode == null)
             return null;
-        return makeComponent(unicode, shortcut);
+        return makeComponent(unicode, new TextComponent(shortcut));
     }
 
-    private Component makeComponent(String unicode, String hover) {
+    private Component makeComponent(String unicode, MutableComponent hover) {
         return new TextComponent(unicode).withStyle(STYLE.withFont(font).withHoverEvent(
-                new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent(hover)
+                new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover
                         .append("\n")
                         .append(new FiguraText("emoji." + name).withStyle(ChatFormatting.DARK_GRAY)))
         ));
@@ -143,6 +144,4 @@ public class EmojiContainer {
     public ResourceLocation getFont() {
         return font;
     }
-
-
 }

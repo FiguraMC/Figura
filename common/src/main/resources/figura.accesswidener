@@ -14,3 +14,8 @@ accessible field com/mojang/blaze3d/vertex/PoseStack$Pose normal Lcom/mojang/mat
 mutable field com/mojang/blaze3d/vertex/PoseStack$Pose pose Lcom/mojang/math/Matrix4f;
 mutable field com/mojang/blaze3d/vertex/PoseStack$Pose normal Lcom/mojang/math/Matrix3f;
 accessible method net/minecraft/client/gui/components/MultiLineLabel$TextWithWidth <init> (Lnet/minecraft/util/FormattedCharSequence;I)V
+
+accessible method net/minecraft/client/gui/components/AbstractScrollWidget getScrollBarHeight ()I
+
+accessible field net/minecraft/client/renderer/texture/TextureAtlas$Preparations width I
+accessible field net/minecraft/client/renderer/texture/TextureAtlas$Preparations height I

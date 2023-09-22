@@ -1,13 +1,15 @@
 package org.figuramc.figura.model.rendering.texture;
 
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.mixin.render.layers.elytra.ElytraLayerAccessor;
+import org.figuramc.figura.model.TextureCustomization;
+import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Type;
 import java.util.UUID;
 
 public class FiguraTextureSet {
@@ -53,10 +55,10 @@ public class FiguraTextureSet {
         return -1;
     }
 
-    public ResourceLocation getOverrideTexture(UUID owner, Pair<OverrideType, Object> pair) {
+    public ResourceLocation getOverrideTexture(UUID owner, TextureCustomization pair) {
         OverrideType type;
 
-        if (pair == null || (type = pair.getFirst()) == null)
+        if (pair == null || (type = pair.getOverrideType()) == null)
             return null;
 
         return switch (type) {
@@ -77,7 +79,7 @@ public class FiguraTextureSet {
             }
             case RESOURCE -> {
                 try {
-                    yield new ResourceLocation(String.valueOf(pair.getSecond()));
+                    yield new ResourceLocation(String.valueOf(pair.getValue()));
                 } catch (Exception ignored) {
                     yield MissingTextureAtlasSprite.getLocation();
                 }
@@ -88,7 +90,7 @@ public class FiguraTextureSet {
             case NORMAL -> textures[3] == null ? null : textures[3].getLocation();
             case CUSTOM -> {
                 try {
-                    yield ((FiguraTexture) pair.getSecond()).getLocation();
+                    yield ((FiguraTexture) pair.getValue()).getLocation();
                 } catch (Exception ignored) {
                     yield MissingTextureAtlasSprite.getLocation();
                 }
@@ -100,11 +102,24 @@ public class FiguraTextureSet {
         SKIN,
         CAPE,
         ELYTRA,
-        RESOURCE,
+        RESOURCE(String.class, "String"),
         PRIMARY,
         SECONDARY,
         SPECULAR,
         NORMAL,
-        CUSTOM
+        CUSTOM(FiguraTexture.class, "Texture");
+
+        public final @Nullable Type argumentType;
+        public final @Nullable String typeName;
+
+        OverrideType() {
+            argumentType = null;
+            typeName = null;
+        }
+
+        OverrideType(@Nullable Type argumentType, String typeName) {
+            this.argumentType = argumentType;
+            this.typeName = typeName;
+        }
     }
 }

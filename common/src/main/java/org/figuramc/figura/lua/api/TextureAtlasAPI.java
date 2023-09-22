@@ -9,7 +9,7 @@ import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.math.vector.FiguraVec4;
-import org.figuramc.figura.mixin.render.TextureAtlasAccessor;
+import org.figuramc.figura.ducks.TextureAtlasAccessor;
 import org.figuramc.figura.utils.LuaUtils;
 
 import java.util.ArrayList;
