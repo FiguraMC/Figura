@@ -274,10 +274,12 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2, FiguraMat2> {
             value = "vector_n.transform"
     )
     public FiguraVec2 transform(FiguraMat2 mat) {
-        return set(
-                mat.v11 * x + mat.v12 * y,
-                mat.v21 * x + mat.v22 * y
-        );
+        if (mat != null)
+            return set(
+                    mat.v11 * x + mat.v12 * y,
+                    mat.v21 * x + mat.v22 * y
+            );
+        return this;
     }
 
     @Override
@@ -546,7 +548,7 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2, FiguraMat2> {
             else if (b instanceof Number d)
                 return vec.scaled(d.doubleValue());
             else if (b instanceof FiguraMat2 mat)
-                return vec.transform(mat);
+                return vec.copy().transform(mat);
         } else if (a instanceof Number d && b instanceof FiguraVec2 vec) {
             return (vec.scaled(d.doubleValue()));
         }

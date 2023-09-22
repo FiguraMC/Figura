@@ -121,7 +121,7 @@ public class EntityNameplateCustomization extends NameplateCustomization {
     @LuaWhitelist
     @LuaMethodDoc("nameplate_entity.get_background_color")
     public FiguraVec4 getBackgroundColor() {
-        return this.background == null ? null : ColorUtils.intToARGB(this.background);
+        return this.background == null ? null : ColorUtils.intToRGBA(this.background);
     }
 
     @LuaWhitelist
@@ -141,7 +141,7 @@ public class EntityNameplateCustomization extends NameplateCustomization {
     )
     public EntityNameplateCustomization setBackgroundColor(Object r, Double g, Double b, Double a) {
         FiguraVec4 vec = LuaUtils.parseVec4("setBackgroundColor", r, g, b, a, 0, 0, 0,  Minecraft.getInstance().options.getBackgroundOpacity(0.25f));
-        this.background = ColorUtils.rgbaToIntARGB(vec);
+        this.background = ColorUtils.rgbaToInt(vec);
         return this;
     }
 

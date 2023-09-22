@@ -22,8 +22,7 @@ import org.figuramc.figura.model.rendering.texture.RenderTypes;
 import org.figuramc.figura.model.rendertasks.*;
 import org.figuramc.figura.utils.LuaUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -692,6 +691,67 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("model_part.get_primary_texture")
+    public Varargs getPrimaryTexture() {
+        return LuaValue.varargsOf(getTextureType(customization.primaryTexture), getTextureValue(customization.primaryTexture));
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("model_part.get_secondary_texture")
+    public Object getSecondaryTexture() {
+        return LuaValue.varargsOf(getTextureType(customization.secondaryTexture), getTextureValue(customization.secondaryTexture));
+    }
+
+    private LuaValue getTextureType(TextureCustomization tex) {
+        if (tex == null) return LuaValue.valueOf(FiguraTextureSet.OverrideType.PRIMARY.name());
+        return LuaValue.valueOf(tex.getOverrideType().name());
+    }
+
+    private LuaValue getTextureValue(TextureCustomization tex) {
+        if (tex == null) return LuaValue.NIL;
+        Object val = tex.getValue();
+        if (val == null) return LuaValue.NIL;
+        if (val instanceof String str) return LuaValue.valueOf(str);
+        return LuaValue.userdataOf(val);
+    }
+
+
+
+    @LuaWhitelist
+    @LuaMethodDoc("model_part.get_primary_defined_textures")
+    public Object getPrimaryDefinedTextures(Integer value) {
+        if (customization.primaryTexture == null) {
+            LuaTable tbl = new LuaTable();
+            FiguraTexture[] arr = this.textures.get(value).textures;
+            tbl.set("main", arr[0] == null ? LuaValue.NIL : LuaValue.userdataOf(arr[0]));
+            tbl.set("emissive", arr[1] == null ? LuaValue.NIL : LuaValue.userdataOf(arr[1]));
+            tbl.set("specular", arr[2] == null ? LuaValue.NIL : LuaValue.userdataOf(arr[2]));
+            tbl.set("normal", arr[3] == null ? LuaValue.NIL : LuaValue.userdataOf(arr[3]));
+            return tbl;
+        }
+        return new LuaTable() {{
+            set("main", LuaValue.userdataOf(customization.primaryTexture.getTexture(owner, textures.get(value == null ? 0 : value))));
+        }};
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("model_part.get_secondary_defined_textures")
+    public Object getSecondaryDefinedTextures(Integer value) {
+        if (customization.secondaryTexture == null) {
+            LuaTable tbl = new LuaTable();
+            FiguraTexture[] arr = this.textures.get(value).textures;
+            tbl.set("main", arr[0] == null ? LuaValue.NIL : LuaValue.userdataOf(arr[0]));
+            tbl.set("emissive", arr[1] == null ? LuaValue.NIL : LuaValue.userdataOf(arr[1]));
+            tbl.set("specular", arr[2] == null ? LuaValue.NIL : LuaValue.userdataOf(arr[2]));
+            tbl.set("normal", arr[3] == null ? LuaValue.NIL : LuaValue.userdataOf(arr[3]));
+            return tbl;
+        }
+        return new LuaTable() {{
+            set("main", LuaValue.userdataOf(customization.secondaryTexture.getTexture(owner, textures.get(value == null ? 0 : value))));
+        }};
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaMethodOverload(
@@ -712,9 +772,11 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     )
     public FiguraModelPart setPrimaryTexture(String type, Object x) {
         try {
-            this.customization.primaryTexture = type == null ? null : Pair.of(FiguraTextureSet.OverrideType.valueOf(type.toUpperCase()), x);
+            FiguraTextureSet.OverrideType overrideType = FiguraTextureSet.OverrideType.valueOf(type.toUpperCase());
+            checkTexture(overrideType, x);
+            this.customization.primaryTexture = type == null ? null : new TextureCustomization(overrideType, x);
             return this;
-        } catch (Exception ignored) {
+        } catch (IllegalArgumentException ignored) {
             throw new LuaError("Invalid texture override type: " + type);
         }
     }
@@ -740,10 +802,24 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     )
     public FiguraModelPart setSecondaryTexture(String type, Object x) {
         try {
-            this.customization.secondaryTexture = type == null ? null : Pair.of(FiguraTextureSet.OverrideType.valueOf(type.toUpperCase()), x);
+            FiguraTextureSet.OverrideType overrideType = FiguraTextureSet.OverrideType.valueOf(type.toUpperCase());
+            checkTexture(overrideType, x);
+            this.customization.secondaryTexture = type == null ? null : new TextureCustomization(overrideType, x);
             return this;
-        } catch (Exception ignored) {
+        } catch (IllegalArgumentException ignored) {
             throw new LuaError("Invalid texture override type: " + type);
+        }
+    }
+
+    private void checkTexture(FiguraTextureSet.OverrideType type, Object value) {
+        if (type.argumentType == null && value == null) return;
+
+        if (type.argumentType == null) {
+            throw new LuaError("\""+type.name()+"\n texture type requires no arguments!");
+        }
+
+        if (value == null || type.argumentType != value.getClass()) {
+            throw new LuaError("\""+type.name()+"\" texture type requires argument type: " + type.typeName);
         }
     }
 
@@ -1195,8 +1271,8 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(overloads = @LuaMethodOverload(argumentTypes = RenderTask.class, argumentNames = "renderTask"), value = "model_part.new_task")
-    public RenderTask newTask(@LuaNotNil RenderTask renderTask) {
+    @LuaMethodDoc(overloads = @LuaMethodOverload(argumentTypes = RenderTask.class, argumentNames = "renderTask"), value = "model_part.add_task")
+    public RenderTask addTask(@LuaNotNil RenderTask renderTask) {
         this.renderTasks.put(renderTask.getName(), renderTask);
         return renderTask;
     }
@@ -1278,7 +1354,8 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             value = "model_part.move_to"
     )
     public FiguraModelPart moveTo(@LuaNotNil FiguraModelPart part) {
-        parent.children.remove(this);
+        if (parent != null)
+            parent.children.remove(this);
         part.children.add(this);
         this.parent = part;
         return this;
@@ -1314,8 +1391,10 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             value = "model_part.remove_child"
     )
     public FiguraModelPart removeChild(@LuaNotNil FiguraModelPart part) {
-        this.children.remove(part);
-        part.parent = null;
+        if (this.children.contains(part)) {
+            this.children.remove(part);
+            part.parent = null;
+        }
         return this;
     }
 

@@ -44,7 +44,7 @@ public interface FiguraClientCommandSource extends SharedSuggestionProvider {
      *
      * @return the entity
      */
-    default Entity getEntity() {
+    default Entity figura$getEntity() {
         return figura$getPlayer();
     }
 
@@ -53,7 +53,7 @@ public interface FiguraClientCommandSource extends SharedSuggestionProvider {
      *
      * @return the position
      */
-    default Vec3 getPosition() {
+    default Vec3 figura$getPosition() {
         return figura$getPlayer().position();
     }
 
@@ -62,7 +62,7 @@ public interface FiguraClientCommandSource extends SharedSuggestionProvider {
      *
      * @return the rotation
      */
-    default Vec2 getRotation() {
+    default Vec2 figura$getRotation() {
         return figura$getPlayer().getRotationVector();
     }
 
@@ -81,7 +81,7 @@ public interface FiguraClientCommandSource extends SharedSuggestionProvider {
      * @param key the meta key
      * @return the meta
      */
-    default Object getMeta(String key) {
+    default Object figura$getMeta(String key) {
         return null;
     }
 }

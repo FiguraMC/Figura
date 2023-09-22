@@ -12,3 +12,4 @@ accessible method net/minecraft/client/gui/components/MultiLineTextWidget <init>
 accessible field net/minecraft/client/gui/components/MultiLineLabel$TextWithWidth width I
 accessible field net/minecraft/client/gui/components/MultiLineLabel$TextWithWidth text Lnet/minecraft/util/FormattedCharSequence;
 accessible field net/minecraft/client/gui/components/MultiLineTextWidget multiLineLabel Lnet/minecraft/client/gui/components/MultiLineLabel;
+accessible method net/minecraft/client/gui/components/AbstractScrollWidget getScrollBarHeight ()I

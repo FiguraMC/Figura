@@ -95,6 +95,10 @@ public class BackendMotdWidget extends AbstractScrollWidget {
         this.height = height;
     }
 
+    public boolean shouldRender() {
+        return getScrollBarHeight() > 0 && this.height >= 48;
+    }
+
     protected static class FiguraMuliLineTextWidget extends MultiLineTextWidget {
         private int color = 0xFFFFFF;
         private OptionalInt maxWidth = OptionalInt.empty();

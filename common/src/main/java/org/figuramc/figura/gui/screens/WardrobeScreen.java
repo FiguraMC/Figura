@@ -27,6 +27,11 @@ import java.nio.file.Path;
 import java.util.List;
 
 public class WardrobeScreen extends AbstractPanelScreen {
+    private static final Component DEBUG_MOTD_FALLBACK = Component.literal("No motd could be loaded.\n\n")
+            .append("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n")
+                    .withStyle(ChatFormatting.GRAY)
+            .append(Component.literal("(This is only visible in debug mode)")
+                    .withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
 
     private Label panic;
 
@@ -46,7 +51,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         // screen
         Minecraft minecraft = Minecraft.getInstance();
         int middle = width / 2;
-        int panels = Math.min(width / 3, 256) - 8;
+        int panels = getPanels();
 
         int modelBgSize = Math.min(width - panels * 2 - 16, height - 96);
         panels = Math.max((width - modelBgSize) / 2 - 8, panels);
@@ -174,10 +179,11 @@ public class WardrobeScreen extends AbstractPanelScreen {
         addRenderableOnly(infoWidget = new AvatarInfoWidget(this.width - panels - 4, 56, panels, back.getY() - 60));
 
         // backend MOTD
-        int motdHeight = back.getY() - (infoWidget.getY() + infoWidget.getHeight()) - 28;
-        if (NetworkStuff.motd != null && motdHeight > 32) {
-            addRenderableWidget(motdWidget = new BackendMotdWidget(this.width - panels, infoWidget.getY() + infoWidget.getHeight() + 2, panels - 8, motdHeight, NetworkStuff.motd, Minecraft.getInstance().font));
+        if (motdWidget != null) {
+            removeWidget(motdWidget);
+            motdWidget = null;
         }
+        updateMotdWidget();
 
         // panic warning - always added last, on top
         addRenderableWidget(panic = new Label(
@@ -186,6 +192,29 @@ public class WardrobeScreen extends AbstractPanelScreen {
         );
         panic.setY(panic.getRawY() - panic.getHeight());
         panic.setVisible(false);
+    }
+
+    private int getPanels() {
+        return Math.min(width / 3, 256) - 8;
+    }
+
+    private void updateMotdWidget() {
+        int panels = getPanels();
+
+        int width = panels - 8;
+        int height = back.getY() - (infoWidget.getY() + infoWidget.getHeight()) - 30;
+        if (motdWidget == null) {
+            Component motd = NetworkStuff.motd == null ? DEBUG_MOTD_FALLBACK : NetworkStuff.motd;
+            if (!FiguraMod.debugModeEnabled() && motd == DEBUG_MOTD_FALLBACK) {
+                return;
+            }
+            motdWidget = addRenderableWidget(new BackendMotdWidget(this.width - panels, infoWidget.getY() + infoWidget.getHeight() + 24, width, height, motd, Minecraft.getInstance().font));
+        }  else {
+            motdWidget.setWidth(width);
+            motdWidget.setHeight(height);
+        }
+
+        motdWidget.visible = motdWidget.shouldRender();
     }
 
     @Override
@@ -201,10 +230,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         upload.setActive(NetworkStuff.canUpload() && !AvatarManager.localUploaded && (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) != null && avatar.nbt != null && avatar.loaded);
         delete.setActive(NetworkStuff.isConnected() && AvatarManager.localUploaded);
 
-        if (motdWidget != null) {
-            motdWidget.setY(infoWidget.getY() + infoWidget.getHeight() + 2);
-            motdWidget.setHeight(back.getY() - (infoWidget.getY() + infoWidget.getHeight()) - 28);
-        }
+        updateMotdWidget();
     }
 
     @Override

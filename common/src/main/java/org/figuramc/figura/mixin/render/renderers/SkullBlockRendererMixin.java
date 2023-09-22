@@ -51,7 +51,7 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
         SkullBlockRendererAccessor.SkullRenderMode localMode = SkullBlockRendererAccessor.getRenderMode();
         SkullBlockRendererAccessor.setRenderMode(SkullBlockRendererAccessor.SkullRenderMode.OTHER);
 
-        // avatar
+        // avatar pointer incase avatar variable is set during render. (unlikely)
         Avatar localAvatar = avatar;
         avatar = null;
 
@@ -89,11 +89,12 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
 
     @Override
     public boolean shouldRenderOffScreen(SkullBlockEntity blockEntity) {
-        return avatar == null ? BlockEntityRenderer.super.shouldRenderOffScreen(blockEntity) : avatar.permissions.get(Permissions.OFFSCREEN_RENDERING) == 1;
+    	Avatar localAvatar = avatar; // avatar pointer incase avatar variable is set during render.
+    	return localAvatar == null || localAvatar.permissions == null ? BlockEntityRenderer.super.shouldRenderOffScreen(blockEntity) : localAvatar.permissions.get(Permissions.OFFSCREEN_RENDERING) == 1;
     }
 
     @Inject(at = @At("HEAD"), method = "getRenderType")
     private static void getRenderType(SkullBlock.Type type, GameProfile profile, CallbackInfoReturnable<RenderType> cir) {
-        avatar = profile != null && profile.getId() != null ? AvatarManager.getAvatarForPlayer(profile.getId()) : null;
+        avatar = (profile != null && profile.getId() != null) ? AvatarManager.getAvatarForPlayer(profile.getId()) : null;
     }
 }

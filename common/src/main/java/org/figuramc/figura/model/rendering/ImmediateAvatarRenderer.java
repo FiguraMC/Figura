@@ -19,10 +19,7 @@ import org.figuramc.figura.math.matrix.FiguraMat3;
 import org.figuramc.figura.math.matrix.FiguraMat4;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.math.vector.FiguraVec4;
-import org.figuramc.figura.model.FiguraModelPart;
-import org.figuramc.figura.model.FiguraModelPartReader;
-import org.figuramc.figura.model.ParentType;
-import org.figuramc.figura.model.PartCustomization;
+import org.figuramc.figura.model.*;
 import org.figuramc.figura.model.rendering.texture.FiguraTexture;
 import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
 import org.figuramc.figura.model.rendering.texture.RenderTypes;
@@ -95,8 +92,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         this.isRendering = true;
 
         // iris fix
-        int irisConfig = UIHelper.paperdoll || !ClientAPI.hasIris() ? 0 : Configs.IRIS_COMPATIBILITY_FIX.value;
-        doIrisEmissiveFix = (irisConfig >= 2 && ClientAPI.hasIrisShader()) || (avatar.renderMode != EntityRenderMode.RENDER && avatar.renderMode != EntityRenderMode.WORLD);
+        int irisConfig = UIHelper.paperdoll || !ClientAPI.hasShaderPackMod() ? 0 : Configs.IRIS_COMPATIBILITY_FIX.value;
+        doIrisEmissiveFix = (irisConfig >= 2 && ClientAPI.hasShaderPack()) || (avatar.renderMode != EntityRenderMode.RENDER && avatar.renderMode != EntityRenderMode.WORLD);
         offsetRenderLayers = irisConfig >= 1;
 
         // custom textures
@@ -197,8 +194,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         customization.alpha = alpha;
         customization.overlay = overlay;
 
-        customization.primaryTexture = Pair.of(FiguraTextureSet.OverrideType.PRIMARY, null);
-        customization.secondaryTexture = Pair.of(FiguraTextureSet.OverrideType.SECONDARY, null);
+        customization.primaryTexture = new TextureCustomization(FiguraTextureSet.OverrideType.PRIMARY, null);
+        customization.secondaryTexture = new TextureCustomization(FiguraTextureSet.OverrideType.SECONDARY, null);
 
         return customization;
     }
@@ -483,7 +480,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
     private VertexData getTexture(PartCustomization customization, FiguraTextureSet textureSet, boolean primary) {
         RenderTypes types = primary ? customization.getPrimaryRenderType() : customization.getSecondaryRenderType();
-        Pair<FiguraTextureSet.OverrideType, Object> texture = primary ? customization.primaryTexture : customization.secondaryTexture;
+        TextureCustomization texture = primary ? customization.primaryTexture : customization.secondaryTexture;
         VertexData ret = new VertexData();
 
         if (types == RenderTypes.NONE)

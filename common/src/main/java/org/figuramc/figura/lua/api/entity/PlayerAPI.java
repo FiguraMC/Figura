@@ -11,6 +11,7 @@ import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.NbtToLua;
 import org.figuramc.figura.lua.ReadOnlyLuaTable;
+import org.figuramc.figura.lua.api.world.ItemStackAPI;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
@@ -193,16 +194,16 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
     @LuaMethodDoc(
             overloads = {
                     @LuaMethodOverload(
-                            argumentTypes = {ItemStack.class, Float.class},
+                            argumentTypes = {ItemStackAPI.class, Float.class},
                             argumentNames = {"stack", "delta"}
                     ),
             },
             value = "player.get_cooldown_percent"
     )
-    public float getCoolDownPercent(@LuaNotNil ItemStack stack, Float delta) {
+    public float getCooldownPercent(@LuaNotNil ItemStackAPI stack, Float delta) {
         checkEntity();
         if (delta == null) delta = 0f;
-        return this.entity.getCooldowns().getCooldownPercent(stack.getItem(), delta);
+        return this.entity.getCooldowns().getCooldownPercent(stack.itemStack.getItem(), delta);
     }
 
     @Override

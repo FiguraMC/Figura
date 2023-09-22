@@ -14,11 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Entity.class)
 public class EntityMixin {
 
-    @Inject(method = "getEyePosition()Lnet/minecraft/world/phys/Vec3;", at = @At("RETURN"), cancellable = true)
-    private void getEyePosition(CallbackInfoReturnable<Vec3> cir) {
-        figura$offsetEyePos(cir);
-    }
-
     @Inject(method = "getEyePosition(F)Lnet/minecraft/world/phys/Vec3;", at = @At("RETURN"), cancellable = true)
     private void getEyePosition(float tickDelta, CallbackInfoReturnable<Vec3> cir) {
         figura$offsetEyePos(cir);

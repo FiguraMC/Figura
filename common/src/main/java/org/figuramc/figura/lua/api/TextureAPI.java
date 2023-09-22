@@ -32,8 +32,7 @@ import java.util.Optional;
         value = "textures"
 )
 public class TextureAPI {
-
-    private static final int TEXTURE_LIMIT = 128;
+    public static final int TEXTURE_LIMIT = 128;
 
     private final Avatar owner;
 
@@ -47,22 +46,7 @@ public class TextureAPI {
     }
 
     public FiguraTexture register(String name, NativeImage image, boolean ignoreSize) {
-        int max = owner.permissions.get(Permissions.TEXTURE_SIZE);
-        if (!ignoreSize && (image.getWidth() > max || image.getHeight() > max)) {
-            owner.noPermissions.add(Permissions.TEXTURE_SIZE);
-            throw new LuaError("Texture exceeded max size of " + max + " x " + max + " resolution, got " + image.getWidth() + " x " + image.getHeight());
-        }
-
-        FiguraTexture oldText = get(name);
-        if (oldText != null)
-            oldText.close();
-
-        if (owner.renderer.customTextures.size() > TEXTURE_LIMIT)
-            throw new LuaError("Maximum amount of textures reached!");
-
-        FiguraTexture texture = new FiguraTexture(owner, name, image);
-        owner.renderer.customTextures.put(name, texture);
-        return texture;
+        return owner.registerTexture(name, image, ignoreSize);
     }
 
     @LuaWhitelist
