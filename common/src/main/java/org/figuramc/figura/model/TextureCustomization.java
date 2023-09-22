@@ -3,7 +3,6 @@ package org.figuramc.figura.model;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
@@ -60,7 +59,7 @@ public class TextureCustomization {
         try {
             Optional<Resource> resource = Minecraft.getInstance().getResourceManager().getResource(resourceLocation);
             // if the string is a valid resourceLocation but does not point to a valid resource, missingno
-            NativeImage image = resource.isPresent() ? NativeImage.read(resource.get().open()) : MissingTextureAtlasSprite.getTexture().getPixels();
+            NativeImage image = resource.isPresent() ? NativeImage.read(resource.get().open()) : MissingTextureAtlasSpriteAccessor.getImageData().get();
             return avatar.registerTexture(name, image, false);
         } catch (Exception e) {
             // spit an error if the player inputs a resource location that does point to a thing, but not to an image
