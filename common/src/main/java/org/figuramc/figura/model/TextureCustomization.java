@@ -10,7 +10,7 @@ import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.api.TextureAPI;
 import org.figuramc.figura.mixin.render.MissingTextureAtlasSpriteAccessor;
-import org.figuramc.figura.mixin.render.TextureAtlasAccessor;
+import org.figuramc.figura.ducks.TextureAtlasAccessor;
 import org.figuramc.figura.model.rendering.ImmediateAvatarRenderer;
 import org.figuramc.figura.model.rendering.texture.FiguraTexture;
 import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
