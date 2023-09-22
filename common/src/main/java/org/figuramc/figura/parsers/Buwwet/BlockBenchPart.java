@@ -217,6 +217,7 @@ public class BlockBenchPart {
                 groupJson.addProperty("color", part.color);
                 groupJson.addProperty("visibility", part.visibility);
 
+                groupJson.add("rotation", BlockBenchPart.floatArrayToJson(part.rotation));
                 groupJson.add("origin", BlockBenchPart.floatArrayToJson(part.origin));
 
                 groupJson.addProperty("isOpen", false);
