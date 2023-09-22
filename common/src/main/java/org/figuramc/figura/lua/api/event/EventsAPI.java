@@ -52,6 +52,9 @@ public class EventsAPI {
     @LuaFieldDoc("events.chat_receive_message")
     public final LuaEvent CHAT_RECEIVE_MESSAGE = new LuaEvent();
     @LuaWhitelist
+    @LuaFieldDoc("events.sign_update")
+    public final LuaEvent SIGN_UPDATE = new LuaEvent(true);
+    @LuaWhitelist
     @LuaFieldDoc("events.skull_render")
     public final LuaEvent SKULL_RENDER = new LuaEvent();
     @LuaWhitelist
@@ -89,7 +92,7 @@ public class EventsAPI {
     public final LuaEvent RESOURCE_RELOAD = new LuaEvent();
 
     private final Map<String, LuaEvent> events = new HashMap<>();
-    
+
     public EventsAPI() {
         events.put("ENTITY_INIT", ENTITY_INIT);
         events.put("TICK", TICK);
@@ -100,6 +103,7 @@ public class EventsAPI {
         events.put("POST_WORLD_RENDER", POST_WORLD_RENDER);
         events.put("CHAT_SEND_MESSAGE", CHAT_SEND_MESSAGE);
         events.put("CHAT_RECEIVE_MESSAGE", CHAT_RECEIVE_MESSAGE);
+        events.put("SIGN_UPDATE", SIGN_UPDATE);
         events.put("SKULL_RENDER", SKULL_RENDER);
         events.put("MOUSE_SCROLL", MOUSE_SCROLL);
         events.put("MOUSE_MOVE", MOUSE_MOVE);
@@ -127,7 +131,7 @@ public class EventsAPI {
         ENTRYPOINTS.addAll(set);
     }
 
-    
+
     @LuaWhitelist
     @LuaMethodDoc("events.get_events")
     public Map<String, LuaEvent> getEvents() {

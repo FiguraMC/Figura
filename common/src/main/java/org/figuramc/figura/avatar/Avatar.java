@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -69,6 +70,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 
@@ -453,6 +455,20 @@ public class Avatar {
             color = ColorUtils.rgbToInt((FiguraVec3) val.arg(2).checkuserdata(FiguraVec3.class));
 
         return Pair.of(msg, color);
+    }
+
+    public void signUpdateEvent(BlockPos pos, String[] lines, boolean front) {
+        assert lines.length == 4;
+        var luaLines = new LuaTable();
+        luaLines.set(1, lines[0]);
+        luaLines.set(2, lines[1]);
+        luaLines.set(3, lines[2]);
+        luaLines.set(4, lines[3]);
+        run("SIGN_UPDATE", tick, FiguraVec3.fromBlockPos(pos), luaLines, front);
+        lines[0] = luaLines.get(1).tojstring();
+        lines[1] = luaLines.get(2).tojstring();
+        lines[2] = luaLines.get(3).tojstring();
+        lines[3] = luaLines.get(4).tojstring();
     }
 
     public boolean mouseScrollEvent(double delta) {
