@@ -52,7 +52,7 @@ public class PartCustomization {
     public Integer overlay = null;
 
     private RenderTypes primaryRenderType, secondaryRenderType;
-    public Pair<FiguraTextureSet.OverrideType, Object> primaryTexture, secondaryTexture;
+    public TextureCustomization primaryTexture, secondaryTexture;
 
     public void applyToStack(PoseStack stack) {
         stack.mulPoseMatrix(positionMatrix.toMatrix4f());

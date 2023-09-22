@@ -8,7 +8,8 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.utils.*;
+import org.figuramc.figura.utils.FiguraResourceListener;
+import org.figuramc.figura.utils.TextUtils;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -45,18 +46,39 @@ public class Emojis {
                 EMOJIS.put(name, container);
                 container.getLookup().getShortcuts().forEach(shortcut -> SHORTCUT_LOOKUP.put(shortcut, container));
 
-                // check for duplicates
-                Set<String> set = new HashSet<>();
-                for (EmojiContainer emoji : EMOJIS.values()) {
-                    for (String s : emoji.getLookup().getNames()) {
-                        if (!set.add(s)) {
-                            FiguraMod.LOGGER.warn("Duplicate emoji id registered {}", s);
-                        }
-                    }
-                }
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("Failed to load {} emojis", name, e);
             }
+        }
+
+        // check for duplicates
+        HashMap<String, List<String>> duplicates = new HashMap<>();
+        HashMap<String, String> map = new HashMap<>();
+        for (EmojiContainer curContainer : EMOJIS.values()) {
+            // For each emoji name in the current container
+            for (String curName : curContainer.getLookup().getNames()) {
+                // Check if there was already a value in the map
+                String prevValue = map.put(curName, curContainer.name);
+
+                // If there was, save the container it was found in for logging
+                if (prevValue != null) {
+                    List<String> list;
+                    if (!duplicates.containsKey(curName)) {
+                        list = new ArrayList<>();
+                        list.add(curContainer.name);
+                        duplicates.put(curName, list);
+                    } else {
+                        list = duplicates.get(curName);
+                    }
+
+                    list.add(prevValue);
+                }
+            }
+        }
+
+        // Print out each duplicate emoji and which containers it was found in.
+        for (String curName : duplicates.keySet()) {
+            FiguraMod.LOGGER.warn("Duplicate emoji \"{}\" found in containers: {}", curName, String.join(", ", duplicates.get(curName)));
         }
     });
 
@@ -153,7 +175,7 @@ public class Emojis {
 
                 // Replace all shortcuts
                 if (shortcuts.size() > 0) {
-                    while(s.length() > 0) {
+                    while (s.length() > 0) {
                         boolean anyFound = false;
                         for (String shortcut : shortcuts) {
                             if (s.startsWith(shortcut)) {
@@ -195,6 +217,16 @@ public class Emojis {
     public static Component getEmoji(String emojiAlias) {
         for (EmojiContainer container : EMOJIS.values()) {
             Component emoji = container.getEmojiComponent(emojiAlias);
+            if (emoji != null) {
+                return emoji;
+            }
+        }
+        return null;
+    }
+
+    public static Component getEmoji(String emojiAlias, MutableComponent hover) {
+        for (EmojiContainer container : EMOJIS.values()) {
+            Component emoji = container.getEmojiComponent(emojiAlias, hover);
             if (emoji != null) {
                 return emoji;
             }

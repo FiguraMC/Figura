@@ -42,7 +42,13 @@ public class FiguraLuaExtras {
     };
 
     public static LuaValue jsonStringToTable(String json) {
-        return JsonUtils.asLuaValue(JsonParser.parseString(json));
+        JsonElement jsonElement;
+        try {
+            jsonElement = JsonParser.parseString(json);
+        } catch (JsonSyntaxException e) {
+            throw new LuaError("Failed to parse malformed Json: " + e.getCause());
+        }
+        return JsonUtils.asLuaValue(jsonElement);
     }
 
     public static String tableToJsonString(LuaValue value) {
