@@ -16,8 +16,8 @@ mutable field com/mojang/blaze3d/vertex/PoseStack$Pose normal Lcom/mojang/math/M
 
 accessible method net/minecraft/client/gui/components/AbstractScrollWidget getScrollBarHeight ()I
 
-accessible method net/minecraft/client/gui/Font renderText (Ljava/lang/String;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;II)F
-extendable method net/minecraft/client/gui/Font renderText (Ljava/lang/String;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;II)F
+accessible method net/minecraft/client/gui/Font renderText (Ljava/lang/String;FFIZLcom/mojang/math/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;ZII)F
+extendable method net/minecraft/client/gui/Font renderText (Ljava/lang/String;FFIZLcom/mojang/math/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;ZII)F
 
 accessible field net/minecraft/client/renderer/texture/TextureAtlas$Preparations width I
 accessible field net/minecraft/client/renderer/texture/TextureAtlas$Preparations height I
