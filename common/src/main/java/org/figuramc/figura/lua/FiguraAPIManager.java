@@ -1,6 +1,7 @@
 package org.figuramc.figura.lua;
 
 import org.figuramc.figura.animation.Animation;
+import org.figuramc.figura.animation.Keyframe;
 import org.figuramc.figura.entries.FiguraAPI;
 import org.figuramc.figura.lua.api.*;
 import org.figuramc.figura.lua.api.action_wheel.Action;
@@ -123,6 +124,8 @@ public class FiguraAPIManager {
 
         add(AnimationAPI.class);
         add(Animation.class);
+        add(Animation.AnimationChannel.class);
+        add(Keyframe.class);
 
         add(HostAPI.class);
 

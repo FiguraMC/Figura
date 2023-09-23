@@ -9,6 +9,7 @@ import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.model.FiguraModelPart;
 import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 
 import java.util.*;
@@ -139,6 +140,25 @@ public class Animation {
 
     // -- lua methods -- // 
 
+
+    @LuaWhitelist
+    @LuaMethodDoc("animation.getChannels")
+    public LuaTable getChannels() {
+        LuaTable ret = new LuaTable();
+        for (Map.Entry<FiguraModelPart, List<Animation.AnimationChannel>> entry : animationParts) {
+            FiguraModelPart part = entry.getKey();
+            List<Animation.AnimationChannel> value = new ArrayList<Animation.AnimationChannel>();
+            for (Animation.AnimationChannel channel : entry.getValue()) {
+                value.add(channel);
+            }
+
+            LuaValue lPart = (LuaValue) owner.luaRuntime.typeManager.javaToLua(part);
+            LuaValue lValue = (LuaValue) owner.luaRuntime.typeManager.javaToLua(value);
+            ret.set(lPart, lValue);
+        }
+        System.out.println();
+        return ret;
+    }
 
     @LuaWhitelist
     @LuaMethodDoc("animation.is_playing")
@@ -607,5 +627,17 @@ public class Animation {
         HOLD
     }
 
-    public record AnimationChannel(TransformType type, Keyframe... keyframes) {}
+    @LuaWhitelist
+    @LuaTypeDoc(
+            name = "AnimationChannel",
+            value = "animation_channel"
+    )
+    public record AnimationChannel(TransformType type, Keyframe... keyframes) {
+
+        @LuaWhitelist
+        @LuaMethodDoc("animation.get_keyframes")
+        public List<Keyframe> getKeyframes() {
+            return List.of(keyframes);
+        }
+    }
 }

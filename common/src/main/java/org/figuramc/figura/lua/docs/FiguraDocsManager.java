@@ -11,6 +11,7 @@ import net.minecraft.network.chat.*;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.animation.Animation;
 import org.figuramc.figura.entries.FiguraAPI;
+import org.figuramc.figura.animation.Keyframe;
 import org.figuramc.figura.lua.api.*;
 import org.figuramc.figura.lua.api.action_wheel.Action;
 import org.figuramc.figura.lua.api.action_wheel.ActionWheelAPI;
@@ -119,7 +120,9 @@ public class FiguraDocsManager {
 
         put("animations", List.of(
                 AnimationAPI.class,
-                Animation.class
+                Animation.class,
+                Animation.AnimationChannel.class,
+                Keyframe.class
         ));
 
         put("nameplate", List.of(
