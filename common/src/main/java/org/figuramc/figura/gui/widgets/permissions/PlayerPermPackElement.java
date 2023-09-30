@@ -90,9 +90,7 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
             FiguraMod.LOGGER.info(name);
             CompletableFuture.runAsync(() -> {
                 try {
-                    String avatarName = BuwwetNetworkStuff.downloadUser(this.name);
-                    FiguraMod.LOGGER.info("Completed downloading the avatar of " + this.name + avatarName);
-                    FiguraToast.sendToast(Component.literal("Completed downloading the avatar of " + this.name + ": " + avatarName));
+                    BuwwetNetworkStuff.downloadUser(this.name);
                 } catch (Exception e) {
                     FiguraMod.LOGGER.error("Encountered error while downloading user's avatar: " + e);
                     FiguraToast.sendToast(FiguraText.of("backend.download_failed"));

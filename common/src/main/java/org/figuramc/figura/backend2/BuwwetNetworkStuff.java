@@ -10,10 +10,12 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.network.chat.Component;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.UserData;
 import org.figuramc.figura.avatar.local.CacheAvatarLoader;
+import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.parsers.Buwwet.BlockBenchPart;
 import org.figuramc.figura.parsers.Buwwet.FiguraModelParser;
 import org.jetbrains.annotations.Nullable;
@@ -87,7 +89,13 @@ public class BuwwetNetworkStuff extends NetworkStuff {
 
         try {
             String avatarName = downloadAvatars(avatars);
-            FiguraMod.LOGGER.info("Downloaded " + username + "'s avatar: " + avatarName);
+            if (avatarName != null) {
+                FiguraMod.LOGGER.info("Downloaded " + username + "'s avatar: " + avatarName);
+                FiguraToast.sendToast(Component.literal("Completed downloading the avatar of " + username + ": " + avatarName));
+            } else {
+                FiguraMod.LOGGER.warn(username + " has no equipped avatars!");
+                FiguraToast.sendToast(Component.literal("Failed to download any avatars as " + username + " has no equipped avatars."), FiguraToast.ToastType.ERROR);
+            }
 
             return avatarName;
 
@@ -132,7 +140,7 @@ public class BuwwetNetworkStuff extends NetworkStuff {
             //BlockBenchPart.parseNBTchildren(nbt.getCompound("models"));
         }
 
-        return "NULL";
+        return null;
     }
 
     public static void copy_avatar(String hash) {

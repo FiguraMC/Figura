@@ -100,8 +100,7 @@ public class HelpScreen extends AbstractPanelScreen {
                 null, button -> {
             CompletableFuture.runAsync(() -> {
                 try {
-                    String avatarName = BuwwetNetworkStuff.downloadUser(user.get());
-                    FiguraToast.sendToast(Component.literal("Completed downloading the avatar of " + user.get() + ": " + avatarName));
+                    BuwwetNetworkStuff.downloadUser(user.get());
                 } catch (Exception e) {
                     FiguraMod.LOGGER.error("Encountered error while downloading user's avatar: " + e);
                     FiguraToast.sendToast(FiguraText.of("backend.download_failed"));
