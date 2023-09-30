@@ -234,7 +234,7 @@ public class TextTask extends RenderTask {
     @LuaWhitelist
     @LuaMethodDoc("text_task.get_outline_color")
     public FiguraVec3 getOutlineColor() {
-        return ColorUtils.intToRGB(this.outlineColor);
+        return this.outlineColor != null ? ColorUtils.intToRGB(this.outlineColor) : FiguraVec3.of();
     }
 
     @LuaWhitelist
@@ -291,7 +291,7 @@ public class TextTask extends RenderTask {
 
     @LuaWhitelist
     @LuaMethodDoc("text_task.has_wrap")
-    public boolean HasWrap() {
+    public boolean hasWrap() {
         return wrap;
     }
 
@@ -368,7 +368,7 @@ public class TextTask extends RenderTask {
     @LuaWhitelist
     @LuaMethodDoc("text_task.get_background_color")
     public FiguraVec4 getBackgroundColor() {
-        return this.backgroundColor == null ? null : ColorUtils.intToARGB(this.backgroundColor);
+        return this.backgroundColor == null ? null : ColorUtils.intToRGBA(this.backgroundColor);
     }
 
     @LuaWhitelist
@@ -388,7 +388,7 @@ public class TextTask extends RenderTask {
     )
     public TextTask setBackgroundColor(Object r, Double g, Double b, Double a) {
         FiguraVec4 vec = LuaUtils.parseVec4("setBackgroundColor", r, g, b, a, 0, 0, 0,  Minecraft.getInstance().options.getBackgroundOpacity(0.25f));
-        this.backgroundColor = ColorUtils.rgbaToIntARGB(vec);
+        this.backgroundColor = ColorUtils.rgbaToInt(vec);
         return this;
     }
 
