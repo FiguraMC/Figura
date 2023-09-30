@@ -250,6 +250,25 @@ public class FiguraModelParser {
             }
         };
 
+        // Extract the sounds from the avatar
+        if (nbt.contains("sounds")) {
+            CompoundTag soundsNbt = nbt.getCompound("sounds");
+
+            Set<String> soundNames = soundsNbt.getAllKeys();
+            for (String soundName : soundNames) {
+                try {
+                    // Create a new filestream and write to it the sound byte array
+                    OutputStream soundFile = new FileOutputStream(avatarSavePath.resolve(soundName + ".ogg").toString(), false);
+                    soundFile.write(soundsNbt.getByteArray(soundName));
+                    soundFile.flush();
+                    soundFile.close();
+
+                } catch (Exception e) {
+                    FiguraMod.LOGGER.error("Failed to save sound " + soundName);
+                }
+            }
+        }
+
         // Save an avatar.json
         JsonObject avatarJson = new JsonObject();
         JsonArray avatarAuthors = new JsonArray();

@@ -36,6 +36,10 @@ public class BlockBenchPart {
         origin = fillVectorIfNone(nbt.get("piv"), 3);
         rotation = fillVectorIfNone(nbt.get("rot"), 3);
 
+        if (nbt.contains("vsb")) {
+            visibility = nbt.getBoolean("vsb");
+        }
+
 
         //FiguraMod.LOGGER.info(nbt.getAllKeys().toString());
         //FiguraMod.LOGGER.info(this.toString());
@@ -363,10 +367,7 @@ public class BlockBenchPart {
 
             json.addProperty("inflate", this.inflate);
 
-            // ??? json.addProperty("inflate", this.inflate);
-
-
-            //json.addProperty("visibility", true);
+            //json.addProperty("visibility", this.visibility);
             json.addProperty("locked", false);
 
 
