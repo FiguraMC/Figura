@@ -85,7 +85,7 @@ public class HelpScreen extends AbstractPanelScreen {
         this.addRenderableWidget(new Label(FiguraText.of("gui.help.figura_version", Component.literal(FiguraMod.VERSION.toString()).withStyle(color)), middle, y += lineHeight + 4, TextUtils.Alignment.CENTER));
         // Hacking time
 
-        this.addRenderableWidget(new Label(Component.literal("Hackervoice: we're in!").withStyle(color), middle, y += lineHeight + 4, TextUtils.Alignment.CENTER));
+        this.addRenderableWidget(new Label(Component.literal("BuwwetParser Ver 1.0.0").withStyle(color), middle, y += lineHeight + 4, TextUtils.Alignment.CENTER));
 
         // back
         addRenderableWidget(new Button(middle - 60, height - 24, 120, 20, FiguraText.of("gui.done"), null, bx -> onClose()));
