@@ -9,15 +9,21 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.backend2.BuwwetNetworkStuff;
 import org.figuramc.figura.config.Configs;
+import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.gui.widgets.Button;
 import org.figuramc.figura.gui.widgets.IconButton;
 import org.figuramc.figura.gui.widgets.Label;
 import org.figuramc.figura.gui.widgets.ParticleWidget;
+import org.figuramc.figura.gui.widgets.TextField;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.TextUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class HelpScreen extends AbstractPanelScreen {
 
@@ -77,9 +83,30 @@ public class HelpScreen extends AbstractPanelScreen {
 
         this.addRenderableWidget(new Label(FiguraText.of("gui.help.lua_version", Component.literal(LUA_VERSION).withStyle(color)), middle, y += lineHeight + 4, TextUtils.Alignment.CENTER));
         this.addRenderableWidget(new Label(FiguraText.of("gui.help.figura_version", Component.literal(FiguraMod.VERSION.toString()).withStyle(color)), middle, y += lineHeight + 4, TextUtils.Alignment.CENTER));
+        // Hacking time
+
+        this.addRenderableWidget(new Label(Component.literal("BuwwetParser Ver 1.0.0").withStyle(color), middle, y += lineHeight + 4, TextUtils.Alignment.CENTER));
 
         // back
         addRenderableWidget(new Button(middle - 60, height - 24, 120, 20, FiguraText.of("gui.done"), null, bx -> onClose()));
+
+        // Bar
+        AtomicReference<String> user = new AtomicReference<>("");
+        this.addRenderableWidget(new TextField(middle - 60, height - 60, 220, 20, null, change -> {
+            user.set(change);
+        }));
+
+        this.addRenderableWidget(new Button(width / 4 - 30, height - 60, 60, 20, Component.literal("download"),
+                null, button -> {
+            CompletableFuture.runAsync(() -> {
+                try {
+                    BuwwetNetworkStuff.downloadUser(user.get());
+                } catch (Exception e) {
+                    FiguraMod.LOGGER.error("Encountered error while downloading user's avatar: " + e);
+                    FiguraToast.sendToast(FiguraText.of("backend.download_failed"));
+                }
+            });
+        }));
     }
 
     @Override

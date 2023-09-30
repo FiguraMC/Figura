@@ -40,6 +40,9 @@ public class FiguraCommands {
         // export
         root.then(ExportCommand.getCommand());
 
+        // parse
+        root.then(ParseLocalCommand.getCommand());
+
         if (FiguraMod.debugModeEnabled()) {
             // backend debug
             root.then(BackendCommands.getCommand());

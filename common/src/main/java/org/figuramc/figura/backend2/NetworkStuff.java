@@ -57,7 +57,7 @@ public class NetworkStuff {
     private static final int RECONNECT = 6000; //5 min
     private static int authCheck = RECONNECT;
 
-    protected static HttpAPI api;
+    public static HttpAPI api;
     protected static WebsocketThingy ws;
 
     public static int backendStatus = 1;
@@ -220,7 +220,7 @@ public class NetworkStuff {
     // -- api stuff -- //
 
 
-    private static void queueString(UUID owner, Function<HttpAPI, HttpRequest> request, BiConsumer<Integer, String> consumer) {
+    public static void queueString(UUID owner, Function<HttpAPI, HttpRequest> request, BiConsumer<Integer, String> consumer) {
         API_REQUESTS.add(new Request<>(owner, api -> HttpAPI.runString(request.apply(api), consumer)));
     }
 
@@ -232,7 +232,7 @@ public class NetworkStuff {
         API_REQUESTS.removeIf(request -> request.owner.equals(requestOwner));
     }
 
-    private static void responseDebug(String src, int code, String data) {
+    public static void responseDebug(String src, int code, String data) {
         if (debug) FiguraMod.debug("Got response of \"" + src + "\" with code " + code + ":\n\t" + data);
     }
 

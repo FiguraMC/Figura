@@ -33,6 +33,7 @@ import java.util.Map;
  */
 public class FiguraModelPartReader {
 
+
     public static FiguraModelPart read(Avatar owner, CompoundTag partCompound, List<FiguraTextureSet> textureSets, boolean smoothNormals) {
         // Read name
         String name = partCompound.getString("name");
@@ -173,7 +174,7 @@ public class FiguraModelPartReader {
         return result;
     }
 
-    private static Pair<FiguraVec3, String[]> parseKeyframeData(CompoundTag keyframeNbt, String tag) {
+    public static Pair<FiguraVec3, String[]> parseKeyframeData(CompoundTag keyframeNbt, String tag) {
         if (!keyframeNbt.contains(tag))
             return null;
 
@@ -245,7 +246,7 @@ public class FiguraModelPartReader {
         modelPart.textureHeight = h;
     }
 
-    private static void readVec3(FiguraVec3 target, CompoundTag tag, String name) {
+    public static void readVec3(FiguraVec3 target, CompoundTag tag, String name) {
         if (tag.contains(name))
             readVec3(target, (ListTag) tag.get(name));
     }
@@ -399,7 +400,7 @@ public class FiguraModelPartReader {
         }
     }
 
-    private static void readMesh(List<Integer> facesByTexture, CompoundTag data, Map<Integer, List<Vertex>> vertices) {
+    public static void readMesh(List<Integer> facesByTexture, CompoundTag data, Map<Integer, List<Vertex>> vertices) {
         CompoundTag meshData = data.getCompound("mesh_data");
         // mesh_data:
         // "vtx": List<Float>, xyz
@@ -520,4 +521,6 @@ public class FiguraModelPartReader {
                 vertex.setNormal(result);
         }
     }
+
+
 }

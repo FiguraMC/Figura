@@ -823,4 +823,8 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
         }
         throw new LuaError("Invalid call to __newindex - vector swizzles must be the same size.");
     }
+
+    public double[] toArray() {
+        return new double[] {this.x, this.y, this.z};
+    }
 }

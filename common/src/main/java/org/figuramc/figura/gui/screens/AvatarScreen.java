@@ -1,7 +1,13 @@
 package org.figuramc.figura.gui.screens;
 
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.world.entity.LivingEntity;
+import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.backend2.BuwwetNetworkStuff;
+import org.figuramc.figura.gui.FiguraToast;
+import org.figuramc.figura.gui.widgets.Button;
 import org.figuramc.figura.gui.widgets.EntityPreview;
 import org.figuramc.figura.utils.FiguraText;
 
@@ -34,5 +40,7 @@ public class AvatarScreen extends AbstractPanelScreen {
         EntityPreview widget = new EntityPreview(0, 0, width, height, scale, pitch, yaw, entity, parentScreen);
         widget.setToggled(true);
         addRenderableWidget(widget);
+
+
     }
 }

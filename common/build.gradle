@@ -13,6 +13,8 @@ repositories {
 }
 
 dependencies {
+    implementation 'junit:junit:4.13.1'
+    implementation 'org.junit.jupiter:junit-jupiter:5.8.1'
     mappings loom.layered {
         mappings("org.quiltmc:quilt-mappings:$minecraft_version+build.$mappings:intermediary-v2")
         officialMojangMappings()

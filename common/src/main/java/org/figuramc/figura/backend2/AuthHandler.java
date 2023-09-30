@@ -9,9 +9,11 @@ import net.minecraft.client.User;
 import net.minecraft.network.chat.Component;
 import org.figuramc.figura.FiguraMod;
 
+import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.logging.Logger;
 
 public class AuthHandler {
 
@@ -27,10 +29,16 @@ public class AuthHandler {
             User user = minecraft.getUser();
             try {
                 String username = user.getName();
+                //FiguraMod.LOGGER.warn("USERNAME:" + username);
                 String serverID = getServerID(username);
+                //FiguraMod.LOGGER.warn("SERVER_ID:" + serverID);
+
                 FiguraMod.debug("Joining \"{}\" on server \"{}\"", username, serverID);
                 minecraft.getMinecraftSessionService().joinServer(user.getGameProfile(), user.getAccessToken(), serverID);
-                NetworkStuff.authSuccess(getToken(serverID));
+                String token = getToken(serverID);
+
+                //FiguraMod.LOGGER.warn(token);
+                NetworkStuff.authSuccess(token);
             // cringe exceptions
             } catch (AuthenticationUnavailableException e) {
                 NetworkStuff.authFail(Component.translatable("disconnect.loginFailedInfo.serversUnavailable").getString());
