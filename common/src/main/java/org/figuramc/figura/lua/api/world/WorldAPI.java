@@ -91,8 +91,29 @@ public class WorldAPI {
         BlockPos blockPos = pos.asBlockPos();
         Level world = getCurrentWorld();
         if (!world.hasChunkAt(blockPos))
-            return new BlockStateAPI(Blocks.AIR.defaultBlockState(), blockPos);
+            return new BlockStateAPI(Blocks.VOID_AIR.defaultBlockState(), blockPos);
         return new BlockStateAPI(world.getBlockState(blockPos), blockPos);
+    }
+    @SuppressWarnings("deprecation")
+    @LuaWhitelist
+    @LuaMethodDoc(
+        overloads = {
+            @LuaMethodOverload(
+                argumentTypes = FiguraVec3.class,
+                argumentNames = "pos"
+            ),
+            @LuaMethodOverload(
+                argumentTypes = {Double.class, Double.class, Double.class},
+                argumentNames = {"x", "y", "z"}
+            )
+        },
+        value = "world.is_chunk_loaded"
+    )
+    public static boolean isChunkLoaded(Object x, Double y, Double z) {
+        FiguraVec3 pos = LuaUtils.parseVec3("getBlockState", x, y, z);
+        BlockPos blockPos = pos.asBlockPos();
+        Level world = getCurrentWorld();
+        return world.hasChunkAt(blockPos);
     }
 
     @SuppressWarnings("deprecation")
