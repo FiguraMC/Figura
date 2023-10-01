@@ -3,41 +3,49 @@ package org.figuramc.figura.gui.widgets;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractScrollWidget;
-import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
+import org.figuramc.figura.utils.ClickableTextHelper;
 import org.figuramc.figura.utils.ui.UIHelper;
 
 import java.util.Objects;
 
 public class BackendMotdWidget extends AbstractScrollWidget {
     private final Font font;
-    private final MultiLineTextWidget multilineWidget;
+    private final ClickableTextHelper textHelper;
+    private int maxWidth;
 
-    public BackendMotdWidget(int i, int j, int k, int l, Component component, Font textRenderer) {
-        super(i, j, k, l, component);
-        this.font = textRenderer;
-        this.multilineWidget = (new MultiLineTextWidget(0, 0, component, textRenderer)).setMaxWidth(this.getWidth() - this.totalInnerPadding());
+    public BackendMotdWidget(int i, int j, int k, int l, Component text, Font font) {
+        super(i, j, k, l, text);
+        this.font = font;
+        this.textHelper = new ClickableTextHelper();
+        this.maxWidth = this.getWidth() - this.totalInnerPadding();
     }
 
-    public BackendMotdWidget setColor(int i) {
-        this.multilineWidget.setColor(i);
-        return this;
+    @Override
+    public void setMessage(Component message) {
+        super.setMessage(message);
+        textHelper.setMessage(message);
     }
 
     public void setWidth(int value) {
         super.setWidth(value);
-        this.multilineWidget.setMaxWidth(this.getWidth() - this.totalInnerPadding());
+        int prevWidth = this.maxWidth;
+        this.maxWidth = this.getWidth() - this.totalInnerPadding();
+        if (maxWidth != prevWidth)
+            textHelper.markDirty();
     }
 
     protected int getInnerHeight() {
-        return this.multilineWidget.getHeight();
+        Objects.requireNonNull(font);
+        return textHelper.lineCount() * font.lineHeight;
     }
 
     protected double scrollRate() {
         Objects.requireNonNull(this.font);
-        return 9.0;
+        return font.lineHeight;
     }
 
     @Override
@@ -52,26 +60,53 @@ public class BackendMotdWidget extends AbstractScrollWidget {
 
     public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         if (this.visible) {
-            if (!this.scrollbarVisible()) {
-                this.renderBackground(graphics);
-                graphics.pose().pushPose();
-                graphics.pose().translate((float)this.getX(), (float)this.getY(), 0.0F);
-                this.multilineWidget.render(graphics, mouseX, mouseY, delta);
-                graphics.pose().popPose();
+            if (!scrollbarVisible()) {
+                renderBackground(graphics);
+                renderContents(graphics, mouseX, mouseY, delta);
             } else {
                 super.renderWidget(graphics, mouseX, mouseY, delta);
             }
-
         }
     }
 
     protected void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        graphics.pose().pushPose();
-        graphics.pose().translate((float)(this.getX() + this.innerPadding()), (float)(this.getY() + this.innerPadding()), 0.0F);
-        this.multilineWidget.render(graphics, mouseX, mouseY, delta);
-        graphics.pose().popPose();
+        int xx = this.getX() + this.innerPadding();
+        int yy = this.getY() + this.innerPadding();
+
+        int scroll = (int)scrollAmount();
+        textHelper.update(font, maxWidth);
+
+        textHelper.visit((text, style, x, y, textWidth, textHeight) -> graphics.drawString(font, Component.literal(text).setStyle(style), xx + x, yy + y, 0xFFFFFFFF));
+
+        //textHelper.renderDebug(graphics, xx, yy, mouseX, mouseY + scroll);
+
+        if (withinContentAreaPoint(mouseX, mouseY)) {
+            Component tooltip = textHelper.getHoverTooltip(xx, yy, mouseX, mouseY + scroll);
+            if (tooltip != null)
+                UIHelper.setTooltip(tooltip);
+
+            if (mouseDown) {
+                String link = textHelper.getClickLink(xx, yy, mouseX, mouseY + scroll);
+                if (link != null)
+                    UIHelper.openURL(link).run();
+
+                mouseDown = false;
+            }
+        }
     }
 
+    @Override
+    public void playDownSound(SoundManager soundManager) {
+        // Don't play the button click sound
+    }
+
+    private boolean mouseDown = false;
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        mouseDown = super.mouseClicked(mouseX, mouseY, button);
+        return mouseDown;
+    }
     protected void updateWidgetNarration(NarrationElementOutput builder) {
         builder.add(NarratedElementType.TITLE, this.getMessage());
     }

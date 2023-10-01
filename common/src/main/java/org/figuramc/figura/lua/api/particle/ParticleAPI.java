@@ -80,7 +80,7 @@ public class ParticleAPI {
         FiguraVec3 pos, vel;
 
         // Parse pos and vel
-        Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("newParticle", x, y, z, w, t, h);
+        Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("newParticle", x, y, z, w, t, h, 2);
         pos = pair.getFirst();
         vel = pair.getSecond();
 

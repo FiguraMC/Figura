@@ -21,8 +21,6 @@ import java.util.UUID;
 
 public class Badges {
 
-    private static final String BADGES_REGEX = ".*(\\$\\{badges}|\\$\\{segdab}).*";
-
     public static final ResourceLocation FONT = new FiguraIdentifier("badges");
 
     public static Component fetchBadges(UUID id) {
@@ -126,7 +124,7 @@ public class Badges {
     }
 
     public static boolean hasCustomBadges(Component text) {
-        return text.visit((style, string) -> string.matches(BADGES_REGEX) ? FormattedText.STOP_ITERATION : Optional.empty(), Style.EMPTY).isPresent();
+        return text.visit((style, string) -> string.contains("${badges}") || string.contains("${segdab}") ? FormattedText.STOP_ITERATION : Optional.empty(), Style.EMPTY).isPresent();
     }
 
     public static Component appendBadges(Component text, UUID id, boolean allow) {
@@ -137,8 +135,8 @@ public class Badges {
         if (!custom)
             return badges.getString().isBlank() ? text : text.copy().append(" ").append(badges);
 
-        text = TextUtils.replaceInText(text, "\\$\\{badges\\}", badges);
-        text = TextUtils.replaceInText(text, "\\$\\{segdab\\}", TextUtils.reverse(badges));
+        text = TextUtils.replaceInText(text, "\\$\\{badges\\}(?s)", badges);
+        text = TextUtils.replaceInText(text, "\\$\\{segdab\\}(?s)", TextUtils.reverse(badges));
 
         return text;
     }
