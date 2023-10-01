@@ -52,7 +52,7 @@ public class FiguraModClientForge extends FiguraMod {
             this.add(overlay.type());
         }
     }};
-    @SubscribeEvent
+
     public static void cancelVanillaOverlays(RenderGuiOverlayEvent.Pre event) {
         if (vanillaOverlays.contains(event.getOverlay())) {
             Entity entity = Minecraft.getInstance().getCameraEntity();
