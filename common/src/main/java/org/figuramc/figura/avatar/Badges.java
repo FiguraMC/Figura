@@ -86,16 +86,23 @@ public class Badges {
             }
         }
 
-        // -- special -- // 
-
-        // special badges
-        BitSet specialSet = pair.getSecond();
-        Special[] special = Special.values();
-        for (int i = special.length - 1; i >= 0; i--) {
-            if (specialSet.get(i))
-                badges.append(special[i].badge);
+        // -- special -- //
+        if (avatar != null) {
+            // special badges
+            BitSet specialSet = pair.getSecond();
+            Special[] specialValues = Special.values();
+            for (int i = specialValues.length - 1; i >= 0; i--) {
+                if (specialSet.get(i)) {
+                    Special special = specialValues[i];
+                    Integer color = special.color;
+                    if (avatar.badgeToColor.containsKey(special.name().toLowerCase())) {
+                        color = ColorUtils.rgbToInt(ColorUtils.userInputHex(avatar.badgeToColor.get(special.name().toLowerCase())));
+                    }
+                    Component badge = color != null ? special.badge.copy().withStyle(Style.EMPTY.withColor(color)) : special.badge;
+                    badges.append(badge);
+                }
+            }
         }
-
 
         // -- extra -- // 
 
@@ -204,6 +211,7 @@ public class Badges {
 
         public final Component badge;
         public final Component desc;
+        public final Integer color;
 
         Special(String unicode) {
             this(unicode, null);
@@ -213,6 +221,7 @@ public class Badges {
             this.desc = FiguraText.of("badges.special." + this.name().toLowerCase());
             Style style = Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc));
             if (color != null) style = style.withColor(color);
+            this.color = color;
             this.badge = Component.literal(unicode).withStyle(style);
         }
     }

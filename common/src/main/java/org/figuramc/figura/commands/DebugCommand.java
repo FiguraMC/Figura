@@ -203,6 +203,9 @@ class DebugCommand {
         aMeta.addProperty("hasLuaRuntime", avatar.luaRuntime != null);
         aMeta.addProperty("hasRenderer", avatar.renderer != null);
         aMeta.addProperty("hasData", avatar.nbt != null);
+        for (Map.Entry<String, String> entry: avatar.badgeToColor.entrySet()) {
+            aMeta.addProperty(entry.getKey(), entry.getValue());
+        }
 
         a.add("meta", aMeta);
 
