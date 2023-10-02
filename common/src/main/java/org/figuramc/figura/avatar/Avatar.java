@@ -98,6 +98,8 @@ public class Avatar {
     public String id;
     public int fileSize;
     public String color;
+    public Map<String, String> badgeToColor = new HashMap<>();
+
     public boolean minify;
 
     // Runtime data
@@ -183,6 +185,11 @@ public class Avatar {
                     color = metadata.getString("color");
                 if (metadata.contains("minify"))
                     minify = metadata.getBoolean("minify");
+                for (String key : metadata.getAllKeys()) {
+                    if (key.contains("badge_color_")) {
+                        badgeToColor.put(key.replace("badge_color_", ""), metadata.getString(key));
+                    }
+                }
                 fileSize = getFileSize();
                 versionStatus = getVersionStatus();
                 if (entityName.isBlank())

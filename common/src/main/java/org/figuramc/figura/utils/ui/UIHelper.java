@@ -636,4 +636,12 @@ public class UIHelper extends GuiComponent {
         if (text != null)
             setTooltip(text);
     }
+
+    public static void renderOutline(PoseStack matrices, int x, int y, int width, int height, int color) {
+        fill(matrices, x, y, x + width, y + 1, color);
+        fill(matrices, x, y + height - 1, x + width, y + height, color);
+        fill(matrices, x, y + 1, x + 1, y + height - 1, color);
+        fill(matrices, x + width - 1, y + 1, x + width, y + height - 1, color);
+    }
+
 }
