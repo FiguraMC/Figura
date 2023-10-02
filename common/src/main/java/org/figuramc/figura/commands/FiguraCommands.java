@@ -6,6 +6,7 @@ import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.backend2.BackendCommands;
+import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.lua.FiguraLuaRuntime;
 import org.figuramc.figura.lua.docs.FiguraDocsManager;
 import org.figuramc.figura.model.rendering.AvatarRenderer;
@@ -39,13 +40,16 @@ public class FiguraCommands {
         // export
         root.then(ExportCommand.getCommand());
 
-        if (FiguraMod.DEBUG_MODE) {
+        if (FiguraMod.debugModeEnabled()) {
             // backend debug
             root.then(BackendCommands.getCommand());
 
             // set avatar command
             root.then(AvatarManager.getCommand());
         }
+
+        // emoji list
+        root.then(EmojiListCommand.getCommand());
 
         return root;
     }

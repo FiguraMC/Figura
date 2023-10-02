@@ -131,7 +131,7 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
     // bobbing fix courtesy of Iris; https://github.com/IrisShaders/Iris/blob/1.20/src/main/java/net/coderbot/iris/mixin/MixinModelViewBobbing.java
     @Inject(method = "renderLevel", at = @At("HEAD"))
     private void onRenderLevel(float tickDelta, long limitTime, PoseStack stack, CallbackInfo ci) {
-        hasShaders = ClientAPI.hasIrisShader();
+        hasShaders = ClientAPI.hasShaderPack();
     }
 
     @ModifyArg(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;bobHurt(Lcom/mojang/blaze3d/vertex/PoseStack;F)V"), index = 0)
@@ -148,8 +148,20 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
             slice = @Slice(
                     from = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;bobHurt(Lcom/mojang/blaze3d/vertex/PoseStack;F)V"),
                     to = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;resetProjectionMatrix(Lorg/joml/Matrix4f;)V")
-            ), locals = LocalCapture.CAPTURE_FAILSOFT)
+            ), locals = LocalCapture.CAPTURE_FAILSOFT, require = 0)
     private void renderLevelSaveBobbing(float tickDelta, long limitTime, PoseStack matrix, CallbackInfo ci, boolean bl, Camera camera, PoseStack poseStack, double d) {
+        if (hasShaders) return;
+        bobbingMatrix = new Matrix4f(poseStack.last().pose());
+        poseStack.popPose();
+    }
+
+    // Optifine slightly changes the locals here, adds an extra boolean
+    @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;last()Lcom/mojang/blaze3d/vertex/PoseStack$Pose;", shift = At.Shift.BEFORE),
+            slice = @Slice(
+                    from = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;bobHurt(Lcom/mojang/blaze3d/vertex/PoseStack;F)V"),
+                    to = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;resetProjectionMatrix(Lorg/joml/Matrix4f;)V")
+            ), locals = LocalCapture.CAPTURE_FAILSOFT, require = 0)
+    private void renderLevelSaveBobbingOF(float tickDelta, long limitTime, PoseStack matrix, CallbackInfo ci, boolean bl, boolean bl2, Camera camera, PoseStack poseStack, double d) {
         if (hasShaders) return;
         bobbingMatrix = new Matrix4f(poseStack.last().pose());
         poseStack.popPose();

@@ -1,5 +1,6 @@
 package org.figuramc.figura.utils;
 
+import com.google.gson.*;
 import com.mojang.brigadier.StringReader;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.commands.CommandBuildContext;
@@ -22,6 +23,10 @@ import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.math.vector.FiguraVec4;
 import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
+
+import javax.xml.validation.Validator;
 
 public class LuaUtils {
 
@@ -40,7 +45,7 @@ public class LuaUtils {
         throw new LuaError("Illegal argument to " + methodName + "(): " + x.getClass().getSimpleName());
     }
 
-    public static Pair<FiguraVec3, FiguraVec3> parse2Vec3(String methodName, Object x, Object y, Number z, Object w, Number t, Number h) {
+    public static Pair<FiguraVec3, FiguraVec3> parse2Vec3(String methodName, Object x, Object y, Number z, Object w, Number t, Number h, int xIndex) {
         FiguraVec3 a, b;
 
         if (x instanceof FiguraVec3 vec1) {
@@ -51,22 +56,22 @@ public class LuaUtils {
                 if (w == null || w instanceof Number) {
                     b = parseVec3(methodName, y, z, (Number) w);
                 } else {
-                    throw new LuaError("Illegal argument to " + methodName + "(): " + w);
+                    throw new LuaError("Illegal argument at position" + xIndex+3 + "to " + methodName + "(): " + w);
                 }
             } else {
-                throw new LuaError("Illegal argument to " + methodName + "(): " + y);
+                throw new LuaError("Illegal argument at position "+ xIndex+1 + " to " + methodName + "(): " + y);
             }
-        } else if (x == null || x instanceof Number && y == null || y instanceof Number) {
+        } else if (x instanceof Number && y == null || y instanceof Number) {
             a = parseVec3(methodName, x, (Number) y, z);
             if (w instanceof FiguraVec3 vec1) {
                 b = vec1.copy();
             } else if (w == null || w instanceof Number) {
                 b = parseVec3(methodName, w, t, h);
             } else {
-                throw new LuaError("Illegal argument to " + methodName + "(): " + w);
+                throw new LuaError("Illegal argument at position "+ xIndex+3 + " to " + methodName + "(): " + w);
             }
         } else {
-            throw new LuaError("Illegal argument to " + methodName + "(): " + x);
+            throw new LuaError("Illegal argument at position "+ xIndex + " to " + methodName + "(): " + x);
         }
 
         return Pair.of(a, b);
@@ -185,5 +190,46 @@ public class LuaUtils {
         } else {
             throw new LuaError("Invalid type for getSlot: " + slot.getClass().getSimpleName());
         }
+    }
+
+    public static JsonElement asJsonValue(LuaValue value) {
+        if (value.isnil()) return JsonNull.INSTANCE;
+        if (value.isboolean()) return new JsonPrimitive(value.checkboolean());
+        if (value.isint()) return new JsonPrimitive(value.checkint());
+        if (value.isnumber()) return new JsonPrimitive(value.checkdouble());
+        if (value.isstring()) return new JsonPrimitive(value.checkjstring());
+        if (value.istable()) {
+            LuaTable table = value.checktable();
+
+            // If it's an "array" (uses numbers as keys)
+            if (checkTableArray(table)) {
+                JsonArray arr = new JsonArray();
+                LuaValue[] keys = table.keys();
+                int arrayLength = keys[keys.length-1].checkint();
+                for(int i = 1; i <= arrayLength; i++) {
+                    arr.add(asJsonValue(table.get(i)));
+                }
+                return arr;
+            }
+            // Otherwise, if it's a proper key-value table
+            else {
+                JsonObject object = new JsonObject();
+                for (LuaValue key : table.keys()) {
+                    object.add(key.tojstring(), asJsonValue(table.get(key)));
+                }
+                return object;
+            }
+        }
+
+        // Fallback for things that shouldn't be converted (like functions)
+        return null;
+    }
+
+    public static boolean checkTableArray(LuaTable table) {
+        for (LuaValue key : table.keys()) {
+            if (!key.isnumber()) return false;
+        }
+
+        return true;
     }
 }

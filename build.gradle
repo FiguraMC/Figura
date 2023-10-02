@@ -1,12 +1,8 @@
 plugins {
 	id "architectury-plugin" version "3.4-SNAPSHOT"
-	id "dev.architectury.loom" version "1.1-SNAPSHOT" apply false
+	id "dev.architectury.loom" version "1.2-SNAPSHOT" apply false
 	id "io.github.juuxel.loom-vineflower" version "1.+" apply false
 	id "io.github.pacifistmc.forgix" version "1.2.6"
-}
-
-architectury {
-	minecraft = rootProject.minecraft_version
 }
 
 architectury {
@@ -30,13 +26,10 @@ subprojects {
 	dependencies {
 		minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
 		// The following line declares the mojmap mappings, you may use other mappings as well
-		mappings loom.layered {
-			mappings("org.quiltmc:quilt-mappings:$minecraft_version+build.$mappings:intermediary-v2")
-			officialMojangMappings()
-		}
 
 		// Mods
 		modCompileOnly "maven.modrinth:iris:$iris"
+		modCompileOnly "maven.modrinth:immediatelyfast:$immediately_fast"
 	}
 }
 
@@ -49,6 +42,11 @@ allprojects {
 	archivesBaseName = rootProject.archives_base_name
 	version = rootProject.mod_version + "+" + rootProject.minecraft_version
 	group = rootProject.maven_group
+	if (project.hasProperty("release")) {
+		jarVersion = version
+	} else {
+		jarVersion = version + "-" + 'git rev-parse --short HEAD'.execute().getText().trim()
+	}
 
 	repositories {
 		// Add repositories to retrieve artifacts from in here.
@@ -56,6 +54,7 @@ allprojects {
 		// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 		// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 		// for more information about repositories.
+		maven { url 'https://jitpack.io' }
 	}
 
 	tasks.withType(JavaCompile) {

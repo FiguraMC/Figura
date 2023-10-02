@@ -45,12 +45,24 @@ public class VectorsAPI {
             value = "vectors.vec"
     )
     public static Object vec(Double x, Double y, Double z, Double w) {
-        if (w != null)
+        if (x == null)
+            throw new LuaError("Illegal argument to vec(): x, " + x);
+
+        if (w != null) {
+            if (y == null)
+                throw new LuaError("Illegal argument to vec(): y," + y);
+            if (z == null)
+                throw new LuaError("Illegal argument to vec(): z," + z);
             return vec4(x, y, z, w);
-        if (z != null)
+        }
+        if (z != null){
+            if (y == null)
+                throw new LuaError("Illegal argument to vec(): y," + y);
             return vec3(x, y, z);
-        if (y != null)
+        }
+        if (y != null) {
             return vec2(x, y);
+        }
         throw new LuaError("Invalid arguments to vec(), needs at least 2 numbers!");
     }
 
@@ -219,7 +231,7 @@ public class VectorsAPI {
     public static FiguraVec3 rotateAroundAxis(double angle, Object x, Object y, Double z, Object w, Double t, Double h) {
         FiguraVec3 vec, axis;
 
-        Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("rotateAroundAxis", x, y, z, w, t, h);
+        Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("rotateAroundAxis", x, y, z, w, t, h, 2);
         vec = pair.getFirst();
         axis = pair.getSecond();
 

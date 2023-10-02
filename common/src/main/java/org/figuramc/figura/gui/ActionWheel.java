@@ -16,6 +16,7 @@ import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.config.Configs;
+import org.figuramc.figura.font.Emojis;
 import org.figuramc.figura.lua.api.action_wheel.Action;
 import org.figuramc.figura.lua.api.action_wheel.Page;
 import org.figuramc.figura.math.vector.FiguraVec3;
@@ -451,9 +452,11 @@ public class ActionWheel {
         public TextureData(int y, float u, float v, int rotation) {
             this(false, y, u, v, rotation);
         }
+
         public TextureData(float u, float v, int rotation) {
             this(-64, u, v, rotation);
         }
+
         public TextureData(float u, float v) {
             this(u, v, 0);
         }

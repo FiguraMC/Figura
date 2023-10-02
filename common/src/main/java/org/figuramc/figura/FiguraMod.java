@@ -14,7 +14,7 @@ import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.config.ConfigManager;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.entries.EntryPointManager;
-import org.figuramc.figura.gui.Emojis;
+import org.figuramc.figura.font.Emojis;
 import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.lua.docs.FiguraDocsManager;
 import org.figuramc.figura.mixin.SkullBlockEntityAccessor;
@@ -36,8 +36,7 @@ public class FiguraMod {
     public static final String MOD_ID = "figura";
     public static final String MOD_NAME = "Figura";
     public static final FiguraModMetadata METADATA = FiguraModMetadata.getMetadataForMod(MOD_ID);
-    public static final Version VERSION = new Version(PlatformUtils.getModVersionString());
-    public static final boolean DEBUG_MODE = false;
+    public static final Version VERSION = new Version(PlatformUtils.getFiguraModVersionString());
     public static final Calendar CALENDAR = Calendar.getInstance();
     public static final Path GAME_DIR = PlatformUtils.getGameDir().normalize();
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
@@ -48,6 +47,13 @@ public class FiguraMod {
     public static Component splashText;
     public static boolean parseMessages = true;
     public static boolean processingKeybind;
+
+    /* For some reason, the mod menu entrypoint (or something) is able to call this before the Config
+    class can initialize, meaning Configs.DEBUG_MODE can be null when this is called.... Weird */
+    @SuppressWarnings("all")
+    public static boolean debugModeEnabled() {
+        return Configs.DEBUG_MODE != null && Configs.DEBUG_MODE.value;
+    }
 
     public static void onClientInit() {
         // init managers
@@ -80,6 +86,8 @@ public class FiguraMod {
         AvatarManager.tickLoadedAvatars();
         popPushProfiler("chatPrint");
         FiguraLuaPrinter.printChatFromQueue();
+        popPushProfiler("emojiAnim");
+        Emojis.tickAnimations();
         popProfiler();
         ticks++;
     }
@@ -88,7 +96,7 @@ public class FiguraMod {
 
     // debug print
     public static void debug(String str, Object... args) {
-        if (DEBUG_MODE) LOGGER.info("[DEBUG] " + str, args);
+        if (FiguraMod.debugModeEnabled()) LOGGER.info("[DEBUG] " + str, args);
         else LOGGER.debug(str, args);
     }
 
@@ -101,7 +109,7 @@ public class FiguraMod {
 
     // mod cache directory
     public static Path getCacheDirectory() {
-        return IOUtils.getOrCreateDir(getFiguraDirectory(), "cache");
+        return IOUtils.getOrCreateDir(getFiguraDirectory(), Configs.LOCAL_ASSETS.value ? "local_cache" : "cache");
     }
 
     // get local player uuid
@@ -138,8 +146,7 @@ public class FiguraMod {
      */
     public static UUID playerNameToUUID(String playerName) {
         GameProfileCache cache = SkullBlockEntityAccessor.getProfileCache();
-        if (cache == null)
-            return null;
+        if (cache == null) return null;
 
         var profile = cache.get(playerName);
         return profile.isEmpty() ? null : profile.get().getId();
@@ -181,7 +188,7 @@ public class FiguraMod {
     }
 
     public enum Links {
-        Wiki("https://github.com/KitCat962/FiguraRewriteRewrite/wiki", ColorUtils.Colors.AWESOME_BLUE.style),
+        Wiki("https://wiki.figuramc.org/", ColorUtils.Colors.AWESOME_BLUE.style),
         Kofi("https://ko-fi.com/skyrina", ColorUtils.Colors.KOFI.style),
         OpenCollective("https://opencollective.com/figura", ColorUtils.Colors.KOFI.style),
         Discord("https://discord.gg/figuramc", ColorUtils.Colors.DISCORD.style),

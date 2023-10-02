@@ -6,9 +6,11 @@ import com.google.gson.JsonParser;
 import net.minecraft.server.packs.PathPackResources;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.backend2.NetworkStuff;
+import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.utils.IOUtils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -78,10 +80,31 @@ public class FiguraRuntimeResources {
                     FiguraMod.debug("Failed to download resource \"" + key + "\"", e);
                 }
             }
+            File assetsDirectoryFile = getAssetsDirectory().toFile();
+            JsonObject directoryJsonObject = constructAssetsDirectoryJsonObject(assetsDirectoryFile.listFiles());
+            for (Map.Entry<String, JsonElement> entry : directoryJsonObject.entrySet()) {
+                if (!hashes.has(entry.getKey()) && !Configs.LOCAL_ASSETS.value) {
+                    IOUtils.deleteFile(getAssetsDirectory().resolve(entry.getKey()));
+                }
+            }
         });
     }
 
+    public static JsonObject constructAssetsDirectoryJsonObject(File[] files) {
+        JsonObject object = new JsonObject();
+        for (File file : files) {
+            if (file.isDirectory()) {
+                for (Map.Entry<String, JsonElement> entry : constructAssetsDirectoryJsonObject(file.listFiles()).entrySet()) {
+                    object.addProperty(entry.getKey(), entry.getValue().getAsString());
+                }
+            } else if (!file.isHidden()){
+                object.addProperty(getAssetsDirectory().toUri().relativize(file.toURI()).getPath(), "0");
+            }
+        }
+        return object;
+    }
     private static void getAndSaveResource(String path) throws Exception {
+        if (Configs.LOCAL_ASSETS.value) return;
         Path target = getAssetsDirectory().resolve(path);
         IOUtils.createDirIfNeeded(target.getParent());
         try (InputStream resource = NetworkStuff.getResource(ASSETS_VERSION, path); OutputStream fs = Files.newOutputStream(target)) {

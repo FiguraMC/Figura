@@ -4,15 +4,18 @@ import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelPart;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.scores.PlayerTeam;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.NbtToLua;
 import org.figuramc.figura.lua.ReadOnlyLuaTable;
+import org.figuramc.figura.lua.api.world.ItemStackAPI;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
+import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.utils.EntityUtils;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
@@ -185,6 +188,22 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
         map.put("collision_rule", team.getCollisionRule().name);
 
         return map;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = {ItemStackAPI.class, Float.class},
+                            argumentNames = {"stack", "delta"}
+                    ),
+            },
+            value = "player.get_cooldown_percent"
+    )
+    public float getCooldownPercent(@LuaNotNil ItemStackAPI stack, Float delta) {
+        checkEntity();
+        if (delta == null) delta = 0f;
+        return this.entity.getCooldowns().getCooldownPercent(stack.itemStack.getItem(), delta);
     }
 
     @Override

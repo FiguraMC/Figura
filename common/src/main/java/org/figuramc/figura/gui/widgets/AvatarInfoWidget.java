@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Style;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
+import org.figuramc.figura.font.Emojis;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.MathUtils;
@@ -64,8 +65,8 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
         // update values
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (avatar != null && avatar.nbt != null) {
-            values.set(0, avatar.name == null || avatar.name.isBlank() ? UNKNOWN : Component.literal(avatar.name).setStyle(accent)); // name
-            values.set(1, avatar.authors == null || avatar.authors.isBlank() ? UNKNOWN : Component.literal(avatar.authors).setStyle(accent)); // authors
+            values.set(0, avatar.name == null || avatar.name.isBlank() ? UNKNOWN : Emojis.applyEmojis(Component.literal(avatar.name).setStyle(accent))); // name
+            values.set(1, avatar.authors == null || avatar.authors.isBlank() ? UNKNOWN : Emojis.applyEmojis(Component.literal(avatar.authors).setStyle(accent))); // authors
             values.set(2, Component.literal(MathUtils.asFileSize(avatar.fileSize)).setStyle(accent)); // size
             values.set(3, Component.literal(String.valueOf(avatar.complexity.pre)).setStyle(accent)); // complexity
         } else {

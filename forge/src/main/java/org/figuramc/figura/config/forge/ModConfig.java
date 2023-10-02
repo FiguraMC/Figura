@@ -8,6 +8,6 @@ import org.figuramc.figura.gui.screens.ConfigScreen;
 public class ModConfig {
     public static void registerConfigScreen() {
         ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> new ConfigScreenHandler.ConfigScreenFactory(
-                (client, parent) -> new ConfigScreen(parent, FiguraMod.DEBUG_MODE)));
+                (client, parent) -> new ConfigScreen(parent, FiguraMod.debugModeEnabled())));
     }
 }

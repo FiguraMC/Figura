@@ -18,6 +18,7 @@ import org.figuramc.figura.model.FiguraModelPart;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaUserdata;
+import org.luaj.vm2.LuaValue;
 
 /**
  * Class only exists to have docs for the global figura
@@ -168,4 +169,28 @@ public abstract class FiguraGlobalsDocs {
     public static String printJson() {
         return null;
     }
+
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = LuaValue.class,
+                            argumentNames = "value"
+                    )
+            },
+            aliases = "toJson",
+            value = "globals.to_json"
+    )
+    public static String toJson() {return null;}
+
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = String.class,
+                            argumentNames = "jsonString"
+                    )
+            },
+            aliases = "parseJson",
+            value = "globals.parse_json"
+    )
+    public static LuaValue parseJson() {return null;}
 }

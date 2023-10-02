@@ -13,6 +13,7 @@ import java.util.List;
 public abstract class ConfigType<T> {
 
     public final String id;
+    public final boolean hidden;
 
     // display
     public Component name;
@@ -25,7 +26,11 @@ public abstract class ConfigType<T> {
     public boolean disabled;
 
     public ConfigType(String name, T value) {
+        this(name, value, false);
+    }
+    public ConfigType(String name, T value, boolean hidden) {
         this.id = name;
+        this.hidden = hidden;
 
         // generate names
         name = "config." + name;
@@ -105,12 +110,16 @@ public abstract class ConfigType<T> {
     public abstract static class ParentedConfig<T> extends ConfigType<T> {
         public final Category parent;
 
-        public ParentedConfig(String name, Category category, T value) {
-            super(name, value);
+        public ParentedConfig(String name, Category category, T value, boolean hidden) {
+            super(name, value, hidden);
             this.parent = category;
 
             category.children.add(this);
             ConfigManager.REGISTRY.add(this);
+        }
+
+        public ParentedConfig(String name, Category category, T value) {
+            this(name, category, value, false);
         }
     }
 
@@ -119,8 +128,12 @@ public abstract class ConfigType<T> {
 
 
     public static class BoolConfig extends ParentedConfig<Boolean> {
+        public BoolConfig(String name, Category category, Boolean defaultValue, boolean hidden) {
+            super(name, category, defaultValue, hidden);
+        }
+
         public BoolConfig(String name, Category category, Boolean defaultValue) {
-            super(name, category, defaultValue);
+            this(name, category, defaultValue, false);
         }
 
         @Override
