@@ -27,6 +27,10 @@ public class WardrobeScreen extends AbstractPanelScreen {
     private static final Component DEBUG_MOTD_FALLBACK = new TextComponent("No motd could be loaded.\n\n")
             .append("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n")
                     .withStyle(ChatFormatting.GRAY)
+            .append(new TextComponent("(This is some text you can hover)\n")
+                    .withStyle(Style.EMPTY.withColor(0xFFF311A0).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("hi chat")))))
+            .append(new TextComponent("(This is some text you can click on)\n")
+                    .withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/FiguraMC/Figura"))))
             .append(new TextComponent("(This is only visible in debug mode)")
                     .withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
 
@@ -53,12 +57,12 @@ public class WardrobeScreen extends AbstractPanelScreen {
         int modelBgSize = Math.min(width - panels * 2 - 16, height - 96);
         panels = Math.max((width - modelBgSize) / 2 - 8, panels);
 
-        // -- left -- //
+        // -- left -- // 
 
         AvatarList avatarList = new AvatarList(4, 28, panels, height - 32, this);
         addRenderableWidget(avatarList);
 
-        // -- middle -- //
+        // -- middle -- // 
 
         // model
         int entitySize = 11 * modelBgSize / 29;
@@ -198,20 +202,32 @@ public class WardrobeScreen extends AbstractPanelScreen {
     private void updateMotdWidget() {
         int panels = getPanels();
 
+        int infoBottom = infoWidget.getY() + infoWidget.getHeight();
+
         int width = panels - 8;
-        int height = back.getY() - (infoWidget.getY() + infoWidget.getHeight()) - 30;
+        int height = back.getY() - infoBottom - 16;
+        int x = this.width - panels;
+        int y = infoBottom + 8;
+
+        infoWidget.tick();
         if (motdWidget == null) {
             Component motd = NetworkStuff.motd == null ? DEBUG_MOTD_FALLBACK : NetworkStuff.motd;
             if (!FiguraMod.debugModeEnabled() && motd == DEBUG_MOTD_FALLBACK) {
                 return;
             }
-            motdWidget = addRenderableWidget(new BackendMotdWidget(this.width - panels, infoWidget.getY() + infoWidget.getHeight() + 24, width, height, motd, Minecraft.getInstance().font));
+            motdWidget = addRenderableWidget(new BackendMotdWidget(x, y, width, height, motd, font));
         }  else {
+            motdWidget.setPosition(x, y);
             motdWidget.setWidth(width);
             motdWidget.setHeight(height);
+            Component motd = NetworkStuff.motd == null ? DEBUG_MOTD_FALLBACK : NetworkStuff.motd;
+            if (!FiguraMod.debugModeEnabled() && motd == DEBUG_MOTD_FALLBACK) {
+                return;
+            }
+            motdWidget.setMessage(motd);
         }
 
-        motdWidget.visible = motdWidget.shouldRender();
+        motdWidget.visible = motdWidget.getHeight() > 48;
     }
 
     @Override

@@ -94,8 +94,29 @@ public class WorldAPI {
         BlockPos blockPos = pos.asBlockPos();
         Level world = getCurrentWorld();
         if (!world.hasChunkAt(blockPos))
-            return new BlockStateAPI(Blocks.AIR.defaultBlockState(), blockPos);
+            return new BlockStateAPI(Blocks.VOID_AIR.defaultBlockState(), blockPos);
         return new BlockStateAPI(world.getBlockState(blockPos), blockPos);
+    }
+    @SuppressWarnings("deprecation")
+    @LuaWhitelist
+    @LuaMethodDoc(
+        overloads = {
+            @LuaMethodOverload(
+                argumentTypes = FiguraVec3.class,
+                argumentNames = "pos"
+            ),
+            @LuaMethodOverload(
+                argumentTypes = {Double.class, Double.class, Double.class},
+                argumentNames = {"x", "y", "z"}
+            )
+        },
+        value = "world.is_chunk_loaded"
+    )
+    public static boolean isChunkLoaded(Object x, Double y, Double z) {
+        FiguraVec3 pos = LuaUtils.parseVec3("getBlockState", x, y, z);
+        BlockPos blockPos = pos.asBlockPos();
+        Level world = getCurrentWorld();
+        return world.hasChunkAt(blockPos);
     }
 
     @SuppressWarnings("deprecation")
@@ -122,7 +143,7 @@ public class WorldAPI {
             value = "world.get_blocks"
     )
     public static List<BlockStateAPI> getBlocks(Object x, Object y, Double z, Double w, Double t, Double h) {
-        Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("getBlocks", x, y, z, w, t, h);
+        Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("getBlocks", x, y, z, w, t, h, 1);
         List<BlockStateAPI> list = new ArrayList<>();
 
         BlockPos min = pair.getFirst().asBlockPos();
@@ -400,7 +421,7 @@ public class WorldAPI {
     public HashMap<String, Object> raycastBlock(boolean fluid, Object x, Object y, Double z, Object w, Double t, Double h) {
         FiguraVec3 start, end;
 
-        Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("raycastBlock", x, y, z, w, t, h);
+        Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("raycastBlock", x, y, z, w, t, h,1);
         start = pair.getFirst();
         end = pair.getSecond();
 
@@ -443,7 +464,7 @@ public class WorldAPI {
     public HashMap<String, Object> raycastEntity(Object x, Object y, Double z, Object w, Double t, Double h) {
         FiguraVec3 start, end;
 
-        Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("raycastEntity", x, y, z, w, t, h);
+        Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("raycastEntity", x, y, z, w, t, h, 1);
         start = pair.getFirst();
         end = pair.getSecond();
 

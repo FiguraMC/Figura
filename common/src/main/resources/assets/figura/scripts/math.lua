@@ -1,7 +1,7 @@
 -- math utils --
 
 function math.clamp(val, min, max)
-  return math.min(math.max(val, min), max)
+   return min > max and max or val > max and max or val < min and min or val
 end
 
 function math.lerp(a, b, t)

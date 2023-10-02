@@ -231,7 +231,7 @@ public class VectorsAPI {
     public static FiguraVec3 rotateAroundAxis(double angle, Object x, Object y, Double z, Object w, Double t, Double h) {
         FiguraVec3 vec, axis;
 
-        Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("rotateAroundAxis", x, y, z, w, t, h);
+        Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("rotateAroundAxis", x, y, z, w, t, h, 2);
         vec = pair.getFirst();
         axis = pair.getSecond();
 
