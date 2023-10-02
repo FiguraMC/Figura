@@ -20,10 +20,9 @@ Note - do not merge upstream into your pr branch if a clean rebase is possible.
 5. You may merge the Pull Request in once you have the sign-off of another developer, or if you do not have permission to do that, you may request the second reviewer to merge it for you.
 
 ## Translation Contribution Process 
-Note - Translations are not located in this repository but in [FiguraMC/Assets](https://github.com/FiguraMC/Assets/)
 1. You must be fluent and/or knowledgeable in the language you are translating to.
 
-2. Please use our Localization solution located [here](https://localization.figuramc.org). This makes it much eaiser for other contributors to view the progress on a specific language.
+2. We use [Weblate](https://weblate.org) to manage our translations vist our project [here](https://hosted.weblate.org/projects/figuramc/). This makes it much eaiser for other contributors to view the progress on a specific language.
 
 ## Art Contribution Process
 Note - Emojis are located in [FiguraMC/Assets](https://github.com/FiguraMC/Assets/)
@@ -31,7 +30,7 @@ Note - Emojis are located in [FiguraMC/Assets](https://github.com/FiguraMC/Asset
 
 2. Document the additions and changes made with your contribution.
 
-##### This is a copy of the Art and Translation Contribution Process located in the Assets Repo.
+##### This is a simplified copy of the Art Contribution Process located in the Assets Repo.
 
 ## Credits
 1. We credit our contributors for working on our projects, and as such we would like to credit them appropriately.
