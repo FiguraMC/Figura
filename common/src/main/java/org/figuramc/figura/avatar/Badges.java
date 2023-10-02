@@ -21,8 +21,6 @@ import java.util.UUID;
 
 public class Badges {
 
-    private static final String BADGES_REGEX = ".*(\\$\\{badges}|\\$\\{segdab}).*";
-
     public static final ResourceLocation FONT = new FiguraIdentifier("badges");
 
     public static Component fetchBadges(UUID id) {
@@ -88,16 +86,23 @@ public class Badges {
             }
         }
 
-        // -- special -- // 
-
-        // special badges
-        BitSet specialSet = pair.getSecond();
-        Special[] special = Special.values();
-        for (int i = special.length - 1; i >= 0; i--) {
-            if (specialSet.get(i))
-                badges.append(special[i].badge);
+        // -- special -- //
+        if (avatar != null) {
+            // special badges
+            BitSet specialSet = pair.getSecond();
+            Special[] specialValues = Special.values();
+            for (int i = specialValues.length - 1; i >= 0; i--) {
+                if (specialSet.get(i)) {
+                    Special special = specialValues[i];
+                    Integer color = special.color;
+                    if (avatar.badgeToColor.containsKey(special.name().toLowerCase())) {
+                        color = ColorUtils.rgbToInt(ColorUtils.userInputHex(avatar.badgeToColor.get(special.name().toLowerCase())));
+                    }
+                    Component badge = color != null ? special.badge.copy().withStyle(Style.EMPTY.withColor(color)) : special.badge;
+                    badges.append(badge);
+                }
+            }
         }
-
 
         // -- extra -- // 
 
@@ -126,7 +131,7 @@ public class Badges {
     }
 
     public static boolean hasCustomBadges(Component text) {
-        return text.visit((style, string) -> string.matches(BADGES_REGEX) ? FormattedText.STOP_ITERATION : Optional.empty(), Style.EMPTY).isPresent();
+        return text.visit((style, string) -> string.contains("${badges}") || string.contains("${segdab}") ? FormattedText.STOP_ITERATION : Optional.empty(), Style.EMPTY).isPresent();
     }
 
     public static Component appendBadges(Component text, UUID id, boolean allow) {
@@ -137,8 +142,8 @@ public class Badges {
         if (!custom)
             return badges.getString().isBlank() ? text : text.copy().append(" ").append(badges);
 
-        text = TextUtils.replaceInText(text, "\\$\\{badges\\}", badges);
-        text = TextUtils.replaceInText(text, "\\$\\{segdab\\}", TextUtils.reverse(badges));
+        text = TextUtils.replaceInText(text, "\\$\\{badges\\}(?s)", badges);
+        text = TextUtils.replaceInText(text, "\\$\\{segdab\\}(?s)", TextUtils.reverse(badges));
 
         return text;
     }
@@ -206,6 +211,7 @@ public class Badges {
 
         public final Component badge;
         public final Component desc;
+        public final Integer color;
 
         Special(String unicode) {
             this(unicode, null);
@@ -215,6 +221,7 @@ public class Badges {
             this.desc = FiguraText.of("badges.special." + this.name().toLowerCase());
             Style style = Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc));
             if (color != null) style = style.withColor(color);
+            this.color = color;
             this.badge = Component.literal(unicode).withStyle(style);
         }
     }

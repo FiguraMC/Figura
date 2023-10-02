@@ -1,59 +1,51 @@
 package org.figuramc.figura.gui.widgets;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.AbstractScrollWidget;
-import net.minecraft.client.gui.components.MultiLineLabel;
-import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
+import org.figuramc.figura.utils.ClickableTextHelper;
 import org.figuramc.figura.utils.ui.UIHelper;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.OptionalInt;
-import java.util.function.Function;
 
 public class BackendMotdWidget extends AbstractScrollWidget {
     private final Font font;
-    private final FiguraMuliLineTextWidget multilineWidget;
+    private final ClickableTextHelper textHelper;
+    private int maxWidth;
 
-    public BackendMotdWidget(int i, int j, int k, int l, Component component, Font textRenderer) {
-        super(i, j, k, l, component);
-        this.font = textRenderer;
-        this.multilineWidget = new FiguraMuliLineTextWidget(MultiLineLabel.create(textRenderer, component), textRenderer, component, true).setMaxWidth(this.getWidth() - this.totalInnerPadding());
+    public BackendMotdWidget(int i, int j, int k, int l, Component text, Font font) {
+        super(i, j, k, l, text);
+        this.font = font;
+        this.textHelper = new ClickableTextHelper();
+        this.maxWidth = this.getWidth() - this.totalInnerPadding();
     }
 
-    public BackendMotdWidget setColor(int i) {
-        this.multilineWidget.setColor(i);
-        return this;
+    @Override
+    public void setMessage(Component message) {
+        super.setMessage(message);
+        textHelper.setMessage(message);
     }
 
     public void setWidth(int value) {
         super.setWidth(value);
-        this.multilineWidget.setMaxWidth(this.getWidth() - this.totalInnerPadding());
+        int prevWidth = this.maxWidth;
+        this.maxWidth = this.getWidth() - this.totalInnerPadding();
+        if (maxWidth != prevWidth)
+            textHelper.markDirty();
     }
 
     protected int getInnerHeight() {
-        return this.multilineWidget.getHeight();
-    }
-
-    @Override
-    protected boolean scrollbarVisible() {
-        return this.getInnerHeight() > this.getHeight();
+        Objects.requireNonNull(font);
+        return textHelper.lineCount() * font.lineHeight;
     }
 
     protected double scrollRate() {
         Objects.requireNonNull(this.font);
-        return 9.0;
+        return font.lineHeight;
     }
 
     protected void renderBorder(PoseStack stack, int x, int y, int width, int height) {
@@ -67,26 +59,53 @@ public class BackendMotdWidget extends AbstractScrollWidget {
     @Override
     public void renderButton(PoseStack pose, int mouseX, int mouseY, float delta) {
         if (this.visible) {
-            if (!this.scrollbarVisible()) {
-                this.renderBackground(pose);
-                pose.pushPose();
-                pose.translate((float)this.getX(), (float)this.getY(), 0.0F);
-                this.multilineWidget.render(pose, mouseX, mouseY, delta);
-                pose.popPose();
+            if (!scrollbarVisible()) {
+                renderBackground(pose);
+                renderContents(pose, mouseX, mouseY, delta);
             } else {
                 super.renderButton(pose, mouseX, mouseY, delta);
             }
-
         }
     }
 
     protected void renderContents(PoseStack pose, int mouseX, int mouseY, float delta) {
-        pose.pushPose();
-        pose.translate((float)(this.getX() + this.innerPadding()), (float)(this.getY() + this.innerPadding()), 0.0F);
-        this.multilineWidget.render(pose, mouseX, mouseY, delta);
-        pose.popPose();
+        int xx = this.getX() + this.innerPadding();
+        int yy = this.getY() + this.innerPadding();
+
+        int scroll = (int)scrollAmount();
+        textHelper.update(font, maxWidth);
+
+        textHelper.visit((text, style, x, y, textWidth, textHeight) -> UIHelper.drawString(pose, font, Component.literal(text).setStyle(style), xx + x, yy + y, 0xFFFFFFFF));
+
+        //textHelper.renderDebug(graphics, xx, yy, mouseX, mouseY + scroll);
+
+        if (withinContentAreaPoint(mouseX, mouseY)) {
+            Component tooltip = textHelper.getHoverTooltip(xx, yy, mouseX, mouseY + scroll);
+            if (tooltip != null)
+                UIHelper.setTooltip(tooltip);
+
+            if (mouseDown) {
+                String link = textHelper.getClickLink(xx, yy, mouseX, mouseY + scroll);
+                if (link != null)
+                    UIHelper.openURL(link).run();
+
+                mouseDown = false;
+            }
+        }
     }
 
+    @Override
+    public void playDownSound(SoundManager soundManager) {
+        // Don't play the button click sound
+    }
+
+    private boolean mouseDown = false;
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        mouseDown = super.mouseClicked(mouseX, mouseY, button);
+        return mouseDown;
+    }
     protected void updateWidgetNarration(NarrationElementOutput builder) {
         builder.add(NarratedElementType.TITLE, this.getMessage());
     }
@@ -95,96 +114,11 @@ public class BackendMotdWidget extends AbstractScrollWidget {
         this.height = height;
     }
 
-    public boolean shouldRender() {
-        return getScrollBarHeight() > 0 && this.height >= 48;
+    protected boolean scrollbarVisible() {
+        return this.getInnerHeight() > this.getHeight();
     }
 
-    protected static class FiguraMuliLineTextWidget extends MultiLineTextWidget {
-        private int color = 0xFFFFFF;
-        private OptionalInt maxWidth = OptionalInt.empty();
-        private OptionalInt maxRows = OptionalInt.empty();
-        private Font font;
-        private final SingleKeyCache<CacheKey, MultiLineLabel> cache = new SingleKeyCache<>(key -> {
-            if (key.maxRows.isPresent()) {
-                return MultiLineLabel.create(font, key.message, key.maxWidth, key.maxRows.getAsInt());
-            }
-            return MultiLineLabel.create(font, key.message, key.maxWidth);
-        });
-        private boolean centered = false;
-        public FiguraMuliLineTextWidget(MultiLineLabel multiLineLabel, Font textRenderer, Component component, boolean bl) {
-            super(multiLineLabel, textRenderer, component, bl);
-            this.font = textRenderer;
-        }
-
-        @Override
-        public void renderButton(PoseStack matrices, int mouseX, int mouseY, float delta) {
-            MultiLineLabel multiLineLabel = this.cache.getValue(this.getFreshCacheKey());
-            int i = this.getX();
-            int j = this.getY();
-            int k = this.font.lineHeight;
-            int l = this.color;
-            if (this.centered) {
-                multiLineLabel.renderCentered(matrices, i + this.getWidth() / 2, j, k, l);
-            } else {
-                multiLineLabel.renderLeftAligned(matrices, i, j, k, l);
-            }
-        }
-
-        public FiguraMuliLineTextWidget setColor(int i) {
-            this.color = i;
-            return this;
-        }
-
-        public FiguraMuliLineTextWidget setMaxWidth(int width) {
-            this.maxWidth = OptionalInt.of(width);
-            return this;
-        }
-
-        public FiguraMuliLineTextWidget setMaxRows(int rows) {
-            this.maxRows = OptionalInt.of(rows);
-            return this;
-        }
-
-        public FiguraMuliLineTextWidget setCentered(boolean centered) {
-            this.centered = centered;
-            return this;
-        }
-
-        @Override
-        public int getWidth() {
-            return this.cache.getValue(this.getFreshCacheKey()).getWidth();
-        }
-
-        private CacheKey getFreshCacheKey() {
-            return new CacheKey(this.getMessage(), this.maxWidth.orElse(Integer.MAX_VALUE), this.maxRows);
-        }
-
-        @Override
-        public int getHeight() {
-            return this.cache.getValue(this.getFreshCacheKey()).getLineCount() * this.font.lineHeight;
-        }
-
-        public class SingleKeyCache<K, V> {
-            private final Function<K, V> computeValue;
-            @Nullable
-            private K cacheKey = null;
-            @Nullable
-            private V cachedValue;
-
-            public SingleKeyCache(Function<K, V> mapper) {
-                this.computeValue = mapper;
-            }
-
-            public V getValue(K key) {
-                if (this.cachedValue == null || !Objects.equals(this.cacheKey, key)) {
-                    this.cachedValue = this.computeValue.apply(key);
-                    this.cacheKey = key;
-                }
-                return this.cachedValue;
-            }
-        }
-        @Environment(value= EnvType.CLIENT)
-        record CacheKey(Component message, int maxWidth, OptionalInt maxRows) {
-        }
+    public boolean shouldRender() {
+        return getScrollBarHeight() > 0 && this.height >= 48;
     }
 }

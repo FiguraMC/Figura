@@ -3,10 +3,7 @@ package org.figuramc.figura.gui.screens;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.*;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -30,6 +27,10 @@ public class WardrobeScreen extends AbstractPanelScreen {
     private static final Component DEBUG_MOTD_FALLBACK = Component.literal("No motd could be loaded.\n\n")
             .append("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n")
                     .withStyle(ChatFormatting.GRAY)
+            .append(Component.literal("(This is some text you can hover)\n")
+                    .withStyle(Style.EMPTY.withColor(0xFFF311A0).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("hi chat")))))
+            .append(Component.literal("(This is some text you can click on)\n")
+                    .withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/FiguraMC/Figura"))))
             .append(Component.literal("(This is only visible in debug mode)")
                     .withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
 
@@ -201,20 +202,32 @@ public class WardrobeScreen extends AbstractPanelScreen {
     private void updateMotdWidget() {
         int panels = getPanels();
 
+        int infoBottom = infoWidget.getY() + infoWidget.getHeight();
+
         int width = panels - 8;
-        int height = back.getY() - (infoWidget.getY() + infoWidget.getHeight()) - 30;
+        int height = back.getY() - infoBottom - 16;
+        int x = this.width - panels;
+        int y = infoBottom + 8;
+
+        infoWidget.tick();
         if (motdWidget == null) {
             Component motd = NetworkStuff.motd == null ? DEBUG_MOTD_FALLBACK : NetworkStuff.motd;
             if (!FiguraMod.debugModeEnabled() && motd == DEBUG_MOTD_FALLBACK) {
                 return;
             }
-            motdWidget = addRenderableWidget(new BackendMotdWidget(this.width - panels, infoWidget.getY() + infoWidget.getHeight() + 24, width, height, motd, Minecraft.getInstance().font));
+            motdWidget = addRenderableWidget(new BackendMotdWidget(x, y, width, height, motd, font));
         }  else {
+            motdWidget.setPosition(x, y);
             motdWidget.setWidth(width);
             motdWidget.setHeight(height);
+            Component motd = NetworkStuff.motd == null ? DEBUG_MOTD_FALLBACK : NetworkStuff.motd;
+            if (!FiguraMod.debugModeEnabled() && motd == DEBUG_MOTD_FALLBACK) {
+                return;
+            }
+            motdWidget.setMessage(motd);
         }
 
-        motdWidget.visible = motdWidget.shouldRender();
+        motdWidget.visible = motdWidget.getHeight() > 48;
     }
 
     @Override

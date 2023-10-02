@@ -2,6 +2,8 @@ package org.figuramc.figura.parsers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import net.minecraft.nbt.*;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.Configs;
@@ -31,6 +33,14 @@ public class AvatarMetadataParser {
 
         // nbt
         CompoundTag nbt = new CompoundTag();
+        JsonElement jsonElement = JsonParser.parseString(json);
+        if (jsonElement != null && !jsonElement.isJsonNull() && !jsonElement.getAsJsonObject().asMap().isEmpty()) {
+            for (Map.Entry<String, JsonElement> jsonElementEntry : jsonElement.getAsJsonObject().entrySet()) {
+                if (jsonElementEntry.getKey() != null && !jsonElementEntry.getKey().isBlank() && jsonElementEntry.getKey().contains("badge_color_")) {
+                    nbt.putString(jsonElementEntry.getKey(), jsonElementEntry.getValue().getAsString());
+                }
+            }
+        }
 
         // version
         Version version = new Version(metadata.version);

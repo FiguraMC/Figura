@@ -45,6 +45,7 @@ public enum ParentType {
     HelmetItemPivot(false, true,"HELMET_ITEM_PIVOT"),
     HelmetPivot(false, true, "HELMET_PIVOT", "HelmetPivot"),
     ChestplatePivot(false, true, "CHESTPLATE_PIVOT", "ChestplatePivot"),
+    ElytraPivot(false, true, "ELYTRA_PIVOT", "ElytraPivot"),
     LeftShoulderPivot(false, true, "LEFT_SHOULDER_PIVOT", "LeftShoulderPivot"),
     RightShoulderPivot(false, true, "RIGHT_SHOULDER_PIVOT", "RightShoulderPivot"),
     LeggingsPivot(false, true, "LEGGINGS_PIVOT", "LeggingsPivot"),
