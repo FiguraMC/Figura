@@ -143,6 +143,7 @@
 
   "figura.badges.no_permissions.init_inst": "Script overran resource limits",
   "figura.badges.no_permissions.complexity": "Model too complex",
+  "figura.badges.no_permissions.nameplate_edit": "Could not edit nameplate",
   "figura.badges.no_permissions.bb_animations": "Model Animations too complex",
   "figura.badges.no_permissions.texture_size": "Custom Textures too huge",
   "figura.badges.no_permissions.particles": "Reached Particles limit",
