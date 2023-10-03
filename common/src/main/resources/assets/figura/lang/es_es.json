@@ -277,5 +277,19 @@
     "figura.gui.avatar_wizard.items_pivot": "Hotbar Items Sub Categoria",
     "figura.gui.avatar_wizard.description": "Descripcion",
     "figura.gui.avatar_wizard.slim": "Brazos delgados (pequeños)",
-    "figura.gui.avatar_wizard.model": "Modelo"
+    "figura.gui.avatar_wizard.model": "Modelo",
+    "figura.gui.avatar_wizard.hide_elytra": "Esconder Elytra Vanilla",
+    "figura.gui.avatar_wizard.hide_armor": "Esconder Armadura Vanilla",
+    "figura.gui.help.docs": "Docs",
+    "figura.gui.help.about": "Acerca de",
+    "figura.gui.avatar_wizard.spyglass_pivot": "Spyglass Sub Categoria",
+    "figura.gui.help.links": "Links",
+    "figura.gui.avatar_wizard.dummy_script": "Incluir un script",
+    "figura.gui.avatar_wizard.armor_pivots": "Armor Sub Categoria",
+    "figura.gui.avatar_wizard.parrots_pivot": "Parrots Sub Categoria",
+    "figura.gui.avatar_wizard.hide_cape": "Esconder Capa Vanilla",
+    "figura.gui.avatar_wizard.hide_player": "Esconder Jugador Vanilla",
+    "figura.gui.avatar_wizard.empty_events": "Incluir eventos de ejemplo",
+    "figura.gui.avatar_wizard.scripting": "Script",
+    "figura.gui.avatar_wizard.helmet_item_pivot": "Head Item Sub Categoria"
 }
