@@ -552,5 +552,16 @@
     "figura.config.paperdoll": "Charakter Preview",
     "figura.config.log_pings": "Logging von Pings",
     "figura.config.update_channel.2.tooltip": "Nur nach Releases suchen",
-    "figura.config.local_assets.tooltip": "Schalte um ob Figura die Assets aus dem Backend oder einem lokalen Ordner lädt.\nDieser lokale Ordner heißt \"local_cache\""
+    "figura.config.local_assets.tooltip": "Schalte um ob Figura die Assets aus dem Backend oder einem lokalen Ordner lädt.\nDieser lokale Ordner heißt \"local_cache\"",
+    "figura.config.log_location.2.tooltip": "Der Ausgabe-log deines Clients",
+    "figura.config.first_person_matrices.tooltip": "Schaltet um, ob die Matrizen der Modelteile aktualisiert werden sollen, während man sich in der First Person Perspektive befindet",
+    "figura.config.render_debug_parts_pivot.tooltip.cubes": "würfel",
+    "figura.config.first_person_matrices": "First Person Matrizen",
+    "figura.config.iris_compatibility_fix.3.tooltip": "Wenn ein Shader-Pack aktiv ist, ändere die Art und Weise, wie der emissive Render-Typ funktioniert, zu einem kompatibleren System, das vollständig beleuchtete Texturen anstelle des Vanilla-Augen-Typs verwendet",
+    "figura.config.render_debug_parts_pivot.tooltip.groups": "gruppen",
+    "figura.config.render_debug_parts_pivot.tooltip": "Die Pivots rendern von %d und %d, wenn die Hitbox Debug Darstellung aktiviert ist",
+    "figura.config.allow_fp_hands.tooltip": "Schaltet um, ob Skripte die First Person Hand Elterngruppen bewegen, drehen oder skalieren können",
+    "figura.config.render_debug_parts_pivot.1": "Aus",
+    "figura.config.render_debug_parts_pivot": "Zeige Part Drehpunkt",
+    "figura.config.log_location.1.tooltip": "Der In-Game Chat (Der Chat schreibt auch in den Logger)"
 }
