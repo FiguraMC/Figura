@@ -174,5 +174,6 @@
     "figura.permissions.value.tick_inst": "Tick Anweisungen",
     "figura.permissions.value.texture_size.tooltip": "Maximal erlaubte Größe für durch das Skript neu erstellte Texturen\nBereits mit dem Avatar geladene Texturen werden ignoriert",
     "figura.gui.complexity": "Komplexität",
-    "figura.permissions.category.high": "Hoch"
+    "figura.permissions.category.high": "Hoch",
+    "figura.gui.wardrobe.new_avatar.tooltip": "Neuen Avatar erstellen"
 }
