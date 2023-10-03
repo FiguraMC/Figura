@@ -488,5 +488,8 @@
     "figura.config.button_location.4": "En bas à gauche",
     "figura.config.paperdoll_scale": "Taille de la paperdoll",
     "figura.config.toast_time.tooltip": "Change la durée (en secondes) où les toasts de Figura doivent être visibles",
-    "figura.config.paperdoll": "Paperdoll"
+    "figura.config.paperdoll": "Paperdoll",
+    "figura.config.default_permission_level": "Niveau de permission par défaut",
+    "figura.config.update_channel.3.tooltip": "Vérifier les mises à jour de versions et pré-versions",
+    "figura.config.update_channel.2.tooltip": "Vérifier seulement pour les nouvelles versions"
 }
