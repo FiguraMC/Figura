@@ -177,5 +177,19 @@
     "figura.permissions.category.high": "Hoch",
     "figura.gui.wardrobe.new_avatar.tooltip": "Neuen Avatar erstellen",
     "figura.gui.sound.stop": "Geräusch stoppen",
-    "figura.gui.sound.play": "Geräusch abspielen"
+    "figura.gui.sound.play": "Geräusch abspielen",
+    "figura.gui.panels.title.sound": "Avatar Geräusche",
+    "figura.gui.wardrobe.drop_files": "Möchtest du die folgenden Dateien in deine Garderobe kopieren?",
+    "figura.gui.wardrobe.folder.tooltip": "Avatar-Wurzelverzeichnis öffnen",
+    "figura.gui.wardrobe.sound.tooltip": "Avatar Geräusche",
+    "figura.gui.panels.title.avatar": "Avatar Vorschau",
+    "figura.gui.wardrobe.expand_wardrobe.tooltip": "Garderobenliste erweitern",
+    "figura.gui.wardrobe.unselect.tooltip": "Aktuelle Avatarauswahl aufheben",
+    "figura.gui.wardrobe.minimize_wardrobe.tooltip": "Garderobenliste minimieren",
+    "figura.gui.wardrobe.keybind.tooltip": "Avatar Tastenbelegung",
+    "figura.gui.wardrobe.delete.tooltip": "Avatar aus der Cloud löschen",
+    "figura.gui.panels.title.keybind": "Avatar Tastenbelegung",
+    "figura.gui.wardrobe.upload.tooltip": "Avatar in Cloud hochladen\nAndere Spieler können nur hochgeladene Avatare sehen",
+    "figura.gui.panels.title.docs": "Lua Docs",
+    "figura.gui.wardrobe.reload.tooltip": "Avatar aus der Cloud laden"
 }
