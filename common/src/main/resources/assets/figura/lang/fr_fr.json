@@ -581,5 +581,8 @@
     "figura.docs.enum.loop_modes": "Liste de LoopModes valides\nUtilisé dans les animations Blockbench",
     "figura.docs.enum.keybinds": "Liste de touches de clavier valides\nUtilisé dans la KeybindAPI",
     "figura.command.export_avatar.success": "Exporté l'avatar dans le dossier de Figura avec succès",
-    "figura.docs.enum.post_effects": "Liste de PostEffects valides\nUtilisé dans la RendererAPI"
+    "figura.docs.enum.post_effects": "Liste de PostEffects valides\nUtilisé dans la RendererAPI",
+    "figura.docs.enum.use_actions": "Liste de UseActions valides\nUtilisé dans l'ItemStackAPI",
+    "figura.docs.enum.render_modes": "Liste de RenderModes valides\nUtilisé dans l'événement RENDER",
+    "figura.docs.enum.player_model_parts": "Liste de PlayerModelParts valides\nUtilisé dans la PlayerAPI"
 }
