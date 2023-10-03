@@ -223,5 +223,6 @@
     "figura.badges.pride.demiromantic": "Marca Demiromantic Figura!",
     "figura.permissions.value.texture_size.tooltip": "Tamaño máximo permitido para nuevas texturas creadas recientemente en el script\nTexturas pre-cargadas de el Avatar son ignoradas",
     "figura.gui.complexity": "Complexidad",
-    "figura.badges.pride.aromantic": "Marca Arromántico Figura!"
+    "figura.badges.pride.aromantic": "Marca Arromántico Figura!",
+    "figura.gui.permissions.minimize_permissions.tooltip": "Minimizar el menú avanzado de permisos"
 }
