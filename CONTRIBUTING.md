@@ -4,10 +4,11 @@ When contributing to Figura, please first discuss and/or interact with our commu
 
 Please note we have a code of conduct, please follow it in all your interactions with the project.
 
-## Pull Request Process
+## Development Process
 Note - do not merge upstream into your pr branch if a clean rebase is possible.
 
-1. Ensure the feature has not been denied and is in demand via the `📧丨mod-suggestions` channel in our [Discord](https://discord.gg/figuramc) or has the [Enhancment]([https://github.com/FiguraMC/Figura/labels/enhancement](https://github.com/FiguraMC/Figura/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement+)) tag in the Issues tab.
+1. Development happens on the default branch. ie; 1.20, etc
+2. Ensure the feature has not been denied and is in demand via the `📧丨mod-suggestions` channel in our [Discord](https://discord.gg/figuramc) or has the [Enhancement]([https://github.com/FiguraMC/Figura/labels/enhancement](https://github.com/FiguraMC/Figura/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement+)) tag in the Issues tab.
    
     OR:
 
@@ -15,22 +16,22 @@ Note - do not merge upstream into your pr branch if a clean rebase is possible.
 
 3. Communicate with developers and other contributors about what you are building and adding. This helps keep multiple people from working on the same thing alone.
 
-4. Clearly and extensively document everything you've added/changed in the pull request. This helps when compiling all the changes into full release patch notes.
+4. Clearly and extensively document everything you've added/changed in the pull request. This helps when compiling all the changes into full release patch notes and adding entries to the wiki.
 
-5. You may merge the Pull Request in once you have the sign-off of another developer, or if you do not have permission to do that, you may request the second reviewer to merge it for you.
+5. You may merge the Pull Request in once you have the sign-off of another developer, or if you do not have permission to do that, you may request a developer to merge it for you.
 
 ## Translation Contribution Process 
 1. You must be fluent and/or knowledgeable in the language you are translating to.
 
-2. We use [Weblate](https://weblate.org) to manage our translations vist our project [here](https://hosted.weblate.org/projects/figuramc/). This makes it much eaiser for other contributors to view the progress on a specific language.
+2. We use [Weblate](https://weblate.org) to manage our translations. Visit our project [here](https://hosted.weblate.org/projects/figuramc/). This makes it much easier for other contributors to view the progress on a specific language.
 
-## Art Contribution Process
+<!-- ## Art Contribution Process - To Be Finished, Commented Out for now.
 Note - Emojis are located in [FiguraMC/Assets](https://github.com/FiguraMC/Assets/)
-1. Follow the color pallete and style provided here: [future link here.. sort out before pulling]
+1. Follow the color palette and style provided here: [future link here.. sort out before pulling]
 
 2. Document the additions and changes made with your contribution.
 
-##### This is a simplified copy of the Art Contribution Process located in the Assets Repo.
+##### This is a simplified copy of the Art Contribution Process located in the Assets Repo. -->
 
 ## Credits
 1. We credit our contributors for working on our projects, and as such we would like to credit them appropriately.
