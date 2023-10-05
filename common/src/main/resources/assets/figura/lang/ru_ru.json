@@ -128,7 +128,7 @@
     "figura.gui.avatar_settings.tooltip": "Настройки Аватара",
     "figura.gui.load_error.unknown": "Неизвестная ошибка",
     "figura.gui.wardrobe.new_avatar.tooltip": "Создать новый Аватар",
-    "figura.tab": " ",
+    "figura.tab": "  ",
     "figura.gui.avatar_wizard.slim": "Тонкие (Маленькие) Руки",
     "figura.gui.avatar_wizard.model": "Модель",
     "figura.gui.avatar_wizard.hide_player": "Скрыть Ванильную Модель",
@@ -330,5 +330,7 @@
     "figura.config.paperdoll": "Кукла",
     "figura.config.action_wheel_title.4": "По центру",
     "figura.gui.complexity": "Сложность",
-    "figura.config.log_pings": "Логировать Пинги"
+    "figura.config.log_pings": "Логировать Пинги",
+    "figura.permissions.value.world_tick_inst.tooltip": "Количество допустимых инструкций кода во время события Мирового Тика",
+    "figura.permissions.value.tick_inst": "Инструкции Тика"
 }
