@@ -50,7 +50,7 @@ Help translate Figura to your native language on [Weblate](https://hosted.weblat
 
 ## Donate: [ ![collective] ](https://opencollective.com/figura) [ ![kofi] ](https://ko-fi.com/skyrina)
 
-## Resources: [ ![wiki] ](https://wiki.figuramc.org/) [ ![weblate] ](https://hosted.weblate.org/projects/figuramc/mod/) [ ![github-contrib] ](https://github.com/FiguraMC/Figura/blob/1.20/CONTRIBUTING.md)
+## Resources: [ ![wiki] ](https://wiki.figuramc.org/) [ ![weblate] ](https://hosted.weblate.org/projects/figuramc/mod/) [ ![github-contrib] ](https://github.com/FiguraMC/Figura/blob/HEAD/CONTRIBUTING.md)
 
 
 # FAQ

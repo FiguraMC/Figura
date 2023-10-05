@@ -34,15 +34,7 @@ Note - Emojis are located in [FiguraMC/Assets](https://github.com/FiguraMC/Asset
 ##### This is a simplified copy of the Art Contribution Process located in the Assets Repo. -->
 
 ## Credits
-1. We credit our contributors for working on our projects, and as such we would like to credit them appropriately.
-
-2. What contribution you made, such as a link to a commit, translations, textures, etc.
-
-3. Include the name you would like to be used for the credits page. (optional)
-
-4. Contact information. (optional)
-
-should we implement a solution like: https://github.com/all-contributors/all-contributors ?
+Credits for our contributors are located in [CREDITS](https://github.com/FiguraMC/Figura/blob/HEAD/CREDITS), along with a link to their contact info.
 
 ## Code of Conduct
 
