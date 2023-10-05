@@ -636,5 +636,12 @@
     "figura.docs.globals.pings": "Die globale Instanz der PingAPI",
     "figura.docs.globals.config": "Die globale Instanz der ConfigAPI",
     "figura.docs.action_wheel.right_click": "Funktion, die bei einem Rechtklick ausgeführt wird",
-    "figura.docs.globals.action_wheel": "Die globale Instanz der ActionWheelAPI und ihre Subtypen"
+    "figura.docs.globals.action_wheel": "Die globale Instanz der ActionWheelAPI und ihre Subtypen",
+    "figura.docs.globals.print_json": "Nimmt ein Minecraft Json String als ein Argument, und schreibt es in den Chat formatiert, ohne den lua schreib header\nObwohl der Syntax nur ein Argument möchte, kann man so viele wie man möchte einfügen\nAlle werden geschrieben, sie werden mit einen Tab Abstand geteilt\nGibt den Formatierten String zurück",
+    "figura.config.force_smooth_avatar": "Reibungslosen Avatar erzwingen",
+    "figura.config.iris_compatibility_fix.1": "Keine",
+    "figura.config.popup_button.tooltip": "Schaltfläche zum Öffnen eines Popup Menüs mit Schnellaktionen für den Zielbenutzer",
+    "figura.gui.permissions.init": "Initilisiere Anweisungen",
+    "figura.docs.globals.type": "Figura überschreibt lua's type() funktion\nWenn auf Figura Typen benutzt, wird der Typ's name wie in der Dokumentation und in den figuraMetatables global zurückgegeben.\nWenn auf einen Tisch der ein metatable mit einem __Typ Key, wird der entsprechende Wert zurückgegeben",
+    "figura.docs.globals.print": "Eine Funktion die ihre Argumente in den Chat schreibt\nObwohl der Syntax nur ein Argument möchte, kann man so viele wie man möchte einfügen\nAlle werden geschrieben, sie werden mit einen Tab Abstand geteilt\nGibt eine String repräsentation von allen Werten zurück"
 }
