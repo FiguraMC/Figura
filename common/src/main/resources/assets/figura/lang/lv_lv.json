@@ -723,5 +723,6 @@
     "figura.config.log_pings": "Reģistrēt pingus",
     "figura.config.update_channel.2.tooltip": "Pārbaudiet tikai izlaidumu atjauninājumus",
     "figura.docs.animation.get_override_pos": "Iegūst, ja šai animācijai ir jāaizstāj tās daļu vanilla pozīcija",
-    "figura.config.local_assets.tooltip": "Pārslēdziet, vai Figura ielādēs līdzekļus no backend vai vietējās mapes.\nŠī vietējā mape tiek saukta par \"local_cache\""
+    "figura.config.local_assets.tooltip": "Pārslēdziet, vai Figura ielādēs līdzekļus no backend vai vietējās mapes.\nŠī vietējā mape tiek saukta par \"local_cache\"",
+    "figura.docs.avatar.get_uuid": "Atgriežs avatāra īpašnieka UUID"
 }
