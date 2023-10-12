@@ -482,9 +482,12 @@ public class ClientAPI {
 
         ServerData mServer = Minecraft.getInstance().getCurrentServer();
         if (mServer != null) {
-            map.put("name", mServer.name);
-            map.put("ip", mServer.ip);
-            map.put("motd", mServer.motd.getString());
+            if (mServer.name != null)
+                map.put("name", mServer.name);
+            if (mServer.ip != null)
+                map.put("ip", mServer.ip);
+            if (mServer.motd != null)
+                map.put("motd", mServer.motd.getString());
         }
 
         return map;
