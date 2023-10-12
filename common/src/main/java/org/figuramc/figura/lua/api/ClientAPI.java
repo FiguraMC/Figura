@@ -424,6 +424,12 @@ public class ClientAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("client.generate_uuid")
+    public static int[] generateUUID(){
+        return UUIDUtil.uuidToIntArray(UUID.randomUUID());
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
                     argumentTypes = {Integer.class, Integer.class, Integer.class, Integer.class},
