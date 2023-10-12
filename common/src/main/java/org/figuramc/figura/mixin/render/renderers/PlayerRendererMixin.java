@@ -63,6 +63,11 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
         // customization boolean, which also is the permission check
         boolean hasCustom = custom != null && avatar.permissions.get(Permissions.NAMEPLATE_EDIT) == 1;
+        if (custom != null && avatar.permissions.get(Permissions.NAMEPLATE_EDIT) == 0) {
+            avatar.noPermissions.add(Permissions.NAMEPLATE_EDIT);
+        } else if (avatar != null) {
+            avatar.noPermissions.remove(Permissions.NAMEPLATE_EDIT);
+        }
 
         // enabled
         if (hasCustom && !custom.visible) {

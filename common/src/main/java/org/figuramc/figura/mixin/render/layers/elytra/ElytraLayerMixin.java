@@ -50,32 +50,11 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, M extends EntityM
     private boolean renderedPivot;
 
     @Inject(at = @At(value = "HEAD"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")
-    public void renderElytra(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
+    public void setAvatar(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
         figura$avatar = AvatarManager.getAvatar(livingEntity);
-
-        if (figura$avatar == null) return;
-
-        ItemStack itemStack = livingEntity.getItemBySlot(EquipmentSlot.CHEST);
-        if (!itemStack.is(Items.ELYTRA)) {
-            return;
-        }
-
-        // Try to render the pivot part
-        renderedPivot = figura$avatar.pivotPartRender(ParentType.ElytraPivot, stack -> {
-            stack.pushPose();
-            stack.scale(16, 16, 16);
-            stack.mulPose(Axis.XP.rotationDegrees(180f));
-            stack.mulPose(Axis.YP.rotationDegrees(180f));
-            stack.translate(0.0f, 0.0f, 0.125f);
-            this.elytraModel.setupAnim(livingEntity, f, g, h, i, j);
-            ResourceLocation resourceLocation = livingEntity instanceof AbstractClientPlayer abstractClientPlayer ? (abstractClientPlayer.isElytraLoaded() && abstractClientPlayer.getElytraTextureLocation() != null ? abstractClientPlayer.getElytraTextureLocation() : (abstractClientPlayer.isCapeLoaded() && abstractClientPlayer.getCloakTextureLocation() != null && abstractClientPlayer.isModelPartShown(PlayerModelPart.CAPE) ? abstractClientPlayer.getCloakTextureLocation() : WINGS_LOCATION)) : WINGS_LOCATION;
-            VertexConsumer vertexConsumer = ItemRenderer.getArmorFoilBuffer(multiBufferSource, RenderType.armorCutoutNoCull(resourceLocation), false, itemStack.hasFoil());
-            this.elytraModel.renderToBuffer(stack, vertexConsumer, i, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
-            stack.popPose();
-        });
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/ElytraModel;setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", shift = At.Shift.AFTER), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V", cancellable = true)
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/ElytraModel;setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", shift = At.Shift.AFTER), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")
     public void onRender(PoseStack poseStack, MultiBufferSource multiBufferSource, int light, T livingEntity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch, CallbackInfo ci) {
         vanillaPart = null;
         if (figura$avatar == null)
@@ -95,15 +74,43 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, M extends EntityM
         if (vanillaPart != null)
             vanillaPart.posTransform(elytraModel);
 
+    }
+
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/ElytraModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V", cancellable = true)
+    public void cancelVanillaPart(PoseStack poseStack, MultiBufferSource multiBufferSource,  int light, T livingEntity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch, CallbackInfo ci) {
+        if (vanillaPart != null)
+            vanillaPart.restore(elytraModel);
+
+
+        ItemStack itemStack = livingEntity.getItemBySlot(EquipmentSlot.CHEST);
+        if (!itemStack.is(Items.ELYTRA)) {
+            return;
+        }
+        if (figura$avatar != null && figura$avatar.luaRuntime != null && figura$avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1 && figura$avatar.luaRuntime.vanilla_model.ELYTRA.checkVisible()) {
+            // Try to render the pivot part
+            renderedPivot = figura$avatar.pivotPartRender(ParentType.ElytraPivot, stack -> {
+                stack.pushPose();
+                stack.scale(16, 16, 16);
+                stack.mulPose(Axis.XP.rotationDegrees(180f));
+                stack.mulPose(Axis.YP.rotationDegrees(180f));
+                stack.translate(0.0f, 0.0f, 0.125f);
+                this.elytraModel.setupAnim(livingEntity, limbAngle, limbDistance, tickDelta, light, animationProgress);
+                ResourceLocation resourceLocation = livingEntity instanceof AbstractClientPlayer abstractClientPlayer ? (abstractClientPlayer.isElytraLoaded() && abstractClientPlayer.getElytraTextureLocation() != null ? abstractClientPlayer.getElytraTextureLocation() : (abstractClientPlayer.isCapeLoaded() && abstractClientPlayer.getCloakTextureLocation() != null && abstractClientPlayer.isModelPartShown(PlayerModelPart.CAPE) ? abstractClientPlayer.getCloakTextureLocation() : WINGS_LOCATION)) : WINGS_LOCATION;
+                VertexConsumer vertexConsumer = ItemRenderer.getArmorFoilBuffer(multiBufferSource, RenderType.armorCutoutNoCull(resourceLocation), false, itemStack.hasFoil());
+                this.elytraModel.renderToBuffer(stack, vertexConsumer, light, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
+                stack.popPose();
+            });
+        } else if (figura$avatar != null && figura$avatar.luaRuntime != null && figura$avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1 && !figura$avatar.luaRuntime.vanilla_model.ELYTRA.checkVisible()){
+            poseStack.popPose();
+            ci.cancel();
+            return;
+        } else {
+            renderedPivot = false;
+        }
+
         if (renderedPivot) {
             poseStack.popPose();
             ci.cancel();
         }
-    }
-
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/ElytraModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")
-    public void cancelVanillaPart(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
-        if (vanillaPart != null)
-            vanillaPart.restore(elytraModel);
     }
 }
