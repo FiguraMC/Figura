@@ -1,6 +1,11 @@
 package org.figuramc.figura.lua.api;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import org.figuramc.figura.avatar.Avatar;
+import org.figuramc.figura.avatar.Badges;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.NbtToLua;
@@ -11,8 +16,13 @@ import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.LuaUtils;
+import org.figuramc.figura.utils.TextUtils;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -79,20 +89,52 @@ public class AvatarAPI {
                     @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"r", "g", "b"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {FiguraVec3.class, String.class},
+                            argumentNames = {"color", "badgeName"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class, String.class},
+                            argumentNames = {"r", "g", "b", "badgeName"}
                     )
             },
             aliases = "color",
             value = "avatar.set_color"
     )
-    public AvatarAPI setColor(Object r, Double g, Double b) {
-        FiguraVec3 vec = LuaUtils.parseOneArgVec("setColor", r, g, b, 1d);
-        avatar.color = ColorUtils.rgbToHex(vec);
+    public AvatarAPI setColor(Object r, Object g, Double b, String badge) {
+        if ((g instanceof Number || g == null) && (badge == null || badge.isEmpty())){
+            FiguraVec3 vec = LuaUtils.parseOneArgVec("setColor", r, (Number) g, b, 1d);
+            avatar.color = ColorUtils.rgbToHex(vec);
+        } else if (g instanceof String && r instanceof FiguraVec3) {
+            FiguraVec3 vec = ((FiguraVec3) r).copy();
+            avatar.badgeToColor.put((String) g, ColorUtils.rgbToHex(vec));
+        } else {
+            Number h;
+            if (g instanceof Number)
+                h = ((Number) g).doubleValue();
+            else {
+                h = 1d;
+            }
+            FiguraVec3 vec = LuaUtils.parseOneArgVec("setColor", r, h, b, 1d);
+            avatar.badgeToColor.put(badge, ColorUtils.rgbToHex(vec));
+        }
         return this;
     }
 
     @LuaWhitelist
-    public AvatarAPI color(Object r, Double g, Double b) {
-        return setColor(r, g, b);
+    public AvatarAPI color(Object r, Object g, Double b, String badge) {
+        return setColor(r, g, b, badge);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            aliases = "badges",
+            value = "avatar.get_badges"
+    )
+    public String getBadges() {
+        Component component = Badges.fetchBadges(avatar.owner);
+        return component.getString();
     }
 
     @LuaWhitelist
