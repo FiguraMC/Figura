@@ -2,6 +2,7 @@ name: Build Figura using Gradle
 on: [pull_request, push]
 jobs:
   build:
+    if: github.actor != 'weblate'
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Repository
