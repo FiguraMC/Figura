@@ -772,7 +772,12 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     )
     public FiguraModelPart setPrimaryTexture(String type, Object x) {
         try {
-            FiguraTextureSet.OverrideType overrideType = FiguraTextureSet.OverrideType.valueOf(type.toUpperCase());
+            FiguraTextureSet.OverrideType overrideType;
+            if (type == null) {
+                overrideType = FiguraTextureSet.OverrideType.PRIMARY;
+            } else {
+                 overrideType = FiguraTextureSet.OverrideType.valueOf(type.toUpperCase());
+            }
             checkTexture(overrideType, x);
             this.customization.primaryTexture = type == null ? null : new TextureCustomization(overrideType, x);
             return this;
@@ -802,7 +807,12 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     )
     public FiguraModelPart setSecondaryTexture(String type, Object x) {
         try {
-            FiguraTextureSet.OverrideType overrideType = FiguraTextureSet.OverrideType.valueOf(type.toUpperCase());
+            FiguraTextureSet.OverrideType overrideType;
+            if (type == null) {
+                overrideType = FiguraTextureSet.OverrideType.SECONDARY;
+            } else {
+                overrideType = FiguraTextureSet.OverrideType.valueOf(type.toUpperCase());
+            }
             checkTexture(overrideType, x);
             this.customization.secondaryTexture = type == null ? null : new TextureCustomization(overrideType, x);
             return this;

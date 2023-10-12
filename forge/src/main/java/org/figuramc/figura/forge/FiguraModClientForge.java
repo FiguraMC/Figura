@@ -74,7 +74,7 @@ public class FiguraModClientForge extends FiguraMod {
         this.add(ForgeIngameGui.CHAT_PANEL_ELEMENT);
         this.add(ForgeIngameGui.PLAYER_LIST_ELEMENT);
     }};
-    @SubscribeEvent
+
     public static void cancelVanillaOverlays(RenderGameOverlayEvent.PreLayer event) {
         if (vanillaOverlays.contains(event.getOverlay())) {
             Entity entity = Minecraft.getInstance().getCameraEntity();
