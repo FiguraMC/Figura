@@ -21,7 +21,7 @@ import java.util.List;
 @LuaWhitelist
 @LuaTypeDoc(name = "FileAPI", value = "file")
 public class FileAPI {
-    private static final String FOLDER_NAME_PATTERN = "^[a-zA-Z_\\-0-9]+$";
+    public static final String FOLDER_NAME_PATTERN = "^[a-zA-Z_\\-0-9]+$";
 
     private final Avatar parent;
     private final Path rootFolderPath;

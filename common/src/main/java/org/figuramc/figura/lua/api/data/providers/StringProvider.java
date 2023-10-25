@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 @LuaTypeDoc(name = "StringProvider", value = "string_provider")
 public class StringProvider extends FiguraProvider<String> {
 
-    public static final Providers PROVIDERS = new Providers();
+    public static final Instances INSTANCES = new Instances();
     private final Charset encodingCharset;
 
     public StringProvider(Charset encodingCharset) {
@@ -23,6 +23,7 @@ public class StringProvider extends FiguraProvider<String> {
     }
 
     @Override
+    @LuaWhitelist
     @LuaMethodDoc("string_provider.get_stream")
     public FiguraInputStream getStream(String data) {
         ByteArrayInputStream bais = new ByteArrayInputStream(data.getBytes(encodingCharset));
@@ -30,20 +31,20 @@ public class StringProvider extends FiguraProvider<String> {
     }
 
     @LuaWhitelist
-    @LuaTypeDoc(name = "StringProviders", value = "string_provider.providers")
-    public static class Providers {
-        private Providers() {}
-        @LuaFieldDoc("string_provider.providers.utf_8")
+    @LuaTypeDoc(name = "StringProviders", value = "string_provider.instances")
+    public static class Instances {
+        private Instances() {}
+        @LuaFieldDoc("string_provider.instances.utf_8")
         public static final StringProvider utf_8 = new StringProvider(StandardCharsets.UTF_8);
-        @LuaFieldDoc("string_provider.providers.utf_16")
+        @LuaFieldDoc("string_provider.instances.utf_16")
         public static final StringProvider utf_16 = new StringProvider(StandardCharsets.UTF_16);
-        @LuaFieldDoc("string_provider.providers.utf_16be")
+        @LuaFieldDoc("string_provider.instances.utf_16be")
         public static final StringProvider utf_16be = new StringProvider(StandardCharsets.UTF_16BE);
-        @LuaFieldDoc("string_provider.providers.utf_16le")
+        @LuaFieldDoc("string_provider.instances.utf_16le")
         public static final StringProvider utf_16le = new StringProvider(StandardCharsets.UTF_16LE);
-        @LuaFieldDoc("string_provider.providers.iso_8859_1")
+        @LuaFieldDoc("string_provider.instances.iso_8859_1")
         public static final StringProvider iso_8859_1 = new StringProvider(StandardCharsets.ISO_8859_1);
-        @LuaFieldDoc("string_provider.providers.ascii")
+        @LuaFieldDoc("string_provider.instances.ascii")
         public static final StringProvider ascii = new StringProvider(StandardCharsets.US_ASCII);
         @LuaWhitelist
         public StringProvider __index(LuaValue key) {

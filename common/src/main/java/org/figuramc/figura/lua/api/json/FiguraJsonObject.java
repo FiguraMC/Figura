@@ -78,7 +78,7 @@ public class FiguraJsonObject implements FiguraJsonSerializer.JsonValue {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            value = "json_object.containsValue",
+            value = "json_object.contains_value",
             overloads = @LuaMethodOverload(argumentTypes = LuaValue.class, argumentNames = "value", returnType = boolean.class)
     )
     public boolean containsValue(LuaValue value) {

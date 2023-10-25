@@ -8,12 +8,7 @@ import org.figuramc.figura.lua.docs.LuaFieldDoc;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
-
-import java.io.ByteArrayInputStream;
-import java.util.Base64;
 
 @LuaWhitelist
 @LuaTypeDoc(name = "DataAPI", value = "data")
@@ -49,11 +44,11 @@ public class DataAPI {
     }
 
     @LuaWhitelist
-    @LuaTypeDoc(name = "Readers", value = "data_readers")
+    @LuaTypeDoc(name = "Readers", value = "data.readers")
     public static class Readers {
         private Readers() {}
-        @LuaFieldDoc("data_readers.string")
-        public static final StringReader.Readers string = StringReader.READERS;
+        @LuaFieldDoc("data.readers.string")
+        public static final StringReader.Instances string = StringReader.INSTANCES;
         @LuaWhitelist
         public Object __index(LuaValue key) {
             if (!key.isstring()) return null;
@@ -70,11 +65,11 @@ public class DataAPI {
     }
 
     @LuaWhitelist
-    @LuaTypeDoc(name = "Providers", value = "data_providers")
+    @LuaTypeDoc(name = "Providers", value = "data.providers")
     public static class Providers {
         private Providers() {}
-        @LuaFieldDoc("data_providers.string")
-        public static final StringProvider.Providers string = StringProvider.PROVIDERS;
+        @LuaFieldDoc("data.providers.string")
+        public static final StringProvider.Instances string = StringProvider.INSTANCES;
         @LuaWhitelist
         public Object __index(LuaValue key) {
             if (!key.isstring()) return null;

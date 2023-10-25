@@ -12,6 +12,7 @@ import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.model.rendering.texture.RenderTypes;
 import org.figuramc.figura.utils.Version;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -89,6 +90,15 @@ public class AvatarMetadataParser {
             for (String name : metadata.autoAnims)
                 autoAnims.add(StringTag.valueOf(name));
             nbt.put("autoAnims", autoAnims);
+        }
+
+        if (metadata.resources != null) {
+            ListTag resourcesPaths = new ListTag();
+            for (String resource :
+                    metadata.resources) {
+                resourcesPaths.add(StringTag.valueOf(resource));
+            }
+            nbt.put("resources_paths", resourcesPaths);
         }
 
         return nbt;
@@ -210,7 +220,7 @@ public class AvatarMetadataParser {
     // json object class
     public static class Metadata {
         public String name, description, author, version, color, background, id, dataFolder;
-        public String[] authors, autoScripts, autoAnims, ignoredTextures;
+        public String[] authors, autoScripts, autoAnims, ignoredTextures, resources;
         public HashMap<String, Customization> customizations;
     }
 

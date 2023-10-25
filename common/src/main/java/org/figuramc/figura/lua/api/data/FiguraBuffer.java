@@ -9,9 +9,6 @@ import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.permissions.Permissions;
 import org.luaj.vm2.LuaError;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 @LuaWhitelist
@@ -50,7 +47,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("buffer.read_byte")
+    @LuaMethodDoc("buffer.read")
     public int read() {
         if (position >= length) {
             return -1;

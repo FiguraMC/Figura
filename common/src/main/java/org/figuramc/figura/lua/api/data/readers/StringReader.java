@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets;
 @LuaWhitelist
 @LuaTypeDoc(name = "StringReader", value = "string_reader")
 public class StringReader extends FiguraReader<String> {
-    public static final Readers READERS = new Readers();
+    public static final Instances INSTANCES = new Instances();
     private final Charset encodingCharset;
 
     private StringReader(Charset encodingCharset) {
@@ -39,20 +39,20 @@ public class StringReader extends FiguraReader<String> {
     }
 
     @LuaWhitelist
-    @LuaTypeDoc(name = "StringReaders", value = "string_reader.readers")
-    public static class Readers {
-        private Readers() {}
-        @LuaFieldDoc("string_reader.readers.utf_8")
+    @LuaTypeDoc(name = "StringReaders", value = "string_reader.instances")
+    public static class Instances {
+        private Instances() {}
+        @LuaFieldDoc("string_reader.instances.utf_8")
         public static final StringReader utf_8 = new StringReader(StandardCharsets.UTF_8);
-        @LuaFieldDoc("string_reader.readers.utf_16")
+        @LuaFieldDoc("string_reader.instances.utf_16")
         public static final StringReader utf_16 = new StringReader(StandardCharsets.UTF_16);
-        @LuaFieldDoc("string_reader.readers.utf_16be")
+        @LuaFieldDoc("string_reader.instances.utf_16be")
         public static final StringReader utf_16be = new StringReader(StandardCharsets.UTF_16BE);
-        @LuaFieldDoc("string_reader.readers.utf_16le")
+        @LuaFieldDoc("string_reader.instances.utf_16le")
         public static final StringReader utf_16le = new StringReader(StandardCharsets.UTF_16LE);
-        @LuaFieldDoc("string_reader.readers.iso_8859_1")
+        @LuaFieldDoc("string_reader.instances.iso_8859_1")
         public static final StringReader iso_8859_1 = new StringReader(StandardCharsets.ISO_8859_1);
-        @LuaFieldDoc("string_reader.readers.ascii")
+        @LuaFieldDoc("string_reader.instances.ascii")
         public static final StringReader ascii = new StringReader(StandardCharsets.US_ASCII);
         @LuaWhitelist
         public StringReader __index(LuaValue key) {

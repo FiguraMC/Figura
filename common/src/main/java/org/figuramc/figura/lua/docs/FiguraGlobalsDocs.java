@@ -3,6 +3,7 @@ package org.figuramc.figura.lua.docs;
 import org.figuramc.figura.lua.api.*;
 import org.figuramc.figura.lua.api.action_wheel.ActionWheelAPI;
 import org.figuramc.figura.lua.api.data.DataAPI;
+import org.figuramc.figura.lua.api.data.ResourcesAPI;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
 import org.figuramc.figura.lua.api.entity.PlayerAPI;
 import org.figuramc.figura.lua.api.event.EventsAPI;
@@ -85,6 +86,8 @@ public abstract class FiguraGlobalsDocs {
     public FileAPI file;
     @LuaFieldDoc("globals.json")
     public JsonAPI json;
+    @LuaFieldDoc("globals.resources")
+    public ResourcesAPI resources;
 
     @LuaFieldDoc("globals.type")
     public LuaFunction type;

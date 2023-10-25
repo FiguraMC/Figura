@@ -99,6 +99,7 @@ public class Avatar {
     public int fileSize;
     public String color;
     public Map<String, String> badgeToColor = new HashMap<>();
+    public Map<String, byte[]> resources = new HashMap<>();
 
     public boolean minify;
 
@@ -187,6 +188,13 @@ public class Avatar {
                     color = metadata.getString("color");
                 if (metadata.contains("minify"))
                     minify = metadata.getBoolean("minify");
+                if (nbt.contains("resources")) {
+                    CompoundTag res = nbt.getCompound("resources");
+                    for (String k :
+                            res.getAllKeys()) {
+                        resources.put(k, res.getByteArray(k));
+                    }
+                }
                 for (String key : metadata.getAllKeys()) {
                     if (key.contains("badge_color_")) {
                         badgeToColor.put(key.replace("badge_color_", ""), metadata.getString(key));

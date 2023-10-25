@@ -149,11 +149,11 @@ public class FiguraAPIManager {
 
         add(FiguraProvider.class);
         add(StringProvider.class);
-        add(StringProvider.Providers.class);
+        add(StringProvider.Instances.class);
 
         add(FiguraReader.class);
         add(StringReader.class);
-        add(StringReader.Readers.class);
+        add(StringReader.Instances.class);
 
         add(DataAPI.class);
         add(DataAPI.Readers.class);
@@ -168,6 +168,8 @@ public class FiguraAPIManager {
         add(FiguraJsonSerializer.class);
         add(FiguraJsonArray.class);
         add(FiguraJsonObject.class);
+
+        add(ResourcesAPI.class);
     }};
 
     public static final Map<String, Function<FiguraLuaRuntime, Object>> API_GETTERS = new LinkedHashMap<>() {{
@@ -192,6 +194,7 @@ public class FiguraAPIManager {
         put("data", r -> new DataAPI(r.owner));
         put("file", r -> new FileAPI(r.owner));
         put("json", r -> JsonAPI.INSTANCE);
+        put("resources", r -> new ResourcesAPI(r.owner));
     }};
 
     private static final Set<FiguraAPI> ENTRYPOINTS = new HashSet<>();
