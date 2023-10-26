@@ -31,7 +31,7 @@
     "figura.toast.cache_clear": "Cleared Cache!",
     "figura.toast.avatar_data_clear": "Cleared Avatar Data!",
     "figura.permissions.category.blocked": "Blocked",
-    "figura.permissions.category.blocked.info": "No permissions\nAll Figura features are disabled\nAs if the Avatar did not existed",
+    "figura.permissions.category.blocked.info": "No permissions\nAll Figura features are disabled\nAs if no Avatar is present",
     "figura.permissions.category.low": "Low",
     "figura.permissions.category.low.info": "Low permissions\nMost features are disabled\nIdeal for very simple Avatars",
     "figura.permissions.category.default": "Default",
