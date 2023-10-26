@@ -33,14 +33,10 @@ public class PlatformUtils {
     }
 
     public static int compareVersionTo(String v1, String v2) {
-        if (v1.contains(SharedConstants.VERSION_STRING) || v2.contains(SharedConstants.VERSION_STRING)) {
-            v1 = v1.replace("+", "").replace("_", "").replace(SharedConstants.VERSION_STRING, "");
-            v2 = v2.replace("+", "").replace("_", "").replace(SharedConstants.VERSION_STRING, "");
-        }
         if(v1 == null)
             return 1;
-        String[] v1Parts = v1.split("\\.");
-        String[] v2Parts = v2.split("\\.");
+        String[] v1Parts = v1.split("[+,_]")[0].split("\\.");
+        String[] v2Parts = v2.split("[+,_]")[0].split("\\.");
         int length = Math.max(v1Parts.length, v2Parts.length);
         for(int i = 0; i < length; i++) {
             int v1Part = i < v1Parts.length ?
