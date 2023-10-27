@@ -20,10 +20,10 @@ jobs:
         echo "LATEST_COMMIT_SHORT=$(echo $LATEST_COMMIT | cut -c1-7)" >> $GITHUB_ENV
         rsync -a --delete --exclude '.git' --exclude 'en_us.json' /tmp/translations/ ./common/src/main/resources/assets/figura/lang/
 
-    - name: Check For Changes
-      run: |
-        CHANGED_FILES=$(git diff --name-only)
-        [[ ! -z "$CHANGED_FILES" ]] && echo "CHANGED=true" >> $GITHUB_ENV
+    # - name: Check For Changes
+    #   run: |
+    #     CHANGED_FILES=$(git diff --name-only)
+    #     [[ ! -z "$CHANGED_FILES" ]] && echo "CHANGED=true" >> $GITHUB_ENV
 
     - name: Close Old Pull Requests & Delete Branches
       uses: actions/github-script@v6
