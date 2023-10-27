@@ -1,0 +1,33 @@
+name: Automatically Update Translations
+
+on:
+  schedule:
+    - cron: "0 0 * * 0"
+  workflow_dispatch:
+
+jobs:
+  update-translations:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Update Translations
+      run: |
+        git clone https://github.com/FiguraMC/translations.git /tmp/translations
+        echo "LATEST_COMMIT=$(cat /tmp/translations/.git/refs/heads/main)" >> $GITHUB_ENV
+        rsync -a --delete --exclude '.git' --exclude 'en_us.json' /tmp/translations/ ./common/src/main/resources/assets/figura/lang/
+
+    - run: |
+        echo "BRANCH_NAME=update-translations-$(date +'%d%m%Y')" >> $GITHUB_ENV
+        echo "MESSAGE=Update Translations $(date +'%d/%m/%Y')" >> $GITHUB_ENV
+
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v5
+      if: env.CHANGES == 'true'
+      with:
+        title: ${{ env.MESSAGE }}
+        body: This pull request was automatically generated to update translations. The last change included in this update was ${{ env.LATEST_COMMIT }}.
+
+        branch: ${{ env.BRANCH_NAME }}
+        commit-message: "[auto] ${{ env.MESSAGE }}"
