@@ -246,8 +246,7 @@ public class FiguraDocsManager {
                 StringProvider.Instances.class,
                 FiguraInputStream.class,
                 FiguraOutputStream.class,
-                FiguraBuffer.class,
-                FiguraFuture.class
+                FiguraBuffer.class
         ));
 
         put("file", List.of(
@@ -259,6 +258,10 @@ public class FiguraDocsManager {
                 FiguraJsonSerializer.class,
                 FiguraJsonObject.class,
                 FiguraJsonArray.class
+        ));
+
+        put("resources", List.of(
+                ResourcesAPI.class
         ));
     }};
     private static final Map<String, List<FiguraDoc>> GENERATED_CHILDREN = new HashMap<>();

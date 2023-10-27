@@ -13,14 +13,19 @@ import java.util.Arrays;
 
 @LuaWhitelist
 @LuaTypeDoc(value = "buffer", name = "Buffer")
-public class FiguraBuffer implements FiguraReadable, FiguraWritable {
+public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseable {
     private static final int CAPACITY_INCREASE_STEP = 512;
     private final Avatar parent;
     private int length = 0, position = 0;
     private byte[] buf;
+    private boolean isClosed;
 
     public FiguraBuffer(Avatar parent) {
         this.parent = parent;
+        if (parent.createdBuffers > getMaxBuffersCount()) {
+            parent.noPermissions.add(Permissions.BUFFERS_COUNT);
+            throw new LuaError("You have exceed the max amount of open buffers");
+        }
         if (CAPACITY_INCREASE_STEP > getMaxCapacity())  {
             parent.noPermissions.add(Permissions.BUFFER_SIZE);
             throw new LuaError("Unable to create buffer because max capacity is less than default buffer size (512)");
@@ -49,6 +54,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable {
     @LuaWhitelist
     @LuaMethodDoc("buffer.read")
     public int read() {
+        checkIsClosed();
         if (position >= length) {
             return -1;
         }
@@ -60,72 +66,84 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable {
     @LuaWhitelist
     @LuaMethodDoc("buffer.read_short")
     public int readShort() {
+        checkIsClosed();
         return FiguraReadable.super.readShort();
     }
 
     @LuaWhitelist
     @LuaMethodDoc("buffer.read_ushort")
     public int readUShort() {
+        checkIsClosed();
         return FiguraReadable.super.readUShort();
     }
 
     @LuaWhitelist
     @LuaMethodDoc("buffer.read_int")
     public int readInt() {
+        checkIsClosed();
         return FiguraReadable.super.readInt();
     }
 
     @LuaWhitelist
     @LuaMethodDoc("buffer.read_long")
     public long readLong() {
+        checkIsClosed();
         return FiguraReadable.super.readLong();
     }
 
     @LuaWhitelist
     @LuaMethodDoc("buffer.read_float")
     public float readFloat() {
+        checkIsClosed();
         return FiguraReadable.super.readFloat();
     }
 
     @LuaWhitelist
     @LuaMethodDoc("buffer.read_double")
     public double readDouble() {
+        checkIsClosed();
         return FiguraReadable.super.readDouble();
     }
 
     @LuaWhitelist
     @LuaMethodDoc("buffer.read_short_le")
     public int readShortLE() {
+        checkIsClosed();
         return FiguraReadable.super.readShortLE();
     }
 
     @LuaWhitelist
     @LuaMethodDoc("buffer.read_ushort_le")
     public int readUShortLE() {
+        checkIsClosed();
         return FiguraReadable.super.readUShortLE();
     }
 
     @LuaWhitelist
     @LuaMethodDoc("buffer.read_int_le")
     public int readIntLE() {
+        checkIsClosed();
         return FiguraReadable.super.readIntLE();
     }
 
     @LuaWhitelist
     @LuaMethodDoc("buffer.read_long_le")
     public long readLongLE() {
+        checkIsClosed();
         return FiguraReadable.super.readLongLE();
     }
 
     @LuaWhitelist
     @LuaMethodDoc("buffer.read_float_le")
     public float readFloatLE() {
+        checkIsClosed();
         return FiguraReadable.super.readFloatLE();
     }
 
     @LuaWhitelist
     @LuaMethodDoc("buffer.read_double_le")
     public double readDoubleLE() {
+        checkIsClosed();
         return FiguraReadable.super.readDoubleLE();
     }
 
@@ -149,6 +167,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable {
             }
     )
     public String readString(Integer length, String encoding) {
+        checkIsClosed();
         return FiguraReadable.super.readString(length, encoding);
     }
 
@@ -161,20 +180,12 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable {
             )
     )
     public void write(@LuaNotNil int val) {
+        checkIsClosed();
         if (length == position) {
             ensureBufCapacity(length++);
         }
         buf[position] = (byte) (val & 0xFF);
         position++;
-    }
-
-    private void writeBytes(byte[] bytes) {
-        if (length <= position + bytes.length) {
-            length += position + bytes.length;
-            ensureBufCapacity(length);
-        }
-        System.arraycopy(bytes, 0, buf, position, bytes.length);
-        position += bytes.length;
     }
 
     @LuaWhitelist
@@ -186,6 +197,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable {
             )
     )
     public void writeShort(@LuaNotNil Integer val) {
+        checkIsClosed();
         FiguraWritable.super.writeShort(val);
     }
 
@@ -198,6 +210,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable {
             )
     )
     public void writeUShort(@LuaNotNil Integer val) {
+        checkIsClosed();
         FiguraWritable.super.writeUShort(val);
     }
 
@@ -210,6 +223,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable {
             )
     )
     public void writeInt(@LuaNotNil Integer val) {
+        checkIsClosed();
         FiguraWritable.super.writeInt(val);
     }
 
@@ -222,6 +236,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable {
             )
     )
     public void writeLong(@LuaNotNil Long val) {
+        checkIsClosed();
         FiguraWritable.super.writeLong(val);
     }
 
@@ -234,6 +249,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable {
             )
     )
     public void writeFloat(@LuaNotNil Float val) {
+        checkIsClosed();
         FiguraWritable.super.writeFloat(val);
     }
 
@@ -246,6 +262,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable {
             )
     )
     public void writeDouble(@LuaNotNil Double val) {
+        checkIsClosed();
         FiguraWritable.super.writeDouble(val);
     }
 
@@ -258,6 +275,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable {
             )
     )
     public void writeShortLE(@LuaNotNil Integer val) {
+        checkIsClosed();
         FiguraWritable.super.writeShortLE(val);
     }
 
@@ -270,6 +288,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable {
             )
     )
     public void writeUShortLE(@LuaNotNil Integer val) {
+        checkIsClosed();
         FiguraWritable.super.writeUShortLE(val);
     }
 
@@ -282,6 +301,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable {
             )
     )
     public void writeIntLE(@LuaNotNil Integer val) {
+        checkIsClosed();
         FiguraWritable.super.writeIntLE(val);
     }
 
@@ -294,6 +314,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable {
             )
     )
     public void writeLongLE(@LuaNotNil Long val) {
+        checkIsClosed();
         FiguraWritable.super.writeLongLE(val);
     }
 
@@ -306,6 +327,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable {
             )
     )
     public void writeFloatLE(@LuaNotNil Float val) {
+        checkIsClosed();
         FiguraWritable.super.writeFloatLE(val);
     }
 
@@ -318,6 +340,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable {
             )
     )
     public void writeDoubleLE(@LuaNotNil Double val) {
+        checkIsClosed();
         FiguraWritable.super.writeDoubleLE(val);
     }
 
@@ -338,18 +361,21 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable {
             }
     )
     public int writeString(@LuaNotNil String val, String encoding) {
+        checkIsClosed();
         return FiguraWritable.super.writeString(val, encoding);
     }
 
     @LuaWhitelist
     @LuaMethodDoc("buffer.get_length")
     public int getLength() {
+        checkIsClosed();
         return length;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("buffer.get_position")
     public int getPosition() {
+        checkIsClosed();
         return position;
     }
 
@@ -362,12 +388,14 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable {
             )
     )
     public void setPosition(@LuaNotNil Integer position) {
+        checkIsClosed();
         this.position = Math.max(Math.min(position, length), 0);
     }
 
     @LuaWhitelist
     @LuaMethodDoc("clear")
     public void clear() {
+        checkIsClosed();
         position = 0;
         length = 0;
     }
@@ -375,6 +403,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable {
     @LuaWhitelist
     @LuaMethodDoc("buffer.available")
     public int available() {
+        checkIsClosed();
         return length-position;
     }
 
@@ -382,6 +411,10 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable {
     @LuaMethodDoc("buffer.get_max_capacity")
     public int getMaxCapacity() {
         return parent.permissions.get(Permissions.BUFFER_SIZE);
+    }
+
+    private int getMaxBuffersCount() {
+        return parent.permissions.get(Permissions.BUFFERS_COUNT);
     }
 
     @LuaWhitelist
@@ -396,6 +429,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable {
             }
     )
     public int readFromStream(@LuaNotNil FiguraInputStream stream, Integer amount) {
+        checkIsClosed();
         if (amount == null) amount = getMaxCapacity()-position;
         else amount = Math.max(Math.min(amount, getMaxCapacity()-position), 0);
         int i;
@@ -419,12 +453,34 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable {
             }
     )
     public int writeToStream(@LuaNotNil FiguraOutputStream stream, Integer amount) {
+        checkIsClosed();
         if (amount == null) amount = available();
         else amount = Math.max(Math.min(amount, available()), -1);
         for (int i = 0; i < amount; i++) {
             stream.write(read());
         }
         return amount;
+    }
+
+    @Override
+    @LuaWhitelist
+    @LuaMethodDoc(value = "buffer.close")
+    public void close() throws Exception {
+        if (!isClosed) {
+            isClosed = true;
+            buf = null;
+            parent.createdBuffers--;
+        }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(value = "buffer.is_closed")
+    public boolean isClosed() {
+        return isClosed;
+    }
+
+    private void checkIsClosed() {
+        if (isClosed) throw new LuaError("This byte buffer is closed and cant be used anymore");
     }
 
     @Override

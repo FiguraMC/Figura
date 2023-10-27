@@ -35,7 +35,8 @@ public class Permissions {
             // CUSTOM_SHADERS = new Permissions("CUSTOM_SHADERS", 0, 0, 1, 1, 1),
             CUSTOM_SOUNDS = new Permissions("CUSTOM_SOUNDS", 0, 0, 1, 1, 1),
             CUSTOM_SKULL = new Permissions("CUSTOM_SKULL", 0, 0, 1, 1, 1),
-            BUFFER_SIZE = new Permissions("BUFFER_SIZE", 0, 3072000, 0, 128000, 1024000, 2048000, Integer.MAX_VALUE);
+            BUFFER_SIZE = new Permissions("BUFFER_SIZE", 0, 3072000, 0, 128000, 1024000, 2048000, Integer.MAX_VALUE),
+            BUFFERS_COUNT = new Permissions("BUFFERS_COUNT", 0, 32, 0, 2, 4, 16, 32);
 
     public static final List<Permissions> DEFAULT = List.of(
             INIT_INST,
@@ -55,7 +56,8 @@ public class Permissions {
             OFFSCREEN_RENDERING,
             CUSTOM_SOUNDS,
             CUSTOM_SKULL,
-            BUFFER_SIZE
+            BUFFER_SIZE,
+            BUFFERS_COUNT
     );
 
 

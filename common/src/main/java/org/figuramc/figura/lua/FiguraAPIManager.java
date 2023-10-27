@@ -142,8 +142,6 @@ public class FiguraAPIManager {
 
         add(TextureAtlasAPI.class);
 
-        add(FiguraFuture.class);
-
         add(FiguraInputStream.class);
         add(FiguraOutputStream.class);
 
