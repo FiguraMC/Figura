@@ -29,7 +29,7 @@ jobs:
       uses: peter-evans/create-pull-request@v5
       with:
         title: ${{ env.MESSAGE }}
-        body: This pull request was automatically generated to update translations. The last change included in this update was [`${{ env.LATEST_COMMIT_SHORT }}`](https://github.com/FiguraMC/translations/commit/${{ env.LATEST_COMMIT }}).
+        body: This pull request was automatically generated to update translations. The last change included in this PR is [`${{ env.LATEST_COMMIT_SHORT }}`](https://github.com/FiguraMC/translations/commit/${{ env.LATEST_COMMIT }}).
         author: GitHub <noreply@github.com>
         branch: ${{ env.BRANCH_NAME }}
         commit-message: "[auto] ${{ env.MESSAGE }}"

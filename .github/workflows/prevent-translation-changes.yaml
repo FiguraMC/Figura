@@ -1,0 +1,42 @@
+name: Prevent Translation Changes
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  check-tranlsation-diff:
+    if: github.actor != 'github-actions[bot]' && !contains(github.event.pull_request.title, 'Update Translations')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check For Translation Changes
+        run: |
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | grep '^common/src/main/resources/assets/figura/lang/.*\.json$' | grep -v 'en_us\.json$')
+          [[ ! -z "$CHANGED_FILES" ]] && echo "TRANSLATIONS_CHANGE=true" >> $GITHUB_ENV
+
+      - name: Find Comment
+        uses: peter-evans/find-comment@v2
+        if: env.TRANSLATIONS_CHANGE == 'true'
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: "github-actions[bot]"
+          body-includes: "Translation Files Modified"
+
+      - name: Create Comment
+        uses: peter-evans/create-or-update-comment@v1
+        if: env.TRANSLATIONS_CHANGE == 'true' && steps.fc.outputs.comment-id == ''
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            # ⚠️ Translation Files Modified ⚠️
+            **Your pull request includes changes to translation files other than `en_us.json`**
+
+            Please do not modify translation files directly within this repository. Instead, make your changes in the [FiguraMC/translations](https://github.com/FiguraMC/translations) repository and submit a new pull request there.
+
+      - name: Fail Workflow
+        run: exit 1
