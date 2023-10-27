@@ -24,7 +24,6 @@ jobs:
 
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v5
-      if: env.CHANGES == 'true'
       with:
         title: ${{ env.MESSAGE }}
         body: This pull request was automatically generated to update translations. The last change included in this update was ${{ env.LATEST_COMMIT }}.
