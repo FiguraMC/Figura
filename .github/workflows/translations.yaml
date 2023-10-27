@@ -34,22 +34,30 @@ jobs:
         REPOSITORY: ${{ github.repository }}
       with:
         script: |
+          const [owner, repo] = process.env.REPOSITORY.split('/');
+
           const { data: { items: pullRequests } } = await github.rest.search.issuesAndPullRequests({
             q: `is:pr is:open in:title "Update Translations" repo:${process.env.REPOSITORY}`,
           });
 
           pullRequests.map(async (pullRequest) => {
+            const details = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: pullRequest.number,
+            });
+
             await github.rest.pulls.update({
-              owner: process.env.REPOSITORY.split('/')[0],
-              repo: process.env.REPOSITORY.split('/')[1],
+              owner,
+              repo,
               pull_number: pullRequest.number,
               state: 'closed',
             });
 
             await github.rest.git.deleteRef({
-              owner: process.env.REPOSITORY.split('/')[0],
-              repo: process.env.REPOSITORY.split('/')[1],
-              ref: `heads/${pullRequest.head.ref}`,
+              owner,
+              repo,
+              ref: `heads/${details.data.head.ref}`,
             });
           });
 
