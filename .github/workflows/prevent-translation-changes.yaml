@@ -16,7 +16,9 @@ jobs:
       - name: Check For Translation Changes
         run: |
           CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | grep '^common/src/main/resources/assets/figura/lang/.*\.json$' | grep -v 'en_us\.json$')
-          [[ ! -z "$CHANGED_FILES" ]] && echo "TRANSLATIONS_CHANGE=true" >> $GITHUB_ENV
+          if [[ ! -z "$CHANGED_FILES" ]]; then
+            echo "TRANSLATIONS_CHANGE=true" >> $GITHUB_ENV
+          fi
 
       - name: Find Comment
         uses: peter-evans/find-comment@v2
