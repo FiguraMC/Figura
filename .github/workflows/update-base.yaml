@@ -1,0 +1,21 @@
+name: Update Base Strings
+
+on:
+  push:
+    branches:
+      - "1.20"
+    paths:
+      - "common/src/main/resources/assets/figura/lang/en_us.json"
+
+jobs:
+  update-base:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Trigger Workflow in Assets Repository
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: update-base.yaml
+          inputs: "{ \"commit\": ${{ toJson(github.sha) }} }"
+          repo: ${{ vars.ASSETS_REPOSITORY }}
+          token: ${{ secrets.GH_BOT_TOKEN }}
