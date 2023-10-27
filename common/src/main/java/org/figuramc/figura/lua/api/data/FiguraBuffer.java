@@ -22,7 +22,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
 
     public FiguraBuffer(Avatar parent) {
         this.parent = parent;
-        if (parent.createdBuffers > getMaxBuffersCount()) {
+        if (parent.openBuffers > getMaxBuffersCount()) {
             parent.noPermissions.add(Permissions.BUFFERS_COUNT);
             throw new LuaError("You have exceed the max amount of open buffers");
         }
@@ -30,6 +30,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
             parent.noPermissions.add(Permissions.BUFFER_SIZE);
             throw new LuaError("Unable to create buffer because max capacity is less than default buffer size (512)");
         }
+        parent.openBuffers++;
         buf = new byte[CAPACITY_INCREASE_STEP];
     }
 
@@ -469,7 +470,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
         if (!isClosed) {
             isClosed = true;
             buf = null;
-            parent.createdBuffers--;
+            parent.openBuffers--;
         }
     }
 

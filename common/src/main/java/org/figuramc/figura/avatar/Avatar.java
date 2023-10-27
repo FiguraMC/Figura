@@ -124,7 +124,7 @@ public class Avatar {
     public int versionStatus = 0;
 
     // limits
-    public int animationComplexity, createdBuffers;
+    public int animationComplexity, openBuffers;
     public final Instructions complexity;
     public final Instructions init, render, worldRender, tick, worldTick, animation;
     public final RefilledNumber particlesRemaining, soundsRemaining;
