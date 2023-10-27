@@ -38,7 +38,20 @@ jobs:
             q: `is:pr is:open in:title "Update Translations" repo:${process.env.REPOSITORY}`,
           });
 
-          console.log(JSON.stringify(pullRequests));
+          pullRequests.map(async (pullRequest) => {
+            await github.rest.pulls.update({
+              owner: process.env.REPOSITORY.split('/')[0],
+              repo: process.env.REPOSITORY.split('/')[1],
+              pull_number: pullRequest.number,
+              state: 'closed',
+            });
+
+            await github.rest.git.deleteRef({
+              owner: process.env.REPOSITORY.split('/')[0],
+              repo: process.env.REPOSITORY.split('/')[1],
+              ref: `heads/${pullRequest.head.ref}`,
+            });
+          });
 
     - name: Format Strings
       if: env.CHANGED == 'true'
