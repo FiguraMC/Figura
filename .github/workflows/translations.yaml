@@ -20,12 +20,29 @@ jobs:
         echo "LATEST_COMMIT_SHORT=$(echo $LATEST_COMMIT | cut -c1-7)" >> $GITHUB_ENV
         rsync -a --delete --exclude '.git' --exclude 'en_us.json' /tmp/translations/ ./common/src/main/resources/assets/figura/lang/
 
+    - name: Check For Changes
+      run: |
+        [[ ! -z "$(git diff --name-only)" ]] && echo "CHANGED=true" >> $GITHUB_ENV
+
+    - name: Close Old Pull Requests & Delete Branches
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const pullRequests = await github.rest.search.issuesAndPullRequests({
+            q: `repo:${ ${{ toJson(github.repository) }}} is:pr is:open author:app/github-action "Update Translations"`,
+          });
+
+          console.log(JSON.stringify(pullRequests.data.items));
+
     - name: Format Strings
+      if: env.CHANGED == 'true'
       run: |
         echo "BRANCH_NAME=update-translations-$(date +'%d%m%Y')" >> $GITHUB_ENV
         echo "MESSAGE=Update Translations $(date +'%d-%m-%Y')" >> $GITHUB_ENV
 
     - name: Create Pull Request
+      if: env.CHANGED == 'true'
+      id: cpr
       uses: peter-evans/create-pull-request@v5
       with:
         title: ${{ env.MESSAGE }}
