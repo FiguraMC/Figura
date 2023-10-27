@@ -22,7 +22,7 @@ jobs:
 
     - name: Check For Changes
       run: |
-        git and -N .
+        git add -N .
         CHANGED_FILES=$(git diff --name-only)
         if [[ ! -z "$CHANGED_FILES" ]]; then
           echo "CHANGED=true" >> $GITHUB_ENV
