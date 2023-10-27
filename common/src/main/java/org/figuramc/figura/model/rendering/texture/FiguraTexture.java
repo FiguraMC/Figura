@@ -2,6 +2,7 @@ package org.figuramc.figura.model.rendering.texture;
 
 import com.mojang.blaze3d.pipeline.RenderCall;
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.SimpleTexture;
@@ -18,7 +19,6 @@ import org.figuramc.figura.math.matrix.FiguraMat4;
 import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.math.vector.FiguraVec4;
-import org.figuramc.figura.mixin.render.SimpleTextureAccessor;
 import org.figuramc.figura.mixin.render.TextureManagerAccessor;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.FiguraIdentifier;
@@ -121,7 +121,8 @@ public class FiguraTexture extends SimpleTexture {
 
             RenderCall runnable = () -> {
                 // Upload texture to GPU.
-                ((SimpleTextureAccessor)this).figura$doLoad(texture, false, false);
+                TextureUtil.prepareImage(this.getId(), texture.getWidth(), texture.getHeight());
+                texture.upload(0, 0, 0, false);
             };
 
             if (RenderSystem.isOnRenderThreadOrInit()) {
