@@ -22,17 +22,20 @@ jobs:
 
     - name: Check For Changes
       run: |
-        git diff --name-only
+        CHANGED_FILES=$(git diff --name-only)
+        [[ ! -z "$CHANGED_FILES" ]] && echo "CHANGED=true" >> $GITHUB_ENV
 
     - name: Close Old Pull Requests & Delete Branches
       uses: actions/github-script@v6
+      env:
+        REPOSITORY: ${{ github.repository }}
       with:
         script: |
-          const pullRequests = await github.rest.search.issuesAndPullRequests({
-            q: `repo:${${{ toJson(github.repository) }}} is:pr is:open author:app/github-action "Update Translations"`,
+          const data = await github.rest.search.issuesAndPullRequests({
+            q: `is:pr is:open in:title "Update Translations" repo:${process.env.REPOSITORY}`,
           });
 
-          console.log(JSON.stringify(pullRequests.data.items));
+          console.log(JSON.stringify(data));
 
     - name: Format Strings
       if: env.CHANGED == 'true'
