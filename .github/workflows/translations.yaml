@@ -1,4 +1,4 @@
-name: Automatically Update Translations
+name: Update Translations
 
 on:
   schedule:
@@ -20,7 +20,8 @@ jobs:
         echo "LATEST_COMMIT_SHORT=$(echo $LATEST_COMMIT | cut -c1-7)" >> $GITHUB_ENV
         rsync -a --delete --exclude '.git' --exclude 'en_us.json' /tmp/translations/ ./common/src/main/resources/assets/figura/lang/
 
-    - run: |
+    - name: Format Strings
+      run: |
         echo "BRANCH_NAME=update-translations-$(date +'%d%m%Y')" >> $GITHUB_ENV
         echo "MESSAGE=Update Translations $(date +'%d-%m-%Y')" >> $GITHUB_ENV
 
@@ -29,6 +30,6 @@ jobs:
       with:
         title: ${{ env.MESSAGE }}
         body: This pull request was automatically generated to update translations. The last change included in this update was [`${{ env.LATEST_COMMIT_SHORT }}`](https://github.com/FiguraMC/translations/commit/${{ env.LATEST_COMMIT }}).
-
+        author: GitHub <noreply@github.com>
         branch: ${{ env.BRANCH_NAME }}
         commit-message: "[auto] ${{ env.MESSAGE }}"
