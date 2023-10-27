@@ -22,8 +22,7 @@ jobs:
 
     - name: Check For Changes
       run: |
-        CHANGED_FILES=$(git diff --name-only)
-        [[ ! -z "$CHANGED_FILES" ]] && echo "CHANGED=true" >> $GITHUB_ENV
+        git diff --name-only
 
     - name: Close Old Pull Requests & Delete Branches
       uses: actions/github-script@v6
