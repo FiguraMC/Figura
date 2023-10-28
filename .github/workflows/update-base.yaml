@@ -31,7 +31,6 @@ jobs:
           inputs: |
             {
               "repository": ${{ toJson(github.repository) }},
-              "branch": ${{ toJson(github.ref) }},
               "commit": ${{ toJson(env.COMMIT_SHA) }},
               "path": ${{ toJson(env.BASE_STRINGS_PATH) }}
             }
