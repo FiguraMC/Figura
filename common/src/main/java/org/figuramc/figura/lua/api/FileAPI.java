@@ -7,7 +7,9 @@ import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.api.data.FiguraInputStream;
 import org.figuramc.figura.lua.api.data.FiguraOutputStream;
 import org.figuramc.figura.lua.api.data.providers.FiguraProvider;
+import org.figuramc.figura.lua.api.data.providers.StringProvider;
 import org.figuramc.figura.lua.api.data.readers.FiguraReader;
+import org.figuramc.figura.lua.api.data.readers.StringReader;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
@@ -184,7 +186,8 @@ public class FileAPI {
                     returnType = Object.class
             )
     )
-    public <T> T read(@LuaNotNil String path, @LuaNotNil FiguraReader<T> reader) {
+    public Object read(@LuaNotNil String path, FiguraReader reader) {
+        if (reader == null) reader = StringReader.Instances.utf_8;
         try (FiguraInputStream fis = openReadStream(path)) {
             return reader.readFrom(fis);
         } catch (IOException e) {
@@ -196,11 +199,12 @@ public class FileAPI {
     @LuaMethodDoc(
             value = "file.write",
             overloads = @LuaMethodOverload(
-                    argumentTypes = { String.class, FiguraProvider.class, Object.class },
-                    argumentNames = { "path", "provider", "data" }
+                    argumentTypes = { String.class, Object.class, FiguraProvider.class },
+                    argumentNames = { "path", "data", "provider" }
             )
     )
-    public <T> void write(@LuaNotNil String path, @LuaNotNil FiguraProvider<T> provider, @LuaNotNil T data) {
+    public void write(@LuaNotNil String path, @LuaNotNil Object data, FiguraProvider provider) {
+        if (provider == null) provider = StringProvider.Instances.utf_8;
         try (FiguraOutputStream fos = openWriteStream(path)) {
             FiguraInputStream fis = provider.getStream(data);
             fis.transferTo(fos);
