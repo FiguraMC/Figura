@@ -9,7 +9,7 @@ on:
     branches:
       - "1.20"
     paths:
-      - ${{ env.BASE_STRINGS_PATH }}
+      - common/src/main/resources/assets/figura/lang/en_us.json
 
 jobs:
   update-base:
