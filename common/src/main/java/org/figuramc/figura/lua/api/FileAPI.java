@@ -6,10 +6,6 @@ import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.api.data.FiguraInputStream;
 import org.figuramc.figura.lua.api.data.FiguraOutputStream;
-import org.figuramc.figura.lua.api.data.providers.FiguraProvider;
-import org.figuramc.figura.lua.api.data.providers.StringProvider;
-import org.figuramc.figura.lua.api.data.readers.FiguraReader;
-import org.figuramc.figura.lua.api.data.readers.StringReader;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
@@ -20,7 +16,6 @@ import java.io.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 @LuaWhitelist
 @LuaTypeDoc(name = "FileAPI", value = "file")
@@ -179,17 +174,16 @@ public class FileAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            value = "file.read",
+            value = "file.read_string",
             overloads = @LuaMethodOverload(
-                    argumentTypes = { String.class, FiguraReader.class },
-                    argumentNames = { "path", "reader" },
-                    returnType = Object.class
+                    argumentTypes = { String.class, String.class },
+                    argumentNames = { "path", "encoding" },
+                    returnType = String.class
             )
     )
-    public Object read(@LuaNotNil String path, FiguraReader reader) {
-        if (reader == null) reader = StringReader.Instances.utf_8;
+    public String readString(@LuaNotNil String path, String encoding) {
         try (FiguraInputStream fis = openReadStream(path)) {
-            return reader.readFrom(fis);
+            return fis.readString(null, encoding);
         } catch (IOException e) {
             throw new LuaError(e);
         }
@@ -197,18 +191,15 @@ public class FileAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            value = "file.write",
+            value = "file.write_string",
             overloads = @LuaMethodOverload(
-                    argumentTypes = { String.class, Object.class, FiguraProvider.class },
-                    argumentNames = { "path", "data", "provider" }
+                    argumentTypes = { String.class, String.class, String.class },
+                    argumentNames = { "path", "data", "encoding" }
             )
     )
-    public void write(@LuaNotNil String path, @LuaNotNil Object data, FiguraProvider provider) {
-        if (provider == null) provider = StringProvider.Instances.utf_8;
+    public void writeString(@LuaNotNil String path, @LuaNotNil String data, String encoding) {
         try (FiguraOutputStream fos = openWriteStream(path)) {
-            FiguraInputStream fis = provider.getStream(data);
-            fis.transferTo(fos);
-            fis.close();
+            fos.writeString(data, encoding);
         } catch (IOException e) {
             throw new LuaError(e);
         }

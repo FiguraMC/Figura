@@ -9,7 +9,10 @@ import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.permissions.Permissions;
 import org.luaj.vm2.LuaError;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Stack;
 
 @LuaWhitelist
 @LuaTypeDoc(value = "buffer", name = "Buffer")
@@ -487,5 +490,57 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
     @Override
     public String toString() {
         return "Buffer";
+    }
+
+    public FiguraBufferInputStream asInputStream() {
+        return new FiguraBufferInputStream(this);
+    }
+
+    public static class FiguraBufferInputStream extends InputStream {
+        private final FiguraBuffer parent;
+        private final Stack<Mark> marks = new Stack<>();
+        public FiguraBufferInputStream(FiguraBuffer figuraBuffer) {
+            parent = figuraBuffer;
+        }
+
+        @Override
+        public int read() throws IOException {
+            if (!marks.empty()) {
+                Mark m = marks.peek();
+                if (parent.getPosition() > m.pos + m.readLimit) return -1;
+            }
+            return parent.read();
+        }
+
+        @Override
+        public boolean markSupported() {
+            return true;
+        }
+
+        @Override
+        public void mark(int readlimit) {
+            marks.push(new Mark(parent.position, readlimit));
+        }
+
+        @Override
+        public void reset() throws IOException {
+            Mark m = marks.pop();
+            parent.setPosition(m.pos);
+        }
+
+        @Override
+        public long skip(long n) throws IOException {
+            long d = Math.min(parent.getLength() - parent.getPosition(), n);
+            parent.setPosition((int)(parent.getPosition()+d));
+            return d;
+        }
+
+        @Override
+        public int available() throws IOException {
+            return parent.available();
+        }
+
+        private record Mark(int pos, int readLimit) {
+        }
     }
 }

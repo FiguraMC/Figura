@@ -5,10 +5,6 @@ import org.figuramc.figura.entries.FiguraAPI;
 import org.figuramc.figura.lua.api.*;
 import org.figuramc.figura.lua.api.data.*;
 import org.figuramc.figura.lua.api.json.*;
-import org.figuramc.figura.lua.api.data.providers.FiguraProvider;
-import org.figuramc.figura.lua.api.data.providers.StringProvider;
-import org.figuramc.figura.lua.api.data.readers.FiguraReader;
-import org.figuramc.figura.lua.api.data.readers.StringReader;
 import org.figuramc.figura.lua.api.entity.*;
 import org.figuramc.figura.lua.api.net.HttpRequestsAPI;
 import org.figuramc.figura.lua.api.net.NetworkingAPI;
@@ -147,17 +143,7 @@ public class FiguraAPIManager {
         add(FiguraInputStream.class);
         add(FiguraOutputStream.class);
 
-        add(FiguraProvider.class);
-        add(StringProvider.class);
-        add(StringProvider.Instances.class);
-
-        add(FiguraReader.class);
-        add(StringReader.class);
-        add(StringReader.Instances.class);
-
         add(DataAPI.class);
-        add(DataAPI.Readers.class);
-        add(DataAPI.Providers.class);
 
         add(FiguraBuffer.class);
 

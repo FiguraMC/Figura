@@ -1,5 +1,7 @@
 package org.figuramc.figura.lua.api.net;
 
+import org.figuramc.figura.lua.api.data.FiguraBuffer;
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.figuramc.figura.lua.LuaNotNil;
@@ -7,8 +9,6 @@ import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.ReadOnlyLuaTable;
 import org.figuramc.figura.lua.api.data.FiguraFuture;
 import org.figuramc.figura.lua.api.data.FiguraInputStream;
-import org.figuramc.figura.lua.api.data.providers.FiguraProvider;
-import org.figuramc.figura.lua.api.data.readers.FiguraReader;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 
@@ -93,9 +93,7 @@ public class HttpRequestsAPI {
         private final HttpRequestsAPI parent;
         private String uri;
         private String method = "GET";
-        private FiguraProvider<P> provider;
-        private P data;
-        private FiguraReader<R> reader;
+        private Object data;
         private final HashMap<String, String> headers = new HashMap<>();
 
         public HttpRequestBuilder(HttpRequestsAPI parent, String uri) {
@@ -120,16 +118,13 @@ public class HttpRequestsAPI {
 
         @LuaWhitelist
         @LuaMethodDoc("http_request_builder.body")
-        public HttpRequestBuilder<R, P> body(FiguraProvider<P> provider, P data) {
-            this.provider = null;
-            this.data = null;
-            return this;
-        }
-
-        @LuaWhitelist
-        @LuaMethodDoc("http_request_builder.reader")
-        public HttpRequestBuilder<R, P> reader(FiguraReader<R> reader) {
-            this.reader = reader;
+        public HttpRequestBuilder<R, P> body(Object data) {
+            if (data == null || data instanceof InputStream || data instanceof FiguraBuffer) {
+                this.data = data;
+            }
+            else {
+                throw new LuaError("Invalid request body type");
+            }
             return this;
         }
 
@@ -156,23 +151,13 @@ public class HttpRequestsAPI {
             return method;
         }
 
-        @LuaWhitelist
-        @LuaMethodDoc("http_request_builder.get_provider")
-        public FiguraProvider<P> getProvider() {
-            return provider;
-        }
 
         @LuaWhitelist
         @LuaMethodDoc("http_request_builder.get_data")
-        public P getData() {
+        public Object getBody() {
             return data;
         }
 
-        @LuaWhitelist
-        @LuaMethodDoc("http_request_builder.get_reader")
-        public FiguraReader<R> getReader() {
-            return reader;
-        }
 
         @LuaWhitelist
         @LuaMethodDoc("http_request_builder.get_headers")
@@ -181,13 +166,12 @@ public class HttpRequestsAPI {
         }
 
         private InputStream inputStreamSupplier() {
-            return provider.getStream(data);
+            return data instanceof InputStream  is ? is : ((FiguraBuffer) data).asInputStream();
         }
 
         private HttpRequest getRequest() {
             HttpRequest.Builder builder = HttpRequest.newBuilder(URI.create(uri));
-            FiguraProvider<P> provider = getProvider();
-            HttpRequest.BodyPublisher bp = provider != null ?
+            HttpRequest.BodyPublisher bp = data != null ?
                     HttpRequest.BodyPublishers.ofInputStream(this::inputStreamSupplier) : HttpRequest.BodyPublishers.noBody();
             for (Map.Entry<String, String> entry :
                     getHeaders().entrySet()) {
@@ -199,16 +183,15 @@ public class HttpRequestsAPI {
 
         @LuaWhitelist
         @LuaMethodDoc("http_request_builder.send")
-        public FiguraFuture<HttpResponse<?>> send() {
+        public FiguraFuture<HttpResponse<FiguraInputStream>> send() {
             String uri = this.getUri();
             parent.parent.securityCheck(uri);
             HttpRequest req = this.getRequest();
-            FiguraFuture<HttpResponse<?>> future = new FiguraFuture<>();
+            FiguraFuture<HttpResponse<FiguraInputStream>> future = new FiguraFuture<>();
             var asyncResponse = parent.httpClient.sendAsync(req, java.net.http.HttpResponse.BodyHandlers.ofInputStream());
             asyncResponse.thenAcceptAsync((response) -> {
-                FiguraReader<R> reader = this.getReader();
-                future.complete(new HttpResponse<>(reader != null ? reader.readFrom(response.body()) :
-                        new FiguraInputStream(response.body()), response.statusCode(), response.headers().map()));
+                future.complete(new HttpResponse<>(new FiguraInputStream(response.body()),
+                        response.statusCode(), response.headers().map()));
             });
             return future;
         }

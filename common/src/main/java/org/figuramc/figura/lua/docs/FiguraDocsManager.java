@@ -20,10 +20,6 @@ import org.figuramc.figura.lua.api.json.FiguraJsonArray;
 import org.figuramc.figura.lua.api.json.FiguraJsonBuilder;
 import org.figuramc.figura.lua.api.json.FiguraJsonObject;
 import org.figuramc.figura.lua.api.json.FiguraJsonSerializer;
-import org.figuramc.figura.lua.api.data.providers.FiguraProvider;
-import org.figuramc.figura.lua.api.data.providers.StringProvider;
-import org.figuramc.figura.lua.api.data.readers.FiguraReader;
-import org.figuramc.figura.lua.api.data.readers.StringReader;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
 import org.figuramc.figura.lua.api.entity.LivingEntityAPI;
 import org.figuramc.figura.lua.api.entity.PlayerAPI;
@@ -238,14 +234,6 @@ public class FiguraDocsManager {
 
         put("data", List.of(
                 DataAPI.class,
-                DataAPI.Readers.class,
-                DataAPI.Providers.class,
-                FiguraReader.class,
-                FiguraProvider.class,
-                StringReader.class,
-                StringProvider.class,
-                StringReader.Instances.class,
-                StringProvider.Instances.class,
                 FiguraInputStream.class,
                 FiguraOutputStream.class,
                 FiguraBuffer.class,
