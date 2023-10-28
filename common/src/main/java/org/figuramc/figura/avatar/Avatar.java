@@ -92,7 +92,7 @@ public class Avatar {
     public final boolean isHost;
 
     //metadata
-    public String name, entityName, dataFolder;
+    public String name, entityName;
     public String authors;
     public Version version;
     public String id;
@@ -180,8 +180,6 @@ public class Avatar {
                 name = metadata.getString("name");
                 authors = metadata.getString("authors");
                 version = new Version(metadata.getString("ver"));
-                if (metadata.contains("dataFolder"))
-                    dataFolder = metadata.getString("dataFolder");
                 if (metadata.contains("id"))
                     id = metadata.getString("id");
                 if (metadata.contains("color"))

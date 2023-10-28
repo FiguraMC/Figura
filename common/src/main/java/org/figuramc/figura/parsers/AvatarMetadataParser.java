@@ -51,8 +51,6 @@ public class AvatarMetadataParser {
 
         nbt.putString("name", metadata.name == null || metadata.name.isBlank() ? filename : metadata.name);
         nbt.putString("ver", version.toString());
-        if (metadata.dataFolder != null && FileAPI.isFolderNameValid(metadata.dataFolder))
-            nbt.putString("dataFolder", metadata.dataFolder);
         if (metadata.color != null) nbt.putString("color", metadata.color);
         if (metadata.background != null) nbt.putString("bg", metadata.background);
         if (metadata.id != null) nbt.putString("id", metadata.id);
@@ -219,7 +217,7 @@ public class AvatarMetadataParser {
 
     // json object class
     public static class Metadata {
-        public String name, description, author, version, color, background, id, dataFolder;
+        public String name, description, author, version, color, background, id;
         public String[] authors, autoScripts, autoAnims, ignoredTextures, resources;
         public HashMap<String, Customization> customizations;
     }

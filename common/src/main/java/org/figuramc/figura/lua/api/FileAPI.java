@@ -20,32 +20,16 @@ import java.util.Arrays;
 @LuaWhitelist
 @LuaTypeDoc(name = "FileAPI", value = "file")
 public class FileAPI {
-    public static final String FOLDER_NAME_PATTERN = "^[a-zA-Z_\\-0-9]+$";
-
     private final Avatar parent;
-    private final Path rootFolderPath;
+    private static final Path rootFolderPath = FiguraMod.getFiguraDirectory().resolve("data").toAbsolutePath()
+            .normalize();
 
     public FileAPI(Avatar parent) {
         this.parent = parent;
-        if (parent.isHost && parent.dataFolder != null && isFolderNameValid(parent.dataFolder)) {
-            Path p = FiguraMod.getFiguraDirectory().resolve("data").resolve(parent.dataFolder).toAbsolutePath()
-                    .normalize();
-            File r = p.toFile();
-            if ((r.exists() && !r.isDirectory()) || (!r.exists() && !r.mkdirs())) {
-                rootFolderPath = null;
-            }
-            else rootFolderPath = p;
-        }
-        else rootFolderPath = null;
-    }
-
-    public static boolean isFolderNameValid(String folderName) {
-        return folderName.matches(FOLDER_NAME_PATTERN);
     }
 
     private Path securityCheck(String path) {
         if (!parent.isHost) throw new LuaError("You can't use FileAPI outside of host environment");
-        if (rootFolderPath == null) throw new LuaError("Data folder is invalid or not set in avatar metadata");
         Path p = relativizePath(path);
         if (!isPathAllowed(p)) throw new LuaError("Path %s is not allowed in FileAPI".formatted(path));
         return p;
@@ -67,12 +51,10 @@ public class FileAPI {
             )
     )
     public boolean isPathAllowed(@LuaNotNil String path) {
-        if (rootFolderPath == null) return false;
         return isPathAllowed(relativizePath(path));
     }
 
     public boolean isPathAllowed(Path path) {
-        if (rootFolderPath == null) return false;
         return path.toAbsolutePath().startsWith(rootFolderPath);
     }
 
@@ -84,7 +66,7 @@ public class FileAPI {
             )
     )
     public boolean allowed() {
-        return parent.isHost && rootFolderPath != null;
+        return parent.isHost;
     }
 
     @LuaWhitelist
