@@ -12,6 +12,7 @@ import org.figuramc.figura.lua.api.keybind.KeybindAPI;
 import org.figuramc.figura.lua.api.math.MatricesAPI;
 import org.figuramc.figura.lua.api.math.VectorsAPI;
 import org.figuramc.figura.lua.api.nameplate.NameplateAPI;
+import org.figuramc.figura.lua.api.net.NetworkingAPI;
 import org.figuramc.figura.lua.api.particle.ParticleAPI;
 import org.figuramc.figura.lua.api.ping.PingAPI;
 import org.figuramc.figura.lua.api.sound.SoundAPI;
@@ -88,6 +89,8 @@ public abstract class FiguraGlobalsDocs {
     public JsonAPI json;
     @LuaFieldDoc("globals.resources")
     public ResourcesAPI resources;
+    @LuaFieldDoc("global.net")
+    public NetworkingAPI net;
 
     @LuaFieldDoc("globals.type")
     public LuaFunction type;

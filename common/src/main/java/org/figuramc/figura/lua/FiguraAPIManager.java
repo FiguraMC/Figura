@@ -10,6 +10,8 @@ import org.figuramc.figura.lua.api.data.providers.StringProvider;
 import org.figuramc.figura.lua.api.data.readers.FiguraReader;
 import org.figuramc.figura.lua.api.data.readers.StringReader;
 import org.figuramc.figura.lua.api.entity.*;
+import org.figuramc.figura.lua.api.net.HttpRequestsAPI;
+import org.figuramc.figura.lua.api.net.NetworkingAPI;
 import org.figuramc.figura.model.rendertasks.*;
 import org.figuramc.figura.lua.api.action_wheel.Action;
 import org.figuramc.figura.lua.api.action_wheel.ActionWheelAPI;
@@ -168,6 +170,10 @@ public class FiguraAPIManager {
         add(FiguraJsonObject.class);
 
         add(ResourcesAPI.class);
+
+        add(NetworkingAPI.class);
+        add(HttpRequestsAPI.class);
+        add(FiguraFuture.class);
     }};
 
     public static final Map<String, Function<FiguraLuaRuntime, Object>> API_GETTERS = new LinkedHashMap<>() {{
@@ -193,6 +199,7 @@ public class FiguraAPIManager {
         put("file", r -> new FileAPI(r.owner));
         put("json", r -> JsonAPI.INSTANCE);
         put("resources", r -> new ResourcesAPI(r.owner));
+        put("net", r -> new NetworkingAPI(r.owner));
     }};
 
     private static final Set<FiguraAPI> ENTRYPOINTS = new HashSet<>();
