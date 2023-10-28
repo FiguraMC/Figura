@@ -1774,8 +1774,8 @@
     "figura.docs.file.open_write_stream": "Opens an output stream for file at specified path",
     "figura.docs.file.write": "Writes value with specified provider in file",
     "figura.docs.file.read": "Reads value with specified reader from file",
-    "figura.docs.file.mkdir": "Creates a directory at specified path",
-    "figura.docs.file.mkdirs": "Creates a directory at specified path including all parent directories",
-    "figura.docs.file.delete": "Deletes file/directory at specified path",
-    "figura.docs.file.list": "Lists all files and directories at specified path"
+    "figura.docs.file.mkdir": "Creates a directory at specified path. Returns true if folder was successfully created",
+    "figura.docs.file.mkdirs": "Creates a directory at specified path including all parent directories. Returns true if folder was successfully created",
+    "figura.docs.file.delete": "Deletes file/directory at specified path. Returns true if successful",
+    "figura.docs.file.list": "Lists all files and directories at specified path, or returns null if directory does not exist or path is not a directory"
 }

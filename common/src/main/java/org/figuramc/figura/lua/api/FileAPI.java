@@ -9,8 +9,10 @@ import org.figuramc.figura.lua.api.data.FiguraOutputStream;
 import org.figuramc.figura.lua.api.data.providers.FiguraProvider;
 import org.figuramc.figura.lua.api.data.readers.FiguraReader;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
+import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaTable;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -59,7 +61,14 @@ public class FileAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("file.is_path_allowed")
+    @LuaMethodDoc(
+            value = "file.is_path_allowed",
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "path",
+                    returnType = Boolean.class
+            )
+    )
     public boolean isPathAllowed(@LuaNotNil String path) {
         if (rootFolderPath == null) return false;
         return isPathAllowed(relativizePath(path));
@@ -71,13 +80,25 @@ public class FileAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("file.allowed")
+    @LuaMethodDoc(
+            value ="file.allowed",
+            overloads = @LuaMethodOverload(
+                    returnType = Boolean.class
+            )
+    )
     public boolean allowed() {
         return parent.isHost && rootFolderPath != null;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("file.exists")
+    @LuaMethodDoc(
+            value = "file.exists",
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "path",
+                    returnType = Boolean.class
+            )
+    )
     public boolean exists(@LuaNotNil String path) {
         Path p = securityCheck(path);
         File f = p.toFile();
@@ -85,7 +106,14 @@ public class FileAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("file.is_file")
+    @LuaMethodDoc(
+            value = "file.is_file",
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "path",
+                    returnType = Boolean.class
+            )
+    )
     public boolean isFile(@LuaNotNil String path) {
         Path p = securityCheck(path);
         File f = p.toFile();
@@ -93,7 +121,14 @@ public class FileAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("file.is_directory")
+    @LuaMethodDoc(
+            value = "file.is_directory",
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "path",
+                    returnType = Boolean.class
+            )
+    )
     public boolean isDirectory(@LuaNotNil String path) {
         Path p = securityCheck(path);
         File f = p.toFile();
@@ -101,7 +136,14 @@ public class FileAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("file.open_read_stream")
+    @LuaMethodDoc(
+            value = "file.open_read_stream",
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "path",
+                    returnType = FiguraInputStream.class
+            )
+    )
     public FiguraInputStream openReadStream(@LuaNotNil String path) {
         try {
             Path p = securityCheck(path);
@@ -114,7 +156,14 @@ public class FileAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("file.open_write_stream")
+    @LuaMethodDoc(
+            value = "file.open_write_stream",
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "path",
+                    returnType = FiguraOutputStream.class
+            )
+    )
     public FiguraOutputStream openWriteStream(@LuaNotNil String path) {
         try {
             Path p = securityCheck(path);
@@ -127,7 +176,14 @@ public class FileAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("file.read")
+    @LuaMethodDoc(
+            value = "file.read",
+            overloads = @LuaMethodOverload(
+                    argumentTypes = { String.class, FiguraReader.class },
+                    argumentNames = { "path", "reader" },
+                    returnType = Object.class
+            )
+    )
     public <T> T read(@LuaNotNil String path, @LuaNotNil FiguraReader<T> reader) {
         try (FiguraInputStream fis = openReadStream(path)) {
             return reader.readFrom(fis);
@@ -137,7 +193,13 @@ public class FileAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("file.write")
+    @LuaMethodDoc(
+            value = "file.write",
+            overloads = @LuaMethodOverload(
+                    argumentTypes = { String.class, FiguraProvider.class, Object.class },
+                    argumentNames = { "path", "provider" }
+            )
+    )
     public <T> void write(@LuaNotNil String path, @LuaNotNil FiguraProvider<T> provider, @LuaNotNil T data) {
         try (FiguraOutputStream fos = openWriteStream(path)) {
             FiguraInputStream fis = provider.getStream(data);
@@ -149,7 +211,14 @@ public class FileAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("file.mkdir")
+    @LuaMethodDoc(
+            value = "file.mkdir",
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "path",
+                    returnType = Boolean.class
+            )
+    )
     public boolean mkdir(@LuaNotNil String path) {
         Path p = securityCheck(path);
         File f = p.toFile();
@@ -157,7 +226,14 @@ public class FileAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("file.mkdirs")
+    @LuaMethodDoc(
+            value = "file.mkdirs",
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "path",
+                    returnType = Boolean.class
+            )
+    )
     public boolean mkdirs(@LuaNotNil String path) {
         Path p = securityCheck(path);
         File f = p.toFile();
@@ -165,7 +241,14 @@ public class FileAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("file.delete")
+    @LuaMethodDoc(
+            value = "file.delete",
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "path",
+                    returnType = Boolean.class
+            )
+    )
     public boolean delete(@LuaNotNil String path) {
         Path p = securityCheck(path);
         File f = p.toFile();
@@ -173,11 +256,19 @@ public class FileAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("file.list")
+    @LuaMethodDoc(
+            value = "file.list",
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "path",
+                    returnType = LuaTable.class
+            )
+    )
     public ArrayList<String> list(@LuaNotNil String path) {
         Path p = securityCheck(path);
         File f = p.toFile();
         ArrayList<String> s = new ArrayList<>();
+        if (!f.exists() || !f.isDirectory()) return null;
         Arrays.stream(f.list()).forEach(str -> s.add(str));
         return s;
     }
