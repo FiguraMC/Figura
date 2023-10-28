@@ -197,7 +197,7 @@ public class FileAPI {
             value = "file.write",
             overloads = @LuaMethodOverload(
                     argumentTypes = { String.class, FiguraProvider.class, Object.class },
-                    argumentNames = { "path", "provider" }
+                    argumentNames = { "path", "provider", "data" }
             )
     )
     public <T> void write(@LuaNotNil String path, @LuaNotNil FiguraProvider<T> provider, @LuaNotNil T data) {
