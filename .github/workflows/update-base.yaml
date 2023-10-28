@@ -3,7 +3,6 @@ name: Update Base Strings
 env:
   BASE_STRINGS_PATH: common/src/main/resources/assets/figura/lang/en_us.json
 
-
 on:
   push:
     branches:
