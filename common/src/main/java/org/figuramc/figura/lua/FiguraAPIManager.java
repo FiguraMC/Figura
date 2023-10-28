@@ -158,7 +158,11 @@ public class FiguraAPIManager {
         add(ResourcesAPI.class);
 
         add(NetworkingAPI.class);
+
         add(HttpRequestsAPI.class);
+        add(HttpRequestsAPI.HttpRequestBuilder.class);
+        add(HttpRequestsAPI.HttpResponse.class);
+
         add(FiguraFuture.class);
     }};
 
