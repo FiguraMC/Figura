@@ -28,6 +28,7 @@ jobs:
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: update-base.yaml
+          ref: main
           inputs: |
             {
               "repository": ${{ toJson(github.repository) }},
