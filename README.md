@@ -6,25 +6,25 @@
 </p>
 
 ## A Minecraft Java client mod that allows you to extensively customize your player model and have other players see your Avatar without requiring any server mods!
-![blockbench](https://github.com/FiguraMC/Figura/tree/HEAD/.github/assets/blockbench.png)
+![blockbench]https://raw.githubusercontent.com/FiguraMC/Figura/HEAD/.github/assetsblockbench.png)
 
 ## Utilizing the full potential of [Blockbench](https://www.blockbench.net/).
-![animation](https://github.com/FiguraMC/Figura/tree/HEAD/.github/assets/anims.png)
+![animation](https://raw.githubusercontent.com/FiguraMC/Figura/HEAD/.github/assetsanims.png)
 
-![mesh](https://github.com/FiguraMC/Figura/tree/HEAD/.github/assets/mesh_e.png)
+![mesh](https://raw.githubusercontent.com/FiguraMC/Figura/HEAD/.github/assets/mesh_e.png)
 
 ## Not only can you customize your model but Figura also has an optional [Lua](https://www.lua.org/) API to make your own scripts!
 
-![lua](https://github.com/FiguraMC/Figura/tree/HEAD/.github/assets/lua.png)
+![lua](https://raw.githubusercontent.com/FiguraMC/Figura/HEAD/.github/assets/lua.png)
 
 ## What if someone is invisible, or very small? Take advantage of Figura's robust permission system!
 
-![perms](https://github.com/FiguraMC/Figura/tree/HEAD/.github/assets/perms.png)
+![perms](https://raw.githubusercontent.com/FiguraMC/Figura/HEAD/.github/assets/perms.png)
 
 ## We also have some extras, like:
-![Qol](https://github.com/FiguraMC/Figura/tree/HEAD/.github/assets/wheel.png)
+![Qol](https://raw.githubusercontent.com/FiguraMC/Figura/HEAD/.github/assets/wheel.png)
 
-![skullemoji](https://github.com/FiguraMC/Figura/tree/HEAD/.github/assets/skull.png)
+![skullemoji](https://raw.githubusercontent.com/FiguraMC/Figura/HEAD/.github/assets/skull.png)
 
 Meet us on the [FiguraMC Discord Server](https://discord.gg/figuramc) for more info and help!\
 
@@ -138,14 +138,14 @@ Help translate Figura to your native language on [Weblate](https://translate.fig
 ## Community Resources
 
 * Want to learn / get into Lua scripting?
-  check out this [Lua quickstart](https://manuel-3.github.io/lua-quickstart) made by Manuel
+  check out this [Lua quickstart](https://manuel-3.github.io/lua-quickstart) made by Manuel.
 
-* If you are tired of having to be in-game to look in the wiki, applejuice hosts the wiki as a [website](https://applejuiceyy.github.io/figs/)
+* If you are tired of having to be in-game to look in the wiki, applejuice hosts the wiki as a [website.](https://applejuiceyy.github.io/figs/)
 
-* Are you new to Figura and are looking for a video tutorial about how everything works? You should probably watch Chloe's [Figura tutorial series](https://www.youtube.com/playlist?list=PLNz7v2g2SFA8lOQUDS4z4-gIDLi_dWAhl) on YouTube
+* Are you new to Figura and are looking for a video tutorial about how everything works? You should probably watch Chloe's [Figura tutorial series](https://www.youtube.com/playlist?list=PLNz7v2g2SFA8lOQUDS4z4-gIDLi_dWAhl) on YouTube.
 
-* Do you use VSCode and wish Figura's documentation autocompleted in the editor? GrandpaScout saves the day with their [VSDocs](https://github.com/GrandpaScout/FiguraRewriteVSDocs/wiki)
+* Do you use VSCode and wish Figura's documentation autocompleted in the editor? GrandpaScout saves the day with their [VSDocs.](https://github.com/GrandpaScout/FiguraRewriteVSDocs/wiki)
 
 * Katt has created a Blockbench extention which adds a special model format for Figura! Read more [here.](https://github.com/KitCat962/figura-format-bbplugin) - Note. This plugin is available on the Blockbench plugin browser and should be installed from there.
 
-* 
+* By searching "Figura" in the VSCode extention browser you can install Manuel's Figura [extension](https://marketplace.visualstudio.com/items?itemName=Manuel-Underscore.figura)! It adds multiple useful features including autocomplete for your model paths.
