@@ -6,31 +6,32 @@
 </p>
 
 ## A Minecraft Java client mod that allows you to extensively customize your player model and have other players see your Avatar without requiring any server mods!
-![blockbench](https://github.com/Covkie/FiguraRME/assets/52550063/2f8bfff9-f5d6-46bd-a98c-7a9eed3faa7b)
+![blockbench](https://github.com/FiguraMC/Figura/tree/HEAD/.github/assets/blockbench.png)
 
 ## Utilizing the full potential of [Blockbench](https://www.blockbench.net/).
-![animation](https://github.com/Covkie/FiguraRME/assets/52550063/d9e0e7b6-675f-40b3-a6fb-88c057ee50ab)
+![animation](https://github.com/FiguraMC/Figura/tree/HEAD/.github/assets/anims.png)
 
-![mesh](https://github.com/Covkie/FiguraRME/assets/52550063/22742e4b-31fe-42cc-b8f4-0cedfe909a05)
+![mesh](https://github.com/FiguraMC/Figura/tree/HEAD/.github/assets/mesh_e.png)
 
 ## Not only can you customize your model but Figura also has an optional [Lua](https://www.lua.org/) API to make your own scripts!
 
-![lua](https://github.com/Covkie/FiguraRME/assets/52550063/9201d481-1c52-42b5-813f-ca09a2fa5378)
+![lua](https://github.com/FiguraMC/Figura/tree/HEAD/.github/assets/lua.png)
 
 ## What if someone is invisible, or very small? Take advantage of Figura's robust permission system!
 
-![perms](https://github.com/Covkie/FiguraRME/assets/52550063/92904d8d-3e38-4faf-b446-5f9480a8321f)
+![perms](https://github.com/FiguraMC/Figura/tree/HEAD/.github/assets/perms.png)
 
 ## We also have some extras, like:
-![Qol](https://github.com/Covkie/FiguraRME/assets/52550063/d9db538e-d1b6-42eb-ad44-fbcc559c3c1f)
+![Qol](https://github.com/FiguraMC/Figura/tree/HEAD/.github/assets/wheel.png)
 
-![skullemoji](https://github.com/Covkie/FiguraRME/assets/52550063/91c0f373-7048-4b2f-90db-e6891fa29589)
+![skullemoji](https://github.com/FiguraMC/Figura/tree/HEAD/.github/assets/skull.png)
 
 Meet us on the [FiguraMC Discord Server](https://discord.gg/figuramc) for more info and help!\
-Help translate Figura to your native language on [Weblate](https://hosted.weblate.org/projects/figuramc/mod/)!\
+
+Help translate Figura to your native language on [Weblate](https://translate.figuramc.org/widget/figuramc)!\
 ![translate]
 
-[translate]: https://hosted.weblate.org/widget/figuramc/mod/multi-auto.svg
+[translate]: https://translate.figuramc.org/widget/figuramc/figura/horizontal-auto.svg
 # Links
 [discord]: https://discord.com/api/guilds/1129805506354085959/widget.png
 [modrinth]: https://img.shields.io/badge/Modrinth-1bd96a?logo=modrinth&logoColor=ffffff
@@ -50,7 +51,7 @@ Help translate Figura to your native language on [Weblate](https://hosted.weblat
 
 ## Donate: [ ![collective] ](https://opencollective.com/figura) [ ![kofi] ](https://ko-fi.com/skyrina)
 
-## Resources: [ ![wiki] ](https://wiki.figuramc.org/) [ ![weblate] ](https://hosted.weblate.org/projects/figuramc/mod/) [ ![github-contrib] ](https://github.com/FiguraMC/Figura/blob/HEAD/CONTRIBUTING.md)
+## Resources: [ ![wiki] ](https://wiki.figuramc.org/) [ ![weblate] ](https://translate.figuramc.org/projects/figuramc/figura/) [ ![github-contrib] ](https://github.com/FiguraMC/Figura/blob/HEAD/CONTRIBUTING.md)
 
 
 # FAQ
@@ -139,15 +140,12 @@ Help translate Figura to your native language on [Weblate](https://hosted.weblat
 * Want to learn / get into Lua scripting?
   check out this [Lua quickstart](https://manuel-3.github.io/lua-quickstart) made by Manuel
 
-
 * If you are tired of having to be in-game to look in the wiki, applejuice hosts the wiki as a [website](https://applejuiceyy.github.io/figs/)
-
 
 * Are you new to Figura and are looking for a video tutorial about how everything works? You should probably watch Chloe's [Figura tutorial series](https://www.youtube.com/playlist?list=PLNz7v2g2SFA8lOQUDS4z4-gIDLi_dWAhl) on YouTube
 
-
-* Do you wish there was another wiki for the rewrite?
-  Slyme has an [unofficial wiki](https://slymeball.github.io/Figura-Wiki) covering most of Figura's basics
-
-
 * Do you use VSCode and wish Figura's documentation autocompleted in the editor? GrandpaScout saves the day with their [VSDocs](https://github.com/GrandpaScout/FiguraRewriteVSDocs/wiki)
+
+* Katt has created a Blockbench extention which adds a special model format for Figura! Read more [here.](https://github.com/KitCat962/figura-format-bbplugin) - Note. This plugin is available on the Blockbench plugin browser and should be installed from there.
+
+* 
