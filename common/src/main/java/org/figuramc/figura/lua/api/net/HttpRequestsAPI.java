@@ -190,19 +190,14 @@ public class HttpRequestsAPI {
                 parent.parent.securityCheck(uri);
             } catch (NetworkingAPI.LinkNotAllowedException e) {
                 parent.parent.error(NetworkingAPI.LogSource.HTTP, Component.literal("Tried to send %s request to not allowed link %s".formatted(method, uri)));
-                throw new RuntimeException(e);
-            }
-            catch (Exception e) {
-                throw new RuntimeException(e);
+                throw e;
             }
             parent.parent.log(NetworkingAPI.LogSource.HTTP, Component.literal("Sent %s request to %s".formatted(method, uri)));
             HttpRequest req = this.getRequest();
             FiguraFuture<HttpResponse<FiguraInputStream>> future = new FiguraFuture<>();
             var asyncResponse = parent.httpClient.sendAsync(req, java.net.http.HttpResponse.BodyHandlers.ofInputStream());
-            asyncResponse.thenAcceptAsync((response) -> {
-                future.complete(new HttpResponse<>(new FiguraInputStream(response.body()),
-                        response.statusCode(), response.headers().map()));
-            });
+            asyncResponse.thenAcceptAsync((response) -> future.complete(new HttpResponse<>(new FiguraInputStream(response.body()),
+                    response.statusCode(), response.headers().map())));
             return future;
         }
     }

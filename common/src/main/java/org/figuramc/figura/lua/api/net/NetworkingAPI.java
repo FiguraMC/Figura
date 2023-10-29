@@ -43,7 +43,7 @@ public class NetworkingAPI {
         http = new HttpRequestsAPI(this);
     }
 
-    public void securityCheck(String link) {
+    public void securityCheck(String link) throws LuaError {
         if (!Configs.ALLOW_NETWORKING.value)
             throw new NetworkingDisabledException(NETWORKING_DISABLED_ERROR_TEXT);
         if (owner.permissions.get(Permissions.NETWORKING) < 1) {
