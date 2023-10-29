@@ -1,5 +1,10 @@
 package org.figuramc.figura.lua.api.net;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.utils.ColorUtils;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
 import org.figuramc.figura.avatar.Avatar;
@@ -10,6 +15,11 @@ import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.permissions.Permissions;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 @LuaWhitelist
@@ -18,6 +28,8 @@ import java.util.ArrayList;
         value = "net"
 )
 public class NetworkingAPI {
+    private static FileOutputStream logFileOutputStream;
+    private static OutputStreamWriter logFileOutputStreamWriter;
     private static final String NETWORKING_DISABLED_ERROR_TEXT = "Networking is disabled in config";
     private static final String NO_PERMISSION_ERROR_TEXT = "This avatar doesn't have networking permissions";
     private static final String NETWORKING_DISALLOWED_FOR_LINK_ERROR = "Networking disallowed for link %s";
@@ -33,13 +45,13 @@ public class NetworkingAPI {
 
     public void securityCheck(String link) {
         if (!Configs.ALLOW_NETWORKING.value)
-            throw new LuaError(NETWORKING_DISABLED_ERROR_TEXT);
+            throw new NetworkingDisabledException(NETWORKING_DISABLED_ERROR_TEXT);
         if (owner.permissions.get(Permissions.NETWORKING) < 1) {
             owner.noPermissions.add(Permissions.NETWORKING);
             throw new LuaError(NO_PERMISSION_ERROR_TEXT);
         }
         if (!isLinkAllowed(link)) {
-            throw new LuaError(NETWORKING_DISALLOWED_FOR_LINK_ERROR.formatted(link));
+            throw new LinkNotAllowedException(NETWORKING_DISALLOWED_FOR_LINK_ERROR.formatted(link));
         }
     }
 
@@ -62,13 +74,80 @@ public class NetworkingAPI {
         };
     }
 
+    void log(LogSource source, Component text) {
+        // 0 - FILE, 1 - FILE + LOGGER, 2 - FILE + LOGGER + CHAT, 3 - NONE
+        int log = Configs.LOG_NETWORKING.value;
+        if (log == 3) return;
+        MutableComponent finalText =
+                Component.literal("[networking:%s:%s] ".formatted(source.name().toLowerCase(),owner.entityName))
+                        .withStyle(ColorUtils.Colors.LUA_PING.style)
+                        .append(text.copy().withStyle(ChatFormatting.WHITE));
+        String logTextString = finalText.getString();
+        switch (log) {
+            case 2 -> FiguraMod.sendChatMessage(finalText);
+            case 1 -> FiguraMod.LOGGER.info(logTextString);
+        }
+        if (logFileOutputStream == null) prepareLogStream();
+        try {
+            LocalTime t = LocalTime.now();
+            writeToLogStream("[%02d:%02d:%02d] [INFO] %s\n".formatted(t.getHour(), t.getMinute(),
+                    t.getSecond(), finalText.getString()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    void error(LogSource source, Component text) {
+        // 0 - FILE, 1 - FILE + LOGGER, 2 - FILE + LOGGER + CHAT, 3 - NONE
+        int log = Configs.LOG_NETWORKING.value;
+        if (log == 3) return;
+        MutableComponent finalText =
+                Component.literal("[networking:%s:%s] ".formatted(source.name().toLowerCase(),owner.entityName))
+                        .withStyle(ColorUtils.Colors.LUA_ERROR.style)
+                        .append(text.copy().withStyle(ChatFormatting.WHITE));
+        String logTextString = finalText.getString();
+        switch (log) {
+            case 2 -> FiguraMod.sendChatMessage(finalText);
+            case 1 -> FiguraMod.LOGGER.error(logTextString);
+        }
+        if (logFileOutputStream == null) prepareLogStream();
+        try {
+            LocalTime t = LocalTime.now();
+            writeToLogStream("[%02d:%02d:%02d] [ERROR] %s\n".formatted(t.getHour(), t.getMinute(),
+                    t.getSecond(), finalText.getString()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void writeToLogStream(String s) throws IOException {
+        logFileOutputStream.write(s.getBytes(StandardCharsets.UTF_8));
+        logFileOutputStream.flush();
+    }
+
+    private static void prepareLogStream() {
+        try {
+            Path p = FiguraMod.getFiguraDirectory().resolve("logs");
+            File folder = p.toFile();
+            folder.mkdirs();
+            LocalDate d = LocalDate.now();
+            File logFile = p.resolve(
+                    String.format("%d-%02d-%02d.log", d.getYear(), d.getMonthValue(), d.getDayOfMonth())
+            ).toFile();
+            logFileOutputStream = new FileOutputStream(logFile, true);
+            logFileOutputStreamWriter = new OutputStreamWriter(logFileOutputStream);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static class Filter {
 
         private String filterSource;
         private FilterMode filterMode;
 
         public Filter(String source, FilterMode mode) {
-            setSource(source);
+            setSource(source.trim());
             setMode(mode);
         }
 
@@ -90,18 +169,20 @@ public class NetworkingAPI {
 
         public boolean matches(String s) {
             return switch (filterMode) {
-                case EQUALS -> s.equals(filterSource);
-                case REGEX -> s.matches(filterSource);
-                case STARTS_WITH -> s.startsWith(filterSource);
-                case ENDS_WITH -> s.endsWith(filterSource);
+                case EQUALS -> s.trim().equals(filterSource);
+                case CONTAINS -> s.trim().contains(filterSource);
+                case REGEX -> s.trim().matches(filterSource);
+                case STARTS_WITH -> s.trim().startsWith(filterSource);
+                case ENDS_WITH -> s.trim().endsWith(filterSource);
             };
         }
 
         public enum FilterMode {
             EQUALS(0),
-            REGEX(1),
-            STARTS_WITH(2),
-            ENDS_WITH(3);
+            CONTAINS(1),
+            REGEX(2),
+            STARTS_WITH(3),
+            ENDS_WITH(4);
             private final int id;
             FilterMode(int id) {
                 this.id = id;
@@ -143,6 +224,10 @@ public class NetworkingAPI {
         }
     }
 
+    enum LogSource {
+        HTTP
+    }
+
     @LuaWhitelist
     public Object __index(LuaValue key) {
         if (!key.isstring()) return null;
@@ -150,5 +235,19 @@ public class NetworkingAPI {
             case "http" -> http;
             default -> null;
         };
+    }
+
+    public static class NetworkingDisabledException extends LuaError {
+
+        public NetworkingDisabledException(String message) {
+            super(message);
+        }
+    }
+
+    public static class LinkNotAllowedException extends LuaError {
+
+        public LinkNotAllowedException(String message) {
+            super(message);
+        }
     }
 }

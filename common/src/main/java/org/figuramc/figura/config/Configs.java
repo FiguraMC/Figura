@@ -3,8 +3,6 @@ package org.figuramc.figura.config;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.Style;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.local.CacheAvatarLoader;
@@ -308,4 +306,6 @@ public class Configs {
     public static final ConfigType.EnumConfig NETWORKING_RESTRICTION = new ConfigType.EnumConfig("networking_restriction", NETWORKING, 0, 3);
 
     public static final ConfigType.NetworkFilterConfig NETWORK_FILTER = new ConfigType.NetworkFilterConfig("network_filter", NETWORKING);
+
+    public static final ConfigType.EnumConfig LOG_NETWORKING = new ConfigType.EnumConfig("networking_logging", NETWORKING, 0, 4);
 }

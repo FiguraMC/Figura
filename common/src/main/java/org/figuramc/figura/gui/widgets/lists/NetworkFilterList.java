@@ -198,7 +198,7 @@ public class NetworkFilterList extends AbstractList {
             this.sourceFilter = sourceFilter;
             children.add(enumButton =
                     new EnumButton(x+width-114, y, 90, 20, "gui.network_filter.list.filter_mode"
-                            ,sourceFilter.getMode().getId(), 4, this::onEnumSelect)
+                            ,sourceFilter.getMode().getId(), 5, this::onEnumSelect)
             );
             children.add(filterTextField = new TextField(x, y, width - 118, 20, TextField.HintType.IP, this::onSourceChange));
             children.add(

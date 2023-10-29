@@ -1,5 +1,6 @@
 package org.figuramc.figura.lua.api.net;
 
+import net.minecraft.network.chat.Component;
 import org.figuramc.figura.lua.api.data.FiguraBuffer;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
@@ -185,7 +186,16 @@ public class HttpRequestsAPI {
         @LuaMethodDoc("http_request_builder.send")
         public FiguraFuture<HttpResponse<FiguraInputStream>> send() {
             String uri = this.getUri();
-            parent.parent.securityCheck(uri);
+            try {
+                parent.parent.securityCheck(uri);
+            } catch (NetworkingAPI.LinkNotAllowedException e) {
+                parent.parent.error(NetworkingAPI.LogSource.HTTP, Component.literal("Tried to send %s request to not allowed link %s".formatted(method, uri)));
+                throw new RuntimeException(e);
+            }
+            catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            parent.parent.log(NetworkingAPI.LogSource.HTTP, Component.literal("Sent %s request to %s".formatted(method, uri)));
             HttpRequest req = this.getRequest();
             FiguraFuture<HttpResponse<FiguraInputStream>> future = new FiguraFuture<>();
             var asyncResponse = parent.httpClient.sendAsync(req, java.net.http.HttpResponse.BodyHandlers.ofInputStream());
