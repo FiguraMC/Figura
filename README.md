@@ -9,7 +9,7 @@
 ![blockbench]https://raw.githubusercontent.com/FiguraMC/Figura/HEAD/.github/assetsblockbench.png)
 
 ## Utilizing the full potential of [Blockbench](https://www.blockbench.net/).
-![animation](https://raw.githubusercontent.com/FiguraMC/Figura/HEAD/.github/assetsanims.png)
+![animation](https://raw.githubusercontent.com/FiguraMC/Figura/HEAD/.github/assets/anims.png)
 
 ![mesh](https://raw.githubusercontent.com/FiguraMC/Figura/HEAD/.github/assets/mesh_e.png)
 
