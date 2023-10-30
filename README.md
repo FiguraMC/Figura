@@ -6,7 +6,7 @@
 </p>
 
 ## A Minecraft Java client mod that allows you to extensively customize your player model and have other players see your Avatar without requiring any server mods!
-![blockbench]https://raw.githubusercontent.com/FiguraMC/Figura/HEAD/.github/assetsblockbench.png)
+![blockbench](https://raw.githubusercontent.com/FiguraMC/Figura/HEAD/.github/assets/blockbench.png)
 
 ## Utilizing the full potential of [Blockbench](https://www.blockbench.net/).
 ![animation](https://raw.githubusercontent.com/FiguraMC/Figura/HEAD/.github/assets/anims.png)
