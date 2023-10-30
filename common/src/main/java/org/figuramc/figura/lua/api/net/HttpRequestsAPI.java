@@ -2,6 +2,7 @@ package org.figuramc.figura.lua.api.net;
 
 import net.minecraft.network.chat.Component;
 import org.figuramc.figura.lua.api.data.FiguraBuffer;
+import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -36,9 +37,16 @@ public class HttpRequestsAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("http.request")
-    public HttpRequestBuilder<?, ?> request(@LuaNotNil String uri) {
-        return new HttpRequestBuilder<>(this, uri);
+    @LuaMethodDoc(
+            value = "http.request",
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "uri",
+                    returnType = HttpRequestBuilder.class
+            )
+    )
+    public HttpRequestBuilder request(@LuaNotNil String uri) {
+        return new HttpRequestBuilder(this, uri);
     }
 
     @LuaWhitelist
@@ -46,11 +54,11 @@ public class HttpRequestsAPI {
             name = "HttpResponse",
             value = "http_response"
     )
-    public static class HttpResponse <T> {
-        private final T data;
+    public static class HttpResponse {
+        private final FiguraInputStream data;
         private final int responseCode;
         private final ReadOnlyLuaTable headersTable;
-        public HttpResponse(T data, int responseCode, Map<String, List<String>> headers) {
+        public HttpResponse(FiguraInputStream data, int responseCode, Map<String, List<String>> headers) {
             this.data = data;
             this.responseCode = responseCode;
             LuaTable headersTable = new LuaTable();
@@ -67,30 +75,50 @@ public class HttpRequestsAPI {
         }
 
         @LuaWhitelist
-        @LuaMethodDoc("http_response.get_data")
-        public Object getData() {
+        @LuaMethodDoc(
+                value = "http_response.get_data",
+                overloads = @LuaMethodOverload(
+                        returnType = FiguraInputStream.class
+                )
+        )
+        public FiguraInputStream getData() {
             return data;
         }
 
         @LuaWhitelist
-        @LuaMethodDoc("http_response.get_response_code")
+        @LuaMethodDoc(
+                value = "http_response.get_response_code",
+                overloads = @LuaMethodOverload(
+                        returnType = int.class
+                )
+        )
         public int getResponseCode() {
             return responseCode;
         }
 
         @LuaWhitelist
-        @LuaMethodDoc("http_response.get_headers")
+        @LuaMethodDoc(
+                value = "http_response.get_headers",
+                overloads = @LuaMethodOverload(
+                        returnType = ReadOnlyLuaTable.class
+                )
+        )
         public ReadOnlyLuaTable getHeaders() {
             return headersTable;
         }
-    }
 
+        @Override
+        public String toString() {
+            return "HttpResponse(%s)".formatted(responseCode);
+        }
+    }
     @LuaWhitelist
     @LuaTypeDoc(
             name = "HttpRequestBuilder",
             value = "http_request_builder"
     )
-    public static class HttpRequestBuilder <R, P> {
+    public static class HttpRequestBuilder {
+
         private final HttpRequestsAPI parent;
         private String uri;
         private String method = "GET";
@@ -104,22 +132,50 @@ public class HttpRequestsAPI {
 
 
         @LuaWhitelist
-        @LuaMethodDoc("http_request_builder.uri")
-        public HttpRequestBuilder<R, P> uri(@LuaNotNil String uri) {
+        @LuaMethodDoc(
+                value = "http_request_builder.uri",
+                overloads = @LuaMethodOverload(
+                        argumentTypes = String.class,
+                        argumentNames = "uri",
+                        returnType = HttpRequestBuilder.class
+                )
+        )
+        public HttpRequestBuilder uri(@LuaNotNil String uri) {
             this.uri = uri;
             return this;
         }
 
         @LuaWhitelist
-        @LuaMethodDoc("http_request_builder.method")
-        public HttpRequestBuilder<R, P> method(String method) {
+        @LuaMethodDoc(
+                value = "http_request_builder.method",
+                overloads = @LuaMethodOverload(
+                        argumentTypes = String.class,
+                        argumentNames = "method",
+                        returnType = HttpRequestBuilder.class
+                )
+        )
+        public HttpRequestBuilder method(String method) {
             this.method = Objects.requireNonNullElse(method, "GET");
             return this;
         }
 
         @LuaWhitelist
-        @LuaMethodDoc("http_request_builder.body")
-        public HttpRequestBuilder<R, P> body(Object data) {
+        @LuaMethodDoc(
+                value = "http_request_builder.body",
+                overloads = {
+                        @LuaMethodOverload(
+                            argumentTypes = FiguraInputStream.class,
+                            argumentNames = "data",
+                            returnType = HttpRequestBuilder.class
+                        ),
+                        @LuaMethodOverload(
+                                argumentTypes = FiguraBuffer.class,
+                                argumentNames = "data",
+                                returnType = HttpRequestBuilder.class
+                        )
+                }
+        )
+        public HttpRequestBuilder body(Object data) {
             if (data == null || data instanceof InputStream || data instanceof FiguraBuffer) {
                 this.data = data;
             }
@@ -130,8 +186,15 @@ public class HttpRequestsAPI {
         }
 
         @LuaWhitelist
-        @LuaMethodDoc("http_request_builder.header")
-        public HttpRequestBuilder<R, P> header(@LuaNotNil String header, String value) {
+        @LuaMethodDoc(
+                value = "http_request_builder.header",
+                overloads = @LuaMethodOverload(
+                        argumentNames = {"header","value"},
+                        argumentTypes = {String.class, String.class},
+                        returnType = HttpRequestBuilder.class
+                )
+        )
+        public HttpRequestBuilder header(@LuaNotNil String header, String value) {
             if (value == null) {
                 headers.remove(header);
             } else {
@@ -141,27 +204,47 @@ public class HttpRequestsAPI {
         }
 
         @LuaWhitelist
-        @LuaMethodDoc("http_request_builder.get_uri")
+        @LuaMethodDoc(
+                value = "http_request_builder.get_uri",
+                overloads = @LuaMethodOverload(
+                        returnType = String.class
+                )
+        )
         public String getUri() {
             return uri;
         }
 
         @LuaWhitelist
-        @LuaMethodDoc("http_request_builder.get_method")
+        @LuaMethodDoc(
+                value = "http_request_builder.get_method",
+                overloads = @LuaMethodOverload(
+                        returnType = String.class
+                )
+        )
         public String getMethod() {
             return method;
         }
 
 
         @LuaWhitelist
-        @LuaMethodDoc("http_request_builder.get_data")
+        @LuaMethodDoc(
+                value = "http_request_builder.get_data",
+                overloads = @LuaMethodOverload(
+                        returnType = Objects.class
+                )
+        )
         public Object getBody() {
             return data;
         }
 
 
         @LuaWhitelist
-        @LuaMethodDoc("http_request_builder.get_headers")
+        @LuaMethodDoc(
+                value = "http_request_builder.get_headers",
+                overloads = @LuaMethodOverload(
+                        returnType = LuaTable.class
+                )
+        )
         public HashMap<String, String> getHeaders() {
             return headers;
         }
@@ -184,7 +267,7 @@ public class HttpRequestsAPI {
 
         @LuaWhitelist
         @LuaMethodDoc("http_request_builder.send")
-        public FiguraFuture<HttpResponse<FiguraInputStream>> send() {
+        public FiguraFuture<HttpResponse> send() {
             String uri = this.getUri();
             try {
                 parent.parent.securityCheck(uri);
@@ -194,12 +277,21 @@ public class HttpRequestsAPI {
             }
             parent.parent.log(NetworkingAPI.LogSource.HTTP, Component.literal("Sent %s request to %s".formatted(method, uri)));
             HttpRequest req = this.getRequest();
-            FiguraFuture<HttpResponse<FiguraInputStream>> future = new FiguraFuture<>();
+            FiguraFuture<HttpResponse> future = new FiguraFuture<>();
             var asyncResponse = parent.httpClient.sendAsync(req, java.net.http.HttpResponse.BodyHandlers.ofInputStream());
-            asyncResponse.thenAcceptAsync((response) -> future.complete(new HttpResponse<>(new FiguraInputStream(response.body()),
+            asyncResponse.thenAcceptAsync((response) -> future.complete(new HttpResponse(new FiguraInputStream(response.body()),
                     response.statusCode(), response.headers().map())));
             return future;
         }
+
+        @Override
+        public String toString() {
+            return "HttpRequestBuilder(%s:%s)".formatted(method, uri);
+        }
     }
 
+    @Override
+    public String toString() {
+        return "HttpAPI";
+    }
 }

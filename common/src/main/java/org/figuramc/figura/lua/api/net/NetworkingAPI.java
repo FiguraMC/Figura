@@ -4,6 +4,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.utils.ColorUtils;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
@@ -29,7 +30,6 @@ import java.util.ArrayList;
 )
 public class NetworkingAPI {
     private static FileOutputStream logFileOutputStream;
-    private static OutputStreamWriter logFileOutputStreamWriter;
     private static final String NETWORKING_DISABLED_ERROR_TEXT = "Networking is disabled in config";
     private static final String NO_PERMISSION_ERROR_TEXT = "This avatar doesn't have networking permissions";
     private static final String NETWORKING_DISALLOWED_FOR_LINK_ERROR = "Networking disallowed for link %s";
@@ -56,13 +56,25 @@ public class NetworkingAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("net.is_networking_allowed")
+    @LuaMethodDoc(
+            value = "net.is_networking_allowed",
+            overloads = @LuaMethodOverload(
+                    returnType = Boolean.class
+            )
+    )
     public boolean isNetworkingAllowed() {
         return Configs.ALLOW_NETWORKING.value && owner.permissions.get(Permissions.NETWORKING) >= 1;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("net.is_link_allowed")
+    @LuaMethodDoc(
+            value = "net.is_link_allowed",
+            overloads = @LuaMethodOverload(
+                    argumentNames = "link",
+                    argumentTypes = String.class,
+                    returnType = Boolean.class
+            )
+    )
     public boolean isLinkAllowed(String link) {
         RestrictionLevel level = RestrictionLevel.getById(Configs.NETWORKING_RESTRICTION.value);
         if (level == null) return false;
@@ -135,7 +147,6 @@ public class NetworkingAPI {
                     String.format("%d-%02d-%02d.log", d.getYear(), d.getMonthValue(), d.getDayOfMonth())
             ).toFile();
             logFileOutputStream = new FileOutputStream(logFile, true);
-            logFileOutputStreamWriter = new OutputStreamWriter(logFileOutputStream);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -242,6 +253,11 @@ public class NetworkingAPI {
         public NetworkingDisabledException(String message) {
             super(message);
         }
+
+        @Override
+        public String toString() {
+            return "NetworkingDisabledException";
+        }
     }
 
     public static class LinkNotAllowedException extends LuaError {
@@ -249,5 +265,15 @@ public class NetworkingAPI {
         public LinkNotAllowedException(String message) {
             super(message);
         }
+
+        @Override
+        public String toString() {
+            return "LinkNotAllowedException";
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "NetworkingAPI";
     }
 }

@@ -242,7 +242,9 @@ public class FiguraDocsManager {
 
         put("net", List.of(
                 NetworkingAPI.class,
-                HttpRequestsAPI.class
+                HttpRequestsAPI.class,
+                HttpRequestsAPI.HttpResponse.class,
+                HttpRequestsAPI.HttpRequestBuilder.class
         ));
 
         put("file", List.of(
