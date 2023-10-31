@@ -185,7 +185,10 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
     )
     public void write(@LuaNotNil int val) {
         checkIsClosed();
-        ensureBufCapacity(position+1);
+        if (length >= position) {
+            ensureBufCapacity(length++);
+            position = Math.min(position, length);
+        }
         buf[position] = (byte) (val & 0xFF);
         position++;
     }
