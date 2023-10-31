@@ -98,7 +98,7 @@ public interface FiguraReadable {
         return Double.longBitsToDouble(readLongLE());
     }
     default String readString(Integer length, String encoding) {
-        length = length == null ? Integer.MAX_VALUE : Math.max(length, 0);
+        length = length == null ? 1024 : Math.max(length, 0);
         Charset charset = encoding == null ? StandardCharsets.UTF_8 : switch (encoding.toLowerCase()) {
             case "utf_16", "utf16" -> StandardCharsets.UTF_16;
             case "utf_16be", "utf16be" -> StandardCharsets.UTF_16BE;
