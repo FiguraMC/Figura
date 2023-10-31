@@ -9,8 +9,15 @@ public interface FiguraReadable {
     int available();
     private static byte[] readNBytes(FiguraReadable readable, int count) {
         byte[] arr = new byte[count];
-        for (int i = 0; i < count; i++) {
-            arr[i] = (byte) readable.read();
+        int b;
+        int i = 0;
+        for (; i < count && (b = readable.read()) != -1; i++) {
+            arr[i] = (byte) b;
+        }
+        if (i < count) {
+            byte[] newArr = new byte[i];
+            System.arraycopy(arr, 0, newArr ,0, i);
+            arr = newArr;
         }
         return arr;
     }
@@ -91,7 +98,7 @@ public interface FiguraReadable {
         return Double.longBitsToDouble(readLongLE());
     }
     default String readString(Integer length, String encoding) {
-        length = length == null ? available() : Math.max(Math.min(length, available()), 0);
+        length = length == null ? Integer.MAX_VALUE : Math.max(length, 0);
         Charset charset = encoding == null ? StandardCharsets.UTF_8 : switch (encoding.toLowerCase()) {
             case "utf_16", "utf16" -> StandardCharsets.UTF_16;
             case "utf_16be", "utf16be" -> StandardCharsets.UTF_16BE;
