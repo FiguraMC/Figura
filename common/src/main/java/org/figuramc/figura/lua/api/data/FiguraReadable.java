@@ -1,8 +1,13 @@
 package org.figuramc.figura.lua.api.data;
 
+import org.luaj.vm2.LuaString;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 public interface FiguraReadable {
     int read();
@@ -109,5 +114,17 @@ public interface FiguraReadable {
         };
         byte[] strBuf = readNBytes(this, length);
         return new String(strBuf, charset);
+    }
+
+    default String readBase64(Integer length) {
+        length = length == null ? 1024 : Math.max(length, 0);
+        byte[] strBuf = readNBytes(this, length);
+        return Base64.getEncoder().encodeToString(strBuf);
+    }
+
+    default LuaString readByteArray(Integer length) {
+        length = length == null ? 1024 : Math.max(length, 0);
+        byte[] strBuf = readNBytes(this, length);
+        return LuaString.valueOf(strBuf);
     }
 }

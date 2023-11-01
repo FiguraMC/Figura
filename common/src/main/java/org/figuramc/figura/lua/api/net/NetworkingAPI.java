@@ -33,14 +33,18 @@ public class NetworkingAPI {
     private static final String NETWORKING_DISABLED_ERROR_TEXT = "Networking is disabled in config";
     private static final String NO_PERMISSION_ERROR_TEXT = "This avatar doesn't have networking permissions";
     private static final String NETWORKING_DISALLOWED_FOR_LINK_ERROR = "Networking disallowed for link %s";
-    private final Avatar owner;
+    final Avatar owner;
     @LuaWhitelist
     @LuaFieldDoc("net.http")
     public final HttpRequestsAPI http;
+    @LuaWhitelist
+    @LuaFieldDoc("net.socket")
+    public final SocketAPI socket;
 
     public NetworkingAPI(Avatar owner) {
         this.owner = owner;
         http = new HttpRequestsAPI(this);
+        socket = new SocketAPI(this);
     }
 
     public void securityCheck(String link) throws LuaError {
@@ -236,7 +240,7 @@ public class NetworkingAPI {
     }
 
     enum LogSource {
-        HTTP
+        HTTP, SOCKET
     }
 
     @LuaWhitelist
@@ -244,6 +248,7 @@ public class NetworkingAPI {
         if (!key.isstring()) return null;
         return switch (key.tojstring()) {
             case "http" -> http;
+            case "socket" -> socket;
             default -> null;
         };
     }

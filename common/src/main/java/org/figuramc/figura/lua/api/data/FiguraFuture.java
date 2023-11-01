@@ -38,4 +38,9 @@ public class FiguraFuture<T> {
     public T getValue() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return "Future(isDone=%s)".formatted(isDone);
+    }
 }

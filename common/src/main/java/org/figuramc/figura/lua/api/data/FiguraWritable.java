@@ -2,9 +2,12 @@ package org.figuramc.figura.lua.api.data;
 
 import org.figuramc.figura.lua.LuaNotNil;
 import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaString;
+import org.luaj.vm2.LuaTable;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 public interface FiguraWritable {
     private static void writeBytes(FiguraWritable writable, byte[] bytes) {
@@ -101,5 +104,19 @@ public interface FiguraWritable {
         byte[] strBytes = val.getBytes(charset);
         writeBytes(this, strBytes);
         return strBytes.length;
+    }
+
+    default int writeBase64(@LuaNotNil String base64String) {
+        byte[] base64Bytes = Base64.getDecoder().decode(base64String);
+        writeBytes(this, base64Bytes);
+        return base64Bytes.length;
+    }
+
+    // TODO: Write byte array function
+    default int writeByteArray(@LuaNotNil LuaString byteArray) {
+        byte[] bytes = new byte[byteArray.length()];
+        byteArray.copyInto(0, bytes, 0, bytes.length);
+        writeBytes(this, bytes);
+        return bytes.length;
     }
 }

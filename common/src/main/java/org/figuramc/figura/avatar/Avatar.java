@@ -36,7 +36,9 @@ import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.lua.FiguraLuaRuntime;
 import org.figuramc.figura.lua.api.TextureAPI;
+import org.figuramc.figura.lua.api.data.FiguraBuffer;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
+import org.figuramc.figura.lua.api.net.FiguraSocket;
 import org.figuramc.figura.lua.api.particle.ParticleAPI;
 import org.figuramc.figura.lua.api.ping.PingArg;
 import org.figuramc.figura.lua.api.ping.PingFunction;
@@ -105,7 +107,8 @@ public class Avatar {
 
     // Runtime data
     private final Queue<Runnable> events = new ConcurrentLinkedQueue<>();
-
+    public final ArrayList<FiguraSocket> openSockets = new ArrayList<>();
+    public final ArrayList<FiguraBuffer> openBuffers = new ArrayList<>();
     public AvatarRenderer renderer;
     public FiguraLuaRuntime luaRuntime;
     public EntityRenderMode renderMode = EntityRenderMode.OTHER;
@@ -124,11 +127,10 @@ public class Avatar {
     public int versionStatus = 0;
 
     // limits
-    public int animationComplexity, openBuffers;
+    public int animationComplexity;
     public final Instructions complexity;
     public final Instructions init, render, worldRender, tick, worldTick, animation;
     public final RefilledNumber particlesRemaining, soundsRemaining;
-
     private Avatar(UUID owner, EntityType<?> type, String name) {
         this.owner = owner;
         this.entityType = type;
@@ -897,6 +899,7 @@ public class Avatar {
 
         clearSounds();
         clearParticles();
+        closeSockets();
 
         events.clear();
     }
@@ -905,6 +908,17 @@ public class Avatar {
         SoundAPI.getSoundEngine().figura$stopSound(owner, null);
         for (SoundBuffer value : customSounds.values())
             value.releaseAlBuffer();
+    }
+
+    public void closeSockets() {
+        for (FiguraSocket socket :
+                openSockets) {
+            if (!socket.isClosed()) {
+                try {
+                    socket.close();
+                } catch (Exception ignored) {}
+            }
+        }
     }
 
     public void clearParticles() {

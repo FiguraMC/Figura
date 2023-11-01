@@ -1,10 +1,12 @@
 package org.figuramc.figura.lua.api.data;
 
+import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaString;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -225,6 +227,38 @@ public class FiguraOutputStream extends OutputStream implements FiguraWritable {
     @Override
     public int writeString(String val, String encoding) {
         return FiguraWritable.super.writeString(val, encoding);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            value = "output_stream.write_base_64",
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = String.class,
+                            argumentNames = "base64",
+                            returnType = Integer.class
+                    )
+            }
+    )
+    @Override
+    public int writeBase64(@LuaNotNil String base64String) {
+        return FiguraWritable.super.writeBase64(base64String);
+    }
+
+    @Override
+    @LuaWhitelist
+    @LuaMethodDoc(
+            value = "output_stream.write_byte_array",
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = String.class,
+                            argumentNames = "array",
+                            returnType = Integer.class
+                    )
+            }
+    )
+    public int writeByteArray(@LuaNotNil LuaString byteArray) {
+        return FiguraWritable.super.writeByteArray(byteArray);
     }
 
     @Override

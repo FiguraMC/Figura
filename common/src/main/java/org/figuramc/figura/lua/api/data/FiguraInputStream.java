@@ -5,6 +5,7 @@ import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaString;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -189,7 +190,7 @@ public class FiguraInputStream extends InputStream implements FiguraReadable {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            value = "input_stream.readString",
+            value = "input_stream.read_string",
             overloads = {
                     @LuaMethodOverload(
                             returnType = String.class
@@ -209,6 +210,44 @@ public class FiguraInputStream extends InputStream implements FiguraReadable {
     @Override
     public String readString(Integer length, String encoding) {
         return FiguraReadable.super.readString(length, encoding);
+    }
+
+    @Override
+    @LuaWhitelist
+    @LuaMethodDoc(
+            value = "input_stream.read_base_64",
+            overloads = {
+                    @LuaMethodOverload(
+                            returnType = String.class
+                    ),
+                    @LuaMethodOverload(
+                            argumentNames = "length",
+                            argumentTypes = Integer.class,
+                            returnType = String.class
+                    )
+            }
+    )
+    public String readBase64(Integer length) {
+        return FiguraReadable.super.readBase64(length);
+    }
+
+    @Override
+    @LuaWhitelist
+    @LuaMethodDoc(
+            value = "input_stream.read_byte_array",
+            overloads = {
+                    @LuaMethodOverload(
+                            returnType = String.class
+                    ),
+                    @LuaMethodOverload(
+                            argumentNames = "length",
+                            argumentTypes = Integer.class,
+                            returnType = String.class
+                    )
+            }
+    )
+    public LuaString readByteArray(Integer length) {
+        return FiguraReadable.super.readByteArray(length);
     }
 
     @Override

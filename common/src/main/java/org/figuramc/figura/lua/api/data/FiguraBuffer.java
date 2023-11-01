@@ -8,6 +8,7 @@ import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.permissions.Permissions;
 import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaString;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +26,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
 
     public FiguraBuffer(Avatar parent) {
         this.parent = parent;
-        if (parent.openBuffers > getMaxBuffersCount()) {
+        if (parent.openBuffers.size() > getMaxBuffersCount()) {
             parent.noPermissions.add(Permissions.BUFFERS_COUNT);
             throw new LuaError("You have exceed the max amount of open buffers");
         }
@@ -33,8 +34,8 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
             parent.noPermissions.add(Permissions.BUFFER_SIZE);
             throw new LuaError("Unable to create buffer because max capacity is less than default buffer size (512)");
         }
-        parent.openBuffers++;
         buf = new byte[CAPACITY_INCREASE_STEP];
+        parent.openBuffers.add(this);
     }
 
     public FiguraBuffer(Avatar parent, int cap) {
@@ -173,6 +174,42 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
     public String readString(Integer length, String encoding) {
         checkIsClosed();
         return FiguraReadable.super.readString(length, encoding);
+    }
+
+    @Override
+    @LuaMethodDoc(
+            value = "buffer.read_base_64",
+            overloads = {
+                    @LuaMethodOverload(
+                            returnType = String.class
+                    ),
+                    @LuaMethodOverload(
+                            argumentNames = "length",
+                            argumentTypes = Integer.class,
+                            returnType = String.class
+                    )
+            }
+    )
+    public String readBase64(Integer length) {
+        return FiguraReadable.super.readBase64(length);
+    }
+
+    @Override
+    @LuaMethodDoc(
+            value = "buffer.read_byte_array",
+            overloads = {
+                    @LuaMethodOverload(
+                            returnType = String.class
+                    ),
+                    @LuaMethodOverload(
+                            argumentNames = "length",
+                            argumentTypes = Integer.class,
+                            returnType = String.class
+                    )
+            }
+    )
+    public LuaString readByteArray(Integer length) {
+        return FiguraReadable.super.readByteArray(length);
     }
 
     @LuaWhitelist
@@ -370,6 +407,36 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
         return FiguraWritable.super.writeString(val, encoding);
     }
 
+    @Override
+    @LuaMethodDoc(
+            value = "buffer.write_base_64",
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = String.class,
+                            argumentNames = "base64",
+                            returnType = Integer.class
+                    )
+            }
+    )
+    public int writeBase64(@LuaNotNil String base64String) {
+        return FiguraWritable.super.writeBase64(base64String);
+    }
+
+    @Override
+    @LuaMethodDoc(
+            value = "buffer.write_byte_array",
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = String.class,
+                            argumentNames = "array",
+                            returnType = Integer.class
+                    )
+            }
+    )
+    public int writeByteArray(@LuaNotNil LuaString byteArray) {
+        return FiguraWritable.super.writeByteArray(byteArray);
+    }
+
     @LuaWhitelist
     @LuaMethodDoc("buffer.get_length")
     public int getLength() {
@@ -474,7 +541,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
         if (!isClosed) {
             isClosed = true;
             buf = null;
-            parent.openBuffers--;
+            parent.openBuffers.remove(this);
         }
     }
 
