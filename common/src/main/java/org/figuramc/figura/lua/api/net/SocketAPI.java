@@ -37,11 +37,10 @@ public class SocketAPI {
             throw new RuntimeException(e);
         }
         int maxSockets = parent.owner.permissions.get(Permissions.MAX_SOCKETS);
-        if (parent.owner.openSocketsCount > maxSockets)
+        if (parent.owner.openSockets.size() > maxSockets)
             throw new LuaError("You can't open more than %s sockets".formatted(maxSockets));
         try {
             FiguraSocket socket = new FiguraSocket(host, port, parent.owner);
-            parent.owner.openSocketsCount++;
             parent.owner.openSockets.add(socket);
             parent.log(NetworkingAPI.LogSource.SOCKET, Component.literal("Established connection to host %s".formatted(host)));
             return socket;

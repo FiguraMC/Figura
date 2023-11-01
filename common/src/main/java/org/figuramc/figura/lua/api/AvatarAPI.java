@@ -333,7 +333,7 @@ public class AvatarAPI {
     @LuaWhitelist
     @LuaMethodDoc("avatar.get_sockets_count")
     public int getSocketsCount() {
-        return avatar.openSocketsCount;
+        return avatar.openSockets.size();
     }
 
     @LuaWhitelist
