@@ -396,6 +396,7 @@ public class FiguraLuaRuntime {
         owner.clearParticles();
         owner.clearSounds();
         owner.closeSockets();
+        owner.closeBuffers();
     }
 
     public static LuaError parseError(Throwable e) {

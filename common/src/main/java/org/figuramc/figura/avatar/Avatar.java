@@ -900,6 +900,7 @@ public class Avatar {
         clearSounds();
         clearParticles();
         closeSockets();
+        closeBuffers();
 
         events.clear();
     }
@@ -916,6 +917,17 @@ public class Avatar {
             if (!socket.isClosed()) {
                 try {
                     socket.close();
+                } catch (Exception ignored) {}
+            }
+        }
+    }
+
+    public void closeBuffers() {
+        for (FiguraBuffer buffer :
+                openBuffers) {
+            if (!buffer.isClosed()) {
+                try {
+                    buffer.close();
                 } catch (Exception ignored) {}
             }
         }
