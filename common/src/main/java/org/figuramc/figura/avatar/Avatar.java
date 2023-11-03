@@ -916,10 +916,11 @@ public class Avatar {
                 openSockets) {
             if (!socket.isClosed()) {
                 try {
-                    socket.close();
+                    socket.baseClose();
                 } catch (Exception ignored) {}
             }
         }
+        openSockets.clear();
     }
 
     public void closeBuffers() {
@@ -927,10 +928,11 @@ public class Avatar {
                 openBuffers) {
             if (!buffer.isClosed()) {
                 try {
-                    buffer.close();
+                    buffer.baseClose();
                 } catch (Exception ignored) {}
             }
         }
+        openBuffers.clear();
     }
 
     public void clearParticles() {

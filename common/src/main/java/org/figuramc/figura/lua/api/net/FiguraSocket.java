@@ -96,10 +96,14 @@ public class FiguraSocket implements AutoCloseable {
     @Override
     @LuaWhitelist
     @LuaMethodDoc("socket.close")
-    public void close() throws Exception {
-        if(!isClosed()) {
+    public void close() throws IOException {
+        baseClose();
+        parent.openSockets.remove(this);
+    }
+
+    public void baseClose() throws IOException {
+        if (!isClosed()) {
             parentSocket.close();
-            parent.openSockets.remove(this);
         }
     }
 

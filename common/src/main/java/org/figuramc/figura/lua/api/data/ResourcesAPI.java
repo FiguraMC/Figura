@@ -56,6 +56,11 @@ public class ResourcesAPI {
         return new ArrayList<>(parent.resources.keySet());
     }
 
+    @LuaWhitelist
+    public FiguraInputStream __index(@LuaNotNil String path) {
+        return get(path);
+    }
+
     @Override
     public String toString() {
         return "ResourcesAPI";

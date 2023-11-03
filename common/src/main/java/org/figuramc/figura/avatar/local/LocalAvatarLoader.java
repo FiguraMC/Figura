@@ -177,7 +177,7 @@ public class LocalAvatarLoader {
                     gos.write(i);
                 }
                 gos.close();
-                resourcesTag.put(p, new ByteArrayTag(baos.toByteArray()));
+                resourcesTag.put(unixifyPath(p), new ByteArrayTag(baos.toByteArray()));
                 baos.close();
             }
             catch (IOException e) {
@@ -185,6 +185,15 @@ public class LocalAvatarLoader {
             }
         }
         nbt.put("resources", resourcesTag);
+    }
+
+    private static String unixifyPath(String original) {
+        Path p = Path.of(original);
+        String[] components = new String[p.getNameCount()];
+        for (int i = 0; i < components.length; i++) {
+            components[i] = p.getName(i).toString();
+        }
+        return String.join("/", components);
     }
 
     private static void matchPathsRecursive(Map<String, Path> pathMap, Path parent, Path current, ArrayList<PathMatcher> matchers) {

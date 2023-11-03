@@ -34,7 +34,7 @@ public class SocketAPI {
             parent.securityCheck(host);
         } catch (NetworkingAPI.LinkNotAllowedException e) {
             parent.error(NetworkingAPI.LogSource.SOCKET, Component.literal("Tried to establish connection to not allowed host %s".formatted(host)));
-            throw new RuntimeException(e);
+            throw e.luaError;
         }
         int maxSockets = parent.owner.permissions.get(Permissions.MAX_SOCKETS);
         if (parent.owner.openSockets.size() > maxSockets)

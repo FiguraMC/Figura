@@ -537,11 +537,15 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
     @Override
     @LuaWhitelist
     @LuaMethodDoc(value = "buffer.close")
-    public void close() throws Exception {
+    public void close() {
+        baseClose();
+        parent.openBuffers.remove(this);
+    }
+
+    public void baseClose() {
         if (!isClosed) {
             isClosed = true;
             buf = null;
-            parent.openBuffers.remove(this);
         }
     }
 

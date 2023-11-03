@@ -32,7 +32,7 @@ public class NetworkingAPI {
     private static FileOutputStream logFileOutputStream;
     private static final String NETWORKING_DISABLED_ERROR_TEXT = "Networking is disabled in config";
     private static final String NO_PERMISSION_ERROR_TEXT = "This avatar doesn't have networking permissions";
-    private static final String NETWORKING_DISALLOWED_FOR_LINK_ERROR = "Networking disallowed for link %s";
+    private static final String NETWORKING_DISALLOWED_FOR_LINK_ERROR = "Networking is not for link %s";
     final Avatar owner;
     @LuaWhitelist
     @LuaFieldDoc("net.http")
@@ -47,9 +47,9 @@ public class NetworkingAPI {
         socket = new SocketAPI(this);
     }
 
-    public void securityCheck(String link) throws LuaError {
+    public void securityCheck(String link) throws RuntimeException {
         if (!Configs.ALLOW_NETWORKING.value)
-            throw new NetworkingDisabledException(NETWORKING_DISABLED_ERROR_TEXT);
+            throw new LuaError(NETWORKING_DISABLED_ERROR_TEXT);
         if (owner.permissions.get(Permissions.NETWORKING) < 1) {
             owner.noPermissions.add(Permissions.NETWORKING);
             throw new LuaError(NO_PERMISSION_ERROR_TEXT);
@@ -186,18 +186,18 @@ public class NetworkingAPI {
             return switch (filterMode) {
                 case EQUALS -> s.trim().equals(filterSource);
                 case CONTAINS -> s.trim().contains(filterSource);
-                case REGEX -> s.trim().matches(filterSource);
                 case STARTS_WITH -> s.trim().startsWith(filterSource);
                 case ENDS_WITH -> s.trim().endsWith(filterSource);
+                case REGEX -> s.trim().matches(filterSource);
             };
         }
 
         public enum FilterMode {
             EQUALS(0),
             CONTAINS(1),
-            REGEX(2),
-            STARTS_WITH(3),
-            ENDS_WITH(4);
+            STARTS_WITH(2),
+            ENDS_WITH(3),
+            REGEX(4);
             private final int id;
             FilterMode(int id) {
                 this.id = id;
@@ -253,22 +253,10 @@ public class NetworkingAPI {
         };
     }
 
-    public static class NetworkingDisabledException extends LuaError {
-
-        public NetworkingDisabledException(String message) {
-            super(message);
-        }
-
-        @Override
-        public String toString() {
-            return "NetworkingDisabledException";
-        }
-    }
-
-    public static class LinkNotAllowedException extends LuaError {
-
+    static class LinkNotAllowedException extends RuntimeException {
+        public final LuaError luaError;
         public LinkNotAllowedException(String message) {
-            super(message);
+            luaError = new LuaError(message);
         }
 
         @Override

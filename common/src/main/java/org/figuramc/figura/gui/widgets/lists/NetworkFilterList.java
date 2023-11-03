@@ -158,7 +158,7 @@ public class NetworkFilterList extends AbstractList {
             if (entry.isVisible()) listElementsTotalHeight += 24;
         }
         if (listElementsTotalHeight > 0) listElementsTotalHeight -= 4;
-        listElementsHeightDifference = listElementsTotalHeight - (getHeight() - 60);
+        listElementsHeightDifference = Math.max(0, listElementsTotalHeight - (getHeight() - 60));
     }
 
     private void repositionContents() {

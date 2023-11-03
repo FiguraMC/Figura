@@ -273,7 +273,7 @@ public class HttpRequestsAPI {
                 parent.parent.securityCheck(uri);
             } catch (NetworkingAPI.LinkNotAllowedException e) {
                 parent.parent.error(NetworkingAPI.LogSource.HTTP, Component.literal("Tried to send %s request to not allowed link %s".formatted(method, uri)));
-                throw e;
+                throw e.luaError;
             }
             parent.parent.log(NetworkingAPI.LogSource.HTTP, Component.literal("Sent %s request to %s".formatted(method, uri)));
             HttpRequest req = this.getRequest();
