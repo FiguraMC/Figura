@@ -61,6 +61,7 @@ public class FiguraJsonSerializer {
         for (JsonElement elem :
                 array) {
             tbl.set(i, luaValueFromElement(elem));
+            i++;
         }
         return tbl;
     }
