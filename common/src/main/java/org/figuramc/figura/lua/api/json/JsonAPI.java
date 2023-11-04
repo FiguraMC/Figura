@@ -49,7 +49,7 @@ public class JsonAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            value = "json_serializer.is_serializable",
+            value = "json.is_serializable",
             overloads = @LuaMethodOverload(
                     argumentTypes = LuaValue.class,
                     argumentNames = "val",

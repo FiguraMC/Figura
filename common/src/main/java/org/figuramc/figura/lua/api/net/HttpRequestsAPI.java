@@ -279,8 +279,11 @@ public class HttpRequestsAPI {
             HttpRequest req = this.getRequest();
             FiguraFuture<HttpResponse> future = new FiguraFuture<>();
             var asyncResponse = parent.httpClient.sendAsync(req, java.net.http.HttpResponse.BodyHandlers.ofInputStream());
-            asyncResponse.thenAcceptAsync((response) -> future.complete(new HttpResponse(new FiguraInputStream(response.body()),
-                    response.statusCode(), response.headers().map())));
+            asyncResponse.whenCompleteAsync((response, t) -> {
+                if (t != null) future.error(t);
+                else future.complete(new HttpResponse(new FiguraInputStream(response.body()),
+                        response.statusCode(), response.headers().map()));
+            });
             return future;
         }
 

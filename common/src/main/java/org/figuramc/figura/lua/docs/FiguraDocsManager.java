@@ -16,10 +16,7 @@ import org.figuramc.figura.lua.api.action_wheel.Action;
 import org.figuramc.figura.lua.api.action_wheel.ActionWheelAPI;
 import org.figuramc.figura.lua.api.action_wheel.Page;
 import org.figuramc.figura.lua.api.data.*;
-import org.figuramc.figura.lua.api.json.FiguraJsonArray;
-import org.figuramc.figura.lua.api.json.FiguraJsonBuilder;
-import org.figuramc.figura.lua.api.json.FiguraJsonObject;
-import org.figuramc.figura.lua.api.json.FiguraJsonSerializer;
+import org.figuramc.figura.lua.api.json.*;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
 import org.figuramc.figura.lua.api.entity.LivingEntityAPI;
 import org.figuramc.figura.lua.api.entity.PlayerAPI;
@@ -256,6 +253,7 @@ public class FiguraDocsManager {
         ));
 
         put("json", List.of(
+                JsonAPI.class,
                 FiguraJsonBuilder.class,
                 FiguraJsonSerializer.class,
                 FiguraJsonObject.class,
