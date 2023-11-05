@@ -13,6 +13,8 @@ import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -165,7 +167,16 @@ public class FileAPI {
     )
     public String readString(@LuaNotNil String path, String encoding) {
         try (FiguraInputStream fis = openReadStream(path)) {
-            return fis.readString(null, encoding);
+            byte[] data = fis.readAllBytes();
+            Charset charset = encoding == null ? StandardCharsets.UTF_8 : switch (encoding.toLowerCase()) {
+                case "utf_16", "utf16" -> StandardCharsets.UTF_16;
+                case "utf_16be", "utf16be" -> StandardCharsets.UTF_16BE;
+                case "utf_16le", "utf16le" -> StandardCharsets.UTF_16LE;
+                case "ascii" -> StandardCharsets.US_ASCII;
+                case "iso_8859_1", "iso88591" -> StandardCharsets.ISO_8859_1;
+                default -> StandardCharsets.UTF_8;
+            };
+            return new String(data, charset);
         } catch (IOException e) {
             throw new LuaError(e);
         }
@@ -181,7 +192,15 @@ public class FileAPI {
     )
     public void writeString(@LuaNotNil String path, @LuaNotNil String data, String encoding) {
         try (FiguraOutputStream fos = openWriteStream(path)) {
-            fos.writeString(data, encoding);
+            Charset charset = encoding == null ? StandardCharsets.UTF_8 : switch (encoding.toLowerCase()) {
+                case "utf_16", "utf16" -> StandardCharsets.UTF_16;
+                case "utf_16be", "utf16be" -> StandardCharsets.UTF_16BE;
+                case "utf_16le", "utf16le" -> StandardCharsets.UTF_16LE;
+                case "ascii" -> StandardCharsets.US_ASCII;
+                case "iso_8859_1", "iso88591" -> StandardCharsets.ISO_8859_1;
+                default -> StandardCharsets.UTF_8;
+            };
+            fos.write(data.getBytes(charset));
         } catch (IOException e) {
             throw new LuaError(e);
         }
