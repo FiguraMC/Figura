@@ -177,6 +177,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
     }
 
     @Override
+    @LuaWhitelist
     @LuaMethodDoc(
             value = "buffer.read_base_64",
             overloads = {
@@ -195,6 +196,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
     }
 
     @Override
+    @LuaWhitelist
     @LuaMethodDoc(
             value = "buffer.read_byte_array",
             overloads = {
@@ -408,6 +410,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
     }
 
     @Override
+    @LuaWhitelist
     @LuaMethodDoc(
             value = "buffer.write_base_64",
             overloads = {
@@ -423,6 +426,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
     }
 
     @Override
+    @LuaWhitelist
     @LuaMethodDoc(
             value = "buffer.write_byte_array",
             overloads = {
