@@ -51,7 +51,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
         if (cap > getMaxCapacity())
             throw new LuaError("Can't increase this buffer capacity to %s, max capacity is %s"
                     .formatted(cap, getMaxCapacity()));
-        if (buf.length < cap) {
+        if (cap > buf.length) {
             buf = Arrays.copyOf(buf, buf.length + CAPACITY_INCREASE_STEP);
         }
     }
@@ -60,7 +60,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
     @LuaMethodDoc("buffer.read")
     public int read() {
         checkIsClosed();
-        if (position >= length) {
+        if (position == length) {
             return -1;
         }
         int v = buf[position] & 0xff;
@@ -224,9 +224,9 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
     )
     public void write(@LuaNotNil int val) {
         checkIsClosed();
-        if (position >= length) {
-            ensureBufCapacity(length++);
-            position = Math.min(position, length);
+        if (position == length) {
+            length++;
+            ensureBufCapacity(length);
         }
         buf[position] = (byte) (val & 0xFF);
         position++;
@@ -508,8 +508,8 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
         checkIsClosed();
         if (amount == null) amount = getMaxCapacity()-position;
         else amount = Math.max(Math.min(amount, getMaxCapacity()-position), 0);
-        int i;
-        for (i = 0; i < amount; i++) {
+        int i = 0;
+        for (; i < amount; i++) {
             int b = stream.read();
             if (b == -1) break;
             write(b);
