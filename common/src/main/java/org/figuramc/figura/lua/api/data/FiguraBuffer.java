@@ -52,7 +52,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
             throw new LuaError("Can't increase this buffer capacity to %s, max capacity is %s"
                     .formatted(cap, getMaxCapacity()));
         if (cap > buf.length) {
-            buf = Arrays.copyOf(buf, buf.length + CAPACITY_INCREASE_STEP);
+            buf = Arrays.copyOf(buf, Math.min(buf.length+CAPACITY_INCREASE_STEP, getMaxCapacity()));
         }
     }
 
