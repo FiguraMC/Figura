@@ -23,7 +23,7 @@ public class FiguraSocket implements AutoCloseable {
     public FiguraSocket(String host, int port, Avatar parent) throws IOException {
         this.parent = parent;
         this.parentSocket = new Socket(host, port);
-        this.socketInputStream = new FiguraInputStream(parentSocket.getInputStream());
+        this.socketInputStream = new FiguraInputStream(parentSocket.getInputStream(), true);
         this.socketOutputStream = new FiguraOutputStream(parentSocket.getOutputStream());
     }
 
