@@ -12,12 +12,15 @@ import org.luaj.vm2.LuaString;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Stack;
 
 @LuaWhitelist
 @LuaTypeDoc(value = "buffer", name = "Buffer")
-public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseable {
+public class FiguraBuffer implements AutoCloseable {
     private static final int CAPACITY_INCREASE_STEP = 512;
     private final Avatar parent;
     private int length = 0, position = 0;
@@ -56,6 +59,21 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
         }
     }
 
+    private byte[] readNBytes(int count) {
+        byte[] arr = new byte[Math.min(count, available())];
+        int b;
+        int i = 0;
+        for (; i < count && (b = this.read()) != -1; i++) {
+            arr[i] = (byte) b;
+        }
+        if (i < count) {
+            byte[] newArr = new byte[i];
+            System.arraycopy(arr, 0, newArr ,0, i);
+            arr = newArr;
+        }
+        return arr;
+    }
+
     @LuaWhitelist
     @LuaMethodDoc("buffer.read")
     public int read() {
@@ -72,84 +90,124 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
     @LuaMethodDoc("buffer.read_short")
     public int readShort() {
         checkIsClosed();
-        return FiguraReadable.super.readShort();
+        byte[] bytes = readNBytes(2);
+        short v = 0;
+        for (int i = 0; i < bytes.length; i++) {
+            v |= (short) ((bytes[((bytes.length - 1) - i)] & 0xFF) << (i * 8));
+        }
+        return v;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("buffer.read_ushort")
     public int readUShort() {
         checkIsClosed();
-        return FiguraReadable.super.readUShort();
+        byte[] bytes = readNBytes(2);
+        int v = 0;
+        for (int i = 0; i < bytes.length; i++) {
+            v |= (bytes[((bytes.length - 1) - i)] & 0xFF) << (i * 8);
+        }
+        return v;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("buffer.read_int")
     public int readInt() {
         checkIsClosed();
-        return FiguraReadable.super.readInt();
+        byte[] bytes = readNBytes(4);
+        int v = 0;
+        for (int i = 0; i < bytes.length; i++) {
+            v |= (bytes[((bytes.length - 1) - i)] & 0xFF) << (i * 8);
+        }
+        return v;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("buffer.read_long")
     public long readLong() {
         checkIsClosed();
-        return FiguraReadable.super.readLong();
+        byte[] bytes = readNBytes(8);
+        long v = 0;
+        for (int i = 0; i < bytes.length; i++) {
+            v |= (long) (bytes[((bytes.length - 1) - i)] & 0xFF) << (i * 8);
+        }
+        return v;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("buffer.read_float")
     public float readFloat() {
         checkIsClosed();
-        return FiguraReadable.super.readFloat();
+        return Float.intBitsToFloat(readInt());
     }
 
     @LuaWhitelist
     @LuaMethodDoc("buffer.read_double")
     public double readDouble() {
         checkIsClosed();
-        return FiguraReadable.super.readDouble();
+        return Double.longBitsToDouble(readLong());
     }
 
     @LuaWhitelist
     @LuaMethodDoc("buffer.read_short_le")
     public int readShortLE() {
         checkIsClosed();
-        return FiguraReadable.super.readShortLE();
+        byte[] bytes = readNBytes(2);
+        short v = 0;
+        for (int i = 0; i < bytes.length; i++) {
+            v |= (short) ((bytes[i] & 0xFF) << (i * 8));
+        }
+        return v;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("buffer.read_ushort_le")
     public int readUShortLE() {
         checkIsClosed();
-        return FiguraReadable.super.readUShortLE();
+        byte[] bytes = readNBytes(2);
+        int v = 0;
+        for (int i = 0; i < bytes.length; i++) {
+            v |= (bytes[i] & 0xFF) << (i * 8);
+        }
+        return v;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("buffer.read_int_le")
     public int readIntLE() {
         checkIsClosed();
-        return FiguraReadable.super.readIntLE();
+        byte[] bytes = readNBytes(4);
+        int v = 0;
+        for (int i = 0; i < bytes.length; i++) {
+            v |= (bytes[i] & 0xFF) << (i * 8);
+        }
+        return v;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("buffer.read_long_le")
     public long readLongLE() {
         checkIsClosed();
-        return FiguraReadable.super.readLongLE();
+        byte[] bytes = readNBytes(8);
+        long v = 0;
+        for (int i = 0; i < bytes.length; i++) {
+            v |= (long) (bytes[i] & 0xFF) << (i * 8);
+        }
+        return v;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("buffer.read_float_le")
     public float readFloatLE() {
         checkIsClosed();
-        return FiguraReadable.super.readFloatLE();
+        return Float.intBitsToFloat(readIntLE());
     }
 
     @LuaWhitelist
     @LuaMethodDoc("buffer.read_double_le")
     public double readDoubleLE() {
         checkIsClosed();
-        return FiguraReadable.super.readDoubleLE();
+        return Double.longBitsToDouble(readLongLE());
     }
 
     @LuaWhitelist
@@ -173,10 +231,19 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
     )
     public String readString(Integer length, String encoding) {
         checkIsClosed();
-        return FiguraReadable.super.readString(length, encoding);
+        length = length == null ? available() : Math.max(length, 0);
+        Charset charset = encoding == null ? StandardCharsets.UTF_8 : switch (encoding.toLowerCase()) {
+            case "utf_16", "utf16" -> StandardCharsets.UTF_16;
+            case "utf_16be", "utf16be" -> StandardCharsets.UTF_16BE;
+            case "utf_16le", "utf16le" -> StandardCharsets.UTF_16LE;
+            case "ascii" -> StandardCharsets.US_ASCII;
+            case "iso_8859_1", "iso88591" -> StandardCharsets.ISO_8859_1;
+            default -> StandardCharsets.UTF_8;
+        };
+        byte[] strBuf = readNBytes(length);
+        return new String(strBuf, charset);
     }
 
-    @Override
     @LuaWhitelist
     @LuaMethodDoc(
             value = "buffer.read_base_64",
@@ -192,10 +259,11 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
             }
     )
     public String readBase64(Integer length) {
-        return FiguraReadable.super.readBase64(length);
+        length = length == null ? available() : Math.max(length, 0);
+        byte[] strBuf = readNBytes(length);
+        return Base64.getEncoder().encodeToString(strBuf);
     }
 
-    @Override
     @LuaWhitelist
     @LuaMethodDoc(
             value = "buffer.read_byte_array",
@@ -211,7 +279,9 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
             }
     )
     public LuaString readByteArray(Integer length) {
-        return FiguraReadable.super.readByteArray(length);
+        length = length == null ? available() : Math.max(length, 0);
+        byte[] strBuf = readNBytes(length);
+        return LuaString.valueOf(strBuf);
     }
 
     @LuaWhitelist
@@ -232,6 +302,12 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
         position++;
     }
 
+    private void writeBytes(byte[] bytes) {
+        for (byte aByte : bytes) {
+            write(aByte & 0xff);
+        }
+    }
+
     @LuaWhitelist
     @LuaMethodDoc(
             value = "buffer.write_short",
@@ -242,7 +318,12 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
     )
     public void writeShort(@LuaNotNil Integer val) {
         checkIsClosed();
-        FiguraWritable.super.writeShort(val);
+        if (val >= Short.MIN_VALUE && val <= Short.MAX_VALUE) {
+            short s = (short) (int) val;
+            write((s >> 8) & 0xFF);
+            write(s & 0xFF);
+        }
+        else throw new LuaError("Value %s is out of range [%s; %s]".formatted(val, Short.MIN_VALUE, Short.MAX_VALUE));
     }
 
     @LuaWhitelist
@@ -255,7 +336,12 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
     )
     public void writeUShort(@LuaNotNil Integer val) {
         checkIsClosed();
-        FiguraWritable.super.writeUShort(val);
+        if (val >= 0 && val <= Character.MAX_VALUE) {
+            char s = (char) (int) val;
+            write((s >> 8) & 0xFF);
+            write(s & 0xFF);
+        }
+        else throw new LuaError("Value %s is out of range [%s; %s]".formatted(val, 0, (int) Character.MAX_VALUE));
     }
 
     @LuaWhitelist
@@ -268,7 +354,10 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
     )
     public void writeInt(@LuaNotNil Integer val) {
         checkIsClosed();
-        FiguraWritable.super.writeInt(val);
+        write((val >> 24) & 0xFF);
+        write((val >> 16) & 0xFF);
+        write((val >> 8) & 0xFF);
+        write(val & 0xFF);
     }
 
     @LuaWhitelist
@@ -281,7 +370,14 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
     )
     public void writeLong(@LuaNotNil Long val) {
         checkIsClosed();
-        FiguraWritable.super.writeLong(val);
+        write((int) ((val >> 56) & 0xFF));
+        write((int) ((val >> 48) & 0xFF));
+        write((int) ((val >> 40) & 0xFF));
+        write((int) ((val >> 32) & 0xFF));
+        write((int) ((val >> 24) & 0xFF));
+        write((int) ((val >> 16) & 0xFF));
+        write((int) ((val >> 8) & 0xFF));
+        write((int) (val & 0xFF));
     }
 
     @LuaWhitelist
@@ -294,7 +390,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
     )
     public void writeFloat(@LuaNotNil Float val) {
         checkIsClosed();
-        FiguraWritable.super.writeFloat(val);
+        writeInt(Float.floatToIntBits(val));
     }
 
     @LuaWhitelist
@@ -307,7 +403,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
     )
     public void writeDouble(@LuaNotNil Double val) {
         checkIsClosed();
-        FiguraWritable.super.writeDouble(val);
+        writeLong(Double.doubleToLongBits(val));
     }
 
     @LuaWhitelist
@@ -320,7 +416,12 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
     )
     public void writeShortLE(@LuaNotNil Integer val) {
         checkIsClosed();
-        FiguraWritable.super.writeShortLE(val);
+        if (val >= Short.MIN_VALUE && val <= Short.MAX_VALUE) {
+            short s = (short) (int) val;
+            write(s & 0xFF);
+            write((s >> 8) & 0xFF);
+        }
+        else throw new LuaError("Value %s is out of range [%s; %s]".formatted(val, Short.MIN_VALUE, Short.MAX_VALUE));
     }
 
     @LuaWhitelist
@@ -333,7 +434,12 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
     )
     public void writeUShortLE(@LuaNotNil Integer val) {
         checkIsClosed();
-        FiguraWritable.super.writeUShortLE(val);
+        if (val >= 0 && val <= Character.MAX_VALUE) {
+            char s = (char) (int) val;
+            write(s & 0xFF);
+            write((s >> 8) & 0xFF);
+        }
+        else throw new LuaError("Value %s is out of range [%s; %s]".formatted(val, 0, (int) Character.MAX_VALUE));
     }
 
     @LuaWhitelist
@@ -346,7 +452,10 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
     )
     public void writeIntLE(@LuaNotNil Integer val) {
         checkIsClosed();
-        FiguraWritable.super.writeIntLE(val);
+        write(val & 0xFF);
+        write((val >> 8) & 0xFF);
+        write((val >> 16) & 0xFF);
+        write((val >> 24) & 0xFF);
     }
 
     @LuaWhitelist
@@ -359,7 +468,14 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
     )
     public void writeLongLE(@LuaNotNil Long val) {
         checkIsClosed();
-        FiguraWritable.super.writeLongLE(val);
+        write((int) (val & 0xFF));
+        write((int) ((val >> 8) & 0xFF));
+        write((int) ((val >> 16) & 0xFF));
+        write((int) ((val >> 24) & 0xFF));
+        write((int) ((val >> 32) & 0xFF));
+        write((int) ((val >> 40) & 0xFF));
+        write((int) ((val >> 48) & 0xFF));
+        write((int) ((val >> 56) & 0xFF));
     }
 
     @LuaWhitelist
@@ -372,7 +488,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
     )
     public void writeFloatLE(@LuaNotNil Float val) {
         checkIsClosed();
-        FiguraWritable.super.writeFloatLE(val);
+        writeIntLE(Float.floatToIntBits(val));
     }
 
     @LuaWhitelist
@@ -385,7 +501,7 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
     )
     public void writeDoubleLE(@LuaNotNil Double val) {
         checkIsClosed();
-        FiguraWritable.super.writeDoubleLE(val);
+        writeLongLE(Double.doubleToLongBits(val));
     }
 
     @LuaWhitelist
@@ -406,10 +522,19 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
     )
     public int writeString(@LuaNotNil String val, String encoding) {
         checkIsClosed();
-        return FiguraWritable.super.writeString(val, encoding);
+        Charset charset = encoding == null ? StandardCharsets.UTF_8 : switch (encoding.toLowerCase()) {
+            case "utf_16", "utf16" -> StandardCharsets.UTF_16;
+            case "utf_16be", "utf16be" -> StandardCharsets.UTF_16BE;
+            case "utf_16le", "utf16le" -> StandardCharsets.UTF_16LE;
+            case "ascii" -> StandardCharsets.US_ASCII;
+            case "iso_8859_1", "iso88591" -> StandardCharsets.ISO_8859_1;
+            default -> StandardCharsets.UTF_8;
+        };
+        byte[] strBytes = val.getBytes(charset);
+        writeBytes(strBytes);
+        return strBytes.length;
     }
-
-    @Override
+    
     @LuaWhitelist
     @LuaMethodDoc(
             value = "buffer.write_base_64",
@@ -422,10 +547,12 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
             }
     )
     public int writeBase64(@LuaNotNil String base64String) {
-        return FiguraWritable.super.writeBase64(base64String);
+        checkIsClosed();
+        byte[] base64Bytes = Base64.getDecoder().decode(base64String);
+        writeBytes(base64Bytes);
+        return base64Bytes.length;
     }
 
-    @Override
     @LuaWhitelist
     @LuaMethodDoc(
             value = "buffer.write_byte_array",
@@ -438,7 +565,11 @@ public class FiguraBuffer implements FiguraReadable, FiguraWritable, AutoCloseab
             }
     )
     public int writeByteArray(@LuaNotNil LuaString byteArray) {
-        return FiguraWritable.super.writeByteArray(byteArray);
+        checkIsClosed();
+        byte[] bytes = new byte[byteArray.length()];
+        byteArray.copyInto(0, bytes, 0, bytes.length);
+        writeBytes(bytes);
+        return bytes.length;
     }
 
     @LuaWhitelist
