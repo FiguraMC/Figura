@@ -12,6 +12,6 @@ import org.figuramc.figura.mixin.render.layers.HumanoidArmorLayerAccessor;
 
 public class RenderUtilsImpl {
     public static <T extends LivingEntity, M extends HumanoidModel<T>, A extends HumanoidModel<T>> ResourceLocation getArmorResource(HumanoidArmorLayer<T, M, A> armorLayer, Entity entity, ItemStack stack, ArmorItem armorItem, EquipmentSlot slot, boolean isInner, String type) {
-        return ((HumanoidArmorLayerAccessor<T, M, A>) armorLayer).getArmorLocation(armorItem, isInner, type);
+        return ((HumanoidArmorLayerAccessor<T, M, A>) armorLayer).invokeGetArmorLocation(armorItem, isInner, type);
     }
 }
