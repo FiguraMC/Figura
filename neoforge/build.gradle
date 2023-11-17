@@ -4,19 +4,7 @@ plugins {
 
 architectury {
     platformSetupLoomIde()
-    forge()
-}
-
-loom {
-    accessWidenerPath = project(":common").loom.accessWidenerPath
-
-    forge {
-        convertAccessWideners = true
-        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
-
-        mixinConfig "figura-common.mixins.json"
-        mixinConfig "figura.mixins.json"
-    }
+    neoForge()
 }
 
 configurations {
@@ -24,7 +12,7 @@ configurations {
     shadowCommon // Don't use shadow from the shadow plugin since it *excludes* files.
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
-    developmentForge.extendsFrom common
+    developmentNeoForge.extendsFrom common
 }
 
 dependencies {
@@ -38,10 +26,10 @@ dependencies {
     include(forgeRuntimeLibrary("com.github.FiguraMC.LuaJ:luaj-jse:$luaj-figura"))
     include(forgeRuntimeLibrary("org.java-websocket:Java-WebSocket:$websocket"))
 
-    forge "net.minecraftforge:forge:${rootProject.forge_version}"
+    neoForge "net.neoforged:neoforge:${rootProject.neoforge_version}"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+    shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive = false }
 }
 
 processResources {
@@ -67,9 +55,11 @@ shadowJar {
 }
 
 remapJar {
+
+    atAccessWideners.add(project(":common").loom.accessWidenerPath.get().asFile.name)
     input.set shadowJar.archiveFile
     dependsOn shadowJar
-    archiveClassifier.set "minecraftforge-mc"
+    archiveClassifier.set "neoforge-mc"
 }
 
 jar {

@@ -1,31 +1,31 @@
-package org.figuramc.figura.forge;
+package org.figuramc.figura.neoforge;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
-import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
-import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.client.gui.overlay.NamedGuiOverlay;
-import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiOverlaysEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RenderGuiOverlayEvent;
+import net.neoforged.neoforge.client.gui.overlay.NamedGuiOverlay;
+import net.neoforged.neoforge.client.gui.overlay.VanillaGuiOverlay;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
-import org.figuramc.figura.config.forge.ModConfig;
-import org.figuramc.figura.gui.forge.GuiOverlay;
-import org.figuramc.figura.gui.forge.GuiUnderlay;
-import org.figuramc.figura.utils.forge.FiguraResourceListenerImpl;
+import org.figuramc.figura.config.neoforge.ModConfig;
+import org.figuramc.figura.gui.neoforge.GuiOverlay;
+import org.figuramc.figura.gui.neoforge.GuiUnderlay;
+import org.figuramc.figura.utils.neoforge.FiguraResourceListenerImpl;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Mod.EventBusSubscriber(modid = FiguraMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-public class FiguraModClientForge extends FiguraMod {
+public class FiguraModClientNeoForge extends FiguraMod {
     // keybinds stored here
     public static List<KeyMapping> KEYBINDS = new ArrayList<>();
 

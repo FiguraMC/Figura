@@ -29,6 +29,10 @@ dependencies {
 
     // Test compile only is used to mount sources on an IDE without overriding vanilla classes with Optifine's
     testCompileOnly fileTree(dir: "$rootProject.projectDir/libs", include: '*.jar')
+
+    // Mods
+    modCompileOnly "maven.modrinth:iris:$iris"
+    modCompileOnly "maven.modrinth:immediatelyfast:$immediately_fast"
 }
 
 publishing {

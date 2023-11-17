@@ -1,0 +1,37 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+issueTrackerURL = "https://github.com/FiguraMC/Figura/issues"
+license = "LGPL-2.1"
+displayURL = "https://github.com/FiguraMC/Figura"
+
+[[mods]]
+modId = "figura"
+version = "${version}"
+displayName = "Figura"
+authors = "skyrina"
+description = '''
+Extensive customization of the Player model
+'''
+logoFile = "icon.png"
+
+[modproperties.figura]
+assets_version="${assets_version}"
+
+[[dependencies.figura]]
+modId = "neoforge"
+mandatory = true
+versionRange = "[20.2,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.figura]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[${minecraft_version},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[mixins]]
+config = "figura-common.mixins.json"
+[[mixins]]
+config = "figura.mixins.json"
