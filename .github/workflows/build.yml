@@ -17,8 +17,6 @@ jobs:
           check-latest: true
       - name: Build using Gradle
         run: ./gradlew build
-      - name: Merge Fabric and Forge JARs
-        run: ./gradlew mergeJars
       - name: Upload Fabric artifacts to GitHub
         uses: actions/upload-artifact@v3
         with:
@@ -29,8 +27,8 @@ jobs:
         with:
           name: Forge-Artifacts
           path: forge/build/libs/
-      - name: Upload Merged JAR to GitHub
+      - name: Upload NeoForge artifacts to GitHub
         uses: actions/upload-artifact@v3
         with:
-          name: Merged-JAR
-          path: Merged/
+          name: Forge-Artifacts
+          path: forge/build/libs/
