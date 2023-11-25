@@ -396,33 +396,49 @@ public class WorldAPI {
     @LuaMethodDoc(
             overloads = {
                     @LuaMethodOverload(
-                    argumentTypes = {Boolean.class, FiguraVec3.class, FiguraVec3.class},
-                    argumentNames = {"fluid", "start", "end"}
+                            argumentTypes = {String.class, String.class, FiguraVec3.class, FiguraVec3.class},
+                            argumentNames = {"blockCastType", "fluidCastType", "start", "end"}
                     ),
                     @LuaMethodOverload(
-                            argumentTypes = {Boolean.class, Double.class, Double.class, Double.class, FiguraVec3.class},
-                            argumentNames = {"fluid", "startX", "startY", "startZ", "end"}
+                            argumentTypes = {String.class, String.class, Double.class, Double.class, Double.class, FiguraVec3.class},
+                            argumentNames = {"blockCastType", "fluidCastType", "startX", "startY", "startZ", "end"}
                     ),
                     @LuaMethodOverload(
-                            argumentTypes = {Boolean.class, FiguraVec3.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"fluid", "start", "endX", "endY", "endZ"}
+                            argumentTypes = {String.class, String.class, FiguraVec3.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"blockCastType", "fluidCastType", "start", "endX", "endY", "endZ"}
                     ),
                     @LuaMethodOverload(
-                            argumentTypes = {Boolean.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"fluid", "startX", "startY", "startZ", "endX", "endY", "endZ"}
+                            argumentTypes = {String.class, String.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"blockCastType", "fluidCastType", "startX", "startY", "startZ", "endX", "endY", "endZ"}
                     )
                 }
             ,
             value = "world.raycast_block"
     )
-    public static HashMap<String, Object> raycastBlock(boolean fluid, Object x, Object y, Double z, Object w, Double t, Double h) {
+    public static HashMap<String, Object> raycastBlock(String blockCastType, String fluidCastType, Object x, Object y, Double z, Object w, Double t, Double h) {
         FiguraVec3 start, end;
 
         Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("raycastBlock", x, y, z, w, t, h,1);
         start = pair.getFirst();
         end = pair.getSecond();
 
-        BlockHitResult result = getCurrentWorld().clip(new ClipContext(start.asVec3(), end.asVec3(), ClipContext.Block.OUTLINE, fluid ? ClipContext.Fluid.NONE : ClipContext.Fluid.ANY, new Marker(EntityType.MARKER, getCurrentWorld())));
+        ClipContext.Block blockContext;
+        try{
+            blockContext = blockCastType != null ? ClipContext.Block.valueOf(blockCastType.toUpperCase()) : ClipContext.Block.OUTLINE;
+        }
+        catch(IllegalArgumentException e){
+            throw new LuaError("Invalid blockRaycastType provided");
+        }
+
+        ClipContext.Fluid fluidContext;
+        try{
+            fluidContext = fluidCastType != null ? ClipContext.Fluid.valueOf(fluidCastType.toUpperCase()) : ClipContext.Fluid.NONE;
+        }
+        catch(IllegalArgumentException e){
+            throw new LuaError("Invalid fluidRaycastType provided");
+        }
+
+        BlockHitResult result = getCurrentWorld().clip(new ClipContext(start.asVec3(), end.asVec3(), blockContext, fluidContext, new Marker(EntityType.MARKER, getCurrentWorld())));
         if (result == null || result.getType() == HitResult.Type.MISS)
             return null;
 

@@ -585,6 +585,8 @@
     "figura.docs.enum.player_model_parts": "List of valid PlayerModelParts\nUsed within the PlayerAPI",
     "figura.docs.enum.use_actions": "List of valid UseActions\nUsed within the ItemStackAPI",
     "figura.docs.enum.render_modes": "List of valid RenderModes\nUsed within the RENDER event",
+    "figura.docs.enum.block_raycast_types": "List of valid BlockRaycastTypes\nUsed to determine how world.raycastBlocks handles blocks",
+    "figura.docs.enum.fluid_raycast_types": "List of valid FluidRaycastTypes\nUsed to determine how world.raycastBlocks handles fluids",
     "figura.docs.globals": "Documentation for the various things Figura adds to the global lua state",
     "figura.docs.globals.vec": "An alias for \"vectors.vec\"",
     "figura.docs.globals.require": "The require() function takes the name of one of your scripts, without the .lua extension\nIf this script has not been already run before, it will run that script and return the value that script returns\nIf it has been run before, then it will not run the file again, but it will return the same thing as the first time\nIf a required script has no returns, then require() will return true\nIf the name you give isn't any of your scripts, it will error",
@@ -1592,5 +1594,5 @@
     "figura.docs.world.get_build_height": "Returns the minimum and maximum build height of the world, as varargs",
     "figura.docs.world.get_spawn_point": "Returns a vector with the coordinates of the world spawn",
     "figura.docs.world.raycast_entity": "Raycasts an Entity in the world, returns a map containing the entity and it's position.",
-    "figura.docs.world.raycast_block": "Raycasts a Block in the world, returns a map containing the block and it's position."
+    "figura.docs.world.raycast_block": "Raycasts a Block in the world, returns a map containing the block and it's position.\nblockCastType and fluidCastType determine how the raycast handles block shapes and fluids.\nWill default to \"OUTLINE\" and \"NONE\" when nil"
 }
