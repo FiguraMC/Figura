@@ -1593,6 +1593,6 @@
     "figura.docs.world.exists": "Checks whether or not a world currently exists\nThis will almost always be true, but might be false on some occasions such as while travelling between dimensions",
     "figura.docs.world.get_build_height": "Returns the minimum and maximum build height of the world, as varargs",
     "figura.docs.world.get_spawn_point": "Returns a vector with the coordinates of the world spawn",
-    "figura.docs.world.raycast_entity": "Raycasts an Entity in the world, returns a map containing the entity and it's position.",
+    "figura.docs.world.raycast_entity": "Raycasts an Entity in the world, returns a map containing the entity and it's position.\npredicate is a function that prevents specific entities from being raycasted.\nTakes in a single EntityAPI object. Return true for valid entities, false for invalid.\nMarks all entities as valid when nil",
     "figura.docs.world.raycast_block": "Raycasts a Block in the world, returns a map containing the block and it's position.\nblockCastType and fluidCastType determine how the raycast handles block shapes and fluids.\nWill default to \"OUTLINE\" and \"NONE\" when nil"
 }
