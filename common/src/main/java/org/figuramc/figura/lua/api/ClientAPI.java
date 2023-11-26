@@ -292,8 +292,7 @@ public class ClientAPI {
             value = "client.get_text_height"
     )
     public static int getTextHeight(String text) {
-        int lineHeight = Minecraft.getInstance().font.lineHeight;
-        return text == null ? lineHeight : lineHeight * TextUtils.splitText(TextUtils.tryParseJson(text), "\n").size();
+        return TextUtils.getHeight(TextUtils.splitText(TextUtils.tryParseJson(text), "\n"), Minecraft.getInstance().font);
     }
 
     @LuaWhitelist
@@ -315,7 +314,7 @@ public class ClientAPI {
         Font font = Minecraft.getInstance().font;
         List<Component> list = TextUtils.formatInBounds(component, font, maxWidth, wrap == null || wrap);
         int x = TextUtils.getWidth(list, font);
-        int y = list.size() * font.lineHeight;
+        int y = TextUtils.getHeight(list, font);
         return FiguraVec2.of(x, y);
     }
 
