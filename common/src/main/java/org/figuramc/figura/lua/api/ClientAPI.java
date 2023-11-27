@@ -292,7 +292,6 @@ public class ClientAPI {
             value = "client.get_text_height"
     )
     public static int getTextHeight(String text) {
-        if (text == "") return 0;
         return TextUtils.getHeight(TextUtils.splitText(TextUtils.tryParseJson(text), "\n"), Minecraft.getInstance().font);
     }
 
@@ -315,7 +314,7 @@ public class ClientAPI {
         Font font = Minecraft.getInstance().font;
         List<Component> list = TextUtils.formatInBounds(component, font, maxWidth, wrap == null || wrap);
         int x = TextUtils.getWidth(list, font);
-        int y = text == "" ? 0 : TextUtils.getHeight(list, font);
+        int y = TextUtils.getHeight(list, font);
         return FiguraVec2.of(x, y);
     }
 
