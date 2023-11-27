@@ -292,6 +292,7 @@ public class ClientAPI {
             value = "client.get_text_height"
     )
     public static int getTextHeight(String text) {
+        if (text == "") return 0;
         return TextUtils.getHeight(TextUtils.splitText(TextUtils.tryParseJson(text), "\n"), Minecraft.getInstance().font);
     }
 
