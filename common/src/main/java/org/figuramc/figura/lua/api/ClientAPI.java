@@ -315,7 +315,7 @@ public class ClientAPI {
         Font font = Minecraft.getInstance().font;
         List<Component> list = TextUtils.formatInBounds(component, font, maxWidth, wrap == null || wrap);
         int x = TextUtils.getWidth(list, font);
-        int y = TextUtils.getHeight(list, font);
+        int y = text == "" ? 0 : TextUtils.getHeight(list, font);
         return FiguraVec2.of(x, y);
     }
 
