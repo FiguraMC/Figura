@@ -13,8 +13,6 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.UseAnim;
-import net.minecraft.world.level.ClipContext;
-
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.animation.Animation;
 import org.figuramc.figura.mixin.input.KeyMappingAccessor;
@@ -91,14 +89,6 @@ public class FiguraListDocs {
         for (EntityRenderMode value : EntityRenderMode.values())
             add(value.name());
     }};
-    private static final LinkedHashSet<String> BLOCK_RAYCAST_TYPE = new LinkedHashSet<>() {{
-        for (ClipContext.Block value : ClipContext.Block.values())
-            add(value.name());
-    }};
-    private static final LinkedHashSet<String> FLUID_RAYCAST_TYPE = new LinkedHashSet<>() {{
-        for (ClipContext.Fluid value : ClipContext.Fluid.values())
-            add(value.name());
-    }};
 
     private enum ListDoc {
         KEYBINDS(() -> FiguraListDocs.KEYBINDS, "Keybinds", "keybinds", 2),
@@ -114,9 +104,7 @@ public class FiguraListDocs {
         COLORS(() -> FiguraListDocs.COLORS, "Colors", "colors", 1),
         PLAYER_MODEL_PARTS(() -> FiguraListDocs.PLAYER_MODEL_PARTS, "PlayerModelParts", "player_model_parts", 1),
         USE_ACTIONS(() -> FiguraListDocs.USE_ACTIONS, "UseActions", "use_actions", 1),
-        RENDER_MODES(() -> FiguraListDocs.RENDER_MODES, "RenderModes", "render_modes", 1),
-        BLOCK_RAYCAST_TYPE(() -> FiguraListDocs.BLOCK_RAYCAST_TYPE, "BlockRaycastTypes", "block_raycast_types", 1),
-        FLUID_RAYCAST_TYPE(() -> FiguraListDocs.FLUID_RAYCAST_TYPE, "FluidRaycastTypes", "fluid_raycast_types", 1);
+        RENDER_MODES(() -> FiguraListDocs.RENDER_MODES, "RenderModes", "render_modes", 1);
 
         private final Supplier<Object> supplier;
         private final String name, id;
