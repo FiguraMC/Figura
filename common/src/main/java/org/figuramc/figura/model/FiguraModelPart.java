@@ -1364,9 +1364,13 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             value = "model_part.move_to"
     )
     public FiguraModelPart moveTo(@LuaNotNil FiguraModelPart part) {
-        if (parent != null)
+        if (parent != null) {
             parent.children.remove(this);
+            parent.childCache.remove(this.name);
+        }
         part.children.add(this);
+        if(part.childCache.get(this.name) == null)
+            part.childCache.put(this.name, this);
         this.parent = part;
         return this;
     }
@@ -1388,6 +1392,8 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         }
 
         this.children.add(part);
+        if(this.childCache.get(part.name) == null)
+            this.childCache.put(part.name, part);
         part.parent = this;
         return this;
     }
@@ -1403,6 +1409,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     public FiguraModelPart removeChild(@LuaNotNil FiguraModelPart part) {
         if (this.children.contains(part)) {
             this.children.remove(part);
+            this.childCache.remove(part.name);
             part.parent = null;
         }
         return this;
