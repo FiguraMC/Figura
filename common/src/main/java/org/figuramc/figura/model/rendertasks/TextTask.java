@@ -118,7 +118,7 @@ public class TextTask extends RenderTask {
 
         Font font = Minecraft.getInstance().font;
         cacheWidth = TextUtils.getWidth(this.text, font);
-        cacheHeight = this.text.size() * font.lineHeight;
+        cacheHeight = TextUtils.getHeight(this.text, font);
     }
 
 
