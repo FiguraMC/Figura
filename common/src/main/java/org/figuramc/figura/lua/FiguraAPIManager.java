@@ -152,7 +152,7 @@ public class FiguraAPIManager {
         put("avatar", r -> r.avatar_meta = new AvatarAPI(r.owner));
         put("vectors", r -> VectorsAPI.INSTANCE);
         put("matrices", r -> MatricesAPI.INSTANCE);
-        put("world", r -> WorldAPI.INSTANCE);
+        put("world", r -> new WorldAPI(r.owner));
         put("pings", r -> r.ping = new PingAPI(r.owner));
         put("textures", r -> r.texture = new TextureAPI(r.owner));
         put("config", r -> new ConfigAPI(r.owner));
