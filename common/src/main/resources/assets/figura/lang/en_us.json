@@ -585,6 +585,8 @@
     "figura.docs.enum.player_model_parts": "List of valid PlayerModelParts\nUsed within the PlayerAPI",
     "figura.docs.enum.use_actions": "List of valid UseActions\nUsed within the ItemStackAPI",
     "figura.docs.enum.render_modes": "List of valid RenderModes\nUsed within the RENDER event",
+    "figura.docs.enum.block_raycast_types": "List of valid BlockRaycastTypes\nUsed to determine how raycast.block handles blocks",
+    "figura.docs.enum.fluid_raycast_types": "List of valid FluidRaycastTypes\nUsed to determine how raycast.block handles fluids",
     "figura.docs.globals": "Documentation for the various things Figura adds to the global lua state",
     "figura.docs.globals.vec": "An alias for \"vectors.vec\"",
     "figura.docs.globals.require": "The require() function takes the name of one of your scripts, without the .lua extension\nIf this script has not been already run before, it will run that script and return the value that script returns\nIf it has been run before, then it will not run the file again, but it will return the same thing as the first time\nIf a required script has no returns, then require() will return true\nIf the name you give isn't any of your scripts, it will error",
@@ -617,6 +619,7 @@
     "figura.docs.globals.pings": "The global instance of PingAPI",
     "figura.docs.globals.textures": "The global instance of the TextureAPI",
     "figura.docs.globals.config": "The global instance of the ConfigAPI",
+    "figura.docs.globals.raycast": "The global instance of RaycastAPI",
     "figura.docs.math": "Contains functions which Figura adds to the default Lua \"math\" library table",
     "figura.docs.math.player_scale": "The constant of the player scaling related to the world",
     "figura.docs.math.world_scale": "The constant of the world scaling related with the player",
@@ -1271,6 +1274,9 @@
     "figura.docs.particle.set_physics": "Sets if this particle has physics",
     "figura.docs.pings": "A global API dedicated to register and call pings",
     "figura.docs.ping_function": "A custom function wrapped with networking data",
+    "figura.docs.raycast": "A global API which provides functions for raycasting",
+    "figura.docs.raycast.block": "Raycasts a Block in the world.\nIf successful, returns the BlockState hit, the exact world position hit as a Vector3, and the side of the block that was hit.\nWhen unsuccessful, returns nil.\nblockCastType and fluidCastType determine how the raycast handles block shapes and fluids.\nWill default to \"COLLIDER\" and \"NONE\" when nil",
+    "figura.docs.raycast.entity": "Raycasts an Entity in the world\nIf successful, returns the EntityAPI hit and the exact world position hit as a Vector3.\nWhen unsuccessful, returns nil.\npredicate is a function that prevents specific entities from being raycasted.\nTakes in a single EntityAPI object. Return true for valid entities, false for invalid.\nMarks all entities as valid when nil",
     "figura.docs.render_task": "Represents a rendering task for Figura to complete each frame\nAn abstract superclass of ItemTask, BlockTask, and TextTask",
     "figura.docs.render_task.remove": "Removes this render task from the parent model part",
     "figura.docs.render_task.get_name": "Get this task's name",
@@ -1590,7 +1596,5 @@
     "figura.docs.world.new_item": "Parses and create a new ItemStack from the given string\nA count and damage can be given, to be applied on this itemstack",
     "figura.docs.world.exists": "Checks whether or not a world currently exists\nThis will almost always be true, but might be false on some occasions such as while travelling between dimensions",
     "figura.docs.world.get_build_height": "Returns the minimum and maximum build height of the world, as varargs",
-    "figura.docs.world.get_spawn_point": "Returns a vector with the coordinates of the world spawn",
-    "figura.docs.world.raycast_entity": "Raycasts an Entity in the world, returns a map containing the entity and it's position.",
-    "figura.docs.world.raycast_block": "Raycasts a Block in the world, returns a map containing the block and it's position."
+    "figura.docs.world.get_spawn_point": "Returns a vector with the coordinates of the world spawn"
 }
