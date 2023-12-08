@@ -862,6 +862,7 @@
     "figura.docs.client.get_active_resource_packs": "Returns a table with the active resource pack names",
     "figura.docs.client.get_figura_version": "Gets the client Figura version",
     "figura.docs.client.compare_versions": "Compares two versions if they are less than (-1), equals (0) or greater than (1)",
+    "figura.docs.client.generate_uuid": "Generates a random UUID",
     "figura.docs.client.int_uuid_to_string": "Converts an int array UUID (as 4 separated arguments) into its hexadecimal string representation",
     "figura.docs.client.uuid_to_int_array": "Converts a string UUID into its int array representation, returning a varargs of 4 ints",
     "figura.docs.client.get_viewer": "Returns the player entity from the running client",
