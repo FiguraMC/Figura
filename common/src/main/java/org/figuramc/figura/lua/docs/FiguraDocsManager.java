@@ -224,6 +224,10 @@ public class FiguraDocsManager {
         put("config", List.of(
                 ConfigAPI.class
         ));
+
+        put("raycast", List.of(
+                RaycastAPI.class
+        ));
     }};
     private static final Map<String, List<FiguraDoc>> GENERATED_CHILDREN = new HashMap<>();
 

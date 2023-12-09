@@ -28,7 +28,7 @@
 
 Meet us on the [FiguraMC Discord Server](https://discord.gg/figuramc) for more info and help!\
 
-Help translate Figura to your native language on [Weblate](https://translate.figuramc.org/widget/figuramc)!\
+Help translate Figura to your native language on [Weblate](https://translate.figuramc.org/projects/figuramc/figura/)!\
 ![translate]
 
 [translate]: https://translate.figuramc.org/widget/figuramc/figura/horizontal-auto.svg

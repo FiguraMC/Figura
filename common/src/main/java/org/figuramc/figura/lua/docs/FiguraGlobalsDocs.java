@@ -77,6 +77,8 @@ public abstract class FiguraGlobalsDocs {
     public TextureAPI textures;
     @LuaFieldDoc("globals.config")
     public ConfigAPI config;
+    @LuaFieldDoc("globals.raycast")
+    public RaycastAPI raycast;
 
     @LuaFieldDoc("globals.type")
     public LuaFunction type;

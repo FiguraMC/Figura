@@ -235,8 +235,8 @@ public class AvatarWizard {
         BlockBenchModel model = new BlockBenchModel("free");
 
         //textures
-        int playerTex = hasPlayer ? model.addImage("Skin", slim ? playerTextureSlim : playerTexture) : -1;
-        int capeTex = hasCapeOrElytra ? model.addImage("Cape", capeTexture) : -1;
+        int playerTex = hasPlayer ? model.addImage("Skin", slim ? playerTextureSlim : playerTexture, 64, 64) : -1;
+        int capeTex = hasCapeOrElytra ? model.addImage("Cape", capeTexture, 64, 32) : -1;
 
         //resolution
         if (hasPlayer)
