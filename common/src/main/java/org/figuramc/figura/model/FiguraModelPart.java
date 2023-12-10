@@ -720,6 +720,9 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     @LuaWhitelist
     @LuaMethodDoc("model_part.get_primary_defined_textures")
     public Object getPrimaryDefinedTextures(Integer value) {
+        if (value == null)  {
+            throw new LuaError("Illegal argument nil to getPrimaryDefinedTextures, requires an int");
+        }
         if (customization.primaryTexture == null) {
             LuaTable tbl = new LuaTable();
             FiguraTexture[] arr = this.textures.get(value).textures;
