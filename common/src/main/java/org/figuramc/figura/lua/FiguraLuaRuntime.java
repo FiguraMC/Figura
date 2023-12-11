@@ -59,6 +59,7 @@ public class FiguraLuaRuntime {
 
     public final Avatar owner;
     private final Globals userGlobals = new Globals();
+    private final LuaTable debugLib;
     private final LuaValue setHookFunction;
     protected final Map<String, String> scripts = new HashMap<>();
     private final Map<String, Varargs> loadedScripts = new HashMap<>();
@@ -79,7 +80,8 @@ public class FiguraLuaRuntime {
         LuaC.install(userGlobals);
 
         userGlobals.load(new DebugLib());
-        setHookFunction = userGlobals.get("debug").get("sethook");
+        debugLib = userGlobals.get("debug").checktable();
+        setHookFunction = debugLib.get("sethook");
 
         setupFiguraSandbox();
 
@@ -229,7 +231,6 @@ public class FiguraLuaRuntime {
             String path = arg.checkjstring(1)
                 .replaceAll("[\\.\\\\][^\\.\\/]", "/")
                 .replaceAll("^\\/+", "");
-            FiguraMod.LOGGER.info(path.toString());
             String scriptName;
             if (arg.isnil(2)) {
                 // If there is no second argument, don't do any path resolving.
