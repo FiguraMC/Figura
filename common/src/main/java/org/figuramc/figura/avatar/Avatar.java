@@ -23,6 +23,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.TagType;
+import net.minecraft.nbt.TagTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -75,6 +77,8 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
+
+import javax.swing.RowFilter.Entry;
 
 // the avatar class
 // contains all things related to the avatar
@@ -927,10 +931,8 @@ public class Avatar {
         if (!nbt.contains("scripts"))
             return;
 
-        Map<String, String> scripts = new HashMap<>();
         CompoundTag scriptsNbt = nbt.getCompound("scripts");
-        for (String s : scriptsNbt.getAllKeys())
-            scripts.put(s, new String(scriptsNbt.getByteArray(s), StandardCharsets.UTF_8));
+        Map<String, String> scripts = loadScript(scriptsNbt, "");
 
         CompoundTag metadata = nbt.getCompound("metadata");
 
@@ -951,6 +953,17 @@ public class Avatar {
             if (runtime.init(autoScripts))
                 init.use(runtime.getInstructions());
         });
+    }
+    
+    public Map<String, String> loadScript(CompoundTag tag, String path) {
+        Map<String, String> result = new HashMap<>();
+        for (String key : tag.getAllKeys()){
+            switch(tag.get(key).getId()){
+                case Tag.TAG_COMPOUND -> result.putAll(loadScript(tag.getCompound(key), path + key + "."));
+                case Tag.TAG_BYTE_ARRAY -> result.put(path + key, new String(tag.getByteArray(key), StandardCharsets.UTF_8));
+            }
+        }
+        return result;
     }
 
     private void loadAnimations() {
