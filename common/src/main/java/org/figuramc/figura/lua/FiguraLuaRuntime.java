@@ -30,6 +30,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -135,13 +136,22 @@ public class FiguraLuaRuntime {
     private final VarArgFunction requireFunction = new VarArgFunction() {
         @Override
         public Varargs invoke(Varargs arg) {
-            String name = arg.checkjstring(1).replaceAll("[/\\\\]", ".");
-            if (loadingScripts.contains(name))
+            // Replace most `\` and `.` with `/`
+            // `.\`, `./` and `..` patterns are unaffected
+            String path = arg.checkjstring(1).replaceAll("[\\.\\\\][^\\.\\/]", "/");
+            String scriptName;
+            if (arg.isnil(2)) {
+                // If there is no second argument, don't do any path resolving.
+                scriptName = path;
+            } else {
+                // If there is a second argument, treat it as the current working directory.
+                Path dirPath = Path.of("", arg.checkjstring(2).split("[\\/\\.\\\\]"));
+                scriptName = dirPath.resolve(path).normalize().toString().replaceAll("\\\\", "/");
+            }
+            if (loadingScripts.contains(scriptName))
                 throw new LuaError("Detected circular dependency in script " + loadingScripts.peek());
-            if (scripts.get(name) == null && arg.isfunction(2))
-                return arg.checkfunction(2).invoke(LuaValue.valueOf(name));
 
-            return INIT_SCRIPT.apply(name);
+            return initializeScript(scriptName);
         }
 
         @Override
@@ -260,7 +270,7 @@ public class FiguraLuaRuntime {
                 return typename() + ": type";
             }
         });
-
+    
         // Change the pairs() function
         LuaFunction globalPairs = userGlobals.get("pairs").checkfunction();
         setGlobal("pairs", new VarArgFunction() {
@@ -302,28 +312,39 @@ public class FiguraLuaRuntime {
         });
     }
 
-    private final TwoArgFunction listFiles = new TwoArgFunction() {
+    private final ThreeArgFunction listFiles = new ThreeArgFunction() {
         @Override
-        public LuaValue call(LuaValue arg1, LuaValue arg2) {
-            // format path
-            String path = arg1.isnil() ? "" : arg1.checkjstring();
-            path = path.replaceAll("[/\\\\]", ".");
+        public LuaValue call(LuaValue folderPath, LuaValue includeSubfolders, LuaValue currentDirectory) {
+            // Defaults to root when nil
+            // Removes leading `/`
+            Path path = Path.of(folderPath.isnil() ? "" : 
+                folderPath.checkjstring()
+                .replaceAll("[\\.\\\\][^\\.\\/]", "/")
+                .replaceAll("^\\/+", "")
+            );
 
-            // max depth
-            int depth = path.isBlank() ? 1 : path.split("\\.").length + 1;
+            // The path used for comparing.
+            // If there is no current directory, path is used raw.
+            // If there is, path is relative to the current directory.
+            Path targetPath = currentDirectory.isnil() ? path : Path.of(currentDirectory.checkjstring()).resolve(path).normalize();
 
-            // subfolder
-            boolean subFolders = !arg2.isnil() && arg2.checkboolean();
+            boolean subFolders = !includeSubfolders.isnil() && includeSubfolders.checkboolean();
 
             // iterate over all script names and add them if their name starts with the path query
             int i = 1;
             LuaTable table = new LuaTable();
             for (String s : scripts.keySet()) {
-                String[] split = s.split("\\.");
+                Path scriptPath = Path.of(s);
 
-                if (!s.startsWith(path) || split.length > depth && !subFolders)
+                // Add to table only if the beginning of the path matches. Empty strings are an exception.
+                if (!(scriptPath.startsWith(targetPath) || targetPath.toString()==""))
                     continue;
-
+                // remove the common parent
+                Path result = targetPath.relativize(scriptPath);
+                // Paths always have at least one name.
+                // If we do not allow subfolders, only allow paths that directly point to a file
+                if (!subFolders && result.getNameCount()!=1)
+                    continue;
                 table.set(i++, LuaValue.valueOf(s));
             }
 
@@ -333,9 +354,9 @@ public class FiguraLuaRuntime {
 
     // init event //
 
-    private final Function<String, Varargs> INIT_SCRIPT = str -> {
+    private Varargs initializeScript(String str){
         // format name
-        String name = str.replaceAll("[/\\\\]", ".");
+        String name = str.replaceAll("[\\.\\\\]", "/");
 
         // already loaded
         Varargs val = loadedScripts.get(name);
@@ -345,15 +366,15 @@ public class FiguraLuaRuntime {
         // not found
         String src = scripts.get(name);
         if (src == null)
-            throw new LuaError("Tried to require nonexistent script \"" + str + "\"!");
+            throw new LuaError("Tried to require nonexistent script \"" + name + "\"!");
 
         this.loadingScripts.push(name);
 
         // load
-        int split = name.lastIndexOf('.');
-        String path = split == -1 ? "" : name.substring(0, split);
-        String fileName = split == -1 ? name : name.substring(split + 1);
-        Varargs value = userGlobals.load(src, name).invoke(LuaValue.varargsOf(LuaValue.valueOf(path), LuaValue.valueOf(fileName)));
+        Path path = Path.of(name);
+        String directory = (path.getParent() == null ? "" : path.getParent()).toString().replaceAll("\\\\", "/");
+        String fileName = path.getFileName().toString();
+        Varargs value = userGlobals.load(src, name).invoke(LuaValue.varargsOf(LuaValue.valueOf(directory), LuaValue.valueOf(fileName)));
         if (value == LuaValue.NIL)
             value = LuaValue.TRUE;
 
@@ -372,10 +393,10 @@ public class FiguraLuaRuntime {
         try {
             if (autoScripts == null) {
                 for (String name : scripts.keySet())
-                    INIT_SCRIPT.apply(name);
+                    initializeScript(name);
             } else {
                 for (Tag name : autoScripts)
-                    INIT_SCRIPT.apply(name.getAsString());
+                    initializeScript(name.getAsString());
             }
         } catch (Exception | StackOverflowError e) {
             error(e);

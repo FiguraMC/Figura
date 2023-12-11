@@ -955,7 +955,7 @@ public class Avatar {
         Map<String, String> result = new HashMap<>();
         for (String key : tag.getAllKeys()){
             switch(tag.get(key).getId()){
-                case Tag.TAG_COMPOUND -> result.putAll(loadScript(tag.getCompound(key), path + key + "."));
+                case Tag.TAG_COMPOUND -> result.putAll(loadScript(tag.getCompound(key), path + key + "/"));
                 case Tag.TAG_BYTE_ARRAY -> result.put(path + key, new String(tag.getByteArray(key), StandardCharsets.UTF_8));
             }
         }
