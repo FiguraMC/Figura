@@ -19,6 +19,7 @@ import org.figuramc.figura.lua.api.nameplate.NameplateAPI;
 import org.figuramc.figura.lua.api.ping.PingAPI;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaModelAPI;
 import org.figuramc.figura.permissions.Permissions;
+import org.figuramc.figura.utils.PathUtils;
 import org.luaj.vm2.*;
 import org.luaj.vm2.compiler.LuaC;
 import org.luaj.vm2.lib.*;
@@ -59,8 +60,8 @@ public class FiguraLuaRuntime {
 
     public final Avatar owner;
     private final Globals userGlobals = new Globals();
-    private final LuaTable debugLib;
-    private final LuaValue setHookFunction;
+    private final LuaFunction setHookFunction;
+    private final LuaFunction getInfoFunction;
     protected final Map<String, String> scripts = new HashMap<>();
     private final Map<String, Varargs> loadedScripts = new HashMap<>();
     private final Stack<String> loadingScripts = new Stack<>();
@@ -80,8 +81,9 @@ public class FiguraLuaRuntime {
         LuaC.install(userGlobals);
 
         userGlobals.load(new DebugLib());
-        debugLib = userGlobals.get("debug").checktable();
-        setHookFunction = debugLib.get("sethook");
+        LuaTable debugLib = userGlobals.get("debug").checktable();
+        setHookFunction = debugLib.get("sethook").checkfunction();
+        getInfoFunction = debugLib.get("getinfo").checkfunction();
 
         setupFiguraSandbox();
 
@@ -225,22 +227,12 @@ public class FiguraLuaRuntime {
     private final VarArgFunction require = new VarArgFunction() {
         @Override
         public Varargs invoke(Varargs arg) {
-            // Replace most `\` and `.` with `/`
-            // `.\`, `./` and `..` patterns are unaffected
-            // Removes leading `/`
-            String path = arg.checkjstring(1)
-                .replaceAll("[\\.\\\\][^\\.\\/]", "/")
-                .replaceAll("^\\/+", "");
-            String scriptName;
-            if (arg.isnil(2)) {
-                // If there is no second argument, don't do any path resolving.
-                // Remove leading symbol characters
-                scriptName = path.replaceAll("^[\\/\\.\\\\]+", "");
-            } else {
-                // If there is a second argument, treat it as the current working directory.
-                Path dirPath = Path.of("", arg.checkjstring(2).split("[\\/\\.\\\\]"));
-                scriptName = dirPath.resolve(path).normalize().toString().replaceAll("\\\\", "/");
-            }
+            Path path = PathUtils.getPath(arg.checkstring(1));
+            Path dir = PathUtils.getWorkingDirectory(getInfoFunction);
+            String scriptName = PathUtils.computeSafeString(
+                PathUtils.isAbsolute(path) ? path : dir.resolve(path)
+            );
+
             if (loadingScripts.contains(scriptName))
                 throw new LuaError("Detected circular dependency in script " + loadingScripts.peek());
 
@@ -253,21 +245,13 @@ public class FiguraLuaRuntime {
         }
     };
 
-    private final ThreeArgFunction listFiles = new ThreeArgFunction() {
+    private final TwoArgFunction listFiles = new TwoArgFunction() {
         @Override
-        public LuaValue call(LuaValue folderPath, LuaValue includeSubfolders, LuaValue currentDirectory) {
-            // Defaults to root when nil
-            // Removes leading `/`
-            Path path = Path.of(folderPath.isnil() ? "" : 
-                folderPath.checkjstring()
-                .replaceAll("[\\.\\\\][^\\.\\/]", "/")
-                .replaceAll("^\\/+", "")
-            );
+        public LuaValue call(LuaValue folderPath, LuaValue includeSubfolders) {
+            Path path = PathUtils.getPath(folderPath);
+            Path dir = PathUtils.getWorkingDirectory(getInfoFunction);
 
-            // The path used for comparing.
-            // If there is no current directory, path is used raw.
-            // If there is, path is relative to the current directory.
-            Path targetPath = currentDirectory.isnil() ? path : Path.of(currentDirectory.checkjstring()).resolve(path).normalize();
+            Path targetPath = (PathUtils.isAbsolute(path) ? path : dir.resolve(path)).normalize();
 
             boolean subFolders = !includeSubfolders.isnil() && includeSubfolders.checkboolean();
 
@@ -275,10 +259,10 @@ public class FiguraLuaRuntime {
             int i = 1;
             LuaTable table = new LuaTable();
             for (String s : scripts.keySet()) {
-                Path scriptPath = Path.of(s);
+                Path scriptPath = Path.of("/"+s);
 
-                // Add to table only if the beginning of the path matches. Empty strings are an exception.
-                if (!(scriptPath.startsWith(targetPath) || targetPath.toString()==""))
+                // Add to table only if the beginning of the path matches
+                if (!(scriptPath.startsWith(targetPath)))
                     continue;
                 // remove the common parent
                 Path result = targetPath.relativize(scriptPath);
@@ -376,8 +360,8 @@ public class FiguraLuaRuntime {
 
         // load
         Path path = Path.of(str);
-        String directory = (path.getParent() == null ? "" : path.getParent()).toString().replaceAll("\\\\", "/");
-        String fileName = path.getFileName().toString();
+        String directory = PathUtils.computeSafeString(path.getParent());
+        String fileName = PathUtils.computeSafeString(path.getFileName());
         Varargs value = userGlobals.load(src, str).invoke(LuaValue.varargsOf(LuaValue.valueOf(directory), LuaValue.valueOf(fileName)));
         if (value == LuaValue.NIL)
             value = LuaValue.TRUE;
