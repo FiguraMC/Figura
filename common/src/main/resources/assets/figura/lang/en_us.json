@@ -921,7 +921,7 @@
     "figura.docs.entity.get_controlled_vehicle": "Return the vehicle that this entity is controlling",
     "figura.docs.entity.has_container": "Checks if the entity has a container (Chest Boats, Minecarts with Chests, …)",
     "figura.docs.entity.has_inventory": "Checks if the entity has an inventory (Horses, Camels, LLamas, …)",
-    "figura.docs.entity.get_targeted_block": "Returns a proxy for your currently targeted BlockState\nThis BlockState appears on the F3 screen\nMaximum and Default distance is 20, Minimum is -20\nReturns as multiple results of the block, the hit position and the block face the hit collided",
+    "figura.docs.entity.get_targeted_block": "Returns a proxy for your currently targeted BlockState\nThis BlockState appears on the F3 screen\nThe maximum (and default) distance is 20, minimum is -20\nReturns the block, the hit position, and the targeted block face as three separate values",
     "figura.docs.entity.get_targeted_entity": "Returns a proxy for your currently targeted Entity\nThis Entity appears on the F3 screen\nMaximum and Default distance is 20, Minimum is 0",
     "figura.docs.entity.get_variable": "Gets the value of a variable this entity stored in themselves using the Avatar API's store() function",
     "figura.docs.entity.is_living": "Gets if this entity is a Living Entity",
