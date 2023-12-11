@@ -225,11 +225,16 @@ public class FiguraLuaRuntime {
         public Varargs invoke(Varargs arg) {
             // Replace most `\` and `.` with `/`
             // `.\`, `./` and `..` patterns are unaffected
-            String path = arg.checkjstring(1).replaceAll("[\\.\\\\][^\\.\\/]", "/");
+            // Removes leading `/`
+            String path = arg.checkjstring(1)
+                .replaceAll("[\\.\\\\][^\\.\\/]", "/")
+                .replaceAll("^\\/+", "");
+            FiguraMod.LOGGER.info(path.toString());
             String scriptName;
             if (arg.isnil(2)) {
                 // If there is no second argument, don't do any path resolving.
-                scriptName = path;
+                // Remove leading symbol character
+                scriptName = path.replaceAll("^[\\/\\.]+", "");
             } else {
                 // If there is a second argument, treat it as the current working directory.
                 Path dirPath = Path.of("", arg.checkjstring(2).split("[\\/\\.\\\\]"));
@@ -356,31 +361,28 @@ public class FiguraLuaRuntime {
     // init event //
 
     private Varargs initializeScript(String str){
-        // format name
-        String name = str.replaceAll("[\\.\\\\]", "/");
-
         // already loaded
-        Varargs val = loadedScripts.get(name);
+        Varargs val = loadedScripts.get(str);
         if (val != null)
             return val;
 
         // not found
-        String src = scripts.get(name);
+        String src = scripts.get(str);
         if (src == null)
-            throw new LuaError("Tried to require nonexistent script \"" + name + "\"!");
+            throw new LuaError("Tried to require nonexistent script \"" + str + "\"!");
 
-        this.loadingScripts.push(name);
+        this.loadingScripts.push(str);
 
         // load
-        Path path = Path.of(name);
+        Path path = Path.of(str);
         String directory = (path.getParent() == null ? "" : path.getParent()).toString().replaceAll("\\\\", "/");
         String fileName = path.getFileName().toString();
-        Varargs value = userGlobals.load(src, name).invoke(LuaValue.varargsOf(LuaValue.valueOf(directory), LuaValue.valueOf(fileName)));
+        Varargs value = userGlobals.load(src, str).invoke(LuaValue.varargsOf(LuaValue.valueOf(directory), LuaValue.valueOf(fileName)));
         if (value == LuaValue.NIL)
             value = LuaValue.TRUE;
 
         // cache and return
-        loadedScripts.put(name, value);
+        loadedScripts.put(str, value);
         loadingScripts.pop();
         return value;
     };
