@@ -197,8 +197,14 @@ public class BlockbenchModelParser {
                 int id = textureIndex.indexOf(name) + textureOffset;
 
                 //fix texture size for more speed
-                int[] imageSize = getTextureSize(source);
-                float[] fixedSize = new float[]{(float) imageSize[0] / resolution.width, (float) imageSize[1] / resolution.height};
+                float[] fixedSize;
+                if (texture.width != null) {
+                    fixedSize = new float[]{(float) texture.width / texture.uv_width, (float) texture.height / texture.uv_height};
+                }
+                else {
+                    int[] imageSize = getTextureSize(source);
+                    fixedSize = new float[]{(float) imageSize[0] / resolution.width, (float) imageSize[1] / resolution.height};
+                }
 
                 //add the texture on the map
                 textureMap.put(name, new TextureData(id, fixedSize));

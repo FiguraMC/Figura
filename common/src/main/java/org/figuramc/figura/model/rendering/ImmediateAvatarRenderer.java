@@ -309,6 +309,10 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
                 FiguraVec3 pivot = custom.getPivot();
                 pivotOffsetter.setPos(pivot);
+                pivotOffsetter.offsetPos(custom.getOffsetPos());
+                pivotOffsetter.offsetPivot(custom.getOffsetPivot());
+                pivotOffsetter.addOffsetPivot(custom.getOffsetPivot());
+                pivotOffsetter.addOffsetPos(custom.getOffsetPos());
                 pivotOffsetter.recalculate();
                 customizationStack.push(pivotOffsetter);
 

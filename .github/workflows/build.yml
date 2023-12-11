@@ -1,5 +1,10 @@
+# Clones the repository which then begins with validating the Gradle Wrapper checksum,
+# If the checksum completes, the script then sets up the JDK we need and begins compiling the software,
+# Finally, If the compiled files have been pushed out to the "(something)/build/libs/" directory - It gets uploaded to GitHub.
+
 name: Build Figura using Gradle
 on: [pull_request, push]
+
 jobs:
   build:
     if: github.actor != 'weblate'
@@ -7,30 +12,28 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1
+
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 17
           check-latest: true
+
       - name: Build using Gradle
         run: ./gradlew build
-      - name: Merge Fabric and Forge JARs
-        run: ./gradlew mergeJars
+
       - name: Upload Fabric artifacts to GitHub
         uses: actions/upload-artifact@v3
         with:
           name: Fabric-Artifacts
           path: fabric/build/libs/
+
       - name: Upload Forge artifacts to GitHub
         uses: actions/upload-artifact@v3
         with:
           name: Forge-Artifacts
           path: forge/build/libs/
-      - name: Upload Merged JAR to GitHub
-        uses: actions/upload-artifact@v3
-        with:
-          name: Merged-JAR
-          path: Merged/
