@@ -179,19 +179,6 @@ public class LocalAvatarLoader {
                 }
             }
         return nbt;
-        // List<Path> scripts = IOUtils.getFilesByExtension(path, ".lua");
-        // if (scripts.size() > 0) {
-        //     CompoundTag scriptsNbt = new CompoundTag();
-        //     String pathRegex = path.toString().isEmpty() ? "\\Q\\E" : Pattern.quote(path + path.getFileSystem().getSeparator());
-        //     for (Path script : scripts) {
-        //         String name = script.toString()
-        //                 .replaceFirst(pathRegex, "")
-        //                 .replaceAll("[/\\\\]", ".");
-        //         name = name.substring(0, name.length() - 4);
-        //         scriptsNbt.put(name, LuaScriptParser.parseScript(name, IOUtils.readFile(script)));
-        //     }
-        //     nbt.put("scripts", scriptsNbt);
-        // }
     }
 
     private static void loadSounds(Path path, CompoundTag nbt) throws IOException {
