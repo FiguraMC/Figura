@@ -36,7 +36,7 @@ public class Configs {
         // test for unused configs
         if (FiguraMod.debugModeEnabled()) {
             ConfigType.Category debug = new ConfigType.Category("debug");
-            new ConfigType.ColorConfig("color_test", debug, 0xFF72AD);
+            new ConfigType.ColorConfig("color_test", debug, ColorUtils.Colors.AWESOME_BLUE.hex);
             new ConfigType.StringConfig("string_test", debug, "text");
             new ConfigType.IntConfig("int_test", debug, 2147483647);
         }
