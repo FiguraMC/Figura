@@ -233,8 +233,8 @@ public class FiguraLuaRuntime {
             String scriptName;
             if (arg.isnil(2)) {
                 // If there is no second argument, don't do any path resolving.
-                // Remove leading symbol character
-                scriptName = path.replaceAll("^[\\/\\.]+", "");
+                // Remove leading symbol characters
+                scriptName = path.replaceAll("^[\\/\\.\\\\]+", "");
             } else {
                 // If there is a second argument, treat it as the current working directory.
                 Path dirPath = Path.of("", arg.checkjstring(2).split("[\\/\\.\\\\]"));
