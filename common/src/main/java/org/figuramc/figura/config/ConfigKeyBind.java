@@ -25,7 +25,10 @@ public class ConfigKeyBind extends KeyMapping {
 
         config.value = config.tempValue = this.saveString();
         ConfigManager.saveConfig();
+    }
 
+    // Moved from setKey as it caused issues on Forge because the vanilla config overriden before it was loaded properly
+    public void saveConfigChanges() {
         Options options = Minecraft.getInstance().options;
         if (options != null) options.save();
 

@@ -1,3 +1,6 @@
+# Sets up the VScode extensions required for our GitPod script,
+# which includes notifying user if port "25565" should be opened.
+
 image:
   file: .gitpod.Dockerfile
 

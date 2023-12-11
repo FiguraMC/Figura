@@ -1,0 +1,41 @@
+# Clones the repository which then begins with searching for modified commits,
+# If found, The workflow in assets repository is then called.
+
+name: Update Base Strings
+
+env:
+  BASE_STRINGS_PATH: common/src/main/resources/assets/figura/lang/en_us.json
+
+on:
+  push:
+    branches:
+      - "1.20"
+    paths:
+      - common/src/main/resources/assets/figura/lang/en_us.json
+
+jobs:
+  update-base:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: ${{ github.event.commits.size }}
+
+      - name: Find Modifying Commit
+        run: |
+          echo "COMMIT_SHA=$(git log -1 --pretty=format:%H --full-diff ${{ env.BASE_STRINGS_PATH }})" >> $GITHUB_ENV
+
+      - name: Trigger Workflow in Assets Repository
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: update-base.yml
+          ref: main
+          inputs: |
+            {
+              "repository": ${{ toJson(github.repository) }},
+              "commit": ${{ toJson(env.COMMIT_SHA) }},
+              "path": ${{ toJson(env.BASE_STRINGS_PATH) }}
+            }
+          repo: ${{ vars.ASSETS_REPOSITORY }}
+          token: ${{ secrets.GH_BOT_TOKEN }}

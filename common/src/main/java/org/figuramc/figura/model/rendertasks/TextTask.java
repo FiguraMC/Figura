@@ -69,7 +69,7 @@ public class TextTask extends RenderTask {
         }
 
         int l = this.customization.light != null ? this.customization.light : light;
-        int bgColor = backgroundColor != null ? backgroundColor : background ? (int) (Minecraft.getInstance().options.getBackgroundOpacity(0.25f) * 0xFF) << 24 : 0;
+        int bgColor = backgroundColor != null ? ColorUtils.intRGBAToIntARGB(backgroundColor) : background ? (int) (Minecraft.getInstance().options.getBackgroundOpacity(0.25f) * 0xFF) << 24 : 0;
         int outlineColor = this.outlineColor != null ? this.outlineColor : 0x202020;
 
         for (int i = 0; i < text.size(); i++) {
@@ -113,11 +113,11 @@ public class TextTask extends RenderTask {
 
         Font font = Minecraft.getInstance().font;
         cacheWidth = TextUtils.getWidth(this.text, font);
-        cacheHeight = this.text.size() * font.lineHeight;
+        cacheHeight = TextUtils.getHeight(this.text, font);
     }
 
 
-    // -- lua -- //
+    // -- lua -- // 
 
 
     @LuaWhitelist

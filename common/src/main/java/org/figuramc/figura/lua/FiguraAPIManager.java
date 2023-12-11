@@ -135,6 +135,8 @@ public class FiguraAPIManager {
         add(ConfigAPI.class);
 
         add(TextureAtlasAPI.class);
+
+        add(RaycastAPI.class);
     }};
 
     public static final Map<String, Function<FiguraLuaRuntime, Object>> API_GETTERS = new LinkedHashMap<>() {{
@@ -156,6 +158,7 @@ public class FiguraAPIManager {
         put("pings", r -> r.ping = new PingAPI(r.owner));
         put("textures", r -> r.texture = new TextureAPI(r.owner));
         put("config", r -> new ConfigAPI(r.owner));
+        put("raycast", r -> new RaycastAPI(r.owner));
     }};
 
     private static final Set<FiguraAPI> ENTRYPOINTS = new HashSet<>();

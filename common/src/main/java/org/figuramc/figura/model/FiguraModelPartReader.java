@@ -139,6 +139,7 @@ public class FiguraModelPartReader {
                         try {
                             interpolation = Interpolation.valueOf(keyframeNbt.getString("int").toUpperCase());
                         } catch (Exception e) {
+                            FiguraMod.LOGGER.error("Invalid interpolation type in the model {}, something is wrong with this model!", keyframeNbt.getString("int"));
                             FiguraMod.LOGGER.error("", e);
                             continue;
                         }
