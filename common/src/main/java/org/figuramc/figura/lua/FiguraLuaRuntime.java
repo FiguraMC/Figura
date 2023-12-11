@@ -178,7 +178,7 @@ public class FiguraLuaRuntime {
                 return typename() + ": type";
             }
         });
-    
+
         // Change the pairs() function
         LuaFunction globalPairs = userGlobals.get("pairs").checkfunction();
         setGlobal("pairs", new VarArgFunction() {
