@@ -91,6 +91,8 @@ public abstract class FiguraGlobalsDocs {
     public ResourcesAPI resources;
     @LuaFieldDoc("global.net")
     public NetworkingAPI net;
+    @LuaFieldDoc("globals.raycast")
+    public RaycastAPI raycast;
 
     @LuaFieldDoc("globals.type")
     public LuaFunction type;

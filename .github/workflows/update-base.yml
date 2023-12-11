@@ -1,3 +1,6 @@
+# Clones the repository which then begins with searching for modified commits,
+# If found, The workflow in assets repository is then called.
+
 name: Update Base Strings
 
 env:
@@ -14,7 +17,7 @@ jobs:
   update-base:
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: ${{ github.event.commits.size }}
@@ -26,7 +29,7 @@ jobs:
       - name: Trigger Workflow in Assets Repository
         uses: benc-uk/workflow-dispatch@v1
         with:
-          workflow: update-base.yaml
+          workflow: update-base.yml
           ref: main
           inputs: |
             {

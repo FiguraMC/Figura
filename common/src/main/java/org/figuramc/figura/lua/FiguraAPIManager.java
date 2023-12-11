@@ -169,6 +169,8 @@ public class FiguraAPIManager {
 
         add(SocketAPI.class);
         add(FiguraSocket.class);
+
+        add(RaycastAPI.class);
     }};
 
     public static final Map<String, Function<FiguraLuaRuntime, Object>> API_GETTERS = new LinkedHashMap<>() {{
@@ -195,6 +197,7 @@ public class FiguraAPIManager {
         put("json", r -> JsonAPI.INSTANCE);
         put("resources", r -> new ResourcesAPI(r.owner));
         put("net", r -> new NetworkingAPI(r.owner));
+        put("raycast", r -> new RaycastAPI(r.owner));
     }};
 
     private static final Set<FiguraAPI> ENTRYPOINTS = new HashSet<>();

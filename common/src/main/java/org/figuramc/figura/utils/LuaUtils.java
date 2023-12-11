@@ -24,6 +24,7 @@ import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.math.vector.FiguraVec4;
 import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaString;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 
@@ -194,9 +195,9 @@ public class LuaUtils {
     public static JsonElement asJsonValue(LuaValue value) {
         if (value.isnil()) return JsonNull.INSTANCE;
         if (value.isboolean()) return new JsonPrimitive(value.checkboolean());
+        if (value instanceof LuaString s) return new JsonPrimitive(s.checkjstring());
         if (value.isint()) return new JsonPrimitive(value.checkint());
         if (value.isnumber()) return new JsonPrimitive(value.checkdouble());
-        if (value.isstring()) return new JsonPrimitive(value.checkjstring());
         if (value.istable()) {
             LuaTable table = value.checktable();
 

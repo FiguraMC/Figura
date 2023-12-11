@@ -30,6 +30,8 @@ public class BlockbenchModel {
         String name;
         String relative_path;
         String source;
+        Float width, height;
+        Float uv_width, uv_height;
     }
 
     // -- elements -- // 
