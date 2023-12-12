@@ -9,7 +9,7 @@ import org.luaj.vm2.lib.VarArgFunction;
 import java.util.Objects;
 import java.util.function.Function;
 
-public class FiguraLuaExtras {
+public class FiguraLuaJson {
     public static void loadFunctions(FiguraLuaRuntime runtime) {
         LuaValue print = PARSE_JSON_FUNCTION.apply(runtime);
         runtime.setGlobal("parseJson", print);

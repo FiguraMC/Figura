@@ -19,6 +19,7 @@ import org.figuramc.figura.lua.api.nameplate.NameplateAPI;
 import org.figuramc.figura.lua.api.ping.PingAPI;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaModelAPI;
 import org.figuramc.figura.permissions.Permissions;
+import org.figuramc.figura.utils.PathUtils;
 import org.luaj.vm2.*;
 import org.luaj.vm2.compiler.LuaC;
 import org.luaj.vm2.lib.*;
@@ -30,6 +31,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -58,7 +60,8 @@ public class FiguraLuaRuntime {
 
     public final Avatar owner;
     private final Globals userGlobals = new Globals();
-    private final LuaValue setHookFunction;
+    private final LuaFunction setHookFunction;
+    private final LuaFunction getInfoFunction;
     protected final Map<String, String> scripts = new HashMap<>();
     private final Map<String, Varargs> loadedScripts = new HashMap<>();
     private final Stack<String> loadingScripts = new Stack<>();
@@ -78,7 +81,9 @@ public class FiguraLuaRuntime {
         LuaC.install(userGlobals);
 
         userGlobals.load(new DebugLib());
-        setHookFunction = userGlobals.get("debug").get("sethook");
+        LuaTable debugLib = userGlobals.get("debug").checktable();
+        setHookFunction = debugLib.get("sethook").checkfunction();
+        getInfoFunction = debugLib.get("getinfo").checkfunction();
 
         setupFiguraSandbox();
 
@@ -132,106 +137,23 @@ public class FiguraLuaRuntime {
         LuaString.s_metatable = new ReadOnlyLuaTable(LuaString.s_metatable);
     }
 
-    private final VarArgFunction requireFunction = new VarArgFunction() {
-        @Override
-        public Varargs invoke(Varargs arg) {
-            String name = arg.checkjstring(1).replaceAll("[/\\\\]", ".");
-            if (loadingScripts.contains(name))
-                throw new LuaError("Detected circular dependency in script " + loadingScripts.peek());
-            if (scripts.get(name) == null && arg.isfunction(2))
-                return arg.checkfunction(2).invoke(LuaValue.valueOf(name));
-
-            return INIT_SCRIPT.apply(name);
-        }
-
-        @Override
-        public String tojstring() {
-            return "function: require";
-        }
-    };
-    private static final Function<FiguraLuaRuntime, LuaValue> LOADSTRING_FUNC = runtime -> new VarArgFunction() {
-        @Override
-        public Varargs invoke(Varargs args) {
-            try {
-                // Get source provider function or get string value and create input stream out of that
-                LuaValue val = args.arg(1);
-                InputStream ld;
-                if (val.isfunction()) {
-                    ld = new FuncStream(val.checkfunction());
-                } else if (val.isstring()) {
-                    ld = new ByteArrayInputStream(val.checkstring().m_bytes);
-                } else {
-                    throw new LuaError("chunk source is neither a string nor function");
-                }
-
-                // Get chunk name (this is what it will display as in the source name, like script)
-                val = args.arg(2);
-                String chunkName = val.isstring() ? val.tojstring() : "loadstring";
-
-                // get environment in which will be used to get global values from, does not make extra lookups outside this table
-                val = args.arg(3);
-                LuaTable environment = val.istable() ? val.checktable() : runtime.userGlobals;
-
-                // create the function from arguments
-                return runtime.userGlobals.load(ld, chunkName, "t", environment);
-            } catch (LuaError e) {
-                return varargsOf(NIL, e.getMessageObject());
-            }
-        }
-
-        @Override
-        public String tojstring() {
-            return "function: loadstring";
-        }
-
-        // Class that creates input stream from 
-        private static class FuncStream extends InputStream {
-            private final LuaFunction function;
-            // start at the end of empty string so next index will get first result
-            private String string = "";
-            private int index = 0;
-
-            public FuncStream(LuaFunction function) {
-                this.function = function;
-            }
-
-            @Override
-            public int read() {
-                // if next index is out of bounds
-                if (++index >= string.length()) {
-                    // reset index
-                    index = 0;
-                    // fetch next functon value
-                    Varargs result = function.invoke();
-                    // check if we hit the end, that is nil, no value or empty string
-                    if (!result.isstring(1) || result.arg1().length() < 1)
-                        return -1;
-                    // get string from result of calling function
-                    string = new String(result.checkstring(1).m_bytes, StandardCharsets.UTF_8);
-                }
-                // return next index
-                return string.charAt(index);
-            }
-        }
-    };
-
     private void loadExtraLibraries() {
         // require
-        userGlobals.set("require", requireFunction);
+        this.setGlobal("require", require);
+
+        // listFiles
+        this.setGlobal("listFiles", listFiles);
+
+        // custom loadstring
+        LuaValue loadstring = loadstringConstructor.apply(this);
+        this.setGlobal("load", loadstring);
+        this.setGlobal("loadstring", loadstring);
 
         // load print functions
         FiguraLuaPrinter.loadPrintFunctions(this);
 
-        // load extra functions
-        FiguraLuaExtras.loadFunctions(this);
-
-        // custom loadstring
-        LuaValue loadstring = LOADSTRING_FUNC.apply(this);
-        this.setGlobal("load", loadstring);
-        this.setGlobal("loadstring", loadstring);
-
-        // listFiles
-        this.setGlobal("listFiles", listFiles);
+        // load JSON functions
+        FiguraLuaJson.loadFunctions(this);
 
         // load math library
         try (InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/scripts/math.lua")) {
@@ -302,63 +224,150 @@ public class FiguraLuaRuntime {
         });
     }
 
+    private final VarArgFunction require = new VarArgFunction() {
+        @Override
+        public Varargs invoke(Varargs arg) {
+            Path path = PathUtils.getPath(arg.checkstring(1));
+            Path dir = PathUtils.getWorkingDirectory(getInfoFunction);
+            String scriptName = PathUtils.computeSafeString(
+                PathUtils.isAbsolute(path) ? path : dir.resolve(path)
+            );
+
+            if (loadingScripts.contains(scriptName))
+                throw new LuaError("Detected circular dependency in script " + loadingScripts.peek());
+
+            return initializeScript(scriptName);
+        }
+
+        @Override
+        public String tojstring() {
+            return "function: require";
+        }
+    };
+
     private final TwoArgFunction listFiles = new TwoArgFunction() {
         @Override
-        public LuaValue call(LuaValue arg1, LuaValue arg2) {
-            // format path
-            String path = arg1.isnil() ? "" : arg1.checkjstring();
-            path = path.replaceAll("[/\\\\]", ".");
+        public LuaValue call(LuaValue folderPath, LuaValue includeSubfolders) {
+            Path path = PathUtils.getPath(folderPath);
+            Path dir = PathUtils.getWorkingDirectory(getInfoFunction);
 
-            // max depth
-            int depth = path.isBlank() ? 1 : path.split("\\.").length + 1;
+            Path targetPath = (PathUtils.isAbsolute(path) ? path : dir.resolve(path)).normalize();
 
-            // subfolder
-            boolean subFolders = !arg2.isnil() && arg2.checkboolean();
+            boolean subFolders = !includeSubfolders.isnil() && includeSubfolders.checkboolean();
 
             // iterate over all script names and add them if their name starts with the path query
             int i = 1;
             LuaTable table = new LuaTable();
             for (String s : scripts.keySet()) {
-                String[] split = s.split("\\.");
+                Path scriptPath = PathUtils.getPath("/" + s);
 
-                if (!s.startsWith(path) || split.length > depth && !subFolders)
+                // Add to table only if the beginning of the path matches
+                if (!(scriptPath.startsWith(targetPath)))
                     continue;
-
+                // remove the common parent
+                Path result = targetPath.relativize(scriptPath);
+                // Paths always have at least one name.
+                // If we do not allow subfolders, only allow paths that directly point to a file
+                if (!subFolders && result.getNameCount()!=1)
+                    continue;
                 table.set(i++, LuaValue.valueOf(s));
             }
 
             return table;
         }
     };
+    
+    private static final Function<FiguraLuaRuntime, LuaValue> loadstringConstructor = runtime -> new VarArgFunction() {
+        @Override
+        public Varargs invoke(Varargs args) {
+            try {
+                // Get source provider function or get string value and create input stream out of that
+                LuaValue val = args.arg(1);
+                InputStream ld;
+                if (val.isfunction()) {
+                    ld = new FuncStream(val.checkfunction());
+                } else if (val.isstring()) {
+                    ld = new ByteArrayInputStream(val.checkstring().m_bytes);
+                } else {
+                    throw new LuaError("chunk source is neither a string nor function");
+                }
+
+                // Get chunk name (this is what it will display as in the source name, like script)
+                val = args.arg(2);
+                String chunkName = val.isstring() ? val.tojstring() : "loadstring";
+
+                // get environment in which will be used to get global values from, does not make extra lookups outside this table
+                val = args.arg(3);
+                LuaTable environment = val.istable() ? val.checktable() : runtime.userGlobals;
+
+                // create the function from arguments
+                return runtime.userGlobals.load(ld, chunkName, "t", environment);
+            } catch (LuaError e) {
+                return varargsOf(NIL, e.getMessageObject());
+            }
+        }
+
+        @Override
+        public String tojstring() {
+            return "function: loadstring";
+        }
+
+        // Class that creates input stream from 
+        private static class FuncStream extends InputStream {
+            private final LuaFunction function;
+            // start at the end of empty string so next index will get first result
+            private String string = "";
+            private int index = 0;
+
+            public FuncStream(LuaFunction function) {
+                this.function = function;
+            }
+
+            @Override
+            public int read() {
+                // if next index is out of bounds
+                if (++index >= string.length()) {
+                    // reset index
+                    index = 0;
+                    // fetch next functon value
+                    Varargs result = function.invoke();
+                    // check if we hit the end, that is nil, no value or empty string
+                    if (!result.isstring(1) || result.arg1().length() < 1)
+                        return -1;
+                    // get string from result of calling function
+                    string = new String(result.checkstring(1).m_bytes, StandardCharsets.UTF_8);
+                }
+                // return next index
+                return string.charAt(index);
+            }
+        }
+    };
 
     // init event //
 
-    private final Function<String, Varargs> INIT_SCRIPT = str -> {
-        // format name
-        String name = str.replaceAll("[/\\\\]", ".");
-
+    private Varargs initializeScript(String str){
         // already loaded
-        Varargs val = loadedScripts.get(name);
+        Varargs val = loadedScripts.get(str);
         if (val != null)
             return val;
 
         // not found
-        String src = scripts.get(name);
+        String src = scripts.get(str);
         if (src == null)
             throw new LuaError("Tried to require nonexistent script \"" + str + "\"!");
 
-        this.loadingScripts.push(name);
+        this.loadingScripts.push(str);
 
         // load
-        int split = name.lastIndexOf('.');
-        String path = split == -1 ? "" : name.substring(0, split);
-        String fileName = split == -1 ? name : name.substring(split + 1);
-        Varargs value = userGlobals.load(src, name).invoke(LuaValue.varargsOf(LuaValue.valueOf(path), LuaValue.valueOf(fileName)));
+        Path path = Path.of(str);
+        String directory = PathUtils.computeSafeString(path.getParent());
+        String fileName = PathUtils.computeSafeString(path.getFileName());
+        Varargs value = userGlobals.load(src, str).invoke(LuaValue.varargsOf(LuaValue.valueOf(directory), LuaValue.valueOf(fileName)));
         if (value == LuaValue.NIL)
             value = LuaValue.TRUE;
 
         // cache and return
-        loadedScripts.put(name, value);
+        loadedScripts.put(str, value);
         loadingScripts.pop();
         return value;
     };
@@ -372,10 +381,10 @@ public class FiguraLuaRuntime {
         try {
             if (autoScripts == null) {
                 for (String name : scripts.keySet())
-                    INIT_SCRIPT.apply(name);
+                    initializeScript(name);
             } else {
                 for (Tag name : autoScripts)
-                    INIT_SCRIPT.apply(name.getAsString());
+                    initializeScript(name.getAsString());
             }
         } catch (Exception | StackOverflowError e) {
             error(e);

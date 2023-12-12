@@ -88,10 +88,6 @@ public abstract class FiguraGlobalsDocs {
                     @LuaMethodOverload(
                             argumentTypes = String.class,
                             argumentNames = "scriptName"
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {String.class, LuaFunction.class},
-                            argumentNames = {"scriptName", "fallbackFunction"}
                     )
             },
             value = "globals.require"

@@ -118,7 +118,9 @@ public class LocalAvatarLoader {
 
                 // scripts
                 loadState = LoadState.SCRIPTS;
-                loadScripts(finalPath, nbt);
+                CompoundTag scripts = loadScripts(finalPath);
+                if (!scripts.getAllKeys().isEmpty())
+                    nbt.put("scripts", scripts);
 
                 // custom sounds
                 loadState = LoadState.SOUNDS;
@@ -158,20 +160,25 @@ public class LocalAvatarLoader {
         });
     }
 
-    private static void loadScripts(Path path, CompoundTag nbt) throws IOException {
-        List<Path> scripts = IOUtils.getFilesByExtension(path, ".lua");
-        if (scripts.size() > 0) {
-            CompoundTag scriptsNbt = new CompoundTag();
-            String pathRegex = path.toString().isEmpty() ? "\\Q\\E" : Pattern.quote(path + path.getFileSystem().getSeparator());
-            for (Path script : scripts) {
-                String name = script.toString()
-                        .replaceFirst(pathRegex, "")
-                        .replaceAll("[/\\\\]", ".");
-                name = name.substring(0, name.length() - 4);
-                scriptsNbt.put(name, LuaScriptParser.parseScript(name, IOUtils.readFile(script)));
+    private static CompoundTag loadScripts(Path path) throws IOException {
+        CompoundTag nbt = new CompoundTag();
+        List<Path> subFiles = IOUtils.listPaths(path);
+        if (subFiles != null)
+            for (Path file : subFiles) {
+                if (IOUtils.isHidden(file))
+                    continue;
+                String name = IOUtils.getFileNameOrEmpty(file);
+                if (Files.isDirectory(file)) {
+                    CompoundTag folderNbt = loadScripts(file);
+                    if (folderNbt.getAllKeys().isEmpty())
+                        continue;
+                    nbt.put(name, folderNbt);
+                } else if (file.toString().toLowerCase().endsWith(".lua")) {
+                    name = name.substring(0, name.length() - 4);
+                    nbt.put(name, LuaScriptParser.parseScript(name, IOUtils.readFile(file)));
+                }
             }
-            nbt.put("scripts", scriptsNbt);
-        }
+        return nbt;
     }
 
     private static void loadSounds(Path path, CompoundTag nbt) throws IOException {
