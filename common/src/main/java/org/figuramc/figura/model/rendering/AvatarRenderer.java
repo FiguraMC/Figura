@@ -235,7 +235,7 @@ public abstract class AvatarRenderer {
     public void setMatrices(double camX, double camY, double camZ, PoseStack matrices) {
         // pos
         Matrix4f posMat = new Matrix4f(matrices.last().pose());
-        posMat.translate(new Vector3f((float) -camX, (float) -camY, (float) -camZ));
+        posMat.multiplyWithTranslation((float) -camX, (float) -camY, (float) -camZ);
         posMat.multiply(Matrix4f.createScaleMatrix(-1, -1, 1));
         this.posMat.set(posMat);
 
