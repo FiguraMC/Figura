@@ -259,7 +259,7 @@ public class FiguraLuaRuntime {
             int i = 1;
             LuaTable table = new LuaTable();
             for (String s : scripts.keySet()) {
-                Path scriptPath = Path.of("/"+s);
+                Path scriptPath = PathUtils.getPath("/" + s);
 
                 // Add to table only if the beginning of the path matches
                 if (!(scriptPath.startsWith(targetPath)))

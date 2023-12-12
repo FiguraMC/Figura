@@ -7,13 +7,17 @@ import org.luaj.vm2.LuaValue;
 
 public class PathUtils {
 
-    public static Path getPath (LuaValue path) {
-        String str = path.isnil() ? "/" : path.checkjstring();
-        if (str.isEmpty()) str = "/";
-        return Path.of(str
+    public static Path getPath (String path) {
+        if (path.isEmpty()) return Path.of("/");
+        return Path.of(path
             .replaceAll("\\\\", "/")
             .replaceAll("[\\.]([^\\./])", "/$1")
             .replaceAll("\\/\\/", "/"));
+    }
+
+    public static Path getPath (LuaValue path) {
+        String str = path.isnil() ? "/" : path.checkjstring();
+        return getPath(str);
     }
 
     public static Path getWorkingDirectory(LuaFunction debugGetinfo) {
