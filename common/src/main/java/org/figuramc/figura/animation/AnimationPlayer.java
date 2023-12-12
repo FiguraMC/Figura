@@ -41,6 +41,10 @@ public class AnimationPlayer {
                 FiguraMod.pushProfiler(type.name());
 
                 Keyframe[] keyframes = channel.keyframes();
+                if (keyframes.length == 0) {
+                    FiguraMod.popProfiler(3);
+                    return limit;
+                }
 
                 int currentIndex = Math.max(0, Mth.binarySearch(0, keyframes.length, index -> anim.frameTime <= keyframes[index].getTime()) - 1);
                 int nextIndex = Math.min(keyframes.length - 1, currentIndex + 1);

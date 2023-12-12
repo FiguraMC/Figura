@@ -8,20 +8,12 @@ import net.minecraft.commands.arguments.blocks.BlockStateArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Marker;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.lua.LuaNotNil;
@@ -391,91 +383,6 @@ public class WorldAPI {
         } catch (Exception ignored) {
             throw new LuaError("Invalid UUID");
         }
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = {
-                    @LuaMethodOverload(
-                    argumentTypes = {Boolean.class, FiguraVec3.class, FiguraVec3.class},
-                    argumentNames = {"fluid", "start", "end"}
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {Boolean.class, Double.class, Double.class, Double.class, FiguraVec3.class},
-                            argumentNames = {"fluid", "startX", "startY", "startZ", "end"}
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {Boolean.class, FiguraVec3.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"fluid", "start", "endX", "endY", "endZ"}
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {Boolean.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"fluid", "startX", "startY", "startZ", "endX", "endY", "endZ"}
-                    )
-                }
-            ,
-            value = "world.raycast_block"
-    )
-    public HashMap<String, Object> raycastBlock(boolean fluid, Object x, Object y, Double z, Object w, Double t, Double h) {
-        FiguraVec3 start, end;
-
-        Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("raycastBlock", x, y, z, w, t, h,1);
-        start = pair.getFirst();
-        end = pair.getSecond();
-
-        BlockHitResult result = getCurrentWorld().clip(new ClipContext(start.asVec3(), end.asVec3(), ClipContext.Block.OUTLINE, fluid ? ClipContext.Fluid.NONE : ClipContext.Fluid.ANY, new Marker(EntityType.MARKER, getCurrentWorld())));
-        if (result == null || result.getType() == HitResult.Type.MISS)
-            return null;
-
-        HashMap<String, Object> map = new HashMap<>();
-        BlockPos pos = result.getBlockPos();
-        map.put("block", getBlockState(pos.getX(), (double) pos.getY(), (double) pos.getZ()));
-        map.put("direction", result.getDirection().getName());
-        map.put("pos", FiguraVec3.fromVec3(result.getLocation()));
-
-        return map;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = {
-                    @LuaMethodOverload(
-                            argumentTypes = {FiguraVec3.class, FiguraVec3.class},
-                            argumentNames = {"start", "end"}
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {Double.class, Double.class, Double.class, FiguraVec3.class},
-                            argumentNames = {"startX", "startY", "startZ", "end"}
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {FiguraVec3.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"start", "endX", "endY", "endZ"}
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"startX", "startY", "startZ", "endX", "endY", "endZ"}
-                    )
-            }
-            ,
-            value = "world.raycast_entity"
-    )
-    public HashMap<String, Object> raycastEntity(Object x, Object y, Double z, Object w, Double t, Double h) {
-        FiguraVec3 start, end;
-
-        Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("raycastEntity", x, y, z, w, t, h, 1);
-        start = pair.getFirst();
-        end = pair.getSecond();
-
-        EntityHitResult result = ProjectileUtil.getEntityHitResult(new Marker(EntityType.MARKER, getCurrentWorld()), start.asVec3(), end.asVec3(), new AABB(start.asVec3(), end.asVec3()), entity -> true, Double.MAX_VALUE);
-
-        if (result == null)
-            return null;
-
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("entity", EntityAPI.wrap(result.getEntity()));
-        map.put("pos", FiguraVec3.fromVec3(result.getLocation()));
-
-        return map;
     }
 
     @LuaWhitelist

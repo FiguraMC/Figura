@@ -2,7 +2,6 @@ plugins {
 	id "architectury-plugin" version "3.4-SNAPSHOT"
 	id "dev.architectury.loom" version "1.2-SNAPSHOT" apply false
 	id "io.github.juuxel.loom-vineflower" version "1.+" apply false
-	id "io.github.pacifistmc.forgix" version "1.2.6"
 }
 
 architectury {
@@ -40,7 +39,7 @@ allprojects {
 
 	java_version = rootProject.java_version
 	archivesBaseName = rootProject.archives_base_name
-	version = rootProject.mod_version + "+" + rootProject.minecraft_version
+	version = rootProject.mod_version + "-" + rootProject.minecraft_version
 	group = rootProject.maven_group
 	if (project.hasProperty("release")) {
 		jarVersion = version
@@ -66,20 +65,5 @@ allprojects {
 		sourceCompatibility = JavaVersion.VERSION_17
 		targetCompatibility = JavaVersion.VERSION_17
 		withSourcesJar()
-	}
-}
-
-forgix {
-
-	group = rootProject.maven_group
-	mergedJarName = rootProject.archives_base_name + "-" +  rootProject.mod_version + "+" + rootProject.minecraft_version + ".jar"
-	forge {
-		projectName = "forge"
-		jarLocation = ("build/libs/" + rootProject.archives_base_name + "-" + rootProject.mod_version + "+" + rootProject.minecraft_version + "-forge-mc.jar")
-	}
-
-	fabric {
-		projectName = "fabric" // This is the name of the fabric project. If this property is not defined then by default it'll set to "fabric" since that's the name the Architectury Template uses.
-		jarLocation = ("build/libs/" + rootProject.archives_base_name + "-" + rootProject.mod_version + "+" + rootProject.minecraft_version + "-fabric-mc.jar")
 	}
 }

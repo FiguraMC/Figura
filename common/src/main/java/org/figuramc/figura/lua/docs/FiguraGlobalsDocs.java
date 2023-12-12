@@ -2,13 +2,17 @@ package org.figuramc.figura.lua.docs;
 
 import org.figuramc.figura.lua.api.*;
 import org.figuramc.figura.lua.api.action_wheel.ActionWheelAPI;
+import org.figuramc.figura.lua.api.data.DataAPI;
+import org.figuramc.figura.lua.api.data.ResourcesAPI;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
 import org.figuramc.figura.lua.api.entity.PlayerAPI;
 import org.figuramc.figura.lua.api.event.EventsAPI;
+import org.figuramc.figura.lua.api.json.JsonAPI;
 import org.figuramc.figura.lua.api.keybind.KeybindAPI;
 import org.figuramc.figura.lua.api.math.MatricesAPI;
 import org.figuramc.figura.lua.api.math.VectorsAPI;
 import org.figuramc.figura.lua.api.nameplate.NameplateAPI;
+import org.figuramc.figura.lua.api.net.NetworkingAPI;
 import org.figuramc.figura.lua.api.particle.ParticleAPI;
 import org.figuramc.figura.lua.api.ping.PingAPI;
 import org.figuramc.figura.lua.api.sound.SoundAPI;
@@ -77,6 +81,18 @@ public abstract class FiguraGlobalsDocs {
     public TextureAPI textures;
     @LuaFieldDoc("globals.config")
     public ConfigAPI config;
+    @LuaFieldDoc("globals.data")
+    public DataAPI data;
+    @LuaFieldDoc("globals.file")
+    public FileAPI file;
+    @LuaFieldDoc("globals.json")
+    public JsonAPI json;
+    @LuaFieldDoc("globals.resources")
+    public ResourcesAPI resources;
+    @LuaFieldDoc("global.net")
+    public NetworkingAPI net;
+    @LuaFieldDoc("globals.raycast")
+    public RaycastAPI raycast;
 
     @LuaFieldDoc("globals.type")
     public LuaFunction type;
@@ -86,10 +102,6 @@ public abstract class FiguraGlobalsDocs {
                     @LuaMethodOverload(
                             argumentTypes = String.class,
                             argumentNames = "scriptName"
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {String.class, LuaFunction.class},
-                            argumentNames = {"scriptName", "fallbackFunction"}
                     )
             },
             value = "globals.require"

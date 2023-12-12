@@ -17,6 +17,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
+import org.figuramc.figura.config.ConfigManager;
 import org.figuramc.figura.config.forge.ModConfig;
 import org.figuramc.figura.gui.forge.GuiOverlay;
 import org.figuramc.figura.gui.forge.GuiUnderlay;
@@ -34,6 +35,9 @@ public class FiguraModClientForge extends FiguraMod {
     public static void onInitializeClient(FMLClientSetupEvent event) {
         onClientInit();
         ModConfig.registerConfigScreen();
+        for (VanillaGuiOverlay overlay : VanillaGuiOverlay.values()) {
+            vanillaOverlays.add(overlay.type());
+        }
     }
 
     @SubscribeEvent
@@ -47,11 +51,7 @@ public class FiguraModClientForge extends FiguraMod {
         event.registerBelowAll("figura_underlay", new GuiUnderlay());
     }
 
-    private static final List<NamedGuiOverlay> vanillaOverlays = new ArrayList<>() {{
-        for (VanillaGuiOverlay overlay : VanillaGuiOverlay.values()) {
-            this.add(overlay.type());
-        }
-    }};
+    private static final List<NamedGuiOverlay> vanillaOverlays = new ArrayList<>();
 
     public static void cancelVanillaOverlays(RenderGuiOverlayEvent.Pre event) {
         if (vanillaOverlays.contains(event.getOverlay())) {
@@ -65,6 +65,8 @@ public class FiguraModClientForge extends FiguraMod {
 
     @SubscribeEvent
     public static void registerKeyBinding(RegisterKeyMappingsEvent event) {
+        // Config has to be initialized here, so that the keybinds exist on time
+        ConfigManager.init();
         for (KeyMapping value : KEYBINDS) {
             if(value != null)
                 event.register(value);
