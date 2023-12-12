@@ -804,7 +804,7 @@ public class Avatar {
             return false;
 
         stack.pushPose();
-        Quaternionf quaternionf = Axis.XP.rotationDegrees(135f);
+        Quaternionf quaternionf = Axis.ZP.rotationDegrees(-90f);
         Quaternionf quaternionf2 = Axis.YP.rotationDegrees(-90f);
         quaternionf.mul(quaternionf2);
         stack.mulPose(quaternionf);
