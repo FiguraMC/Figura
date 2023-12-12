@@ -3,9 +3,7 @@
   "minVersion": "0.8",
   "package": "org.figuramc.figura.mixin",
   "compatibilityLevel": "JAVA_17",
-  "mixins": [
-    "render.renderers.TridentRendererMixin"
-  ],
+  "mixins": [],
   "client": [
     "BiomeAccessor",
     "BlockBehaviourAccessor",
