@@ -396,6 +396,12 @@ public class Avatar {
         return isCancelled(result);
     }
 
+    public boolean tridentRenderEvent(float delta, EntityAPI<?> trident) {
+        Varargs result = null;
+        if (loaded) result = run("TRIDENT_RENDER", render, delta, trident);
+        return isCancelled(result);
+    }
+
     public boolean itemRenderEvent(ItemStackAPI item, String mode, FiguraVec3 pos, FiguraVec3 rot, FiguraVec3 scale, boolean leftHanded, PoseStack stack, MultiBufferSource bufferSource, int light, int overlay) {
         Varargs result = loaded ? run("ITEM_RENDER", render, item, mode, pos, rot, scale, leftHanded) : null;
         if (result == null)
@@ -783,6 +789,28 @@ public class Avatar {
 
         renderer.setupRenderer(
                 PartFilterScheme.ARROW, bufferSource, stack,
+                delta, light, 1f, OverlayTexture.NO_OVERLAY,
+                false, false
+        );
+
+        int comp = renderer.renderSpecialParts();
+
+        stack.popPose();
+        return comp > 0;
+    }
+
+    public boolean renderTrident(PoseStack stack, MultiBufferSource bufferSource, float delta, int light) {
+        if (renderer == null || !loaded)
+            return false;
+
+        stack.pushPose();
+        Quaternionf quaternionf = Axis.XP.rotationDegrees(135f);
+        Quaternionf quaternionf2 = Axis.YP.rotationDegrees(-90f);
+        quaternionf.mul(quaternionf2);
+        stack.mulPose(quaternionf);
+
+        renderer.setupRenderer(
+                PartFilterScheme.TRIDENT, bufferSource, stack,
                 delta, light, 1f, OverlayTexture.NO_OVERLAY,
                 false, false
         );
