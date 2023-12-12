@@ -73,6 +73,9 @@ public class EventsAPI {
     @LuaFieldDoc("events.arrow_render")
     public final LuaEvent ARROW_RENDER = new LuaEvent();
     @LuaWhitelist
+    @LuaFieldDoc("events.trident_render")
+    public final LuaEvent TRIDENT_RENDER = new LuaEvent();
+    @LuaWhitelist
     @LuaFieldDoc("events.item_render")
     public final LuaEvent ITEM_RENDER = new LuaEvent();
     @LuaWhitelist
@@ -100,6 +103,7 @@ public class EventsAPI {
             put("CHAR_TYPED", CHAR_TYPED);
             put("USE_ITEM", USE_ITEM);
             put("ARROW_RENDER", ARROW_RENDER);
+            put("TRIDENT_RENDER", TRIDENT_RENDER);
             put("ITEM_RENDER", ITEM_RENDER);
             put("ON_PLAY_SOUND", ON_PLAY_SOUND);
             put("RESOURCE_RELOAD", RESOURCE_RELOAD);
