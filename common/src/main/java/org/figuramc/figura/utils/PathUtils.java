@@ -31,7 +31,7 @@ public class PathUtils {
         String str = path == null ? "" : path.normalize().toString();
         return str
             .replaceAll("\\\\", "/")
-            .replaceAll("^/", "");
+            .replaceAll("^\\/+", "");
     }
 
     public static String computeSafeString(String path) {
