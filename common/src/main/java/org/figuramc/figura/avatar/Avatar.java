@@ -38,7 +38,9 @@ import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.lua.FiguraLuaRuntime;
 import org.figuramc.figura.lua.api.TextureAPI;
+import org.figuramc.figura.lua.api.data.FiguraBuffer;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
+import org.figuramc.figura.lua.api.net.FiguraSocket;
 import org.figuramc.figura.lua.api.particle.ParticleAPI;
 import org.figuramc.figura.lua.api.ping.PingArg;
 import org.figuramc.figura.lua.api.ping.PingFunction;
@@ -91,7 +93,7 @@ public class Avatar {
     public boolean loaded = true;
     public final boolean isHost;
 
-    // metadata
+    //metadata
     public String name, entityName;
     public String authors;
     public Version version;
@@ -99,12 +101,14 @@ public class Avatar {
     public int fileSize;
     public String color;
     public Map<String, String> badgeToColor = new HashMap<>();
+    public Map<String, byte[]> resources = new HashMap<>();
 
     public boolean minify;
 
     // Runtime data
     private final Queue<Runnable> events = new ConcurrentLinkedQueue<>();
-
+    public final ArrayList<FiguraSocket> openSockets = new ArrayList<>();
+    public final ArrayList<FiguraBuffer> openBuffers = new ArrayList<>();
     public AvatarRenderer renderer;
     public FiguraLuaRuntime luaRuntime;
     public EntityRenderMode renderMode = EntityRenderMode.OTHER;
@@ -127,7 +131,6 @@ public class Avatar {
     public final Instructions complexity;
     public final Instructions init, render, worldRender, tick, worldTick, animation;
     public final RefilledNumber particlesRemaining, soundsRemaining;
-
     private Avatar(UUID owner, EntityType<?> type, String name) {
         this.owner = owner;
         this.entityType = type;
@@ -185,6 +188,13 @@ public class Avatar {
                     color = metadata.getString("color");
                 if (metadata.contains("minify"))
                     minify = metadata.getBoolean("minify");
+                if (nbt.contains("resources")) {
+                    CompoundTag res = nbt.getCompound("resources");
+                    for (String k :
+                            res.getAllKeys()) {
+                        resources.put(k, res.getByteArray(k));
+                    }
+                }
                 for (String key : metadata.getAllKeys()) {
                     if (key.contains("badge_color_")) {
                         badgeToColor.put(key.replace("badge_color_", ""), metadata.getString(key));
@@ -888,6 +898,8 @@ public class Avatar {
 
         clearSounds();
         clearParticles();
+        closeSockets();
+        closeBuffers();
 
         events.clear();
     }
@@ -896,6 +908,30 @@ public class Avatar {
         SoundAPI.getSoundEngine().figura$stopSound(owner, null);
         for (SoundBuffer value : customSounds.values())
             value.releaseAlBuffer();
+    }
+
+    public void closeSockets() {
+        for (FiguraSocket socket :
+                openSockets) {
+            if (!socket.isClosed()) {
+                try {
+                    socket.baseClose();
+                } catch (Exception ignored) {}
+            }
+        }
+        openSockets.clear();
+    }
+
+    public void closeBuffers() {
+        for (FiguraBuffer buffer :
+                openBuffers) {
+            if (!buffer.isClosed()) {
+                try {
+                    buffer.baseClose();
+                } catch (Exception ignored) {}
+            }
+        }
+        openBuffers.clear();
     }
 
     public void clearParticles() {
@@ -926,10 +962,8 @@ public class Avatar {
         if (!nbt.contains("scripts"))
             return;
 
-        Map<String, String> scripts = new HashMap<>();
         CompoundTag scriptsNbt = nbt.getCompound("scripts");
-        for (String s : scriptsNbt.getAllKeys())
-            scripts.put(s, new String(scriptsNbt.getByteArray(s), StandardCharsets.UTF_8));
+        Map<String, String> scripts = loadScript(scriptsNbt, "");
 
         CompoundTag metadata = nbt.getCompound("metadata");
 
@@ -950,6 +984,17 @@ public class Avatar {
             if (runtime.init(autoScripts))
                 init.use(runtime.getInstructions());
         });
+    }
+    
+    public Map<String, String> loadScript(CompoundTag tag, String path) {
+        Map<String, String> result = new HashMap<>();
+        for (String key : tag.getAllKeys()){
+            switch(tag.get(key).getId()){
+                case Tag.TAG_COMPOUND -> result.putAll(loadScript(tag.getCompound(key), path + key + "/"));
+                case Tag.TAG_BYTE_ARRAY -> result.put(path + key, new String(tag.getByteArray(key), StandardCharsets.UTF_8));
+            }
+        }
+        return result;
     }
 
     private void loadAnimations() {

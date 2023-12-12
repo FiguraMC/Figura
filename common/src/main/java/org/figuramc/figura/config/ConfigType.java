@@ -1,8 +1,15 @@
 package org.figuramc.figura.config;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.gui.screens.NetworkFilterScreen;
+import org.figuramc.figura.lua.api.net.NetworkingAPI;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.FiguraText;
@@ -85,6 +92,13 @@ public abstract class ConfigType<T> {
     }
 
     public void onChange() {}
+
+    // -- json serializable -- //
+
+    public interface SerializableConfig {
+        JsonElement serialize();
+        void deserialize(JsonElement element);
+    }
 
 
     // -- category -- // 
@@ -316,5 +330,63 @@ public abstract class ConfigType<T> {
 
         @Override
         public void setValue(String newVal) {}
+    }
+
+    // -- network filter -- //
+    public static class NetworkFilterConfig extends ButtonConfig implements SerializableConfig {
+        private final ArrayList<NetworkingAPI.Filter> filters = new ArrayList<>();
+        public NetworkFilterConfig(String name, Category category) {
+            super(name, category, () -> {
+                Minecraft mc = Minecraft.getInstance();
+                mc.setScreen(new NetworkFilterScreen(mc.screen));
+            });
+        }
+        public ArrayList<NetworkingAPI.Filter> getFilters() {
+            return filters;
+        }
+
+        @Override
+        public JsonElement serialize() {
+            JsonArray array = new JsonArray();
+            for (NetworkingAPI.Filter filter :
+                    filters) {
+                JsonObject o = new JsonObject();
+                o.addProperty("source", filter.getSource());
+                o.addProperty("mode", filter.getMode().getId());
+                array.add(o);
+            }
+            return array;
+        }
+
+        @Override
+        public void deserialize(JsonElement element) {
+            filters.clear();
+            if (!element.isJsonArray()) return;
+            JsonArray array = element.getAsJsonArray();
+            for (JsonElement e :
+                    array) {
+                if (!e.isJsonObject()) continue;
+                JsonObject o = e.getAsJsonObject();
+                JsonElement s = o.get("source");
+                JsonElement m = o.get("mode");
+                if (s == null || m == null || !s.isJsonPrimitive() || !m.isJsonPrimitive()) continue;
+                JsonPrimitive source = s.getAsJsonPrimitive();
+                JsonPrimitive mode = m.getAsJsonPrimitive();
+                if (!source.isString() || !mode.isNumber()) continue;
+                NetworkingAPI.Filter.FilterMode filterMode = NetworkingAPI.Filter.FilterMode.getById(mode.getAsInt());
+                if (filterMode == null) continue;
+                filters.add(new NetworkingAPI.Filter(source.getAsString(), filterMode));
+            }
+        }
+
+        @Override
+        public void setDefault() {
+            filters.clear();
+        }
+
+        @Override
+        public boolean isDefault() {
+            return filters.size() == 0;
+        }
     }
 }

@@ -16,6 +16,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
+import org.figuramc.figura.config.ConfigManager;
 import org.figuramc.figura.config.forge.ModConfig;
 import org.figuramc.figura.gui.forge.GuiOverlay;
 import org.figuramc.figura.gui.forge.GuiUnderlay;
@@ -33,6 +34,32 @@ public class FiguraModClientForge extends FiguraMod {
     public static void onInitializeClient(FMLClientSetupEvent event) {
         onClientInit();
         ModConfig.registerConfigScreen();
+        vanillaOverlays.add(ForgeIngameGui.VIGNETTE_ELEMENT);
+        vanillaOverlays.add(ForgeIngameGui.SPYGLASS_ELEMENT);
+        vanillaOverlays.add(ForgeIngameGui.HELMET_ELEMENT);
+        vanillaOverlays.add(ForgeIngameGui.FROSTBITE_ELEMENT);
+        vanillaOverlays.add(ForgeIngameGui.PORTAL_ELEMENT);
+        vanillaOverlays.add(ForgeIngameGui.HOTBAR_ELEMENT);
+        vanillaOverlays.add(ForgeIngameGui.CROSSHAIR_ELEMENT);
+        vanillaOverlays.add(ForgeIngameGui.BOSS_HEALTH_ELEMENT);
+        vanillaOverlays.add(ForgeIngameGui.PLAYER_HEALTH_ELEMENT);
+        vanillaOverlays.add(ForgeIngameGui.ARMOR_LEVEL_ELEMENT);
+        vanillaOverlays.add(ForgeIngameGui.MOUNT_HEALTH_ELEMENT);
+        vanillaOverlays.add(ForgeIngameGui.FOOD_LEVEL_ELEMENT);
+        vanillaOverlays.add(ForgeIngameGui.AIR_LEVEL_ELEMENT);
+        vanillaOverlays.add(ForgeIngameGui.JUMP_BAR_ELEMENT);
+        vanillaOverlays.add(ForgeIngameGui.EXPERIENCE_BAR_ELEMENT);
+        vanillaOverlays.add(ForgeIngameGui.ITEM_NAME_ELEMENT);
+        vanillaOverlays.add(ForgeIngameGui.SLEEP_FADE_ELEMENT);
+        vanillaOverlays.add(ForgeIngameGui.HUD_TEXT_ELEMENT);
+        vanillaOverlays.add(ForgeIngameGui.FPS_GRAPH_ELEMENT);
+        vanillaOverlays.add(ForgeIngameGui.POTION_ICONS_ELEMENT);
+        vanillaOverlays.add(ForgeIngameGui.RECORD_OVERLAY_ELEMENT);
+        vanillaOverlays.add(ForgeIngameGui.SUBTITLES_ELEMENT);
+        vanillaOverlays.add(ForgeIngameGui.TITLE_TEXT_ELEMENT);
+        vanillaOverlays.add(ForgeIngameGui.SCOREBOARD_ELEMENT);
+        vanillaOverlays.add(ForgeIngameGui.CHAT_PANEL_ELEMENT);
+        vanillaOverlays.add(ForgeIngameGui.PLAYER_LIST_ELEMENT);
     }
 
     @SubscribeEvent
@@ -46,34 +73,7 @@ public class FiguraModClientForge extends FiguraMod {
         OverlayRegistry.registerOverlayBottom("figura_underlay", new GuiUnderlay());
     }
 
-    private static final List<IIngameOverlay> vanillaOverlays = new ArrayList<>() {{
-        this.add(ForgeIngameGui.VIGNETTE_ELEMENT);
-        this.add(ForgeIngameGui.SPYGLASS_ELEMENT);
-        this.add(ForgeIngameGui.HELMET_ELEMENT);
-        this.add(ForgeIngameGui.FROSTBITE_ELEMENT);
-        this.add(ForgeIngameGui.PORTAL_ELEMENT);
-        this.add(ForgeIngameGui.HOTBAR_ELEMENT);
-        this.add(ForgeIngameGui.CROSSHAIR_ELEMENT);
-        this.add(ForgeIngameGui.BOSS_HEALTH_ELEMENT);
-        this.add(ForgeIngameGui.PLAYER_HEALTH_ELEMENT);
-        this.add(ForgeIngameGui.ARMOR_LEVEL_ELEMENT);
-        this.add(ForgeIngameGui.MOUNT_HEALTH_ELEMENT);
-        this.add(ForgeIngameGui.FOOD_LEVEL_ELEMENT);
-        this.add(ForgeIngameGui.AIR_LEVEL_ELEMENT);
-        this.add(ForgeIngameGui.JUMP_BAR_ELEMENT);
-        this.add(ForgeIngameGui.EXPERIENCE_BAR_ELEMENT);
-        this.add(ForgeIngameGui.ITEM_NAME_ELEMENT);
-        this.add(ForgeIngameGui.SLEEP_FADE_ELEMENT);
-        this.add(ForgeIngameGui.HUD_TEXT_ELEMENT);
-        this.add(ForgeIngameGui.FPS_GRAPH_ELEMENT);
-        this.add(ForgeIngameGui.POTION_ICONS_ELEMENT);
-        this.add(ForgeIngameGui.RECORD_OVERLAY_ELEMENT);
-        this.add(ForgeIngameGui.SUBTITLES_ELEMENT);
-        this.add(ForgeIngameGui.TITLE_TEXT_ELEMENT);
-        this.add(ForgeIngameGui.SCOREBOARD_ELEMENT);
-        this.add(ForgeIngameGui.CHAT_PANEL_ELEMENT);
-        this.add(ForgeIngameGui.PLAYER_LIST_ELEMENT);
-    }};
+    private static final List<IIngameOverlay> vanillaOverlays = new ArrayList<>();
 
     public static void cancelVanillaOverlays(RenderGameOverlayEvent.PreLayer event) {
         if (vanillaOverlays.contains(event.getOverlay())) {
@@ -87,6 +87,8 @@ public class FiguraModClientForge extends FiguraMod {
 
     @SubscribeEvent
     public static void registerKeyBinding(FMLClientSetupEvent event) {
+        // Config has to be initialized here, so that the keybinds exist on time
+        ConfigManager.init();
         for (KeyMapping value : KEYBINDS) {
             if(value != null)
                 ClientRegistry.registerKeyBinding(value);

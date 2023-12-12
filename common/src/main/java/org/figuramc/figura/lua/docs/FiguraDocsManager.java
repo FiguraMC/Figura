@@ -15,6 +15,8 @@ import org.figuramc.figura.lua.api.*;
 import org.figuramc.figura.lua.api.action_wheel.Action;
 import org.figuramc.figura.lua.api.action_wheel.ActionWheelAPI;
 import org.figuramc.figura.lua.api.action_wheel.Page;
+import org.figuramc.figura.lua.api.data.*;
+import org.figuramc.figura.lua.api.json.*;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
 import org.figuramc.figura.lua.api.entity.LivingEntityAPI;
 import org.figuramc.figura.lua.api.entity.PlayerAPI;
@@ -29,6 +31,10 @@ import org.figuramc.figura.lua.api.nameplate.EntityNameplateCustomization;
 import org.figuramc.figura.lua.api.nameplate.NameplateAPI;
 import org.figuramc.figura.lua.api.nameplate.NameplateCustomization;
 import org.figuramc.figura.lua.api.nameplate.NameplateCustomizationGroup;
+import org.figuramc.figura.lua.api.net.FiguraSocket;
+import org.figuramc.figura.lua.api.net.HttpRequestsAPI;
+import org.figuramc.figura.lua.api.net.NetworkingAPI;
+import org.figuramc.figura.lua.api.net.SocketAPI;
 import org.figuramc.figura.lua.api.particle.LuaParticle;
 import org.figuramc.figura.lua.api.particle.ParticleAPI;
 import org.figuramc.figura.lua.api.ping.PingAPI;
@@ -223,6 +229,42 @@ public class FiguraDocsManager {
 
         put("config", List.of(
                 ConfigAPI.class
+        ));
+
+        put("data", List.of(
+                DataAPI.class,
+                FiguraInputStream.class,
+                FiguraOutputStream.class,
+                FiguraBuffer.class,
+                FiguraFuture.class
+        ));
+
+        put("net", List.of(
+                NetworkingAPI.class,
+                HttpRequestsAPI.class,
+                HttpRequestsAPI.HttpResponse.class,
+                HttpRequestsAPI.HttpRequestBuilder.class,
+                SocketAPI.class,
+                FiguraSocket.class
+        ));
+
+        put("file", List.of(
+                FileAPI.class
+        ));
+
+        put("json", List.of(
+                JsonAPI.class,
+                FiguraJsonBuilder.class,
+                FiguraJsonSerializer.class,
+                FiguraJsonObject.class,
+                FiguraJsonArray.class
+        ));
+
+        put("resources", List.of(
+                ResourcesAPI.class
+        ));
+        put("raycast", List.of(
+                RaycastAPI.class
         ));
     }};
     private static final Map<String, List<FiguraDoc>> GENERATED_CHILDREN = new HashMap<>();

@@ -307,7 +307,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 // fix pivots
                 FiguraMod.pushProfiler("fixMatricesPivot");
 
-                FiguraVec3 pivot = custom.getPivot();
+                FiguraVec3 pivot = custom.getPivot().copy().add(custom.getOffsetPivot());
                 pivotOffsetter.setPos(pivot);
                 pivotOffsetter.recalculate();
                 customizationStack.push(pivotOffsetter);

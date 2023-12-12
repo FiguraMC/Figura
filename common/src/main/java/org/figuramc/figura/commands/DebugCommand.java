@@ -3,7 +3,9 @@ package org.figuramc.figura.commands;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.nbt.CompoundTag;
@@ -296,7 +298,7 @@ class DebugCommand {
 
         // scripts
         CompoundTag scriptsNbt = nbt.getCompound("scripts");
-        JsonObject scripts = parseCompoundSize(scriptsNbt);
+        JsonElement scripts = parseTagRecursive(scriptsNbt);
         sizes.add("scripts", scripts);
         sizes.addProperty("scripts_total", parseSize(getBytesFromNbt(scriptsNbt)));
 
@@ -353,6 +355,25 @@ class DebugCommand {
         insertJsonSortedData(sizesMap, target);
 
         return target;
+    }
+
+    private static JsonElement parseTagRecursive(Tag tag) {
+        if (tag instanceof CompoundTag compoundTag) {
+            JsonObject obj = new JsonObject();
+            HashMap<String, Integer> sizesMap = new HashMap<>();
+            for (String key : compoundTag.getAllKeys()) {
+                JsonElement value = parseTagRecursive(compoundTag.get(key));
+                if (value instanceof JsonPrimitive size && size.isNumber())
+                    sizesMap.put(key, size.getAsInt());
+                else
+                    obj.add(key, value);
+            }
+            insertJsonSortedData(sizesMap, obj);
+            return obj;
+        }
+        else {
+            return new JsonPrimitive(getBytesFromNbt(tag));
+        }
     }
 
     private static void insertJsonSortedData(HashMap<String, Integer> sizesMap, JsonObject json) {
