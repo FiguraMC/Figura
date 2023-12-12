@@ -885,7 +885,6 @@
     "figura.docs.entity.get_rot": "Gets the rotation of the entity in degrees\nIf delta is passed in, then it will be used to linearly interpolate the rotation of the entity between the previous tick and the current tick\nThe default value of delta is 1",
     "figura.docs.entity.get_uuid": "Gets the UUID of the proxied entity",
     "figura.docs.entity.get_type": "Gets the Minecraft identifier of this entity\nFor instance, \"minecraft:pig\"",
-    "figura.docs.entity.is_cute": "Checks if this entity is cute",
     "figura.docs.entity.get_velocity": "Gets the current velocity of this entity in world coordinates, calculated as its position this tick minus its position last tick",
     "figura.docs.entity.get_look_dir": "Returns a unit vector pointing in the direction that this entity is looking\nSee the blue line in the F3+B screen for an example",
     "figura.docs.entity.get_frozen_ticks": "Gets the number of ticks this entity has been freezing in powder snow for",
