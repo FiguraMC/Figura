@@ -11,7 +11,6 @@ public class PathUtils {
         if (path.isEmpty()) return Path.of("/");
         if (!path.startsWith(".")) path = "/" + path;
         return Path.of(path
-            .replaceAll("\\.lua$", "")
             .replaceAll("\\\\", "/")
             .replaceAll("[\\.]([^\\./])", "/$1")
             .replaceAll("\\/\\/", "/"));
