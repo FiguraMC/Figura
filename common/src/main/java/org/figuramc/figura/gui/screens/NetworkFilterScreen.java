@@ -36,7 +36,6 @@ public class NetworkFilterScreen extends AbstractPanelScreen {
         super.render(stack, mouseX, mouseY, delta);
     }
 
-    @Override
     protected void repositionElements() {
         titleLabel.setX(width / 2);
         titleLabel.setY(8 + titleLabel.getHeight() / 2 );
@@ -45,6 +44,12 @@ public class NetworkFilterScreen extends AbstractPanelScreen {
         networkFilterList.setY(titleLabel.getY() + (titleLabel.getHeight() / 2) + 8);
         networkFilterList.setWidth(listWidth);
         networkFilterList.setHeight(height - (titleLabel.getY() + (titleLabel.getHeight() / 2) + 16));
+    }
+
+    @Override
+    public void resize(Minecraft client, int width, int height) {
+        super.resize(client, width, height);
+        repositionElements();
     }
 
     @Override

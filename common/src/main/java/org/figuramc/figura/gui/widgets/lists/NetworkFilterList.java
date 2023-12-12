@@ -81,17 +81,16 @@ public class NetworkFilterList extends AbstractList {
 
         // background and scissors
         UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE_FILL);
-        UIHelper.setupScissor(x + scissorsX, y + scissorsY, width + scissorsWidth, height + scissorsHeight);
 
         super.render(stack, mouseX, mouseY, delta);
-
         updateScissors(4,28, -18, -56);
+        UIHelper.setupScissor(x + scissorsX, y + scissorsY, width + scissorsWidth, height + scissorsHeight);
         for (NetworkFilterEntry entry :
                 contents()) {
             if (!entry.isVisible()) continue;
             entry.render(stack, mouseX, mouseY, delta);
         }
-        RenderSystem.disableScissor();
+        UIHelper.disableScissor();
     }
 
     @Override
