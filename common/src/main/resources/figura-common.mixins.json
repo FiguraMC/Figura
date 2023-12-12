@@ -3,8 +3,7 @@
   "minVersion": "0.8",
   "package": "org.figuramc.figura.mixin",
   "compatibilityLevel": "JAVA_17",
-  "mixins": [
-  ],
+  "mixins": [],
   "client": [
     "BiomeAccessor",
     "BlockBehaviourAccessor",
@@ -72,6 +71,7 @@
     "render.layers.items.ItemInHandLayerMixin",
     "render.layers.items.PlayerItemInHandLayerMixin",
     "render.renderers.ArrowRendererMixin",
+    "render.renderers.TridentRendererMixin",
     "render.renderers.BlockEntityWithoutLevelRendererMixin",
     "render.renderers.EntityRendererMixin",
     "render.renderers.HandRenderSelectionAccessor",
