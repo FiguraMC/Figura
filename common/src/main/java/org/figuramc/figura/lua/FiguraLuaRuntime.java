@@ -232,7 +232,7 @@ public class FiguraLuaRuntime {
             Path path = PathUtils.getPath(arg.checkstring(1));
             Path dir = PathUtils.getWorkingDirectory(getInfoFunction);
             String scriptName = PathUtils.computeSafeString(
-                PathUtils.isAbsolute(path) ? path : dir.resolve(path)
+                PathUtils.isAbsolute(path) ? Path.of("/").resolve(path) : dir.resolve(path)
             );
 
             if (loadingScripts.contains(scriptName))
@@ -253,7 +253,7 @@ public class FiguraLuaRuntime {
             Path path = PathUtils.getPath(folderPath);
             Path dir = PathUtils.getWorkingDirectory(getInfoFunction);
 
-            Path targetPath = (PathUtils.isAbsolute(path) ? path : dir.resolve(path)).normalize();
+            Path targetPath = (PathUtils.isAbsolute(path) ? Path.of("/").resolve(path) : dir.resolve(path)).normalize();
 
             boolean subFolders = !includeSubfolders.isnil() && includeSubfolders.checkboolean();
 
@@ -348,28 +348,30 @@ public class FiguraLuaRuntime {
     // init event //
 
     private Varargs initializeScript(String str){
+        Path path = PathUtils.getPath(str);
+        String name = PathUtils.computeSafeString(path);
+
         // already loaded
-        Varargs val = loadedScripts.get(str);
+        Varargs val = loadedScripts.get(name);
         if (val != null)
             return val;
 
         // not found
-        String src = scripts.get(str);
+        String src = scripts.get(name);
         if (src == null)
-            throw new LuaError("Tried to require nonexistent script \"" + str + "\"!");
+            throw new LuaError("Tried to require nonexistent script \"" + name + "\"!");
 
-        this.loadingScripts.push(str);
+        this.loadingScripts.push(name);
 
         // load
-        Path path = Path.of(str);
         String directory = PathUtils.computeSafeString(path.getParent());
         String fileName = PathUtils.computeSafeString(path.getFileName());
-        Varargs value = userGlobals.load(src, str).invoke(LuaValue.varargsOf(LuaValue.valueOf(directory), LuaValue.valueOf(fileName)));
+        Varargs value = userGlobals.load(src, name).invoke(LuaValue.varargsOf(LuaValue.valueOf(directory), LuaValue.valueOf(fileName)));
         if (value == LuaValue.NIL)
             value = LuaValue.TRUE;
 
         // cache and return
-        loadedScripts.put(str, value);
+        loadedScripts.put(name, value);
         loadingScripts.pop();
         return value;
     };
