@@ -5,14 +5,14 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import net.minecraft.nbt.*;
+
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.Configs;
-import org.figuramc.figura.lua.api.FileAPI;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.model.rendering.texture.RenderTypes;
+import org.figuramc.figura.utils.PathUtils;
 import org.figuramc.figura.utils.Version;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -74,8 +74,7 @@ public class AvatarMetadataParser {
         if (metadata.autoScripts != null) {
             ListTag autoScripts = new ListTag();
             for (String name : metadata.autoScripts) {
-                name = name.replaceAll("\\.lua$", "").replaceAll("[/\\\\]", ".");
-                autoScripts.add(StringTag.valueOf(name));
+                autoScripts.add(StringTag.valueOf(PathUtils.computeSafeString(name)));
             }
             nbt.put("autoScripts", autoScripts);
         }

@@ -232,7 +232,7 @@ public class FiguraLuaRuntime {
             Path path = PathUtils.getPath(arg.checkstring(1));
             Path dir = PathUtils.getWorkingDirectory(getInfoFunction);
             String scriptName = PathUtils.computeSafeString(
-                PathUtils.isAbsolute(path) ? Path.of("/").resolve(path) : dir.resolve(path)
+                PathUtils.isAbsolute(path) ? path : dir.resolve(path)
             );
 
             if (loadingScripts.contains(scriptName))
@@ -253,7 +253,7 @@ public class FiguraLuaRuntime {
             Path path = PathUtils.getPath(folderPath);
             Path dir = PathUtils.getWorkingDirectory(getInfoFunction);
 
-            Path targetPath = (PathUtils.isAbsolute(path) ? Path.of("/").resolve(path) : dir.resolve(path)).normalize();
+            Path targetPath = (PathUtils.isAbsolute(path) ? path : dir.resolve(path)).normalize();
 
             boolean subFolders = !includeSubfolders.isnil() && includeSubfolders.checkboolean();
 
@@ -261,7 +261,7 @@ public class FiguraLuaRuntime {
             int i = 1;
             LuaTable table = new LuaTable();
             for (String s : scripts.keySet()) {
-                Path scriptPath = PathUtils.getPath("/" + s);
+                Path scriptPath = PathUtils.getPath(s);
 
                 // Add to table only if the beginning of the path matches
                 if (!(scriptPath.startsWith(targetPath)))

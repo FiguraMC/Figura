@@ -9,7 +9,9 @@ public class PathUtils {
 
     public static Path getPath (String path) {
         if (path.isEmpty()) return Path.of("/");
+        if (!path.startsWith(".")) path = "/" + path;
         return Path.of(path
+            .replaceAll("\\.lua$", "")
             .replaceAll("\\\\", "/")
             .replaceAll("[\\.]([^\\./])", "/$1")
             .replaceAll("\\/\\/", "/"));
@@ -23,7 +25,7 @@ public class PathUtils {
     public static Path getWorkingDirectory(LuaFunction debugGetinfo) {
         String file = debugGetinfo.call(LuaValue.valueOf(1)).get("source").checkjstring();
         Path path = Path.of("/" + file);
-        return path.getNameCount() > 1 ? path.resolve("../") : Path.of("/");
+        return path.getNameCount() > 1 ? path.resolve("../").normalize() : Path.of("/");
     }
 
     public static String computeSafeString(Path path) {
@@ -33,8 +35,16 @@ public class PathUtils {
             .replaceAll("^/", "");
     }
 
+    public static String computeSafeString(String path) {
+        return computeSafeString(getPath(path));
+    }
+
     public static boolean isAbsolute(Path path) {
         return path.getRoot() != null || !path.toString().startsWith(".");
+    }
+
+    public static boolean isAbsolute(String path) {
+        return isAbsolute(getPath(path));
     }
 
 }
