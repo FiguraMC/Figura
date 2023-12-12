@@ -45,6 +45,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     public final PartCustomization customization;
     public PartCustomization savedCustomization;
     public ParentType parentType = ParentType.None;
+    public PartCustomization playerCustomization;
 
     private final Map<String, FiguraModelPart> childCache = new HashMap<>();
     public final List<FiguraModelPart> children;
@@ -104,6 +105,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     public void applyVanillaTransforms(VanillaModelData vanillaModelData) {
+
         if (vanillaModelData == null)
             return;
 
@@ -111,6 +113,8 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         VanillaModelData.PartData partData = vanillaModelData.partMap.get(this.parentType);
         if (partData == null)
             return;
+        playerCustomization = new PartCustomization();
+        customization.copyTo(playerCustomization);
 
         // apply vanilla transforms
         customization.vanillaVisible = partData.visible;
@@ -120,31 +124,47 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         defaultPivot.subtract(partData.pos);
 
         if (!overrideVanillaScale()) {
-            defaultPivot.multiply(partData.scale);
-            customization.offsetScale(partData.scale);
+            FiguraVec3 newScale = partData.scale.copy().multiply(customization.getOffsetScale());
+            defaultPivot.multiply(newScale);
+            customization.offsetScale(newScale);
         }
 
         if (!overrideVanillaPos()) {
-            customization.offsetPivot(defaultPivot);
-            customization.offsetPos(defaultPivot);
+            customization.addOffsetPivot(defaultPivot);
+            customization.addOffsetPos(defaultPivot);
         }
 
         // customization.offsetPivot(pivot);
         if (!overrideVanillaRot())
-            customization.offsetRot(partData.rot);
+            customization.addOffsetRot(partData.rot);
     }
 
     public void resetVanillaTransforms() {
         if (parentType.provider != null) {
             if (!overrideVanillaPos()) {
-                customization.offsetPivot(0, 0, 0);
-                customization.offsetPos(0, 0, 0);
+                if (playerCustomization != null) {
+                    customization.offsetPivot(playerCustomization.getOffsetPivot());
+                    customization.offsetPos(playerCustomization.getOffsetPos());
+                } else {
+                    customization.offsetPivot(0, 0, 0);
+                    customization.offsetPos(0, 0, 0);
+                }
             }
-            if (!overrideVanillaRot())
-                customization.offsetRot(0, 0, 0);
-            if (!overrideVanillaScale())
-                customization.offsetScale(1, 1, 1);
-
+            if (!overrideVanillaRot()) {
+                if (playerCustomization != null) {
+                    customization.offsetRot(playerCustomization.getOffsetRot());
+                } else {
+                    customization.offsetRot(0, 0, 0);
+                }
+            }
+            if (!overrideVanillaScale()) {
+                if (playerCustomization != null) {
+                    customization.offsetScale(playerCustomization.getOffsetScale());
+                } else {
+                    customization.offsetScale(1, 1, 1);
+                }
+            }
+            playerCustomization = null;
             customization.vanillaVisible = null;
         }
     }
@@ -170,7 +190,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         customization.setMatrix(prevPartToView);
     }
 
-    // -- animations -- // 
+    // -- animations -- //
 
     public void animPosition(FiguraVec3 vec, boolean merge) {
         if (merge) {
@@ -209,7 +229,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         }
     }
 
-    // -- LUA BUSINESS --// 
+    // -- LUA BUSINESS --//
 
 
     @LuaWhitelist
@@ -720,6 +740,9 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     @LuaWhitelist
     @LuaMethodDoc("model_part.get_primary_defined_textures")
     public Object getPrimaryDefinedTextures(Integer value) {
+        if (value == null)  {
+            throw new LuaError("Illegal argument nil to getPrimaryDefinedTextures, requires an int");
+        }
         if (customization.primaryTexture == null) {
             LuaTable tbl = new LuaTable();
             FiguraTexture[] arr = this.textures.get(value).textures;

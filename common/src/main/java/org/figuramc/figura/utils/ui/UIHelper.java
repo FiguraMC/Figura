@@ -427,7 +427,6 @@ public final class UIHelper {
         if (text == null)
             return;
 
-        // Woolfy generated code
         int bottomDistance = screenH - (y + height);
         int rightDistance = screenW - (x + width);
         int verArea = y * screenW - bottomDistance * screenW;

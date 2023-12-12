@@ -35,6 +35,9 @@ public class FiguraModClientForge extends FiguraMod {
     public static void onInitializeClient(FMLClientSetupEvent event) {
         onClientInit();
         ModConfig.registerConfigScreen();
+        for (VanillaGuiOverlay overlay : VanillaGuiOverlay.values()) {
+            vanillaOverlays.add(overlay.type());
+        }
     }
 
     @SubscribeEvent
@@ -48,11 +51,7 @@ public class FiguraModClientForge extends FiguraMod {
         event.registerBelowAll("figura_underlay", new GuiUnderlay());
     }
 
-    private static final List<NamedGuiOverlay> vanillaOverlays = new ArrayList<>() {{
-        for (VanillaGuiOverlay overlay : VanillaGuiOverlay.values()) {
-            this.add(overlay.type());
-        }
-    }};
+    private static final List<NamedGuiOverlay> vanillaOverlays = new ArrayList<>();
 
     public static void cancelVanillaOverlays(RenderGuiOverlayEvent.Pre event) {
         if (vanillaOverlays.contains(event.getOverlay())) {

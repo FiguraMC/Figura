@@ -5,6 +5,7 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import org.figuramc.figura.gui.widgets.Label;
+import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.TextUtils;
 
@@ -25,6 +26,6 @@ public class DocsScreen extends AbstractPanelScreen {
     @Override
     protected void init() {
         super.init();
-        this.addRenderableWidget(new Label(Component.empty().append("TEST ").append(Component.literal("LABEL :3").withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "")))), width / 2, height / 2, 3f, 200, true, TextUtils.Alignment.CENTER, 0xFF72AD));
+        this.addRenderableWidget(new Label(Component.empty().append("Still not finished :s"), width / 2, height / 2, 3f, 200, true, TextUtils.Alignment.CENTER, ColorUtils.Colors.AWESOME_BLUE.hex));
     }
 }
