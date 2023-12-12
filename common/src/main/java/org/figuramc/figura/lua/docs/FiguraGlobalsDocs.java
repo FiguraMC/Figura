@@ -88,10 +88,6 @@ public abstract class FiguraGlobalsDocs {
                     @LuaMethodOverload(
                             argumentTypes = String.class,
                             argumentNames = "scriptName"
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {String.class, String.class},
-                            argumentNames = {"scriptName", "currentDirectory"}
                     )
             },
             value = "globals.require"
@@ -108,10 +104,6 @@ public abstract class FiguraGlobalsDocs {
                     @LuaMethodOverload(
                             argumentTypes = {String.class, Boolean.class},
                             argumentNames = {"folder", "subFolders"}
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {String.class, Boolean.class, String.class},
-                            argumentNames = {"folder", "subFolders", "currentDirectory"}
                     )
             },
             value = "globals.list_files"
