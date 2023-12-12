@@ -189,7 +189,8 @@ public class FiguraLuaRuntime {
             @Override
             public Varargs invoke(Varargs varargs) {
                 LuaValue arg1 = varargs.arg1();
-                if (arg1.type() == LuaValue.TTABLE && arg1.getmetatable() != null) {
+                int type = arg1.type();
+                if ((type == LuaValue.TTABLE || type == LuaValue.TUSERDATA) && arg1.getmetatable() != null) {
                     LuaValue __pairs = arg1.getmetatable().rawget("__pairs");
                     if (__pairs.isfunction())
                         return __pairs.invoke(varargs);
@@ -209,7 +210,8 @@ public class FiguraLuaRuntime {
             @Override
             public Varargs invoke(Varargs varargs) {
                 LuaValue arg1 = varargs.arg1();
-                if (arg1.type() == LuaValue.TTABLE && arg1.getmetatable() != null) {
+                int type = arg1.type();
+                if ((type == LuaValue.TTABLE || type == LuaValue.TUSERDATA) && arg1.getmetatable() != null) {
                     LuaValue __ipairs = arg1.getmetatable().rawget("__ipairs");
                     if (__ipairs.isfunction())
                         return __ipairs.invoke(varargs);
@@ -402,6 +404,8 @@ public class FiguraLuaRuntime {
         owner.luaRuntime = null;
         owner.clearParticles();
         owner.clearSounds();
+        owner.closeSockets();
+        owner.closeBuffers();
     }
 
     public static LuaError parseError(Throwable e) {

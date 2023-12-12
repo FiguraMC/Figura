@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import org.figuramc.figura.lua.api.json.FiguraJsonSerializer;
 import org.figuramc.figura.lua.api.world.BlockStateAPI;
 import org.figuramc.figura.lua.api.world.ItemStackAPI;
 import org.figuramc.figura.lua.api.world.WorldAPI;
@@ -26,8 +27,6 @@ import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaString;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
-
-import javax.xml.validation.Validator;
 
 public class LuaUtils {
 
@@ -221,7 +220,9 @@ public class LuaUtils {
                 return object;
             }
         }
-
+        if (value.isuserdata() && value.checkuserdata() instanceof FiguraJsonSerializer.JsonValue val) {
+            return val.getElement();
+        }
         // Fallback for things that shouldn't be converted (like functions)
         return null;
     }
