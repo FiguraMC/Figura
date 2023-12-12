@@ -124,8 +124,9 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         defaultPivot.subtract(partData.pos);
 
         if (!overrideVanillaScale()) {
-            defaultPivot.multiply(partData.scale.copy().add(customization.getOffsetScale()));
-            customization.offsetScale(partData.scale);
+            FiguraVec3 newScale = partData.scale.copy().multiply(customization.getOffsetScale());
+            defaultPivot.multiply(newScale);
+            customization.offsetScale(newScale);
         }
 
         if (!overrideVanillaPos()) {
@@ -1410,6 +1411,8 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         while (parent != null) {
             if (part == parent)
                 throw new LuaError("Cannot add child that's already parent of this part");
+            if (part == this)
+                throw new LuaError("Fractal, cannot parent part to itself");
             parent = parent.parent;
         }
 

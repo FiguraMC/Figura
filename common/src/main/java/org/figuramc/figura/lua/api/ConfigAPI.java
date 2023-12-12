@@ -58,7 +58,7 @@ public class ConfigAPI {
 
 
     public static Path getConfigDataDir() {
-        return IOUtils.getOrCreateDir(FiguraMod.getFiguraDirectory(), "data");
+        return IOUtils.getOrCreateDir(FiguraMod.getFiguraDirectory(), "config");
     }
 
     public static void clearAllData() {
