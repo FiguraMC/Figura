@@ -113,7 +113,7 @@ public class LocalAvatarLoader {
 
                 // scripts
                 loadState = LoadState.SCRIPTS;
-                CompoundTag scripts = loadScripts(finalPath);
+                CompoundTag scripts = loadScripts(finalPath, finalPath);
                 if (!scripts.getAllKeys().isEmpty())
                     nbt.put("scripts", scripts);
 
@@ -217,7 +217,7 @@ public class LocalAvatarLoader {
         }
     }
 
-    private static CompoundTag loadScripts(Path path) throws IOException {
+    private static CompoundTag loadScripts(Path path, Path finalPath) throws Exception {
         CompoundTag nbt = new CompoundTag();
         List<Path> subFiles = IOUtils.listPaths(path);
         if (subFiles != null)
@@ -226,12 +226,16 @@ public class LocalAvatarLoader {
                     continue;
                 String name = IOUtils.getFileNameOrEmpty(file);
                 if (Files.isDirectory(file)) {
-                    CompoundTag folderNbt = loadScripts(file);
+                    if (nbt.get(name) != null)
+                        throw new Exception("Script \"" + name + "\" and Folder \"" + name + "\" in " + finalPath.relativize(path) + " cannot have the same name");
+                    CompoundTag folderNbt = loadScripts(file, finalPath);
                     if (folderNbt.getAllKeys().isEmpty())
                         continue;
                     nbt.put(name, folderNbt);
                 } else if (file.toString().toLowerCase().endsWith(".lua")) {
                     name = name.substring(0, name.length() - 4);
+                    if (nbt.get(name) != null)
+                        throw new Exception("Script \"" + name + "\" and Folder \"" + name + "\" in " + finalPath.relativize(path) + " cannot have the same name");
                     nbt.put(name, LuaScriptParser.parseScript(name, IOUtils.readFile(file)));
                 }
             }
