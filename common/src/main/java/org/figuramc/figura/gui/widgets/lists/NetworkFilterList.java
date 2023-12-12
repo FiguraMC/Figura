@@ -83,14 +83,14 @@ public class NetworkFilterList extends AbstractList {
         UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE_FILL);
 
         super.render(stack, mouseX, mouseY, delta);
-        UIHelper.setupScissor(x + scissorsX, y + scissorsY, width + scissorsWidth, height + scissorsHeight);
         updateScissors(4,28, -18, -56);
+        UIHelper.setupScissor(x + scissorsX, y + scissorsY, width + scissorsWidth, height + scissorsHeight);
         for (NetworkFilterEntry entry :
                 contents()) {
             if (!entry.isVisible()) continue;
             entry.render(stack, mouseX, mouseY, delta);
         }
-        RenderSystem.disableScissor();
+        UIHelper.disableScissor();
     }
 
     @Override
