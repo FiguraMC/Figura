@@ -1411,6 +1411,8 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         while (parent != null) {
             if (part == parent)
                 throw new LuaError("Cannot add child that's already parent of this part");
+            if (part == this)
+                throw new LuaError("Fractal, cannot parent part to itself");
             parent = parent.parent;
         }
 
