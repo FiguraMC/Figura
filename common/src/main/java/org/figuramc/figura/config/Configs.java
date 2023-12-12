@@ -36,7 +36,7 @@ public class Configs {
         // test for unused configs
         if (FiguraMod.debugModeEnabled()) {
             ConfigType.Category debug = new ConfigType.Category("debug");
-            new ConfigType.ColorConfig("color_test", debug, 0xFF72AD);
+            new ConfigType.ColorConfig("color_test", debug, ColorUtils.Colors.AWESOME_BLUE.hex);
             new ConfigType.StringConfig("string_test", debug, "text");
             new ConfigType.IntConfig("int_test", debug, 2147483647);
         }
@@ -56,6 +56,10 @@ public class Configs {
             MISC = new ConfigType.Category("misc"),
             DEV = new ConfigType.Category("dev") {{
                 this.name = this.name.copy().withStyle(ChatFormatting.RED);
+            }},
+            NETWORKING = new ConfigType.Category("networking") {{
+                this.name = this.name.copy().withStyle(ChatFormatting.RED);
+                this.tooltip = this.tooltip.copy().withStyle(ChatFormatting.RED);
             }};
 
 
@@ -295,4 +299,13 @@ public class Configs {
     public static final ConfigType.BoolConfig
             FORCE_SMOOTH_AVATAR = new ConfigType.BoolConfig("force_smooth_avatar", DEV, false),
             GUI_FPS = new ConfigType.BoolConfig("gui_fps", DEV, false);
+
+    // -- NETWORKING -- //
+    public static final ConfigType.BoolConfig ALLOW_NETWORKING =
+            new ConfigType.BoolConfig("allow_networking", NETWORKING, false);
+    public static final ConfigType.EnumConfig NETWORKING_RESTRICTION = new ConfigType.EnumConfig("networking_restriction", NETWORKING, 0, 3);
+
+    public static final ConfigType.NetworkFilterConfig NETWORK_FILTER = new ConfigType.NetworkFilterConfig("network_filter", NETWORKING);
+
+    public static final ConfigType.EnumConfig LOG_NETWORKING = new ConfigType.EnumConfig("networking_logging", NETWORKING, 0, 4);
 }

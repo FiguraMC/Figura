@@ -3,10 +3,17 @@ package org.figuramc.figura.lua;
 import org.figuramc.figura.animation.Animation;
 import org.figuramc.figura.entries.FiguraAPI;
 import org.figuramc.figura.lua.api.*;
+import org.figuramc.figura.lua.api.data.*;
+import org.figuramc.figura.lua.api.json.*;
+import org.figuramc.figura.lua.api.entity.*;
+import org.figuramc.figura.lua.api.net.FiguraSocket;
+import org.figuramc.figura.lua.api.net.HttpRequestsAPI;
+import org.figuramc.figura.lua.api.net.NetworkingAPI;
+import org.figuramc.figura.lua.api.net.SocketAPI;
+import org.figuramc.figura.model.rendertasks.*;
 import org.figuramc.figura.lua.api.action_wheel.Action;
 import org.figuramc.figura.lua.api.action_wheel.ActionWheelAPI;
 import org.figuramc.figura.lua.api.action_wheel.Page;
-import org.figuramc.figura.lua.api.entity.*;
 import org.figuramc.figura.lua.api.event.EventsAPI;
 import org.figuramc.figura.lua.api.event.LuaEvent;
 import org.figuramc.figura.lua.api.keybind.FiguraKeybind;
@@ -40,7 +47,6 @@ import org.figuramc.figura.math.vector.FiguraVec4;
 import org.figuramc.figura.model.FiguraModelPart;
 import org.figuramc.figura.model.rendering.Vertex;
 import org.figuramc.figura.model.rendering.texture.FiguraTexture;
-import org.figuramc.figura.model.rendertasks.*;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -136,6 +142,34 @@ public class FiguraAPIManager {
 
         add(TextureAtlasAPI.class);
 
+        add(FiguraInputStream.class);
+        add(FiguraOutputStream.class);
+
+        add(DataAPI.class);
+
+        add(FiguraBuffer.class);
+
+        add(FileAPI.class);
+
+        add(JsonAPI.class);
+        add(FiguraJsonBuilder.class);
+        add(FiguraJsonSerializer.class);
+        add(FiguraJsonArray.class);
+        add(FiguraJsonObject.class);
+
+        add(ResourcesAPI.class);
+
+        add(NetworkingAPI.class);
+
+        add(HttpRequestsAPI.class);
+        add(HttpRequestsAPI.HttpRequestBuilder.class);
+        add(HttpRequestsAPI.HttpResponse.class);
+
+        add(FiguraFuture.class);
+
+        add(SocketAPI.class);
+        add(FiguraSocket.class);
+
         add(RaycastAPI.class);
     }};
 
@@ -158,6 +192,11 @@ public class FiguraAPIManager {
         put("pings", r -> r.ping = new PingAPI(r.owner));
         put("textures", r -> r.texture = new TextureAPI(r.owner));
         put("config", r -> new ConfigAPI(r.owner));
+        put("data", r -> new DataAPI(r.owner));
+        put("file", r -> new FileAPI(r.owner));
+        put("json", r -> JsonAPI.INSTANCE);
+        put("resources", r -> new ResourcesAPI(r.owner));
+        put("net", r -> new NetworkingAPI(r.owner));
         put("raycast", r -> new RaycastAPI(r.owner));
     }};
 

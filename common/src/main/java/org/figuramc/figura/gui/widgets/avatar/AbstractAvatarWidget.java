@@ -23,7 +23,7 @@ import java.nio.file.Path;
 public abstract class AbstractAvatarWidget extends AbstractContainerElement implements Comparable<AbstractAvatarWidget> {
 
     protected static final int SPACING = 6;
-    protected static final Component FAVOURITE = Component.literal("★").withStyle(Style.EMPTY.withFont(UIHelper.UI_FONT).withColor(ChatFormatting.YELLOW));
+    protected static final Component FAVOURITE = Component.literal("★").withStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
     protected static final Component ADD_FAVOURITE = FiguraText.of("gui.context.favorite.add");
     protected static final Component REMOVE_FAVOURITE = FiguraText.of("gui.context.favorite.remove");
 
