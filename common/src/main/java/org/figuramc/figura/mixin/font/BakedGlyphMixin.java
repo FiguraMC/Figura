@@ -37,6 +37,7 @@ public abstract class BakedGlyphMixin implements BakedGlyphAccessor {
     @Shadow
     @Final
     private float v1;
+    @Shadow @Final private float u1;
     @Unique
     EmojiMetadata figura$metadata;
 
@@ -67,5 +68,25 @@ public abstract class BakedGlyphMixin implements BakedGlyphAccessor {
         vertexConsumer.vertex(matrix, x + figura$metadata.width + n, l, 0.0f).color(red, green, blue, alpha).uv(u + singleWidth, this.v1).uv2(light).endVertex();
         vertexConsumer.vertex(matrix, x + figura$metadata.width + m, k, 0.0f).color(red, green, blue, alpha).uv(u + singleWidth, this.v0).uv2(light).endVertex();
         ci.cancel();
+    }
+
+    @Override
+    public float figura$getU0() {
+        return u0;
+    }
+
+    @Override
+    public float figura$getV0() {
+        return v0;
+    }
+
+    @Override
+    public float figura$getU1() {
+        return u1;
+    }
+
+    @Override
+    public float figura$getV1() {
+        return v1;
     }
 }

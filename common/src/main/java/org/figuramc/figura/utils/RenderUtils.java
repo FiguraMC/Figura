@@ -1,8 +1,13 @@
 package org.figuramc.figura.utils;
 
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.architectury.injectables.annotations.ExpectPlatform;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.renderer.RenderStateShard;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
@@ -16,6 +21,8 @@ import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
 import org.figuramc.figura.permissions.Permissions;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.function.Function;
 
 public class RenderUtils {
 
@@ -82,4 +89,20 @@ public class RenderUtils {
     public static <T extends LivingEntity, M extends HumanoidModel<T>, A extends HumanoidModel<T>> ResourceLocation getArmorResource(HumanoidArmorLayer<T, M, A> armorLayer, Entity entity, ItemStack stack, ArmorItem item, EquipmentSlot slot, boolean isInner, String type) {
         throw new AssertionError();
     }
+
+    public static class TextRenderType extends RenderType {
+        public static Function<ResourceLocation, RenderType> TEXT_BACKGROUND_SEE_THROUGH = Util.memoize((texture) -> {
+            return create("text_background_see_through", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, false, true, RenderType.CompositeState.builder().setShaderState(RenderStateShard.RENDERTYPE_TEXT_INTENSITY_SEE_THROUGH_SHADER).setTextureState(new RenderStateShard.TextureStateShard(texture, false, false)).setTransparencyState(TRANSLUCENT_TRANSPARENCY).setLightmapState(LIGHTMAP).setDepthTestState(NO_DEPTH_TEST).setWriteMaskState(COLOR_WRITE).createCompositeState(false));
+        });
+        public static Function<ResourceLocation, RenderType> TEXT_BACKGROUND = Util.memoize((texture) -> {
+            return create("text_background", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, false, true, RenderType.CompositeState.builder().setShaderState(RENDERTYPE_TEXT_INTENSITY_SHADER).setTextureState(new RenderStateShard.TextureStateShard(texture, false, false)).setTransparencyState(TRANSLUCENT_TRANSPARENCY).setLightmapState(LIGHTMAP).createCompositeState(false));
+        });
+
+        public TextRenderType(String name, VertexFormat vertexFormat, VertexFormat.Mode drawMode, int expectedBufferSize, boolean hasCrumbling, boolean translucent, Runnable startAction, Runnable endAction) {
+            super(name, vertexFormat, drawMode, expectedBufferSize, hasCrumbling, translucent, startAction, endAction);
+        }
+
+    }
+
+
 }
