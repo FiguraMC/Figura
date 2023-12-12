@@ -1647,7 +1647,7 @@
     "figura.docs.world.new_item": "Parses and creates a new ItemStack from the given string\nA count and damage can be given, to be applied on this itemstack",
     "figura.docs.world.exists": "Checks whether or not a world currently exists\nThis will almost always be true, but might be false on some occasions such as while traveling between dimensions",
     "figura.docs.world.get_build_height": "Returns the minimum and maximum build height of the world, as multiple results",
-    "figura.docs.world.get_spawn_point": "Returns a vector with the coordinates of the world spawn"
+    "figura.docs.world.get_spawn_point": "Returns a vector with the coordinates of the world spawn",
     "figura.docs.world.raycast_entity": "Raycasts an Entity in the world, returns a map containing the entity and it's position.",
     "figura.docs.world.raycast_block": "Raycasts a Block in the world, returns a map containing the block and it's position.",
     "figura.docs.data": "A global API that provides functions to work with data related features",
