@@ -183,7 +183,7 @@ public class PartCustomization {
         needsMatrixRecalculation = true;
     }
     public void addOffsetPivot(FiguraVec3 pivot) {
-        addOffsetPos(pivot.x, pivot.y, pivot.z);
+        addOffsetPivot(pivot.x, pivot.y, pivot.z);
     }
     public void addOffsetPivot(double x, double y, double z) {
         offsetPivot.add(x, y, z);

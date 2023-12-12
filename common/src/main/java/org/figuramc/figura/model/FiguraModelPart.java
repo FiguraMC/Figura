@@ -124,8 +124,9 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         defaultPivot.subtract(partData.pos);
 
         if (!overrideVanillaScale()) {
-            defaultPivot.multiply(partData.scale.copy().add(customization.getOffsetScale()));
-            customization.offsetScale(partData.scale);
+            FiguraVec3 newScale = partData.scale.copy().multiply(customization.getOffsetScale());
+            defaultPivot.multiply(newScale);
+            customization.offsetScale(newScale);
         }
 
         if (!overrideVanillaPos()) {
