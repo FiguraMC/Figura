@@ -13,6 +13,8 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.level.ClipContext;
+
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.animation.Animation;
 import org.figuramc.figura.mixin.input.KeyMappingAccessor;
@@ -25,6 +27,7 @@ import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.FiguraClientCommandSource;
 import org.figuramc.figura.utils.FiguraText;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -39,6 +42,14 @@ public class FiguraListDocs {
     private static final LinkedHashMap<String, List<String>> PARENT_TYPES = new LinkedHashMap<>() {{
         for (ParentType value : ParentType.values())
             put(value.name(), Arrays.asList(value.aliases));
+    }};
+    private static final LinkedHashMap<String, List<String>> STRING_ENCODINGS = new LinkedHashMap<>() {{
+        put("utf8", List.of("utf_8"));
+        put("utf16", List.of("utf_16"));
+        put("utf16be", List.of("utf_16_be"));
+        put("utf16le", List.of("utf_16_le"));
+        put("ascii", List.of());
+        put("iso88591", List.of("iso_8859_1"));
     }};
     private static final LinkedHashSet<String> RENDER_TYPES = new LinkedHashSet<>() {{
         for (RenderTypes value : RenderTypes.values())
@@ -89,6 +100,14 @@ public class FiguraListDocs {
         for (EntityRenderMode value : EntityRenderMode.values())
             add(value.name());
     }};
+    private static final LinkedHashSet<String> BLOCK_RAYCAST_TYPE = new LinkedHashSet<>() {{
+        for (ClipContext.Block value : ClipContext.Block.values())
+            add(value.name());
+    }};
+    private static final LinkedHashSet<String> FLUID_RAYCAST_TYPE = new LinkedHashSet<>() {{
+        for (ClipContext.Fluid value : ClipContext.Fluid.values())
+            add(value.name());
+    }};
 
     private enum ListDoc {
         KEYBINDS(() -> FiguraListDocs.KEYBINDS, "Keybinds", "keybinds", 2),
@@ -104,7 +123,10 @@ public class FiguraListDocs {
         COLORS(() -> FiguraListDocs.COLORS, "Colors", "colors", 1),
         PLAYER_MODEL_PARTS(() -> FiguraListDocs.PLAYER_MODEL_PARTS, "PlayerModelParts", "player_model_parts", 1),
         USE_ACTIONS(() -> FiguraListDocs.USE_ACTIONS, "UseActions", "use_actions", 1),
-        RENDER_MODES(() -> FiguraListDocs.RENDER_MODES, "RenderModes", "render_modes", 1);
+        RENDER_MODES(() -> FiguraListDocs.RENDER_MODES, "RenderModes", "render_modes", 1),
+        STRING_ENCODINGS(() -> FiguraListDocs.STRING_ENCODINGS, "StringEncodings", "string_encodings", 1),
+        BLOCK_RAYCAST_TYPE(() -> FiguraListDocs.BLOCK_RAYCAST_TYPE, "BlockRaycastTypes", "block_raycast_types", 1),
+        FLUID_RAYCAST_TYPE(() -> FiguraListDocs.FLUID_RAYCAST_TYPE, "FluidRaycastTypes", "fluid_raycast_types", 1);
 
         private final Supplier<Object> supplier;
         private final String name, id;

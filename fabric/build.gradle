@@ -53,7 +53,13 @@ dependencies {
         include(modCompileOnly(fabricApi.module("fabric-resource-loader-v0", rootProject.fabric_api)))
     }
     // Mods
-	modCompileOnly "maven.modrinth:modmenu:$modmenu"
+    if (rootProject.run_with_modmenu == "true") {
+        modRuntimeOnly(fabricApi.module("fabric-screen-api-v1", rootProject.fabric_api))
+        modRuntimeOnly(fabricApi.module("fabric-lifecycle-events-v1", rootProject.fabric_api))
+        modImplementation("maven.modrinth:modmenu:$modmenu")
+    } else {
+        modCompileOnly("maven.modrinth:modmenu:$modmenu")
+    }
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }

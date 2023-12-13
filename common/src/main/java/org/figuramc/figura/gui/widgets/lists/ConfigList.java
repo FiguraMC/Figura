@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.util.Mth;
 import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.config.ConfigKeyBind;
 import org.figuramc.figura.config.ConfigManager;
 import org.figuramc.figura.config.ConfigType;
 import org.figuramc.figura.gui.screens.ConfigScreen;
@@ -138,6 +139,9 @@ public class ConfigList extends AbstractList {
             return false;
 
         focusedBinding.setKey(key);
+        if (focusedBinding instanceof ConfigKeyBind)
+            ((ConfigKeyBind)focusedBinding).saveConfigChanges();
+
         focusedBinding = null;
         FiguraMod.processingKeybind = false;
 

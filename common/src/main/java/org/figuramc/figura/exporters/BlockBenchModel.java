@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public class BlockBenchModel {
 
-    private static final String VERSION = "4.5";
+    private static final String VERSION = "4.9";
 
     private final JsonObject root = new JsonObject();
     private final ArrayList<Cube> elements = new ArrayList<>();
@@ -36,13 +36,17 @@ public class BlockBenchModel {
     }
 
     // returns the image id
-    public int addImage(String name, String source) {
+    public int addImage(String name, String source, int width, int height) {
         int id = textures.size();
 
         JsonObject texture = new JsonObject();
         texture.addProperty("name", name);
         texture.addProperty("id", String.valueOf(id));
         texture.addProperty("source", "data:image/png;base64," + source);
+        texture.addProperty("width", width);
+        texture.addProperty("height", height);
+        texture.addProperty("uv_width", width);
+        texture.addProperty("uv_height", height);
         textures.add(texture);
 
         return id;

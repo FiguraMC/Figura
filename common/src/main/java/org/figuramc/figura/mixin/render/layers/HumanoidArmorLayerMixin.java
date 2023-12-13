@@ -253,11 +253,11 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
             hasOverlay = true;
         }
 
-        VertexConsumer regularArmorConsumer = vertexConsumers.getBuffer(RenderType.armorCutoutNoCull(this.getArmorLocation(armorItem, bl, null)));
+        VertexConsumer regularArmorConsumer = vertexConsumers.getBuffer(RenderType.armorCutoutNoCull(RenderUtils.getArmorResource((HumanoidArmorLayer<T, M, A>)(Object)this, entity, itemStack, armorItem, armorSlot, bl, null)));
         modelPart.render(poseStack, regularArmorConsumer, light, OverlayTexture.NO_OVERLAY, tintR, tintG, tintB, 1f);
 
         if (hasOverlay) {
-            VertexConsumer overlaidArmorConsumer = vertexConsumers.getBuffer(RenderType.armorCutoutNoCull(this.getArmorLocation(armorItem, bl, "overlay")));
+            VertexConsumer overlaidArmorConsumer = vertexConsumers.getBuffer(RenderType.armorCutoutNoCull(RenderUtils.getArmorResource((HumanoidArmorLayer<T, M, A>)(Object)this, entity, itemStack, armorItem, armorSlot, bl, "overlay")));
             modelPart.render(poseStack, overlaidArmorConsumer, light, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
         }
 

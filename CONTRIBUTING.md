@@ -23,7 +23,7 @@ Note - do not merge upstream into your pr branch if a clean rebase is possible.
 ## Translation Contribution Process 
 1. You must be fluent and/or knowledgeable in the language you are translating to.
 
-2. We use [Weblate](https://weblate.org) to manage our translations. Visit our project [here](https://hosted.weblate.org/projects/figuramc/). This makes it much easier for other contributors to view the progress on a specific language.
+2. We use [Weblate](https://weblate.org) to manage our translations. Visit our instance [here](https://translate.figuramc.org/projects/figuramc/). This makes it much easier for other contributors to view the progress on a specific language.
 
 <!-- ## Art Contribution Process - To Be Finished, Commented Out for now.
 Note - Emojis are located in [FiguraMC/Assets](https://github.com/FiguraMC/Assets/)

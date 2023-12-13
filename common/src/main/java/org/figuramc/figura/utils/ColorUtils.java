@@ -207,6 +207,16 @@ public class ColorUtils {
         return hex;
     }
 
+    // This actually seems to storing BGAR this whole file is a lie, but i will just play along...
+    public static int intRGBAToIntARGB(int hexRGBA) {
+        int green = (hexRGBA >> 16) & 0xFF;
+        int blue = (hexRGBA >> 8) & 0xFF;
+        int alpha = hexRGBA & 0xFF;
+        int red = (hexRGBA >> 24) & 0xFF;
+
+        return ((alpha << 24) | (red << 16) | (green << 8) | blue);
+    }
+
     public static int rgbaToInt(FiguraVec4 rgba) {
         int hex = (int) (rgba.x * 0xFF);
         hex = (hex << 8) + (int) (rgba.y * 0xFF);
