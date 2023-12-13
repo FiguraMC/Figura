@@ -60,6 +60,7 @@ import org.figuramc.figura.permissions.PermissionPack;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.EntityUtils;
+import org.figuramc.figura.utils.PathUtils;
 import org.figuramc.figura.utils.RefilledNumber;
 import org.figuramc.figura.utils.Version;
 import org.figuramc.figura.utils.ui.UIHelper;
@@ -1018,7 +1019,7 @@ public class Avatar {
         for (String key : tag.getAllKeys()){
             switch(tag.get(key).getId()){
                 case Tag.TAG_COMPOUND -> result.putAll(loadScript(tag.getCompound(key), path + key + "/"));
-                case Tag.TAG_BYTE_ARRAY -> result.put(path + key, new String(tag.getByteArray(key), StandardCharsets.UTF_8));
+                case Tag.TAG_BYTE_ARRAY -> result.put(PathUtils.computeSafeString(path + key), new String(tag.getByteArray(key), StandardCharsets.UTF_8));
             }
         }
         return result;
