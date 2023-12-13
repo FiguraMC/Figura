@@ -1,10 +1,7 @@
 package org.figuramc.figura.avatar.local;
 
 import net.minecraft.Util;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import org.figuramc.figura.FiguraMod;
@@ -18,14 +15,13 @@ import org.figuramc.figura.utils.FiguraResourceListener;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.IOUtils;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * class used to load avatars from a file
@@ -118,7 +114,9 @@ public class LocalAvatarLoader {
 
                 // scripts
                 loadState = LoadState.SCRIPTS;
-                loadScripts(finalPath, nbt);
+                CompoundTag scripts = loadScripts(finalPath, finalPath);
+                if (!scripts.getAllKeys().isEmpty())
+                    nbt.put("scripts", scripts);
 
                 // custom sounds
                 loadState = LoadState.SOUNDS;
@@ -147,6 +145,11 @@ public class LocalAvatarLoader {
                     nbt.put("textures", textures);
                 if (!animations.isEmpty())
                     nbt.put("animations", animations);
+                CompoundTag metadataTag = nbt.getCompound("metadata");
+                if (metadataTag.contains("resources_paths")) {
+                    loadResources(nbt, metadataTag.getList("resources_paths", Tag.TAG_STRING), finalPath);
+                    metadataTag.remove("resource_paths");
+                }
 
                 // load
                 target.loadAvatar(nbt);
@@ -157,21 +160,87 @@ public class LocalAvatarLoader {
             }
         });
     }
-
-    private static void loadScripts(Path path, CompoundTag nbt) throws IOException {
-        List<Path> scripts = IOUtils.getFilesByExtension(path, ".lua");
-        if (scripts.size() > 0) {
-            CompoundTag scriptsNbt = new CompoundTag();
-            String pathRegex = path.toString().isEmpty() ? "\\Q\\E" : Pattern.quote(path + path.getFileSystem().getSeparator());
-            for (Path script : scripts) {
-                String name = script.toString()
-                        .replaceFirst(pathRegex, "")
-                        .replaceAll("[/\\\\]", ".");
-                name = name.substring(0, name.length() - 4);
-                scriptsNbt.put(name, LuaScriptParser.parseScript(name, IOUtils.readFile(script)));
-            }
-            nbt.put("scripts", scriptsNbt);
+    private static void loadResources(CompoundTag nbt, ListTag pathsTag, Path parentPath) {
+        ArrayList<PathMatcher> pathMatchers = new ArrayList<>();
+        FileSystem fs = FileSystems.getDefault();
+        for (int i = 0; i < pathsTag.size(); i++) {
+            pathMatchers.add(fs.getPathMatcher("glob:".concat(pathsTag.getString(i))));
         }
+        Map<String, Path> pathMap = new HashMap<>();
+        matchPathsRecursive(pathMap, parentPath, parentPath, pathMatchers);
+        CompoundTag resourcesTag = new CompoundTag();
+        for (String p:
+                pathMap.keySet()) {
+            try (FileInputStream fis = new FileInputStream(pathMap.get(p).toFile())) {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                GZIPOutputStream gos = new GZIPOutputStream(baos);
+                int i;
+                while ((i = fis.read()) != -1) {
+                    gos.write(i);
+                }
+                gos.close();
+                resourcesTag.put(unixifyPath(p), new ByteArrayTag(baos.toByteArray()));
+                baos.close();
+            }
+            catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        nbt.put("resources", resourcesTag);
+    }
+
+    private static String unixifyPath(String original) {
+        Path p = Path.of(original);
+        String[] components = new String[p.getNameCount()];
+        for (int i = 0; i < components.length; i++) {
+            components[i] = p.getName(i).toString();
+        }
+        return String.join("/", components);
+    }
+
+    private static void matchPathsRecursive(Map<String, Path> pathMap, Path parent, Path current, ArrayList<PathMatcher> matchers) {
+        File f = current.toFile();
+        if (f.isFile()) {
+            Path relative = parent.toAbsolutePath().relativize(current.toAbsolutePath()).normalize();
+            for (PathMatcher m :
+                    matchers) {
+                if (m.matches(relative)) {
+                    pathMap.put(relative.toString(), current);
+                    break;
+                }
+            }
+        }
+        else {
+            for (File fl :
+                    current.toFile().listFiles()) {
+                matchPathsRecursive(pathMap, parent, fl.toPath(), matchers);
+            }
+        }
+    }
+
+    private static CompoundTag loadScripts(Path path, Path finalPath) throws Exception {
+        CompoundTag nbt = new CompoundTag();
+        List<Path> subFiles = IOUtils.listPaths(path);
+        if (subFiles != null)
+            for (Path file : subFiles) {
+                if (IOUtils.isHidden(file))
+                    continue;
+                String name = IOUtils.getFileNameOrEmpty(file);
+                if (Files.isDirectory(file)) {
+                    if (nbt.get(name) != null)
+                        throw new Exception("Script \"" + name + "\" and Folder \"" + name + "\" in " + finalPath.relativize(path) + " cannot have the same name");
+                    CompoundTag folderNbt = loadScripts(file, finalPath);
+                    if (folderNbt.getAllKeys().isEmpty())
+                        continue;
+                    nbt.put(name, folderNbt);
+                } else if (file.toString().toLowerCase().endsWith(".lua")) {
+                    name = name.substring(0, name.length() - 4);
+                    if (nbt.get(name) != null)
+                        throw new Exception("Script \"" + name + "\" and Folder \"" + name + "\" in " + finalPath.relativize(path) + " cannot have the same name");
+                    nbt.put(name, LuaScriptParser.parseScript(name, IOUtils.readFile(file)));
+                }
+            }
+        return nbt;
     }
 
     private static void loadSounds(Path path, CompoundTag nbt) throws IOException {

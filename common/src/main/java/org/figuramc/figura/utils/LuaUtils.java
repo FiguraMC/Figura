@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import org.figuramc.figura.lua.api.json.FiguraJsonSerializer;
 import org.figuramc.figura.lua.api.world.BlockStateAPI;
 import org.figuramc.figura.lua.api.world.ItemStackAPI;
 import org.figuramc.figura.lua.api.world.WorldAPI;
@@ -23,10 +24,9 @@ import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.math.vector.FiguraVec4;
 import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaString;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
-
-import javax.xml.validation.Validator;
 
 public class LuaUtils {
 
@@ -195,9 +195,9 @@ public class LuaUtils {
     public static JsonElement asJsonValue(LuaValue value) {
         if (value.isnil()) return JsonNull.INSTANCE;
         if (value.isboolean()) return new JsonPrimitive(value.checkboolean());
+        if (value instanceof LuaString s) return new JsonPrimitive(s.checkjstring());
         if (value.isint()) return new JsonPrimitive(value.checkint());
         if (value.isnumber()) return new JsonPrimitive(value.checkdouble());
-        if (value.isstring()) return new JsonPrimitive(value.checkjstring());
         if (value.istable()) {
             LuaTable table = value.checktable();
 
@@ -220,7 +220,9 @@ public class LuaUtils {
                 return object;
             }
         }
-
+        if (value.isuserdata() && value.checkuserdata() instanceof FiguraJsonSerializer.JsonValue val) {
+            return val.getElement();
+        }
         // Fallback for things that shouldn't be converted (like functions)
         return null;
     }

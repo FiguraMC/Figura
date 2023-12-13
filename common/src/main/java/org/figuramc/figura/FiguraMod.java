@@ -58,7 +58,6 @@ public class FiguraMod {
     public static void onClientInit() {
         // init managers
         EntryPointManager.init();
-        ConfigManager.init();
         PermissionManager.init();
         LocalAvatarFetcher.init();
         CacheAvatarLoader.init();

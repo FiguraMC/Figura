@@ -24,6 +24,7 @@ import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.permissions.Permissions;
+import org.figuramc.figura.utils.PlatformUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -83,7 +84,7 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, M extends EntityM
 
 
         ItemStack itemStack = livingEntity.getItemBySlot(EquipmentSlot.CHEST);
-        if (!itemStack.is(Items.ELYTRA)) {
+        if (!itemStack.is(Items.ELYTRA) && !PlatformUtils.isModLoaded("origins")) {
             return;
         }
         if (figura$avatar != null && figura$avatar.luaRuntime != null && figura$avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1 && figura$avatar.luaRuntime.vanilla_model.ELYTRA.checkVisible()) {
@@ -101,6 +102,7 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, M extends EntityM
                 stack.popPose();
             });
         } else if (figura$avatar != null && figura$avatar.luaRuntime != null && figura$avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1 && !figura$avatar.luaRuntime.vanilla_model.ELYTRA.checkVisible()){
+            renderedPivot = true;
             poseStack.popPose();
             ci.cancel();
             return;

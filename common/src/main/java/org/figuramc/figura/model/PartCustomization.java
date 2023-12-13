@@ -182,6 +182,13 @@ public class PartCustomization {
         offsetPivot.set(x, y, z);
         needsMatrixRecalculation = true;
     }
+    public void addOffsetPivot(FiguraVec3 pivot) {
+        addOffsetPivot(pivot.x, pivot.y, pivot.z);
+    }
+    public void addOffsetPivot(double x, double y, double z) {
+        offsetPivot.add(x, y, z);
+        needsMatrixRecalculation = true;
+    }
     public FiguraVec3 getOffsetPivot() {
         return offsetPivot.copy();
     }
@@ -191,6 +198,13 @@ public class PartCustomization {
     }
     public void offsetPos(double x, double y, double z) {
         offsetPos.set(x, y, z);
+        needsMatrixRecalculation = true;
+    }
+    public void addOffsetPos(FiguraVec3 pos) {
+        addOffsetPos(pos.x, pos.y, pos.z);
+    }
+    public void addOffsetPos(double x, double y, double z) {
+        offsetPos.add(x, y, z);
         needsMatrixRecalculation = true;
     }
     public FiguraVec3 getOffsetPos() {
@@ -204,6 +218,13 @@ public class PartCustomization {
         offsetRot.set(x, y, z);
         needsMatrixRecalculation = true;
     }
+    public void addOffsetRot(FiguraVec3 rot) {
+        addOffsetRot(rot.x, rot.y, rot.z);
+    }
+    public void addOffsetRot(double x, double y, double z) {
+        offsetRot.add(x, y, z);
+        needsMatrixRecalculation = true;
+    }
     public FiguraVec3 getOffsetRot() {
         return offsetRot.copy();
     }
@@ -213,6 +234,13 @@ public class PartCustomization {
     }
     public void offsetScale(double x, double y, double z) {
         offsetScale.set(x, y, z);
+        needsMatrixRecalculation = true;
+    }
+    public void addOffsetScale(FiguraVec3 scale) {
+        addOffsetScale(scale.x, scale.y, scale.z);
+    }
+    public void addOffsetScale(double x, double y, double z) {
+        offsetScale.add(x, y, z);
         needsMatrixRecalculation = true;
     }
     public FiguraVec3 getOffsetScale() {

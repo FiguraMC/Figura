@@ -4,6 +4,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.config.ConfigKeyBind;
 import org.figuramc.figura.config.ConfigType;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.gui.widgets.KeybindWidgetHelper;
@@ -32,6 +33,7 @@ public class KeybindElement extends AbstractConfigElement {
         children.remove(resetButton);
         children.add(resetButton = new ParentedButton(getX() + width - 60, getY(), 60, 20, Component.translatable("controls.reset"), this, button -> {
             binding.setKey(binding.getDefaultKey());
+            ((ConfigKeyBind)binding).saveConfigChanges();
             parentList.updateKeybinds();
         }));
 

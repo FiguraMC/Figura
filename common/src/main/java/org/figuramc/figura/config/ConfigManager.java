@@ -44,7 +44,10 @@ public final class ConfigManager {
                         JsonElement object = json.get(config.id.toLowerCase());
                         if (object == null)
                             continue;
-
+                        if (config instanceof ConfigType.SerializableConfig s) {
+                            s.deserialize(object);
+                            continue;
+                        }
                         String obj = object.getAsString();
                         if (config instanceof ConfigType.KeybindConfig keybind) {
                             keybind.keyBind.setKey(InputConstants.getKey(obj));
@@ -81,7 +84,9 @@ public final class ConfigManager {
                     continue;
 
                 String id = config.id;
-                if (config.value instanceof Number n)
+                if (config instanceof ConfigType.SerializableConfig s)
+                    configJson.add(id, s.serialize());
+                else if (config.value instanceof Number n)
                     configJson.addProperty(id, n);
                 else if (config.value instanceof Character c)
                     configJson.addProperty(id, c);
