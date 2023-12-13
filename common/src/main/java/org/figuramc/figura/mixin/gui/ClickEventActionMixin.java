@@ -21,13 +21,7 @@ public class ClickEventActionMixin {
     // courtesy of https://github.com/SpongePowered/Mixin/issues/387
     @Shadow @Final @Mutable
     private static ClickEvent.Action[] $VALUES;
-    @Shadow @Final
-    private static Map<String, ClickEvent.Action> LOOKUP;
     @Shadow @Final private String name;
-
-    static {
-        LOOKUP.put("figura_function", figura$addVariant("FIGURA_FUNCTION", "figura_function", false));
-    }
 
     @Invoker("<init>")
     public static ClickEvent.Action figura$invokeInit(String internalName, int internalId, String name, boolean user) {

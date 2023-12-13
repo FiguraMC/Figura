@@ -1,9 +1,10 @@
 package org.figuramc.figura;
 
+import com.google.common.cache.LoadingCache;
+import com.mojang.authlib.GameProfile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.world.entity.Entity;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -11,7 +12,6 @@ import org.figuramc.figura.avatar.local.CacheAvatarLoader;
 import org.figuramc.figura.avatar.local.LocalAvatarFetcher;
 import org.figuramc.figura.avatar.local.LocalAvatarLoader;
 import org.figuramc.figura.backend2.NetworkStuff;
-import org.figuramc.figura.config.ConfigManager;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.entries.EntryPointManager;
 import org.figuramc.figura.font.Emojis;
@@ -26,10 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class FiguraMod {
 
@@ -144,10 +143,18 @@ public class FiguraMod {
      * @return - the player's uuid or null
      */
     public static UUID playerNameToUUID(String playerName) {
-        GameProfileCache cache = SkullBlockEntityAccessor.getProfileCache();
+        LoadingCache<String, CompletableFuture<Optional<GameProfile>>> cache = SkullBlockEntityAccessor.getProfileCache();
         if (cache == null) return null;
 
-        var profile = cache.get(playerName);
+        Optional<GameProfile> profile = null;
+        try {
+            try {
+                profile = cache.get(playerName).get();
+            } catch (InterruptedException ignored) {
+            }
+        } catch (ExecutionException e) {
+            profile = Optional.empty();
+        }
         return profile.isEmpty() ? null : profile.get().getId();
     }
 
