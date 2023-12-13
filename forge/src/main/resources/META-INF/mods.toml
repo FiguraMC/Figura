@@ -8,11 +8,12 @@ displayURL = "https://github.com/FiguraMC/Figura"
 modId = "figura"
 version = "${version}"
 displayName = "Figura"
-authors = "skyrina"
+logoFile="assets/figura/icon.png"
+authors = "skyrina, lumelia, UnlikePaladin, omoflop"
+credits = "TooManyLimits, Lexize, KitCat962, Manuel-3, superpowers04, auriafoxgirl, applejuiceyy"
 description = '''
 Extensive customization of the Player model
 '''
-logoFile = "icon.png"
 
 [modproperties.figura]
 assets_version="${assets_version}"
@@ -22,11 +23,11 @@ modId = "forge"
 mandatory = true
 versionRange = "[47,)"
 ordering = "NONE"
-side = "BOTH"
+side = "CLIENT"
 
 [[dependencies.figura]]
 modId = "minecraft"
 mandatory = true
 versionRange = "[${minecraft_version},)"
 ordering = "NONE"
-side = "BOTH"
+side = "CLIENT"
