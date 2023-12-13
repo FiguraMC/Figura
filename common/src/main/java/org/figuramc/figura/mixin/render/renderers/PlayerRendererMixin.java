@@ -12,10 +12,7 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.scores.DisplaySlot;
-import net.minecraft.world.scores.Objective;
-import net.minecraft.world.scores.Score;
-import net.minecraft.world.scores.Scoreboard;
+import net.minecraft.world.scores.*;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -161,9 +158,9 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
                 hasScore = true;
 
                 // render scoreboard
-                Score score = scoreboard.getOrCreatePlayerScore(player.getScoreboardName(), scoreboardObjective);
+                ScoreAccess score = scoreboard.getOrCreatePlayerScore(player, scoreboardObjective);
 
-                Component text1 = Component.literal(Integer.toString(score.getScore())).append(" ").append(scoreboardObjective.getDisplayName());
+                Component text1 = Component.literal(Integer.toString(score.get())).append(" ").append(scoreboardObjective.getDisplayName());
                 float x = -font.width(text1) / 2f;
                 float y = deadmau ? -10f : 0f;
 

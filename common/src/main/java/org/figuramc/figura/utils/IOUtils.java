@@ -1,6 +1,7 @@
 package org.figuramc.figura.utils;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import org.figuramc.figura.FiguraMod;
 
@@ -66,7 +67,7 @@ public class IOUtils {
 
             // read file
             InputStream fis = Files.newInputStream(path);
-            CompoundTag nbt = NbtIo.readCompressed(fis);
+            CompoundTag nbt = NbtIo.readCompressed(fis, NbtAccounter.unlimitedHeap());
             consumer.accept(nbt);
             fis.close();
         } catch (Exception e) {

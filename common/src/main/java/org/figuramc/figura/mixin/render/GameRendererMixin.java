@@ -149,7 +149,7 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
                     from = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;bobHurt(Lcom/mojang/blaze3d/vertex/PoseStack;F)V"),
                     to = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;resetProjectionMatrix(Lorg/joml/Matrix4f;)V")
             ), locals = LocalCapture.CAPTURE_FAILSOFT, require = 0)
-    private void renderLevelSaveBobbing(float tickDelta, long limitTime, PoseStack matrix, CallbackInfo ci, boolean bl, Camera camera, PoseStack poseStack, double d) {
+    private void renderLevelSaveBobbing(float tickDelta, long limitTime, PoseStack matrix, CallbackInfo ci, boolean bl, Camera camera, Entity entity, PoseStack poseStack, double d) {
         if (hasShaders) return;
         bobbingMatrix = new Matrix4f(poseStack.last().pose());
         poseStack.popPose();
@@ -161,7 +161,7 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
                     from = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;bobHurt(Lcom/mojang/blaze3d/vertex/PoseStack;F)V"),
                     to = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;resetProjectionMatrix(Lorg/joml/Matrix4f;)V")
             ), locals = LocalCapture.CAPTURE_FAILSOFT, require = 0)
-    private void renderLevelSaveBobbingOF(float tickDelta, long limitTime, PoseStack matrix, CallbackInfo ci, boolean bl, boolean bl2, Camera camera, PoseStack poseStack, double d) {
+    private void renderLevelSaveBobbingOF(float tickDelta, long limitTime, PoseStack matrix, CallbackInfo ci, boolean bl, boolean bl2, Camera camera, Entity entity, PoseStack poseStack, double d) {
         if (hasShaders) return;
         bobbingMatrix = new Matrix4f(poseStack.last().pose());
         poseStack.popPose();

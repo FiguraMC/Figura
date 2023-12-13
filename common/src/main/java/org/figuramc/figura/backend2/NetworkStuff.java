@@ -6,6 +6,7 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.chat.Component;
 import org.figuramc.figura.FiguraMod;
@@ -426,7 +427,7 @@ public class NetworkStuff {
 
             //success
             try {
-                CompoundTag nbt = NbtIo.readCompressed(stream);
+                CompoundTag nbt = NbtIo.readCompressed(stream, NbtAccounter.unlimitedHeap());
                 CacheAvatarLoader.save(hash, nbt);
                 target.loadAvatar(nbt);
             } catch (Exception e) {

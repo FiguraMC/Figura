@@ -28,7 +28,7 @@ public class ScreenMixin {
         if (event instanceof TextUtils.FiguraClickEvent figuraEvent) {
             figuraEvent.onClick.run();
             cir.setReturnValue(true);
-        } else if (event.getAction() == ClickEvent.Action.getByName("figura_function")) {
+        } else if (event.getAction() == ClickEvent.Action.valueOf("FIGURA_FUNCTION")) {
             cir.setReturnValue(true);
 
             Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());

@@ -1,6 +1,7 @@
 package org.figuramc.figura.mixin.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
@@ -11,6 +12,7 @@ import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.utils.RenderUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
+import org.joml.Quaternionf;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -27,7 +29,7 @@ public class EntityRenderDispatcherMixin {
     @Unique private Avatar avatar;
 
     @Inject(method = "renderFlame", at = @At("HEAD"), cancellable = true)
-    private void renderFlame(PoseStack stack, MultiBufferSource multiBufferSource, Entity entity, CallbackInfo ci) {
+    private void renderFlame(PoseStack matrices, MultiBufferSource vertexConsumers, Entity entity, Quaternionf quaternionf, CallbackInfo ci) {
         Avatar a = AvatarManager.getAvatar(entity);
         if (RenderUtils.vanillaModelAndScript(a)) {
             if (!a.luaRuntime.renderer.renderFire) {
@@ -38,9 +40,9 @@ public class EntityRenderDispatcherMixin {
         }
     }
 
-    @ModifyArg(method = "renderFlame", at = @At(value = "INVOKE", target = "Lcom/mojang/math/Axis;rotationDegrees(F)Lorg/joml/Quaternionf;"))
-    private float renderFlameRot(float f) {
-        return UIHelper.paperdoll ? UIHelper.fireRot : f;
+    @ModifyVariable(method = "renderFlame", at = @At(value = "HEAD"), argsOnly = true)
+    private Quaternionf renderFlameRot(Quaternionf f) {
+        return UIHelper.paperdoll ? Axis.YP.rotationDegrees(UIHelper.fireRot) : f;
     }
 
     @ModifyVariable(method = "renderFlame", at = @At("STORE"), ordinal = 0)

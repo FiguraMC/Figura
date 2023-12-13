@@ -139,17 +139,13 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         if (!isVisible())
             return;
 
         isHovered = this.isMouseOver(mouseX, mouseY);
-        renderWidget(gui, mouseX, mouseY, delta);
-    }
 
-    // render the scroll
-    @Override
-    public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+        // render the scroll
         UIHelper.enableBlend();
         int x = getX();
         int y = getY();

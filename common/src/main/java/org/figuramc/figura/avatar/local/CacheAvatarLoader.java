@@ -1,6 +1,7 @@
 package org.figuramc.figura.avatar.local;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.UserData;
@@ -59,7 +60,7 @@ public class CacheAvatarLoader {
         LocalAvatarLoader.async(() -> {
             Path path = getAvatarCacheDirectory().resolve(hash + ".moon");
             try {
-                target.loadAvatar(NbtIo.readCompressed(Files.newInputStream(path)));
+                target.loadAvatar(NbtIo.readCompressed(Files.newInputStream(path), NbtAccounter.unlimitedHeap()));
                 FiguraMod.debug("Loaded avatar \"{}\" from cache to \"{}\"", hash, target.id);
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("Failed to load cache avatar: " + hash, e);

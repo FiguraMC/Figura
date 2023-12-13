@@ -86,7 +86,7 @@ class ExportCommand {
             if (avatar.nbt == null)
                 throw new Exception();
 
-            NbtIo.writeCompressed(avatar.nbt, FiguraMod.getFiguraDirectory().resolve(filename + ".moon").toFile());
+            NbtIo.writeCompressed(avatar.nbt, FiguraMod.getFiguraDirectory().resolve(filename + ".moon"));
 
             context.getSource().figura$sendFeedback(FiguraText.of("command.export_avatar.success"));
             return 1;

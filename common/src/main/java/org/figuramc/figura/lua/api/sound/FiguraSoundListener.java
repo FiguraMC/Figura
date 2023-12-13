@@ -9,7 +9,7 @@ import org.figuramc.figura.math.vector.FiguraVec3;
 
 public class FiguraSoundListener implements SoundEventListener {
     @Override
-    public void onPlaySound(SoundInstance sound, WeighedSoundEvents soundSet) {
+    public void onPlaySound(SoundInstance sound, WeighedSoundEvents soundSet, float f) {
         String id = sound.getLocation().toString();
         String file = sound.getSound().getLocation().toString();
         FiguraVec3 pos = FiguraVec3.of(sound.getX(), sound.getY(), sound.getZ());

@@ -58,7 +58,7 @@ public class LocalAvatarLoader {
             // nbt
             CompoundTag nbt;
             try {
-                nbt = NbtIo.readCompressed(cem.getValue().open());
+                nbt = NbtIo.readCompressed(cem.getValue().open(), NbtAccounter.unlimitedHeap());
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("Failed to load " + id + " avatar", e);
                 continue;

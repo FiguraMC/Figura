@@ -52,19 +52,14 @@ public class Button extends net.minecraft.client.gui.components.Button implement
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         if (!this.isVisible())
             return;
 
         // update hovered
         this.setHovered(this.isMouseOver(mouseX, mouseY));
 
-         // render button
-        this.renderWidget(gui, mouseX, mouseY, delta);
-    }
-
-    @Override
-    public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+        // render button
         // render texture
         if (this.texture != null) {
             renderTexture(gui, delta);

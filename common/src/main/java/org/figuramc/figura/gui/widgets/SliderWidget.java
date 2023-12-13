@@ -74,18 +74,11 @@ public class SliderWidget extends ScrollBarWidget {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-        if (this.isVisible()) {
-            // set hovered
-            this.isHovered = this.isMouseOver(mouseX, mouseY);
-
-            // render button
-            this.renderWidget(gui, mouseX, mouseY, delta);
-        }
-    }
-
-    @Override
     public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+        // set hovered
+        this.isHovered = this.isMouseOver(mouseX, mouseY);
+
+        // render button
         UIHelper.enableBlend();
         int x = getX();
         int y = getY();

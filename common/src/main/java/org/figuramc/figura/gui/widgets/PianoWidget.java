@@ -101,16 +101,11 @@ public class PianoWidget extends AbstractContainerElement {
         }
 
         @Override
-        public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+        public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
             if (!this.isVisible())
                 return;
 
             // render button
-            this.renderWidget(gui, mouseX, mouseY, delta);
-        }
-
-        @Override
-        public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
             UIHelper.fillRounded(gui, getX(), getY(), getWidth(), getHeight(), (isSharp ? 0 : 0xFFFFFF) + (0xFF << 24));
             UIHelper.blitSliced(gui, getX(), getY(), getWidth(), getHeight(), UIHelper.OUTLINE);
 
