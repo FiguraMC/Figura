@@ -272,7 +272,7 @@ public class FiguraLuaRuntime {
                 // If we do not allow subfolders, only allow paths that directly point to a file
                 if (!subFolders && result.getNameCount()!=1)
                     continue;
-                table.set(i++, LuaValue.valueOf(s));
+                table.set(i++, LuaValue.valueOf(s.replace('/', '.')));
             }
 
             return table;
