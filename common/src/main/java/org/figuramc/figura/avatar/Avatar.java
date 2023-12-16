@@ -61,6 +61,7 @@ import org.figuramc.figura.permissions.PermissionPack;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.EntityUtils;
+import org.figuramc.figura.utils.PathUtils;
 import org.figuramc.figura.utils.RefilledNumber;
 import org.figuramc.figura.utils.Version;
 import org.figuramc.figura.utils.ui.UIHelper;
@@ -994,7 +995,7 @@ public class Avatar {
         Map<String, String> scripts = new HashMap<>();
         CompoundTag scriptsNbt = nbt.getCompound("scripts");
         for (String s : scriptsNbt.getAllKeys())
-            scripts.put(s, new String(scriptsNbt.getByteArray(s), StandardCharsets.UTF_8));
+            scripts.put(PathUtils.computeSafeString(s), new String(scriptsNbt.getByteArray(s), StandardCharsets.UTF_8));
 
         CompoundTag metadata = nbt.getCompound("metadata");
 

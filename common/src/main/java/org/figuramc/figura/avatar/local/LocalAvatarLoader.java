@@ -14,7 +14,6 @@ import org.figuramc.figura.parsers.LuaScriptParser;
 import org.figuramc.figura.utils.FiguraResourceListener;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.IOUtils;
-import org.figuramc.figura.utils.PathUtils;
 
 import java.io.*;
 import java.nio.file.*;
@@ -223,10 +222,10 @@ public class LocalAvatarLoader {
             CompoundTag scriptsNbt = new CompoundTag();
             String pathRegex = path.toString().isEmpty() ? "\\Q\\E" : Pattern.quote(path + path.getFileSystem().getSeparator());
             for (Path script : scripts) {
-                String name = PathUtils.computeSafeString(script.toString()
-                    .replaceFirst(pathRegex, "")
-                    .replaceAll("\\.lua$", "")
-                );
+                String name = script.toString()
+                        .replaceFirst(pathRegex, "")
+                        .replaceAll("[/\\\\]", ".");
+                name = name.substring(0, name.length() - 4);
                 scriptsNbt.put(name, LuaScriptParser.parseScript(name, IOUtils.readFile(script)));
             }
             nbt.put("scripts", scriptsNbt);
