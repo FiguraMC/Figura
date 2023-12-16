@@ -61,7 +61,6 @@ import org.figuramc.figura.permissions.PermissionPack;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.EntityUtils;
-import org.figuramc.figura.utils.PathUtils;
 import org.figuramc.figura.utils.RefilledNumber;
 import org.figuramc.figura.utils.Version;
 import org.figuramc.figura.utils.ui.UIHelper;
@@ -992,8 +991,10 @@ public class Avatar {
         if (!nbt.contains("scripts"))
             return;
 
+        Map<String, String> scripts = new HashMap<>();
         CompoundTag scriptsNbt = nbt.getCompound("scripts");
-        Map<String, String> scripts = loadScript(scriptsNbt, "");
+        for (String s : scriptsNbt.getAllKeys())
+            scripts.put(s, new String(scriptsNbt.getByteArray(s), StandardCharsets.UTF_8));
 
         CompoundTag metadata = nbt.getCompound("metadata");
 
@@ -1014,17 +1015,6 @@ public class Avatar {
             if (runtime.init(autoScripts))
                 init.use(runtime.getInstructions());
         });
-    }
-    
-    public Map<String, String> loadScript(CompoundTag tag, String path) {
-        Map<String, String> result = new HashMap<>();
-        for (String key : tag.getAllKeys()){
-            switch(tag.get(key).getId()){
-                case Tag.TAG_COMPOUND -> result.putAll(loadScript(tag.getCompound(key), path + key + "/"));
-                case Tag.TAG_BYTE_ARRAY -> result.put(PathUtils.computeSafeString(path + key), new String(tag.getByteArray(key), StandardCharsets.UTF_8));
-            }
-        }
-        return result;
     }
 
     private void loadAnimations() {
