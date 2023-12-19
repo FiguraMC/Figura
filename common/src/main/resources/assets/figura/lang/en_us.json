@@ -1455,6 +1455,8 @@
     "figura.docs.renderer.get_eye_offset": "Returns the offset for the entity eye position\nDefault nil",
     "figura.docs.renderer.set_block_outline_color": "Sets the color of the selected block outline\nDefault alpha is 0.4\nMight not be compatible with shaders",
     "figura.docs.renderer.get_block_outline_color": "Returns the set color for the selected block outline\nDefault nil",
+    "figura.docs.renderer.set_root_rotation_allowed": "Sets if the model should have root rotations applied to it or not\nDefault true",
+    "figura.docs.renderer.get_root_rotation_allowed": "Gets if the model should have root rotations applied",
     "figura.docs.sounds": "A global API which is used to play Minecraft sounds\nAccessed using the name \"sounds\"",
     "figura.docs.sounds.play_sound": "Plays the specified sound at the specified position with the given volume and pitch multipliers\nThe sound id is either an identifier or the custom sound name\nVolume in Minecraft refers to how far away people can hear the sound from, not the actual loudness of it\nIf you don't give values for volume and pitch, the default values are 1",
     "figura.docs.sounds.stop_sound": "Stops the playing sounds from this avatar\nIf an id is specified, it only stops the sounds from that id",
