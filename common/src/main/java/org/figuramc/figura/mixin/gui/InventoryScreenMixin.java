@@ -20,7 +20,7 @@ public class InventoryScreenMixin {
         if (!Configs.FIGURA_INVENTORY.value || AvatarManager.panic)
             return;
 
-        UIHelper.drawEntity(x, y, size, mouseX, mouseY, entity, guiGraphics, EntityRenderMode.MINECRAFT_GUI);
+        UIHelper.drawEntity(x, y, size, mouseY, mouseX, entity, guiGraphics, EntityRenderMode.MINECRAFT_GUI);
         ci.cancel();
     }
 }

@@ -177,9 +177,9 @@ public final class UIHelper {
             }
             default -> {
                 // rotations
-                float rot = (float) Math.atan(pitch / 40f) * 20f;
+                float rot = (float) Math.atan(yaw / 40f) * 20f;
 
-                xRot = (float) Math.atan(yaw / 40f) * 20f;
+                xRot = (float) Math.atan(pitch / 40f) * 20f;
                 yRot = -rot + bodyY + 180;
 
                 entity.setXRot(-xRot);
