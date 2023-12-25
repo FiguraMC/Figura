@@ -265,14 +265,12 @@ public class NetworkStuff {
         queueString(Util.NIL_UUID, HttpAPI::getVersion, (code, data) -> {
             responseDebug("checkVersion", code, data);
             JsonObject json = JsonParser.parseString(data).getAsJsonObject();
-            latestVersion = new Version(json.get("prerelease").getAsString());
-
             int config = Configs.UPDATE_CHANNEL.value;
-            if (config != 0) {
-                Version compare = config == 1 ? new Version(json.get("release").getAsString()) : latestVersion;
-                if (compare.compareTo(FiguraMod.VERSION) > 0)
-                    FiguraToast.sendToast(FiguraText.of("toast.new_version"), compare);
-            }
+            latestVersion = new Version(json.get(config <= 1 ? "release" : "prerelease").getAsString());
+            if (config == 0)
+                return;
+            if (latestVersion.compareTo(FiguraMod.VERSION) > 0)
+                FiguraToast.sendToast(FiguraText.of("toast.new_version"), latestVersion);
         });
     }
 
