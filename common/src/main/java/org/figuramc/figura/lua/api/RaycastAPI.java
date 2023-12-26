@@ -44,31 +44,38 @@ public class RaycastAPI {
     @LuaMethodDoc(
             overloads = {
                     @LuaMethodOverload(
-                            argumentTypes = {String.class, String.class, FiguraVec3.class, FiguraVec3.class},
-                            argumentNames = {"blockCastType", "fluidCastType", "start", "end"}
+                            argumentTypes = {FiguraVec3.class, FiguraVec3.class, String.class, String.class},
+                            argumentNames = {"start", "end", "blockCastType", "fluidCastType"}
                     ),
                     @LuaMethodOverload(
-                            argumentTypes = {String.class, String.class, Double.class, Double.class, Double.class, FiguraVec3.class},
-                            argumentNames = {"blockCastType", "fluidCastType", "startX", "startY", "startZ", "end"}
+                            argumentTypes = {Double.class, Double.class, Double.class, FiguraVec3.class, String.class, String.class},
+                            argumentNames = {"startX", "startY", "startZ", "end", "blockCastType", "fluidCastType"}
                     ),
                     @LuaMethodOverload(
-                            argumentTypes = {String.class, String.class, FiguraVec3.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"blockCastType", "fluidCastType", "start", "endX", "endY", "endZ"}
+                            argumentTypes = {FiguraVec3.class, Double.class, Double.class, Double.class, String.class, String.class},
+                            argumentNames = {"start", "endX", "endY", "endZ", "blockCastType", "fluidCastType"}
                     ),
                     @LuaMethodOverload(
-                            argumentTypes = {String.class, String.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"blockCastType", "fluidCastType", "startX", "startY", "startZ", "endX", "endY", "endZ"}
+                            argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class, Double.class, String.class, String.class},
+                            argumentNames = {"startX", "startY", "startZ", "endX", "endY", "endZ", "blockCastType", "fluidCastType"}
                     )
                 }
             ,
             value = "raycast.block"
     )
-    public Object[] block(String blockCastType, String fluidCastType, Object x, Object y, Double z, Object w, Double t, Double h) {
+    public Object[] block(Object x, Object y, Object z, Object w, Object t, Object h, String blockCastType, String fluidCastType) {
         FiguraVec3 start, end;
+        Pair<Pair<FiguraVec3, FiguraVec3>, Object[]> parseResult = LuaUtils.parse2Vec3(
+            "block", 
+            new Class<?>[]{String.class, String.class}, 
+            x, y, z, w, t, h, blockCastType, fluidCastType
+        );
 
-        Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("block", x, y, z, w, t, h,1);
-        start = pair.getFirst();
-        end = pair.getSecond();
+        start = parseResult.getFirst().getFirst();
+        end = parseResult.getFirst().getSecond();
+
+        blockCastType = (String)parseResult.getSecond()[0];
+        fluidCastType = (String)parseResult.getSecond()[1];
 
         ClipContext.Block blockContext;
         try{
@@ -94,35 +101,41 @@ public class RaycastAPI {
     @LuaMethodDoc(
             overloads = {
                     @LuaMethodOverload(
-                            argumentTypes = {LuaFunction.class, FiguraVec3.class, FiguraVec3.class},
-                            argumentNames = {"predicate", "start", "end"}
+                            argumentTypes = {FiguraVec3.class, FiguraVec3.class, LuaFunction.class},
+                            argumentNames = {"start", "end", "predicate"}
                     ),
                     @LuaMethodOverload(
-                            argumentTypes = {LuaFunction.class, Double.class, Double.class, Double.class, FiguraVec3.class},
-                            argumentNames = {"predicate", "startX", "startY", "startZ", "end"}
+                            argumentTypes = {Double.class, Double.class, Double.class, FiguraVec3.class, LuaFunction.class},
+                            argumentNames = {"startX", "startY", "startZ", "end", "predicate"}
                     ),
                     @LuaMethodOverload(
-                            argumentTypes = {LuaFunction.class, FiguraVec3.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"predicate", "start", "endX", "endY", "endZ"}
+                            argumentTypes = {FiguraVec3.class, Double.class, Double.class, Double.class, LuaFunction.class},
+                            argumentNames = {"start", "endX", "endY", "endZ", "predicate"}
                     ),
                     @LuaMethodOverload(
-                            argumentTypes = {LuaFunction.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"predicate", "startX", "startY", "startZ", "endX", "endY", "endZ"}
+                            argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class, Double.class, LuaFunction.class},
+                            argumentNames = {"startX", "startY", "startZ", "endX", "endY", "endZ", "predicate"}
                     )
             }
             ,
             value = "raycast.entity"
     )
-    public Object[] entity(LuaFunction predicate, Object x, Object y, Double z, Object w, Double t, Double h) {
+    public Object[] entity(Object x, Object y, Object z, Object w, Object t, Double h, LuaFunction predicate) {
         FiguraVec3 start, end;
 
-        Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("entity", x, y, z, w, t, h, 1);
-        start = pair.getFirst();
-        end = pair.getSecond();
+        Pair<Pair<FiguraVec3, FiguraVec3>, Object[]> pair = LuaUtils.parse2Vec3(
+            "entity", 
+            new Class<?>[]{LuaFunction.class},
+            x, y, z, w, t, h, predicate);
+
+        start = pair.getFirst().getFirst();
+        end = pair.getFirst().getSecond();
+
+        final LuaFunction fn = (LuaFunction)pair.getSecond()[0];
 
         Predicate<Entity> entityPredicate = (entity) -> {
-            if (predicate == null) return true;
-            LuaValue result = predicate.invoke(this.owner.luaRuntime.typeManager.javaToLua(EntityAPI.wrap(entity))).arg1();
+            if (fn == null) return true;
+            LuaValue result = fn.invoke(this.owner.luaRuntime.typeManager.javaToLua(EntityAPI.wrap(entity))).arg1();
             if ((result.isboolean() && result.checkboolean() == false) || result.isnil())
                 return false;
             return true;

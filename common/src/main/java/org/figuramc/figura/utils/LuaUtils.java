@@ -35,13 +35,22 @@ import org.luaj.vm2.LuaValue;
 
 public class LuaUtils {
 
+    /**
+     * This is a generic vector parsing function that also parses the arguments after the vectors, allowing vectors to be at the beginning of the function signature
+     * @param methodName The name of the function that is calling this function. Used for readable errors.
+     * @param vectorSizes The sizes of Vectors to parse. The number of vectors is determined by the size of the array.
+     * @param defaultValues When a Vector or a Vector argument is nil, it will be filled in with the value in this array at the correct index.
+     * @param expectedReturns An array of Classes for what the extra arguments are supposed to be. Used for readable errors.
+     * @param args The arguments of the function, passed in as varargs. 
+     * @return The new args list with multi-number-argument Vectors being returned as real Vectors.
+     */
     public static Object[] parseVec(String methodName, int[] vectorSizes, double[] defaultValues, Class<?>[] expectedReturns, Object ...args) {
         ArrayList<Object> ret = new ArrayList<Object>(args.length);
         int i=0;
         for(int size : vectorSizes) {
             if (args[i] instanceof FiguraVector vec){
                 if(vec.size()!=size)
-                    throw new LuaError("Illegal argument at position " + i + " to " + methodName + "(): Expected Vector" + size + ", recieved Vector" + vec.size());
+                    throw new LuaError("Illegal argument at position " + (i + 1) + " to " + methodName + "(): Expected Vector" + size + ", recieved Vector" + vec.size());
                 ret.add(vec);
                 i += 1;
             }
@@ -53,7 +62,9 @@ public class LuaUtils {
                     else if(args[i+o] == null)
                         vec[o]=defaultValues[o];
                     else
-                        throw new LuaError("Illegal argument at position " + (i+o) + " to " + methodName + "(): " + args[i+o]);
+                        throw new LuaError("Illegal argument at position " + (i + o + 1) + " to " + methodName + "():" + 
+                            " Expected Number, recieved " + args[i+o].getClass().getSimpleName() + " (" + args[i+o] + ")"
+                        );
                 }
                 ret.add(
                     switch(size){
@@ -77,11 +88,15 @@ public class LuaUtils {
                 i += 1;
             }
             else
-                throw new LuaError("Illegal argument at position " + i + " to " + methodName + "(): Expected Vector" + size + " or Number, recieved " + args[i]);
+                throw new LuaError("Illegal argument at position " + (i + 1) + " to " + methodName + "():" + 
+                    " Expected Vector" + size + " or Number, recieved " + args[i].getClass().getSimpleName() + " (" + args[i] + ")"
+                );
         }
         for(int o = i; o < args.length; o++) {
-            if(args[o] != null && args[o].getClass() != expectedReturns[o-i])
-                throw new LuaError("Illegal argument at position " + o + " to " + methodName + "(): Expected " + expectedReturns[o-i].getSimpleName() + ", recieved " + args[o]);
+            if(args[o] != null && !expectedReturns[o-i].isAssignableFrom(args[o].getClass()))
+                throw new LuaError("Illegal argument at position " + (o + 1) + " to " + methodName + "():" + 
+                    " Expected " + expectedReturns[o-i].getSimpleName() + ", recieved " + args[o].getClass().getSimpleName() + " (" + args[o] + ")"
+                );
             ret.add(args[o]);
         }
         return ret.toArray();
