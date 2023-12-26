@@ -71,7 +71,7 @@ public class LuaUtils {
                         case 2->FiguraVec2.of(vec[0], vec[1]);
                         case 3->FiguraVec3.of(vec[0], vec[1], vec[2]);
                         case 4->FiguraVec4.of(vec[0], vec[1], vec[2], vec[3]);
-                        default->throw new LuaError("Illegal vector size: " + size);
+                        default->throw new IllegalArgumentException("Illegal vector size: " + size);
                     }
                 );
                 i += size;
@@ -82,7 +82,7 @@ public class LuaUtils {
                         case 2->FiguraVec2.of(defaultValues[0], defaultValues[1]);
                         case 3->FiguraVec3.of(defaultValues[0], defaultValues[1], defaultValues[2]);
                         case 4->FiguraVec4.of(defaultValues[0], defaultValues[1], defaultValues[2], defaultValues[3]);
-                        default->throw new LuaError("Illegal vector size: " + size);
+                        default->throw new IllegalArgumentException("Illegal vector size: " + size);
                     }
                 );
                 i += 1;
