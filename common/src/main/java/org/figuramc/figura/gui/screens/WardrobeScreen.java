@@ -129,7 +129,12 @@ public class WardrobeScreen extends AbstractPanelScreen {
                             .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                                     FiguraText.of("gui.new_version.tooltip", Component.literal(NetworkStuff.latestVersion.toString()).withStyle(ChatFormatting.GREEN))
                             ))
-                            .withClickEvent(new TextUtils.FiguraClickEvent(UIHelper.openURL(FiguraMod.Links.Modrinth.url + "/versions")))
+                            .withClickEvent(new TextUtils.FiguraClickEvent(UIHelper.openURL(
+                                NetworkStuff.latestVersion.pre==null ? 
+                                    (FiguraMod.Links.Modrinth.url + "/versions") : 
+                                    (FiguraMod.Links.Github.url + "/releases")
+                                ))
+                            )
                     );
         } else if (versionStatus < 0) {
             versionText.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
