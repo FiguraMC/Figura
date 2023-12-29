@@ -30,6 +30,7 @@ import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 
 import java.util.*;
+import java.lang.Math;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -225,7 +226,22 @@ public class WorldAPI {
             value = "world.get_time_of_day"
     )
     public static double getTimeOfDay(double delta) {
-        return getCurrentWorld().getDayTime() + delta;
+        return (getCurrentWorld().getDayTime() + delta) % 24000;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
+                            argumentTypes = Double.class,
+                            argumentNames = "delta"
+                    )
+            },
+            value = "world.get_day"
+    )
+    public static double getDay(double delta) {
+        return Math.floor((getCurrentWorld().getDayTime() + delta) / 24000);
     }
 
     @LuaWhitelist
