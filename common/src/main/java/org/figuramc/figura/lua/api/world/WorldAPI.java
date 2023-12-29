@@ -214,7 +214,6 @@ public class WorldAPI {
         return getCurrentWorld().getGameTime() + delta;
     }
 
-        // MARKER
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
@@ -226,7 +225,7 @@ public class WorldAPI {
             },
             value = "world.get_time_of_day"
     )
-    public static double (double delta) {
+    public static double getTimeOfDay(double delta) {
         return (getCurrentWorld().getDayTime() + delta) % 24000;
     }
 
