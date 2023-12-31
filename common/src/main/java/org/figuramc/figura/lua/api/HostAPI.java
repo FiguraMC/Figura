@@ -21,8 +21,12 @@ import net.minecraft.world.item.ItemStack;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
+import org.figuramc.figura.avatar.local.LocalAvatarFetcher;
+import org.figuramc.figura.avatar.local.LocalAvatarLoader;
+import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.ducks.GuiMessageAccessor;
+import org.figuramc.figura.gui.widgets.lists.AvatarList;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
@@ -41,6 +45,7 @@ import org.figuramc.figura.utils.LuaUtils;
 import org.figuramc.figura.utils.TextUtils;
 import org.luaj.vm2.LuaError;
 
+import java.nio.file.Path;
 import java.util.*;
 
 @LuaWhitelist
@@ -614,6 +619,75 @@ public class HostAPI {
         ClientPacketListener connection = this.minecraft.getConnection();
         PlayerInfo playerInfo = connection != null ? connection.getPlayerInfo(owner.owner) : null;
         return playerInfo != null && playerInfo.hasVerifiableChat();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("host.loadLocalAvatar")
+    public void loadLocalAvatar(String avatarPath) {
+        if (!isHost()) return;
+        Path path = null;
+        if (avatarPath != null && !avatarPath.isEmpty()) {
+            path = LocalAvatarFetcher.getLocalAvatarDirectory().resolve(avatarPath);
+        }
+        AvatarManager.loadLocalAvatar(path);
+        AvatarList.selectedEntry = path;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("host.loadAndUploadAvatar")
+    public void loadAndUploadAvatar(String avatarPath) {
+        if (!isHost()) return;
+        Path path = null;
+        if (avatarPath != null && !avatarPath.isEmpty()) {
+            path = LocalAvatarFetcher.getLocalAvatarDirectory().resolve(avatarPath);
+        }
+        AvatarManager.loadLocalAvatarSync(path); // make sure to load synchronously to also be able to update right after
+        if (path == null) {
+            FiguraMod.LOGGER.info("path is null");
+            NetworkStuff.deleteAvatar(null);
+        }
+        else {
+            FiguraMod.LOGGER.info(path.toString());
+            Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
+            FiguraMod.LOGGER.info(avatar.toString());
+            try {
+                LocalAvatarLoader.loadAvatar(null, null);
+            } catch (Exception ignored) {}
+            NetworkStuff.uploadAvatar(avatar);
+        }
+        AvatarList.selectedEntry = null;
+    }
+    
+    @LuaWhitelist
+    @LuaMethodDoc("host.uploadThisAvatar")
+    public void uploadThisAvatar() {
+        if (!isHost()) return;
+        Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
+        try {
+            LocalAvatarLoader.loadAvatar(null, null);
+        } catch (Exception ignored) {}
+        NetworkStuff.uploadAvatar(avatar);
+        AvatarList.selectedEntry = null;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("host.clearCloud")
+    public void clearCloud() {
+        if (!isHost()) return;
+        NetworkStuff.deleteAvatar(null);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("host.reloadFromCloud")
+    public void reloadFromCloud() {
+        if (!isHost()) return;
+        AvatarManager.clearAvatars(FiguraMod.getLocalPlayerUUID());
+        try {
+            LocalAvatarLoader.loadAvatar(null, null);
+        } catch (Exception ignored) {}
+        AvatarManager.localUploaded = true;
+        AvatarList.selectedEntry = null;
+        NetworkStuff.auth();
     }
 
     public Object __index(String arg) {

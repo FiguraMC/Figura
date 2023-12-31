@@ -238,6 +238,22 @@ public class AvatarManager {
         localUploaded = false;
     }
 
+    // load the local player avatar synchronously
+    public static void loadLocalAvatarSync(Path path) {
+        UUID id = FiguraMod.getLocalPlayerUUID();
+
+        // clear
+        clearAvatars(id);
+        FETCHED_USERS.add(id);
+
+        // load
+        UserData user = LOADED_USERS.computeIfAbsent(id, UserData::new);
+        LocalAvatarLoader.loadAvatarSync(path, user);
+
+        // mark as not uploaded
+        localUploaded = false;
+    }
+
     // load CEM avatar
     public static Avatar loadEntityAvatar(Entity entity, CompoundTag nbt) {
         Avatar targetAvatar = new Avatar(entity);
