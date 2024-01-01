@@ -9,10 +9,12 @@ import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.Heightmap;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.lua.LuaNotNil;
@@ -23,6 +25,7 @@ import org.figuramc.figura.lua.api.entity.PlayerAPI;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
+import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.utils.EntityUtils;
 import org.figuramc.figura.utils.LuaUtils;
@@ -327,6 +330,38 @@ public class WorldAPI {
         if (world.getChunkAt(blockPos) == null)
             return null;
         return world.getBrightness(LightLayer.BLOCK, blockPos);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = {String.class, FiguraVec2.class},
+                            argumentNames = {"heightmap", "pos"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {String.class, Double.class, Double.class},
+                            argumentNames = {"heightmap", "x", "z"}
+                    )
+            },
+            value = "world.get_heightmap"
+    )
+    public static Integer getHeightmap(String heightmap, Object x, Double z) {
+        FiguraVec2 pos = LuaUtils.parseVec2("getHeightmap", x, z);
+        Level world = getCurrentWorld();
+
+        BlockPos blockPos = new BlockPos((int) pos.x(), 0, (int) pos.y());
+        if (world.getChunkAt(blockPos) == null)
+            return null;
+
+        Heightmap.Types heightmapType;
+        try {
+            heightmapType = heightmap != null ? Heightmap.Types.valueOf(heightmap.toUpperCase()) : Heightmap.Types.MOTION_BLOCKING;
+        } catch (IllegalArgumentException e) {
+            throw new LuaError("Invalid heightmap type provided");
+        }
+
+        return world.getHeight(heightmapType, (int) pos.x(), (int) pos.y());
     }
 
     @LuaWhitelist
