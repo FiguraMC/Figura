@@ -93,7 +93,7 @@ public class LuaUtils {
                 );
         }
         for(int o = i; o < args.length; o++) {
-            if(args[o] != null && !expectedReturns[o-i].isAssignableFrom(args[o].getClass()))
+            if(args[o] != null && (o-i) < expectedReturns.length && !expectedReturns[o-i].isAssignableFrom(args[o].getClass()))
                 throw new LuaError("Illegal argument at position " + (o + 1) + " to " + methodName + "():" + 
                     " Expected " + expectedReturns[o-i].getSimpleName() + ", recieved " + args[o].getClass().getSimpleName() + " (" + args[o] + ")"
                 );
