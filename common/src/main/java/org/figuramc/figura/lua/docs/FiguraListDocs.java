@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -113,6 +114,10 @@ public class FiguraListDocs {
         for (Heightmap.Types value : Heightmap.Types.values())
             add(value.name());
     }};
+    private static final LinkedHashSet<String> REGISTRIES = new LinkedHashSet<>() {{
+        for (ResourceLocation resourceLocation : BuiltInRegistries.REGISTRY.keySet())
+            add(resourceLocation.getPath());
+    }};
 
     private enum ListDoc {
         KEYBINDS(() -> FiguraListDocs.KEYBINDS, "Keybinds", "keybinds", 2),
@@ -132,7 +137,8 @@ public class FiguraListDocs {
         STRING_ENCODINGS(() -> FiguraListDocs.STRING_ENCODINGS, "StringEncodings", "string_encodings", 1),
         BLOCK_RAYCAST_TYPE(() -> FiguraListDocs.BLOCK_RAYCAST_TYPE, "BlockRaycastTypes", "block_raycast_types", 1),
         FLUID_RAYCAST_TYPE(() -> FiguraListDocs.FLUID_RAYCAST_TYPE, "FluidRaycastTypes", "fluid_raycast_types", 1),
-        HEIGHTMAP_TYPE(() -> FiguraListDocs.HEIGHTMAP_TYPE, "HeightmapTypes", "heightmap_types", 1);
+        HEIGHTMAP_TYPE(() -> FiguraListDocs.HEIGHTMAP_TYPE, "HeightmapTypes", "heightmap_types", 1),
+        REGISTRIES(() -> FiguraListDocs.REGISTRIES, "Registries", "registries", 1);
 
         private final Supplier<Object> supplier;
         private final String name, id;
