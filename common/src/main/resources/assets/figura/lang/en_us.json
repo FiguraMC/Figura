@@ -928,6 +928,7 @@
     "figura.docs.client.get_frame_time": "Returns the current fraction between the last tick and the next tick\nThis is the value used as \"delta\" in the RENDER event",
     "figura.docs.client.list_atlases": "Returns a list of all registered atlases paths",
     "figura.docs.client.get_atlas": "Returns a TextureAtlasAPI object with information about the given atlas\nReturns nil if the atlas was not found",
+    "figura.docs.client.get_enum": "Return an array containing the entries in the given enum\nEnums can be found in /figura docs enums",
     "figura.docs.client.get_tab_list": "Returns a table with the text shown in the tablist",
     "figura.docs.client.get_translated_string": "Returns the translated string of the given key\nTranslation is done using the current client language\nOptionally takes a single argument, or a list with all arguments, that will populate the translation",
     "figura.docs.config": "A global API used to save and load avatar data between game sessions",
