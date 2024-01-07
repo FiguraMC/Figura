@@ -20,6 +20,7 @@ import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
 import org.figuramc.figura.lua.api.entity.ViewerAPI;
+import org.figuramc.figura.lua.docs.FiguraListDocs;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
@@ -618,6 +619,21 @@ public class ClientAPI {
         }
 
         return component.getString();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(argumentTypes = String.class, argumentNames = "enumName"),
+            },
+            value = "client.getEnum"
+    )
+    public static List<String> getEnum(@LuaNotNil String enumName) {
+        try {
+            return FiguraListDocs.getEnumValues(enumName);
+        } catch (Exception e) {
+            throw new LuaError("Enum " + enumName + " does not exist");
+        }
     }
 
     @Override
