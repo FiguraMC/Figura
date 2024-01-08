@@ -28,7 +28,7 @@ public abstract class ParticleEngineMixin implements ParticleEngineAccessor {
     @Unique private final HashMap<Particle, UUID> particleMap = new HashMap<>();
 
     // This fixes a conflict with Optifine having slightly different args + it should be more stable in general, capturing Locals is bad practice
-    @ModifyVariable(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/particle/ParticleEngine;tickParticle(Lnet/minecraft/client/particle/Particle;)V"), method = "tickParticleList", ordinal = 0)
+    @ModifyVariable(method = "tickParticleList", at = @At(value = "INVOKE", target = "Ljava/util/Iterator;remove()V", ordinal = 0))
     private Particle tickParticleList(Particle particle) {
         particleMap.remove(particle);
         return particle;
@@ -50,7 +50,6 @@ public abstract class ParticleEngineMixin implements ParticleEngineAccessor {
         Iterator<Map.Entry<Particle, UUID>> iterator = particleMap.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<Particle, UUID> entry = iterator.next();
-
             if ((owner == null || entry.getValue().equals(owner))) {
                 if (entry.getKey() != null)
                     entry.getKey().remove();
