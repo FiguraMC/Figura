@@ -9,7 +9,6 @@ import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
@@ -336,18 +335,18 @@ public class WorldAPI {
     @LuaMethodDoc(
             overloads = {
                     @LuaMethodOverload(
-                            argumentTypes = {String.class, FiguraVec2.class},
-                            argumentNames = {"heightmap", "pos"}
+                            argumentTypes = {FiguraVec2.class, String.class},
+                            argumentNames = {"pos", "heightmap"}
                     ),
                     @LuaMethodOverload(
-                            argumentTypes = {String.class, Double.class, Double.class},
-                            argumentNames = {"heightmap", "x", "z"}
+                            argumentTypes = {Double.class, Double.class, String.class},
+                            argumentNames = {"x", "z", "heightmap"}
                     )
             },
-            value = "world.get_heightmap"
+            value = "world.get_height"
     )
-    public static Integer getHeightmap(String heightmap, Object x, Double z) {
-        FiguraVec2 pos = LuaUtils.parseVec2("getHeightmap", x, z);
+    public static Integer getHeight(Object x, Double z, String heightmap) {
+        FiguraVec2 pos = LuaUtils.parseVec2("getHeight", x, z);
         Level world = getCurrentWorld();
 
         BlockPos blockPos = new BlockPos((int) pos.x(), 0, (int) pos.y());
