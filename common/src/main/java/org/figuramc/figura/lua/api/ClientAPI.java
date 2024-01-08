@@ -10,7 +10,9 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.server.IntegratedServer;
+import net.minecraft.core.Registry;
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.repository.Pack;
@@ -36,6 +38,7 @@ import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -618,6 +621,25 @@ public class ClientAPI {
         }
 
         return component.getString();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(argumentTypes = String.class, argumentNames = "registryName"),
+            },
+            value = "client.get_registry"
+    )
+    public static List<String> getRegistry(@LuaNotNil String registryName) {
+        Registry<?> registry = BuiltInRegistries.REGISTRY.get(new ResourceLocation(registryName));
+
+        if (registry != null) {
+            return registry.keySet().stream()
+                    .map(ResourceLocation::toString)
+                    .collect(Collectors.toList());
+        } else {
+            throw new LuaError("Registry " + registryName + " does not exist");
+        }
     }
 
     @Override
