@@ -7,6 +7,7 @@ import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.server.IntegratedServer;
@@ -25,6 +26,7 @@ import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
+import org.figuramc.figura.mixin.gui.GuiAccessor;
 import org.figuramc.figura.mixin.gui.PlayerTabOverlayAccessor;
 import org.figuramc.figura.mixin.render.ModelManagerAccessor;
 import org.figuramc.figura.utils.*;
@@ -535,6 +537,27 @@ public class ClientAPI {
     @LuaMethodDoc("client.get_frame_time")
     public static double getFrameTime() {
         return Minecraft.getInstance().getFrameTime();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_actionbar")
+    public static Component getActionbar() {
+        Gui gui = Minecraft.getInstance().gui;
+        return ((GuiAccessor) gui).getActionbarTime() > 0 ? ((GuiAccessor) gui).getActionbar() : null;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_title")
+    public static Component getTitle() {
+        Gui gui = Minecraft.getInstance().gui;
+        return ((GuiAccessor) gui).getTime() > 0 ? ((GuiAccessor) gui).getTitle() : null;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_subtitle")
+    public static Component getSubtitle() {
+        Gui gui = Minecraft.getInstance().gui;
+        return ((GuiAccessor) gui).getTime() > 0 ? ((GuiAccessor) gui).getSubtitle() : null;
     }
 
     @LuaWhitelist
