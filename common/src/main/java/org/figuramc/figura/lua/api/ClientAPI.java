@@ -16,6 +16,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.scores.Objective;
+import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.Score;
+import net.minecraft.world.scores.Scoreboard;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
@@ -558,6 +562,56 @@ public class ClientAPI {
     public static Component getSubtitle() {
         Gui gui = Minecraft.getInstance().gui;
         return ((GuiAccessor) gui).getTime() > 0 ? ((GuiAccessor) gui).getSubtitle() : null;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_scoreboard")
+    public static Map<String, Map<String, Object>> getScoreboard() {
+        Map<String, Map<String, Object>> map = new HashMap<>();
+
+        assert Minecraft.getInstance().level != null;
+        Scoreboard scoreboard = Minecraft.getInstance().level.getScoreboard();
+
+        Map<String, Objective> objectives = new HashMap<>();
+
+        // sidebars for different team colours
+        assert Minecraft.getInstance().player != null;
+        PlayerTeam playerTeam = scoreboard.getPlayersTeam(Minecraft.getInstance().player.getScoreboardName());
+        if (playerTeam != null) {
+            int id = playerTeam.getColor().getId();
+            if (id >= 0) {
+                objectives.put("sidebar_team_" + playerTeam.getColor().getName(), scoreboard.getDisplayObjective(3 + id));
+            }
+        }
+
+        objectives.put("list", scoreboard.getDisplayObjective(0));
+        objectives.put("sidebar", scoreboard.getDisplayObjective(1));
+        objectives.put("below_name", scoreboard.getDisplayObjective(2));
+
+        for (Map.Entry<String, Objective> entry : objectives.entrySet()) {
+            String key = entry.getKey();
+            Objective objective = entry.getValue();
+
+            if (objective != null) {
+                Map<String, Object> objectiveMap = new HashMap<>();
+
+                objectiveMap.put("name", objective.getName());
+                objectiveMap.put("display_name", objective.getFormattedDisplayName());
+                objectiveMap.put("criteria", objective.getCriteria().getName());
+                objectiveMap.put("render_type", objective.getRenderType().getSerializedName());
+
+                Map<String, Integer> scoreMap = new HashMap<>();
+                for (Score score : scoreboard.getPlayerScores(objective)) {
+                    scoreMap.put(score.getOwner(), score.getScore());
+                }
+
+                objectiveMap.put("scores", scoreMap);
+
+                map.put(key, objectiveMap);
+            }
+        }
+
+        return map;
     }
 
     @LuaWhitelist
