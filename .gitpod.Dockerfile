@@ -6,4 +6,4 @@ USER gitpod
 
 SHELL ["/bin/bash", "-c"]
 
-RUN source ~/.sdkman/bin/sdkman-init.sh && sdk install java 17.0.9-tem
+RUN source ~/.sdkman/bin/sdkman-init.sh && sdk install java 17.0.10-tem
