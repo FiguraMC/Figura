@@ -153,8 +153,11 @@ public class AvatarManager {
         UUID uuid = entity.getUUID();
 
         // load from player (fetch backend) if is a player
-        if (entity instanceof Player)
-            return getAvatarForPlayer(uuid);
+        if (entity instanceof Player){
+            Avatar avatar = getAvatarForPlayer(uuid);
+            if (avatar != null)
+                return avatar;
+        }
 
         // otherwise check for CEM
         return getAvatarForEntity(entity);

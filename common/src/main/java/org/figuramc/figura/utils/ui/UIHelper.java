@@ -38,6 +38,7 @@ import org.figuramc.figura.gui.widgets.FiguraWidget;
 import org.figuramc.figura.math.vector.FiguraVec4;
 import org.figuramc.figura.model.rendering.EntityRenderMode;
 import org.figuramc.figura.utils.FiguraIdentifier;
+import org.figuramc.figura.utils.RenderUtils;
 import org.figuramc.figura.utils.TextUtils;
 
 import java.util.List;
@@ -176,13 +177,11 @@ public class UIHelper extends GuiComponent {
             }
             default -> {
                 // rotations
-                float rot = (float) Math.atan(pitch / 40f) * 20f;
-
-                xRot = (float) Math.atan(yaw / 40f) * 20f;
-                yRot = -rot + bodyY + 180;
+                xRot = pitch;
+                yRot = yaw + bodyY + 180;
 
                 entity.setXRot(-xRot);
-                entity.yHeadRot = rot + bodyY;
+                entity.yHeadRot = -yaw + bodyY;
 
                 // lightning
                 Lighting.setupForEntityInInventory();
@@ -194,6 +193,11 @@ public class UIHelper extends GuiComponent {
         stack.translate(x, y, renderMode == EntityRenderMode.MINECRAFT_GUI ? 250d : -250d);
         stack.scale(scale, scale, scale);
         stack.last().pose().multiply(Matrix4f.createScaleMatrix(1f, 1f, -1f)); // Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
+
+        Avatar avatar = AvatarManager.getAvatar(entity);
+        if (RenderUtils.vanillaModelAndScript(avatar) && !avatar.luaRuntime.renderer.getRootRotationAllowed()) {
+            yRot = yaw;
+        }
 
         // apply rotations
         Quaternion quaternion = Vector3f.ZP.rotationDegrees(180f);
@@ -218,7 +222,6 @@ public class UIHelper extends GuiComponent {
         fireRot = -yRot;
         dollScale = scale;
 
-        Avatar avatar = AvatarManager.getAvatar(entity);
         if (avatar != null) avatar.renderMode = renderMode;
 
         double finalXPos = xPos;

@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
@@ -24,6 +25,7 @@ import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.compat.GeckoLibCompat;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
 import org.figuramc.figura.model.ParentType;
+import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.FiguraArmorPartRenderer;
 import org.figuramc.figura.utils.RenderUtils;
 import org.spongepowered.asm.mixin.*;
@@ -103,6 +105,9 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
     @Unique
     private void figura$tryRenderArmorPart(EquipmentSlot slot, FiguraArmorPartRenderer<T, M, A> renderer, PoseStack vanillaPoseStack, T entity, MultiBufferSource vertexConsumers, int light, ParentType... parentTypes) {
         if (slot == null) return; // ?
+        VanillaPart part = RenderUtils.partFromSlot(figura$avatar, slot);
+        if (figura$avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1 && part != null && !part.checkVisible()) return;
+
         ItemStack itemStack = entity.getItemBySlot(slot);
 
         // Don't render armor if GeckoLib is already doing the rendering
@@ -161,6 +166,7 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
     private void figura$helmetRenderer(PoseStack poseStack, MultiBufferSource vertexConsumers, int light, A model, T entity, ItemStack itemStack, EquipmentSlot armorSlot, ArmorItem armorItem, ParentType parentType) {
         if (parentType == ParentType.HelmetPivot) {
             figura$renderArmorPart(model.head, poseStack, vertexConsumers, light, entity, itemStack, armorSlot, armorItem);
+            figura$renderArmorPart(model.hat, poseStack, vertexConsumers, light, entity, itemStack, armorSlot, armorItem);
         }
     }
 
@@ -252,7 +258,8 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
             hasOverlay = true;
         }
 
-        VertexConsumer regularArmorConsumer = vertexConsumers.getBuffer(RenderType.armorCutoutNoCull(RenderUtils.getArmorResource((HumanoidArmorLayer<T, M, A>)(Object)this, entity, itemStack, armorItem, armorSlot, bl, null)));
+        ResourceLocation normalArmorResource = RenderUtils.getArmorResource((HumanoidArmorLayer<T, M, A>)(Object)this, entity, itemStack, armorItem, armorSlot, bl, null);
+        VertexConsumer regularArmorConsumer = vertexConsumers.getBuffer(RenderType.armorCutoutNoCull(normalArmorResource));
         modelPart.render(poseStack, regularArmorConsumer, light, OverlayTexture.NO_OVERLAY, tintR, tintG, tintB, 1f);
 
         if (hasOverlay) {

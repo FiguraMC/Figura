@@ -298,7 +298,7 @@ class DebugCommand {
 
         // scripts
         CompoundTag scriptsNbt = nbt.getCompound("scripts");
-        JsonElement scripts = parseTagRecursive(scriptsNbt);
+        JsonElement scripts = parseCompoundSize(scriptsNbt);
         sizes.add("scripts", scripts);
         sizes.addProperty("scripts_total", parseSize(getBytesFromNbt(scriptsNbt)));
 
