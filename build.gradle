@@ -39,7 +39,7 @@ allprojects {
 
 	java_version = rootProject.java_version
 	archivesBaseName = rootProject.archives_base_name
-	version = rootProject.mod_version + "-" + rootProject.minecraft_version
+	version = rootProject.mod_version + "+" + rootProject.minecraft_version
 	group = rootProject.maven_group
 	if (project.hasProperty("release")) {
 		jarVersion = version
