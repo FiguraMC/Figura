@@ -28,7 +28,7 @@ public class InventoryScreenMixin {
 
         // Scissor is disabled here as enabling it would cut off nameplate rendering and taller models.
         // guiGraphics.enableScissor(x, y, i, j);
-        UIHelper.drawEntity(g, h, size, pitch, yaw, entity, guiGraphics, modelOffset, EntityRenderMode.MINECRAFT_GUI);
+        UIHelper.drawEntity(g, h, size, (float) Math.atan(yaw / 40f) * 20f, (float) -Math.atan(pitch / 40f) * 20f, entity, guiGraphics, modelOffset, EntityRenderMode.MINECRAFT_GUI);
         // guiGraphics.disableScissor();
         ci.cancel();
     }

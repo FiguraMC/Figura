@@ -9,6 +9,7 @@ import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.permissions.Permissions;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaString;
+import org.luaj.vm2.LuaValue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -564,12 +565,17 @@ public class FiguraBuffer implements AutoCloseable {
                     )
             }
     )
-    public int writeByteArray(@LuaNotNil LuaString byteArray) {
+    public int writeByteArray(@LuaNotNil LuaValue val) {
         checkIsClosed();
-        byte[] bytes = new byte[byteArray.length()];
-        byteArray.copyInto(0, bytes, 0, bytes.length);
-        writeBytes(bytes);
-        return bytes.length;
+        if (!(val instanceof LuaString byteArray)) {
+            throw new LuaError("Expected string, got %s".formatted(val.typename()));
+        }
+        else {
+            byte[] bytes = new byte[byteArray.length()];
+            byteArray.copyInto(0, bytes, 0, bytes.length);
+            writeBytes(bytes);
+            return bytes.length;
+        }
     }
 
     @LuaWhitelist

@@ -89,7 +89,7 @@ public abstract class FiguraGlobalsDocs {
     public JsonAPI json;
     @LuaFieldDoc("globals.resources")
     public ResourcesAPI resources;
-    @LuaFieldDoc("global.net")
+    @LuaFieldDoc("globals.net")
     public NetworkingAPI net;
     @LuaFieldDoc("globals.raycast")
     public RaycastAPI raycast;

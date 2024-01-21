@@ -33,6 +33,7 @@ import org.figuramc.figura.gui.widgets.FiguraWidget;
 import org.figuramc.figura.math.vector.FiguraVec4;
 import org.figuramc.figura.model.rendering.EntityRenderMode;
 import org.figuramc.figura.utils.FiguraIdentifier;
+import org.figuramc.figura.utils.RenderUtils;
 import org.figuramc.figura.utils.TextUtils;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -176,13 +177,11 @@ public final class UIHelper {
             }
             default -> {
                 // rotations
-                float rot = (float) Math.atan(pitch / 40f) * 20f;
-
-                xRot = (float) Math.atan(yaw / 40f) * 20f;
-                yRot = -rot + bodyY + 180;
+                xRot = pitch;
+                yRot = yaw + bodyY + 180;
 
                 entity.setXRot(-xRot);
-                entity.yHeadRot = rot + bodyY;
+                entity.yHeadRot = -yaw + bodyY;
 
                 // lightning
                 Lighting.setupForEntityInInventory();
@@ -195,6 +194,11 @@ public final class UIHelper {
         pose.translate(x, y, 250d);
         pose.scale(scale, scale, scale);
         pose.last().pose().scale(1f, 1f, -1f); // Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
+
+        Avatar avatar = AvatarManager.getAvatar(entity);
+        if (RenderUtils.vanillaModelAndScript(avatar) && !avatar.luaRuntime.renderer.getRootRotationAllowed()) {
+            yRot = yaw;
+        }
 
         // apply rotations
         Quaternionf quaternion = Axis.ZP.rotationDegrees(180f);
@@ -220,7 +224,6 @@ public final class UIHelper {
         fireRot = -yRot;
         dollScale = scale;
 
-        Avatar avatar = AvatarManager.getAvatar(entity);
         if (avatar != null) avatar.renderMode = renderMode;
 
         double finalXPos = xPos;
