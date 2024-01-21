@@ -304,6 +304,31 @@ public class FiguraListDocs {
         return root;
     }
 
+    public static List<String> getEnumValues(String enumName) {
+        try {
+            ListDoc enumListDoc = ListDoc.valueOf(enumName.toUpperCase());
+
+            Collection<?> enumValues = enumListDoc.get();
+            List<String> enumValueList = new ArrayList<>();
+            for (Object value : enumValues) {
+                if (value instanceof Map.Entry<?, ?> entry) {
+                    enumValueList.add(entry.getKey().toString());
+                    if (entry.getValue() instanceof Collection<?>) {
+                        for (Object alias : (Collection<?>) entry.getValue()) {
+                            enumValueList.add(alias.toString());
+                        }
+                    }
+                } else {
+                    enumValueList.add(value.toString());
+                }
+            }
+
+            return enumValueList;
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Enum " + enumName + " does not exist");
+        }
+    }
+
     public static JsonElement toJson(boolean translate) {
         JsonArray array = new JsonArray();
         for (ListDoc value : ListDoc.values())
