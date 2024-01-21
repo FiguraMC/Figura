@@ -22,7 +22,16 @@ public class PathUtils {
     }
 
     public static Path getWorkingDirectory(LuaFunction debugGetinfo) {
-        String file = debugGetinfo.call(LuaValue.valueOf(1)).get("source").checkjstring();
+        // Navigate up the stack trace and grab the first non-Java source
+        int i=1;
+        String file = "";
+        do {
+            LuaValue stack = debugGetinfo.call(LuaValue.valueOf(i++));
+            if(stack.isnil()) // shouldn't happen, but guards against potential infinite loops
+                break;
+            file = stack.get("source").checkjstring();
+        } while (file.equals("=[Java]"));
+
         Path path = Path.of("/" + file);
         return path.getNameCount() > 1 ? path.resolve("../").normalize() : Path.of("/");
     }

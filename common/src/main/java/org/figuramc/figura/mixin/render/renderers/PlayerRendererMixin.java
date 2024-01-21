@@ -24,6 +24,7 @@ import org.figuramc.figura.lua.api.nameplate.EntityNameplateCustomization;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.permissions.Permissions;
+import org.figuramc.figura.utils.RenderUtils;
 import org.figuramc.figura.utils.TextUtils;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
@@ -235,5 +236,13 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
             avatar.luaRuntime.vanilla_model.PLAYER.restore(this.getModel());
 
         avatar = null;
+    }
+
+    @Inject(method = "setupRotations", at = @At("HEAD"), cancellable = true)
+    private void setupRotations(AbstractClientPlayer entity, PoseStack poseStack, float f, float f2, float f3, CallbackInfo cir) {
+        Avatar avatar = AvatarManager.getAvatar(entity);
+        if (RenderUtils.vanillaModelAndScript(avatar) && !avatar.luaRuntime.renderer.getRootRotationAllowed()) {
+            cir.cancel();
+        }
     }
 }

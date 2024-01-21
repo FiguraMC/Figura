@@ -6,6 +6,7 @@
   "mixins": [],
   "client": [
     "MinecraftAccesor",
+    "AABBInvoker",
     "BiomeAccessor",
     "BlockBehaviourAccessor",
     "ClientCommandSourceMixin",
@@ -29,6 +30,7 @@
     "gui.ChatScreenMixin",
     "gui.ClickEventActionMixin",
     "gui.DebugScreenOverlayMixin",
+    "gui.GuiAccessor",
     "gui.GuiMessageLineMixin",
     "gui.GuiMessageMixin",
     "gui.GuiMixin",
