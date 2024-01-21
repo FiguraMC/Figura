@@ -61,6 +61,7 @@ public class RendererAPI {
     public FiguraVec3 eyeOffset;
     public FiguraVec4 blockOutlineColor;
     public Boolean upsideDown;
+    public Boolean rootRotation;
 
     public RendererAPI(Avatar owner) {
         this.owner = owner.owner;
@@ -704,6 +705,31 @@ public class RendererAPI {
     @LuaWhitelist
     public RendererAPI blockOutlineColor(Object r, Double g, Double b, Double a) {
         return setBlockOutlineColor(r, g, b, a);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = Boolean.class,
+                    argumentNames = "bool"
+            ),
+            aliases = "rootRotationAllowed",
+            value = "renderer.set_root_rotation_allowed"
+    )
+    public RendererAPI setRootRotationAllowed(Boolean bool) {
+        this.rootRotation = bool;
+        return this;
+    }
+
+    @LuaWhitelist
+    public RendererAPI rootRotationAllowed(Boolean bool) {
+        return setRootRotationAllowed(bool);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("renderer.get_root_rotation_allowed")
+    public Boolean getRootRotationAllowed() {
+        return rootRotation != null ? rootRotation : true;
     }
 
     @LuaWhitelist
