@@ -20,6 +20,7 @@ import org.figuramc.figura.ducks.SoundEngineAccessor;
 import org.figuramc.figura.ducks.SubtitleOverlayAccessor;
 import org.figuramc.figura.lua.api.sound.LuaSound;
 import org.figuramc.figura.math.vector.FiguraVec3;
+import org.figuramc.figura.permissions.Permissions;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
@@ -122,8 +123,14 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
                     sound.getSource().name(), 
                     sound.getSound().getLocation().toString()
                 );
-                if (cancel)
-                    c.cancel();
+                if (avatar.permissions.get(Permissions.CANCEL_SOUNDS) >= 1) {
+                    avatar.noPermissions.remove(Permissions.CANCEL_SOUNDS);
+                    if (cancel)
+                        c.cancel(); // calling cancel multple times is fine, right?
+                }
+                else {
+                    avatar.noPermissions.add(Permissions.CANCEL_SOUNDS);
+                }
             });
         }
     }
