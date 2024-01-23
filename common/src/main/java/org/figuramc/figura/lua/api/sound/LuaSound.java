@@ -117,8 +117,14 @@ public class LuaSound {
                 SoundSource.PLAYERS.name(),
                 null
             );
-            if (cancel)
-                this.playing = false;
+            if (avatar.permissions.get(Permissions.CANCEL_SOUNDS) >= 1) {
+                avatar.noPermissions.remove(Permissions.CANCEL_SOUNDS);
+                if (cancel)
+                    this.playing = false;
+            }
+            else {
+                avatar.noPermissions.add(Permissions.CANCEL_SOUNDS);
+            }
         });
         // If the sound was cancelled, exit.
         if (!this.playing) {
