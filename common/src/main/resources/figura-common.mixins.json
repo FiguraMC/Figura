@@ -4,8 +4,6 @@
   "package": "org.figuramc.figura.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "compat.GeckolibGeoRendererMixin",
-    "compat.GeckolibGeoArmorRendererMixin"
   ],
   "client": [
     "AABBInvoker",
@@ -91,7 +89,9 @@
     "sound.ChannelHandleMixin",
     "sound.SoundEngineMixin",
     "sound.SoundManagerAccessor",
-    "sound.SubtitleOverlayMixin"
+    "sound.SubtitleOverlayMixin",
+    "compat.GeckolibGeoRendererMixin",
+    "compat.GeckolibGeoArmorRendererMixin"
   ],
   "server": [
   ],

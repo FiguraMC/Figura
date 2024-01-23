@@ -67,6 +67,7 @@ public class FiguraMod {
         FiguraRuntimeResources.init();
 
         GeckoLibCompat.init();
+        SimpleVCCompat.init();
     }
 
     public static List<FiguraResourceListener> getResourceListeners() {
