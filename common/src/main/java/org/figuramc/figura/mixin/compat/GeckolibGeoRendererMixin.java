@@ -10,10 +10,7 @@ import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.ducks.GeckolibGeoArmorAccessor;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.permissions.Permissions;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Pseudo;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -25,14 +22,33 @@ import software.bernie.geckolib.renderer.GeoRenderer;
 
 @Pseudo
 @Mixin(value = GeoRenderer.class, remap = false)
-public interface GeckolibGeoRendererMixin {
+public interface GeckolibGeoRendererMixin<T extends GeoAnimatable> {
 
     @Shadow
     void renderRecursively(PoseStack par1, GeoAnimatable par2, GeoBone par3, RenderType par4, MultiBufferSource par5, VertexConsumer par6, boolean par7, float par8, int par9, int par10, float par11, float par12, float par13, float par14);
 
+    @Shadow void updateAnimatedTextureFrame(T animatable);
 
-    @Inject(method = "actuallyRender", at = @At(value = "INVOKE", target = "Lsoftware/bernie/geckolib/renderer/GeoRenderer;renderRecursively(Lcom/mojang/blaze3d/vertex/PoseStack;Lsoftware/bernie/geckolib/core/animatable/GeoAnimatable;Lsoftware/bernie/geckolib/cache/object/GeoBone;Lnet/minecraft/client/renderer/RenderType;Lnet/minecraft/client/renderer/MultiBufferSource;Lcom/mojang/blaze3d/vertex/VertexConsumer;ZFIIFFFF)V"), cancellable = true)
-    default void modifyBone(PoseStack poseStack, GeoAnimatable geoAnimatable, BakedGeoModel model, RenderType renderType, MultiBufferSource multiBufferSource, VertexConsumer vertexConsumer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha, CallbackInfo ci){
+    /**
+     * @author UnlikePaladin
+     * @reason Upstream Mixin, that is anything that's not Fabric's fork doesn't support interface injection so we have to overwrite :(
+     */
+    @Overwrite
+    default void actuallyRender(PoseStack poseStack, T animatable, BakedGeoModel model, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        updateAnimatedTextureFrame(animatable);
+
+        CallbackInfo callbackInfo = new CallbackInfo("figura$renderPivots", true);
+        figura$renderPivots(poseStack, animatable, model, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha, callbackInfo);
+        if (callbackInfo.isCancelled())
+            return;
+
+        for (GeoBone group : model.topLevelBones()) {
+            renderRecursively(poseStack, animatable, group, renderType, bufferSource, buffer, isReRender, partialTick, packedLight,
+                    packedOverlay, red, green, blue, alpha);
+        }
+    }
+
+    default void figura$renderPivots(PoseStack poseStack, GeoAnimatable geoAnimatable, BakedGeoModel model, RenderType renderType, MultiBufferSource multiBufferSource, VertexConsumer vertexConsumer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha, CallbackInfo ci){
         boolean allFailed = true;
 
         // If the renderer is an armor renderer and the avatar is not null
