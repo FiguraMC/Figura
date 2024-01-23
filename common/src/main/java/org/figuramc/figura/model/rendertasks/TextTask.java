@@ -61,7 +61,7 @@ public class TextTask extends RenderTask {
         // prepare variables
         Font font = Minecraft.getInstance().font;
         int l = this.customization.light != null ? this.customization.light : light;
-        int bg = backgroundColor != null ? backgroundColor : background ? (int) (Minecraft.getInstance().options.getBackgroundOpacity(0.25f) * 0xFF) << 24 : 0;
+        int bg = backgroundColor != null ? ColorUtils.intRGBAToIntARGB(backgroundColor) : background ? (int) (Minecraft.getInstance().options.getBackgroundOpacity(0.25f) * 0xFF) << 24 : 0;
         int out = outlineColor != null ? outlineColor : 0x202020;
         int op = opacity << 24 | 0xFFFFFF;
         Font.DisplayMode displayMode = seeThrough ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.POLYGON_OFFSET;
@@ -118,7 +118,7 @@ public class TextTask extends RenderTask {
 
         Font font = Minecraft.getInstance().font;
         cacheWidth = TextUtils.getWidth(this.text, font);
-        cacheHeight = this.text.size() * font.lineHeight;
+        cacheHeight = TextUtils.getHeight(this.text, font);
     }
 
 

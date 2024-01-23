@@ -36,7 +36,9 @@ import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.lua.FiguraLuaRuntime;
 import org.figuramc.figura.lua.api.TextureAPI;
+import org.figuramc.figura.lua.api.data.FiguraBuffer;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
+import org.figuramc.figura.lua.api.net.FiguraSocket;
 import org.figuramc.figura.lua.api.particle.ParticleAPI;
 import org.figuramc.figura.lua.api.ping.PingArg;
 import org.figuramc.figura.lua.api.ping.PingFunction;
@@ -59,6 +61,7 @@ import org.figuramc.figura.permissions.PermissionPack;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.EntityUtils;
+import org.figuramc.figura.utils.PathUtils;
 import org.figuramc.figura.utils.RefilledNumber;
 import org.figuramc.figura.utils.Version;
 import org.figuramc.figura.utils.ui.UIHelper;
@@ -91,7 +94,7 @@ public class Avatar {
     public boolean loaded = true;
     public final boolean isHost;
 
-    // metadata
+    //metadata
     public String name, entityName;
     public String authors;
     public Version version;
@@ -99,12 +102,14 @@ public class Avatar {
     public int fileSize;
     public String color;
     public Map<String, String> badgeToColor = new HashMap<>();
+    public Map<String, byte[]> resources = new HashMap<>();
 
     public boolean minify;
 
     // Runtime data
     private final Queue<Runnable> events = new ConcurrentLinkedQueue<>();
-
+    public final ArrayList<FiguraSocket> openSockets = new ArrayList<>();
+    public final ArrayList<FiguraBuffer> openBuffers = new ArrayList<>();
     public AvatarRenderer renderer;
     public FiguraLuaRuntime luaRuntime;
     public EntityRenderMode renderMode = EntityRenderMode.OTHER;
@@ -127,7 +132,6 @@ public class Avatar {
     public final Instructions complexity;
     public final Instructions init, render, worldRender, tick, worldTick, animation;
     public final RefilledNumber particlesRemaining, soundsRemaining;
-
     private Avatar(UUID owner, EntityType<?> type, String name) {
         this.owner = owner;
         this.entityType = type;
@@ -185,6 +189,13 @@ public class Avatar {
                     color = metadata.getString("color");
                 if (metadata.contains("minify"))
                     minify = metadata.getBoolean("minify");
+                if (nbt.contains("resources")) {
+                    CompoundTag res = nbt.getCompound("resources");
+                    for (String k :
+                            res.getAllKeys()) {
+                        resources.put(k, res.getByteArray(k));
+                    }
+                }
                 for (String key : metadata.getAllKeys()) {
                     if (key.contains("badge_color_")) {
                         badgeToColor.put(key.replace("badge_color_", ""), metadata.getString(key));
@@ -383,6 +394,12 @@ public class Avatar {
     public boolean arrowRenderEvent(float delta, EntityAPI<?> arrow) {
         Varargs result = null;
         if (loaded) result = run("ARROW_RENDER", render, delta, arrow);
+        return isCancelled(result);
+    }
+
+    public boolean tridentRenderEvent(float delta, EntityAPI<?> trident) {
+        Varargs result = null;
+        if (loaded) result = run("TRIDENT_RENDER", render, delta, trident);
         return isCancelled(result);
     }
 
@@ -783,6 +800,28 @@ public class Avatar {
         return comp > 0;
     }
 
+    public boolean renderTrident(PoseStack stack, MultiBufferSource bufferSource, float delta, int light) {
+        if (renderer == null || !loaded)
+            return false;
+
+        stack.pushPose();
+        Quaternionf quaternionf = Axis.ZP.rotationDegrees(90f);
+        Quaternionf quaternionf2 = Axis.YP.rotationDegrees(90f);
+        quaternionf.mul(quaternionf2);
+        stack.mulPose(quaternionf);
+
+        renderer.setupRenderer(
+                PartFilterScheme.TRIDENT, bufferSource, stack,
+                delta, light, 1f, OverlayTexture.NO_OVERLAY,
+                false, false
+        );
+
+        int comp = renderer.renderSpecialParts();
+
+        stack.popPose();
+        return comp > 0;
+    }
+
     public boolean renderItem(PoseStack stack, MultiBufferSource bufferSource, FiguraModelPart part, int light, int overlay) {
         if (renderer == null || !loaded || part.parentType != ParentType.Item)
             return false;
@@ -889,6 +928,8 @@ public class Avatar {
 
         clearSounds();
         clearParticles();
+        closeSockets();
+        closeBuffers();
 
         events.clear();
     }
@@ -897,6 +938,30 @@ public class Avatar {
         SoundAPI.getSoundEngine().figura$stopSound(owner, null);
         for (SoundBuffer value : customSounds.values())
             value.releaseAlBuffer();
+    }
+
+    public void closeSockets() {
+        for (FiguraSocket socket :
+                openSockets) {
+            if (!socket.isClosed()) {
+                try {
+                    socket.baseClose();
+                } catch (Exception ignored) {}
+            }
+        }
+        openSockets.clear();
+    }
+
+    public void closeBuffers() {
+        for (FiguraBuffer buffer :
+                openBuffers) {
+            if (!buffer.isClosed()) {
+                try {
+                    buffer.baseClose();
+                } catch (Exception ignored) {}
+            }
+        }
+        openBuffers.clear();
     }
 
     public void clearParticles() {
@@ -930,7 +995,7 @@ public class Avatar {
         Map<String, String> scripts = new HashMap<>();
         CompoundTag scriptsNbt = nbt.getCompound("scripts");
         for (String s : scriptsNbt.getAllKeys())
-            scripts.put(s, new String(scriptsNbt.getByteArray(s), StandardCharsets.UTF_8));
+            scripts.put(PathUtils.computeSafeString(s), new String(scriptsNbt.getByteArray(s), StandardCharsets.UTF_8));
 
         CompoundTag metadata = nbt.getCompound("metadata");
 

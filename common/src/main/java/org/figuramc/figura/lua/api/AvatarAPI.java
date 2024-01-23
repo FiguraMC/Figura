@@ -319,9 +319,39 @@ public class AvatarAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("avatar.get_buffers_count")
+    public int getBuffersCount() {
+        return avatar.openBuffers.size();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("avatar.get_max_buffers_count")
+    public int getMaxBuffersCount() {
+        return avatar.permissions.get(Permissions.BUFFERS_COUNT);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("avatar.get_sockets_count")
+    public int getSocketsCount() {
+        return avatar.openSockets.size();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("avatar.get_max_sockets_count")
+    public int getMaxSocketsCount() {
+        return avatar.permissions.get(Permissions.MAX_SOCKETS);
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("avatar.get_max_texture_size")
     public int getMaxTextureSize() {
         return avatar.permissions.get(Permissions.TEXTURE_SIZE);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("avatar.get_max_buffer_size")
+    public int getMaxBufferSize() {
+        return avatar.permissions.get(Permissions.BUFFER_SIZE);
     }
 
     @LuaWhitelist

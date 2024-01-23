@@ -58,7 +58,6 @@ public class FiguraMod {
     public static void onClientInit() {
         // init managers
         EntryPointManager.init();
-        ConfigManager.init();
         PermissionManager.init();
         LocalAvatarFetcher.init();
         CacheAvatarLoader.init();
@@ -191,7 +190,7 @@ public class FiguraMod {
         Wiki("https://wiki.figuramc.org/", ColorUtils.Colors.AWESOME_BLUE.style),
         Kofi("https://ko-fi.com/skyrina", ColorUtils.Colors.KOFI.style),
         OpenCollective("https://opencollective.com/figura", ColorUtils.Colors.KOFI.style),
-        Discord("https://discord.gg/figuramc", ColorUtils.Colors.DISCORD.style),
+        Discord("https://discord.figuramc.org/", ColorUtils.Colors.DISCORD.style),
         Github("https://github.com/FiguraMC/Figura", ColorUtils.Colors.GITHUB.style),
         Modrinth("https://modrinth.com/mod/figura", ColorUtils.Colors.MODRINTH.style),
         Curseforge("https://www.curseforge.com/minecraft/mc-mods/figura", ColorUtils.Colors.CURSEFORGE.style),

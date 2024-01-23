@@ -19,6 +19,7 @@ import org.figuramc.figura.lua.api.nameplate.NameplateAPI;
 import org.figuramc.figura.lua.api.ping.PingAPI;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaModelAPI;
 import org.figuramc.figura.permissions.Permissions;
+import org.figuramc.figura.utils.PathUtils;
 import org.luaj.vm2.*;
 import org.luaj.vm2.compiler.LuaC;
 import org.luaj.vm2.lib.*;
@@ -30,6 +31,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -58,7 +60,8 @@ public class FiguraLuaRuntime {
 
     public final Avatar owner;
     private final Globals userGlobals = new Globals();
-    private final LuaValue setHookFunction;
+    private final LuaFunction setHookFunction;
+    private final LuaFunction getInfoFunction;
     protected final Map<String, String> scripts = new HashMap<>();
     private final Map<String, Varargs> loadedScripts = new HashMap<>();
     private final Stack<String> loadingScripts = new Stack<>();
@@ -78,7 +81,9 @@ public class FiguraLuaRuntime {
         LuaC.install(userGlobals);
 
         userGlobals.load(new DebugLib());
-        setHookFunction = userGlobals.get("debug").get("sethook");
+        LuaTable debugLib = userGlobals.get("debug").checktable();
+        setHookFunction = debugLib.get("sethook").checkfunction();
+        getInfoFunction = debugLib.get("getinfo").checkfunction();
 
         setupFiguraSandbox();
 
@@ -132,16 +137,108 @@ public class FiguraLuaRuntime {
         LuaString.s_metatable = new ReadOnlyLuaTable(LuaString.s_metatable);
     }
 
-    private final VarArgFunction requireFunction = new VarArgFunction() {
+    private void loadExtraLibraries() {
+        // require
+        this.setGlobal("require", require);
+
+        // listFiles
+        this.setGlobal("listFiles", listFiles);
+
+        // custom loadstring
+        LuaValue loadstring = loadstringConstructor.apply(this);
+        this.setGlobal("load", loadstring);
+        this.setGlobal("loadstring", loadstring);
+
+        // load print functions
+        FiguraLuaPrinter.loadPrintFunctions(this);
+
+        // load JSON functions
+        FiguraLuaJson.loadFunctions(this);
+
+        // load math library
+        try (InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/scripts/math.lua")) {
+            if (inputStream == null) throw new IOException("Unable to get resource");
+            userGlobals.load(new String(inputStream.readAllBytes()), "math").call();
+        } catch (Exception e) {
+            error(new LuaError("Failed to load builtin math script:\n" + e.getMessage()));
+        }
+
+        // Change the type() function
+        setGlobal("type", new OneArgFunction() {
+            @Override
+            public LuaValue call(LuaValue arg) {
+                if (arg.type() == LuaValue.TUSERDATA)
+                    return LuaString.valueOf(typeManager.getTypeName(arg.checkuserdata().getClass()));
+                if (arg.type() == LuaValue.TTABLE && arg.getmetatable() != null) {
+                    LuaValue __type = arg.getmetatable().rawget("__type");
+                    if (!__type.isnil())
+                        return __type;
+                }
+                return LuaString.valueOf(arg.typename());
+            }
+
+            @Override
+            public String tojstring() {
+                return typename() + ": type";
+            }
+        });
+
+        // Change the pairs() function
+        LuaFunction globalPairs = userGlobals.get("pairs").checkfunction();
+        setGlobal("pairs", new VarArgFunction() {
+            @Override
+            public Varargs invoke(Varargs varargs) {
+                LuaValue arg1 = varargs.arg1();
+                int type = arg1.type();
+                if ((type == LuaValue.TTABLE || type == LuaValue.TUSERDATA) && arg1.getmetatable() != null) {
+                    LuaValue __pairs = arg1.getmetatable().rawget("__pairs");
+                    if (__pairs.isfunction())
+                        return __pairs.invoke(varargs);
+                }
+                return globalPairs.invoke(varargs);
+            }
+
+            @Override
+            public String tojstring() {
+                return typename() + ": pairs";
+            }
+        });
+
+        // Change the ipairs() function
+        LuaFunction globalIPairs = userGlobals.get("ipairs").checkfunction();
+        setGlobal("ipairs", new VarArgFunction() {
+            @Override
+            public Varargs invoke(Varargs varargs) {
+                LuaValue arg1 = varargs.arg1();
+                int type = arg1.type();
+                if ((type == LuaValue.TTABLE || type == LuaValue.TUSERDATA) && arg1.getmetatable() != null) {
+                    LuaValue __ipairs = arg1.getmetatable().rawget("__ipairs");
+                    if (__ipairs.isfunction())
+                        return __ipairs.invoke(varargs);
+                }
+                return globalIPairs.invoke(varargs);
+            }
+
+            @Override
+            public String tojstring() {
+                return typename() + ": ipairs";
+            }
+        });
+    }
+
+    private final VarArgFunction require = new VarArgFunction() {
         @Override
         public Varargs invoke(Varargs arg) {
-            String name = arg.checkjstring(1).replaceAll("[/\\\\]", ".");
-            if (loadingScripts.contains(name))
-                throw new LuaError("Detected circular dependency in script " + loadingScripts.peek());
-            if (scripts.get(name) == null && arg.isfunction(2))
-                return arg.checkfunction(2).invoke(LuaValue.valueOf(name));
+            Path path = PathUtils.getPath(arg.checkstring(1));
+            Path dir = PathUtils.getWorkingDirectory(getInfoFunction);
+            String scriptName = PathUtils.computeSafeString(
+                PathUtils.isAbsolute(path) ? path : dir.resolve(path)
+            );
 
-            return INIT_SCRIPT.apply(name);
+            if (loadingScripts.contains(scriptName))
+                throw new LuaError("Detected circular dependency in script " + loadingScripts.peek());
+
+            return initializeScript(scriptName);
         }
 
         @Override
@@ -149,7 +246,40 @@ public class FiguraLuaRuntime {
             return "function: require";
         }
     };
-    private static final Function<FiguraLuaRuntime, LuaValue> LOADSTRING_FUNC = runtime -> new VarArgFunction() {
+
+    private final TwoArgFunction listFiles = new TwoArgFunction() {
+        @Override
+        public LuaValue call(LuaValue folderPath, LuaValue includeSubfolders) {
+            Path path = PathUtils.getPath(folderPath);
+            Path dir = PathUtils.getWorkingDirectory(getInfoFunction);
+
+            Path targetPath = (PathUtils.isAbsolute(path) ? path : dir.resolve(path)).normalize();
+
+            boolean subFolders = !includeSubfolders.isnil() && includeSubfolders.checkboolean();
+
+            // iterate over all script names and add them if their name starts with the path query
+            int i = 1;
+            LuaTable table = new LuaTable();
+            for (String s : scripts.keySet()) {
+                Path scriptPath = PathUtils.getPath(s);
+
+                // Add to table only if the beginning of the path matches
+                if (!(scriptPath.startsWith(targetPath)))
+                    continue;
+                // remove the common parent
+                Path result = targetPath.relativize(scriptPath);
+                // Paths always have at least one name.
+                // If we do not allow subfolders, only allow paths that directly point to a file
+                if (!subFolders && result.getNameCount()!=1)
+                    continue;
+                table.set(i++, LuaValue.valueOf(s.replace('/', '.')));
+            }
+
+            return table;
+        }
+    };
+    
+    private static final Function<FiguraLuaRuntime, LuaValue> loadstringConstructor = runtime -> new VarArgFunction() {
         @Override
         public Varargs invoke(Varargs args) {
             try {
@@ -215,127 +345,11 @@ public class FiguraLuaRuntime {
         }
     };
 
-    private void loadExtraLibraries() {
-        // require
-        userGlobals.set("require", requireFunction);
-
-        // load print functions
-        FiguraLuaPrinter.loadPrintFunctions(this);
-
-        // load extra functions
-        FiguraLuaExtras.loadFunctions(this);
-
-        // custom loadstring
-        LuaValue loadstring = LOADSTRING_FUNC.apply(this);
-        this.setGlobal("load", loadstring);
-        this.setGlobal("loadstring", loadstring);
-
-        // listFiles
-        this.setGlobal("listFiles", listFiles);
-
-        // load math library
-        try (InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/scripts/math.lua")) {
-            if (inputStream == null) throw new IOException("Unable to get resource");
-            userGlobals.load(new String(inputStream.readAllBytes()), "math").call();
-        } catch (Exception e) {
-            error(new LuaError("Failed to load builtin math script:\n" + e.getMessage()));
-        }
-
-        // Change the type() function
-        setGlobal("type", new OneArgFunction() {
-            @Override
-            public LuaValue call(LuaValue arg) {
-                if (arg.type() == LuaValue.TUSERDATA)
-                    return LuaString.valueOf(typeManager.getTypeName(arg.checkuserdata().getClass()));
-                if (arg.type() == LuaValue.TTABLE && arg.getmetatable() != null) {
-                    LuaValue __type = arg.getmetatable().rawget("__type");
-                    if (!__type.isnil())
-                        return __type;
-                }
-                return LuaString.valueOf(arg.typename());
-            }
-
-            @Override
-            public String tojstring() {
-                return typename() + ": type";
-            }
-        });
-
-        // Change the pairs() function
-        LuaFunction globalPairs = userGlobals.get("pairs").checkfunction();
-        setGlobal("pairs", new VarArgFunction() {
-            @Override
-            public Varargs invoke(Varargs varargs) {
-                LuaValue arg1 = varargs.arg1();
-                if (arg1.type() == LuaValue.TTABLE && arg1.getmetatable() != null) {
-                    LuaValue __pairs = arg1.getmetatable().rawget("__pairs");
-                    if (__pairs.isfunction())
-                        return __pairs.invoke(varargs);
-                }
-                return globalPairs.invoke(varargs);
-            }
-
-            @Override
-            public String tojstring() {
-                return typename() + ": pairs";
-            }
-        });
-
-        // Change the ipairs() function
-        LuaFunction globalIPairs = userGlobals.get("ipairs").checkfunction();
-        setGlobal("ipairs", new VarArgFunction() {
-            @Override
-            public Varargs invoke(Varargs varargs) {
-                LuaValue arg1 = varargs.arg1();
-                if (arg1.type() == LuaValue.TTABLE && arg1.getmetatable() != null) {
-                    LuaValue __ipairs = arg1.getmetatable().rawget("__ipairs");
-                    if (__ipairs.isfunction())
-                        return __ipairs.invoke(varargs);
-                }
-                return globalIPairs.invoke(varargs);
-            }
-
-            @Override
-            public String tojstring() {
-                return typename() + ": ipairs";
-            }
-        });
-    }
-
-    private final TwoArgFunction listFiles = new TwoArgFunction() {
-        @Override
-        public LuaValue call(LuaValue arg1, LuaValue arg2) {
-            // format path
-            String path = arg1.isnil() ? "" : arg1.checkjstring();
-            path = path.replaceAll("[/\\\\]", ".");
-
-            // max depth
-            int depth = path.isBlank() ? 1 : path.split("\\.").length + 1;
-
-            // subfolder
-            boolean subFolders = !arg2.isnil() && arg2.checkboolean();
-
-            // iterate over all script names and add them if their name starts with the path query
-            int i = 1;
-            LuaTable table = new LuaTable();
-            for (String s : scripts.keySet()) {
-                String[] split = s.split("\\.");
-
-                if (!s.startsWith(path) || split.length > depth && !subFolders)
-                    continue;
-
-                table.set(i++, LuaValue.valueOf(s));
-            }
-
-            return table;
-        }
-    };
-
     // init event //
 
-    private final Function<String, Varargs> INIT_SCRIPT = str -> {
-        // format name
-        String name = str.replaceAll("[/\\\\]", ".");
+    private Varargs initializeScript(String str){
+        Path path = PathUtils.getPath(str);
+        String name = PathUtils.computeSafeString(path);
 
         // already loaded
         Varargs val = loadedScripts.get(name);
@@ -345,15 +359,14 @@ public class FiguraLuaRuntime {
         // not found
         String src = scripts.get(name);
         if (src == null)
-            throw new LuaError("Tried to require nonexistent script \"" + str + "\"!");
+            throw new LuaError("Tried to require nonexistent script \"" + name + "\"!");
 
         this.loadingScripts.push(name);
 
         // load
-        int split = name.lastIndexOf('.');
-        String path = split == -1 ? "" : name.substring(0, split);
-        String fileName = split == -1 ? name : name.substring(split + 1);
-        Varargs value = userGlobals.load(src, name).invoke(LuaValue.varargsOf(LuaValue.valueOf(path), LuaValue.valueOf(fileName)));
+        String directory = PathUtils.computeSafeString(path.getParent());
+        String fileName = PathUtils.computeSafeString(path.getFileName());
+        Varargs value = userGlobals.load(src, name).invoke(LuaValue.varargsOf(LuaValue.valueOf(directory), LuaValue.valueOf(fileName)));
         if (value == LuaValue.NIL)
             value = LuaValue.TRUE;
 
@@ -372,10 +385,10 @@ public class FiguraLuaRuntime {
         try {
             if (autoScripts == null) {
                 for (String name : scripts.keySet())
-                    INIT_SCRIPT.apply(name);
+                    initializeScript(name);
             } else {
                 for (Tag name : autoScripts)
-                    INIT_SCRIPT.apply(name.getAsString());
+                    initializeScript(name.getAsString());
             }
         } catch (Exception | StackOverflowError e) {
             error(e);
@@ -393,6 +406,8 @@ public class FiguraLuaRuntime {
         owner.luaRuntime = null;
         owner.clearParticles();
         owner.clearSounds();
+        owner.closeSockets();
+        owner.closeBuffers();
     }
 
     public static LuaError parseError(Throwable e) {

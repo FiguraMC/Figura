@@ -6,7 +6,10 @@
   "name": "Figura",
   "description": "Extensive customization of the Player model",
   "authors": [
-    "skyrina"
+    "skyrina", "lumelia", "UnlikePaladin", "omoflop"
+  ],
+  "contributors": [
+    "TooManyLimits", "Lexize", "KitCat962", "Manuel-3", "superpowers04", "auriafoxgirl", "applejuiceyy"
   ],
   "contact": {
     "homepage": "https://github.com/FiguraMC/Figura",
@@ -43,7 +46,7 @@
     "assets_version": "${assets_version}",
     "modmenu": {
       "links": {
-        "Discord": "https://discord.gg/figuramc",
+        "Discord": "https://discord.figuramc.org/",
         "Ko-fi": "https://ko-fi.com/skyrina",
         "Open Collective": "https://opencollective.com/figura",
         "Modrinth":  "https://modrinth.com/mod/figura/",

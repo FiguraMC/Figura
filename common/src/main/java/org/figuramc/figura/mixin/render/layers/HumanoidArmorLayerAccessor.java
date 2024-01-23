@@ -35,5 +35,5 @@ public interface HumanoidArmorLayerAccessor<T extends LivingEntity, M extends Hu
 
     @Intrinsic
     @Invoker("getArmorLocation")
-    ResourceLocation getArmorLocation(ArmorItem item, boolean legs, @Nullable String overlay);
+    ResourceLocation invokeGetArmorLocation(ArmorItem item, boolean legs, @Nullable String overlay);
 }
