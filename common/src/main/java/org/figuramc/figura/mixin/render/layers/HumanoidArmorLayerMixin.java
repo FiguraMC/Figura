@@ -33,7 +33,6 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = HumanoidArmorLayer.class, priority = 900)
 public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends HumanoidModel<T>, A extends HumanoidModel<T>> extends RenderLayer<T, M> implements HumanoidArmorLayerAccessor<T, M, A> {
@@ -115,12 +114,10 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
 
         ItemStack itemStack = entity.getItemBySlot(slot);
 
-        // Don't render armor if GeckoLib is already doing the rendering
-        if (GeckoLibCompat.armorHasCustomModel(itemStack)) return;
-
         // Make sure the item in the equipment slot is actually a piece of armor
         if ((itemStack.getItem() instanceof ArmorItem armorItem && armorItem.getEquipmentSlot() == slot)) {
             A armorModel = getArmorModel(slot);
+
 
             armorModel.body.xRot = 0.0f;
             armorModel.rightLeg.z = 0.0f;
@@ -133,22 +130,23 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
             armorModel.rightArm.y = 2.0f;
             boolean allFailed = true;
 
-            // Go through each parent type needed to render the current piece of armor
-            for (ParentType parentType : parentTypes) {
+            // Don't render armor if GeckoLib is already doing the rendering
+            if (!GeckoLibCompat.armorHasCustomModel(itemStack)) {
+                // Go through each parent type needed to render the current piece of armor
+                for (ParentType parentType : parentTypes) {
+                            // Try to render the pivot part
+                        boolean renderedPivot = figura$avatar.pivotPartRender(parentType, stack -> {
+                                stack.pushPose();
+                                figura$prepareArmorRender(stack);
+                                renderer.renderArmorPart(stack, vertexConsumers, light, armorModel, entity, itemStack, slot, armorItem, parentType);
+                                stack.popPose();
+                            });
 
-                // Try to render the pivot part
-                boolean renderedPivot = figura$avatar.pivotPartRender(parentType, stack -> {
-                    stack.pushPose();
-                    figura$prepareArmorRender(stack);
-                    renderer.renderArmorPart(stack, vertexConsumers, light, armorModel, entity, itemStack, slot, armorItem, parentType);
-                    stack.popPose();
-                });
-
-                if (renderedPivot) {
-                    allFailed = false;
-                }
+                            if (renderedPivot) {
+                                allFailed = false;
+                            }
+                        }
             }
-
             // As a fallback, render armor the vanilla way
             if (allFailed) {
                 figura$renderingVanillaArmor = true;
