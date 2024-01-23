@@ -116,11 +116,11 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
             // Run sound event
             AvatarManager.executeAll("playSoundEvent", avatar -> {
                 boolean cancel = avatar.playSoundEvent(
-                    sound.getLocation().toString(), 
-                    FiguraVec3.fromVec3(pos), 
-                    sound.getVolume(), sound.getPitch(), 
-                    sound.isLooping(), 
-                    sound.getSource().name(), 
+                    sound.getLocation().toString(),
+                    FiguraVec3.fromVec3(pos),
+                    sound.getVolume(), sound.getPitch(),
+                    sound.isLooping(),
+                    sound.getSource().name(),
                     sound.getSound().getLocation().toString()
                 );
                 if (avatar.permissions.get(Permissions.CANCEL_SOUNDS) >= 1) {
@@ -142,18 +142,6 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
             if (listener instanceof SubtitleOverlay overlay)
                 ((SubtitleOverlayAccessor) overlay).figura$PlaySound(sound);
         }
-        AvatarManager.executeAll("playSoundEvent", avatar -> {
-            boolean cancel = avatar.playSoundEvent(
-                sound.getId(), 
-                sound.getPos(), 
-                sound.getVolume(), sound.getPitch(), 
-                sound.isLooping(), 
-                SoundSource.PLAYERS.name(), 
-                null
-            );
-            if (cancel)
-                sound.stop();
-        });
     }
 
     @Override @Intrinsic

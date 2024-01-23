@@ -9,6 +9,7 @@ import net.minecraft.client.sounds.SoundBufferLibrary;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
 import org.figuramc.figura.avatar.Avatar;
+import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
@@ -88,20 +89,55 @@ public class LuaSound {
 
         owner.noPermissions.remove(Permissions.SOUNDS);
 
+        // if handle exists, the sound was previously played. Unpause it
         if (handle != null) {
             handle.execute(Channel::unpause);
             this.playing = true;
-        } else if (buffer != null) {
-            float vol = calculateVolume();
-            if (vol <= 0)
-                return this;
+            return this;
+        }
 
+        // if there is no sound data, exit early
+        if (buffer == null && sound == null)
+            return this;
+
+        float vol = calculateVolume();
+        // if nobody can hear you scream, are you really screaming? No.
+        if (vol <= 0)
+            return this;
+
+        if (buffer != null)
             this.handle = SoundAPI.getSoundEngine().figura$createHandle(owner.owner, id, Library.Pool.STATIC);
-            if (handle == null)
-                return this;
+        else
+            this.handle = SoundAPI.getSoundEngine().figura$createHandle(owner.owner, id, sound.shouldStream() ? Library.Pool.STREAMING : Library.Pool.STATIC);
 
-            SoundAPI.getSoundEngine().figura$addSound(this);
+        // The handle can fail to be created sometimes I guess
+        if (handle == null)
+            return this;
 
+        // Technically I am setting playing to true earlier than I am supposed to,
+        // but the function cannot exit early past here (other than crashing) so its fine
+        this.playing = true;
+        AvatarManager.executeAll("playSoundEvent", avatar -> {
+            boolean cancel = avatar.playSoundEvent(
+                this.getId(),
+                this.getPos(),
+                this.getVolume(), this.getPitch(),
+                this.isLooping(),
+                SoundSource.PLAYERS.name(),
+                null
+            );
+            if (cancel)
+                this.playing = false;
+        });
+        // If the sound was cancelled, remove the handler and exit
+        if (!this.playing) {
+            this.stop();
+            return this;
+        }
+
+        SoundAPI.getSoundEngine().figura$addSound(this);
+
+        if (buffer != null) {
             handle.execute(channel -> {
                 channel.setPitch(pitch);
                 channel.setVolume(volume * vol);
@@ -112,31 +148,18 @@ public class LuaSound {
                 channel.attachStaticBuffer(buffer);
                 channel.play();
             });
-
-            this.playing = true;
-        } else if (sound != null) {
-            float vol = calculateVolume();
-            if (vol <= 0)
-                return this;
-
-            boolean shouldStream = sound.shouldStream();
-            this.handle = SoundAPI.getSoundEngine().figura$createHandle(owner.owner, id, shouldStream ? Library.Pool.STREAMING : Library.Pool.STATIC);
-            if (handle == null)
-                return this;
-
-            SoundAPI.getSoundEngine().figura$addSound(this);
-
+        } else {
             handle.execute(channel -> {
                 channel.setPitch(pitch);
                 channel.setVolume(volume * vol);
                 channel.linearAttenuation(attenuation * 16f);
-                channel.setLooping(loop && !shouldStream);
+                channel.setLooping(loop && !sound.shouldStream());
                 channel.setSelfPosition(pos.asVec3());
                 channel.setRelative(false);
             });
 
             SoundBufferLibrary lib = SoundAPI.getSoundEngine().figura$getSoundBuffers();
-            if (!shouldStream) {
+            if (!sound.shouldStream()) {
                 lib.getCompleteBuffer(sound.getPath()).thenAccept(buffer -> handle.execute(channel -> {
                     channel.attachStaticBuffer(buffer);
                     channel.play();
@@ -147,8 +170,6 @@ public class LuaSound {
                     channel.play();
                 }));
             }
-
-            this.playing = true;
         }
 
         return this;
