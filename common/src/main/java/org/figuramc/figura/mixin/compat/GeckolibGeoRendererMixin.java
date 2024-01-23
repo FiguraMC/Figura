@@ -48,32 +48,41 @@ public interface GeckolibGeoRendererMixin {
             switch (armorRenderer.getCurrentSlot()) {
                 case HEAD:
                     allFailed = figura$renderPivot(armorRenderer, avatar, ParentType.HelmetPivot, geoAnimatable, armorRenderer.getHeadBone(), renderType, multiBufferSource, vertexConsumer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+                    if (allFailed)
+                        renderRecursively(poseStack, geoAnimatable, armorRenderer.getHeadBone(), renderType, multiBufferSource, vertexConsumer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
                     break;
                 case CHEST:
                     allFailed = figura$renderPivot(armorRenderer, avatar, ParentType.ChestplatePivot, geoAnimatable, armorRenderer.getBodyBone(), renderType, multiBufferSource, vertexConsumer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
-                    if (allFailed) break;
+                    if (allFailed)
+                        renderRecursively(poseStack, geoAnimatable, armorRenderer.getBodyBone(), renderType, multiBufferSource, vertexConsumer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
                     allFailed = figura$renderPivot(armorRenderer, avatar, ParentType.LeftShoulderPivot, geoAnimatable, armorRenderer.getLeftArmBone(), renderType, multiBufferSource, vertexConsumer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
-                    if (allFailed) break;
+                    if (allFailed)
+                        renderRecursively(poseStack, geoAnimatable, armorRenderer.getLeftArmBone(), renderType, multiBufferSource, vertexConsumer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
                     allFailed = figura$renderPivot(armorRenderer, avatar, ParentType.RightShoulderPivot, geoAnimatable, armorRenderer.getRightArmBone(), renderType, multiBufferSource, vertexConsumer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+                    if (allFailed)
+                        renderRecursively(poseStack, geoAnimatable, armorRenderer.getRightArmBone(), renderType, multiBufferSource, vertexConsumer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
                     break;
                 case LEGS:
                     allFailed = figura$renderPivot(armorRenderer, avatar, ParentType.LeftLeggingPivot, geoAnimatable, armorRenderer.getLeftLegBone(), renderType, multiBufferSource, vertexConsumer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
-                    if (allFailed) break;
+                    if (allFailed)
+                        renderRecursively(poseStack, geoAnimatable, armorRenderer.getLeftLegBone(), renderType, multiBufferSource, vertexConsumer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
                     figura$renderPivot(armorRenderer, avatar, ParentType.RightLeggingPivot, geoAnimatable, armorRenderer.getRightLegBone(), renderType, multiBufferSource, vertexConsumer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+                    if (allFailed)
+                        renderRecursively(poseStack, geoAnimatable, armorRenderer.getRightLegBone(), renderType, multiBufferSource, vertexConsumer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
                     break;
                 case FEET:
                     allFailed = figura$renderPivot(armorRenderer, avatar, ParentType.LeftBootPivot, geoAnimatable, armorRenderer.getLeftBootBone(), renderType, multiBufferSource, vertexConsumer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
-                    if (allFailed) break;
+                    if (allFailed)
+                        renderRecursively(poseStack, geoAnimatable, armorRenderer.getLeftBootBone(), renderType, multiBufferSource, vertexConsumer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
                     allFailed = figura$renderPivot(armorRenderer, avatar, ParentType.RightBootPivot, geoAnimatable, armorRenderer.getRightBootBone(), renderType, multiBufferSource, vertexConsumer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+                    if (allFailed)
+                        renderRecursively(poseStack, geoAnimatable, armorRenderer.getRightBootBone(), renderType, multiBufferSource, vertexConsumer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
                     break;
                 default:
                     break;
             }
-        }
-
-        // If everything rendered and worked correctly, cancel
-        if (!allFailed)
             ci.cancel();
+        }
     }
 
     // Returns the true if the pivot failed to render to match HumanoidArmorLayerMixin
