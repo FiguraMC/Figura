@@ -105,15 +105,6 @@ public class LuaSound {
         if (vol <= 0)
             return this;
 
-        if (buffer != null)
-            this.handle = SoundAPI.getSoundEngine().figura$createHandle(owner.owner, id, Library.Pool.STATIC);
-        else
-            this.handle = SoundAPI.getSoundEngine().figura$createHandle(owner.owner, id, sound.shouldStream() ? Library.Pool.STREAMING : Library.Pool.STATIC);
-
-        // The handle can fail to be created sometimes I guess
-        if (handle == null)
-            return this;
-
         // Technically I am setting playing to true earlier than I am supposed to,
         // but the function cannot exit early past here (other than crashing) so its fine
         this.playing = true;
@@ -129,9 +120,19 @@ public class LuaSound {
             if (cancel)
                 this.playing = false;
         });
-        // If the sound was cancelled, remove the handler and exit
+        // If the sound was cancelled, exit.
         if (!this.playing) {
-            this.stop();
+            return this;
+        }
+
+        if (buffer != null)
+            this.handle = SoundAPI.getSoundEngine().figura$createHandle(owner.owner, id, Library.Pool.STATIC);
+        else
+            this.handle = SoundAPI.getSoundEngine().figura$createHandle(owner.owner, id, sound.shouldStream() ? Library.Pool.STREAMING : Library.Pool.STATIC);
+
+        // I dunno why this check was here in the first place and I aint about to ruin things by removing it.
+        if (handle == null) {
+            this.playing = false; // explicit set just incase
             return this;
         }
 
