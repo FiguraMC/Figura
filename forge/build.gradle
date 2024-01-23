@@ -39,7 +39,7 @@ dependencies {
     include(forgeRuntimeLibrary("org.java-websocket:Java-WebSocket:$websocket"))
 
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
-
+    
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 }

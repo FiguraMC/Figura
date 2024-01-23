@@ -38,7 +38,7 @@ subprojects {
 		modCompileOnly "maven.modrinth:iris:$iris"
 		modCompileOnly "maven.modrinth:immediatelyfast:$immediately_fast"
 		modCompileOnly "maven.modrinth:iris:$iris"
-		modCompileOnly ('software.bernie.geckolib:geckolib-fabric-1.20.1:4.4') {
+		modCompileOnly ("software.bernie.geckolib:geckolib-fabric-$geckolib_version") {
 			exclude group: "net.fabricmc"
 		}
 	}

@@ -32,7 +32,7 @@ public interface GeckolibGeoRendererMixin {
 
 
     @Inject(method = "actuallyRender", at = @At(value = "INVOKE", target = "Lsoftware/bernie/geckolib/renderer/GeoRenderer;renderRecursively(Lcom/mojang/blaze3d/vertex/PoseStack;Lsoftware/bernie/geckolib/core/animatable/GeoAnimatable;Lsoftware/bernie/geckolib/cache/object/GeoBone;Lnet/minecraft/client/renderer/RenderType;Lnet/minecraft/client/renderer/MultiBufferSource;Lcom/mojang/blaze3d/vertex/VertexConsumer;ZFIIFFFF)V"), cancellable = true)
-    private void modifyBone(PoseStack poseStack, GeoAnimatable geoAnimatable, BakedGeoModel model, RenderType renderType, MultiBufferSource multiBufferSource, VertexConsumer vertexConsumer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha, CallbackInfo ci){
+    default void modifyBone(PoseStack poseStack, GeoAnimatable geoAnimatable, BakedGeoModel model, RenderType renderType, MultiBufferSource multiBufferSource, VertexConsumer vertexConsumer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha, CallbackInfo ci){
         boolean allFailed = true;
 
         // If the renderer is an armor renderer and the avatar is not null
@@ -78,7 +78,7 @@ public interface GeckolibGeoRendererMixin {
 
     // Returns the true if the pivot failed to render to match HumanoidArmorLayerMixin
     @Unique
-    private boolean figura$renderPivot(GeoArmorRenderer armorRenderer, Avatar avatar, ParentType parentType, GeoAnimatable geoAnimatable, GeoBone geoBone, RenderType renderType, MultiBufferSource multiBufferSource, VertexConsumer vertexConsumer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    default boolean figura$renderPivot(GeoArmorRenderer armorRenderer, Avatar avatar, ParentType parentType, GeoAnimatable geoAnimatable, GeoBone geoBone, RenderType renderType, MultiBufferSource multiBufferSource, VertexConsumer vertexConsumer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         if (geoBone == null)
             return true;
 
@@ -110,7 +110,7 @@ public interface GeckolibGeoRendererMixin {
 
     // Based on the values from HumanoidArmorLayerMixin
     @Unique
-    private void figura$transformStackBasedOnType(PoseStack poseStack, ParentType parentType) {
+    default void figura$transformStackBasedOnType(PoseStack poseStack, ParentType parentType) {
         if (parentType == ParentType.LeftShoulderPivot) {
             poseStack.translate(-6 / 16f, 0f, 0f);
         }  else if (parentType == ParentType.RightShoulderPivot) {
@@ -129,7 +129,7 @@ public interface GeckolibGeoRendererMixin {
     }
 
     @Unique
-    private void figura$prepareArmorRender(PoseStack stack) {
+    default void figura$prepareArmorRender(PoseStack stack) {
         stack.scale(16, 16, 16);
         stack.mulPose(Axis.XP.rotationDegrees(180f));
         stack.mulPose(Axis.YP.rotationDegrees(180f));
