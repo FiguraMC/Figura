@@ -73,6 +73,7 @@ public interface GeckolibGeoRendererMixin {
         return !avatar.pivotPartRender(parentType, stack -> {
             stack.pushPose();
             figura$prepareArmorRender(stack);
+            figura$transformStackBasedOnType(stack, parentType);
 
             ((GeckolibGeoArmorAccessor)armorRenderer).figura$setEntityRenderTranslations(stack.last().pose());
 
@@ -91,6 +92,24 @@ public interface GeckolibGeoRendererMixin {
         });
     }
 
+    @Unique
+    private void figura$transformStackBasedOnType(PoseStack poseStack, ParentType parentType) {
+        if (parentType == ParentType.LeftShoulderPivot) {
+            poseStack.translate(-6 / 16f, 0f, 0f);
+        }  else if (parentType == ParentType.RightShoulderPivot) {
+            poseStack.translate(6 / 16f, 0f, 0f);
+        } else if (parentType == ParentType.LeggingsPivot) {
+            poseStack.translate(0, -12 / 16f, 0);
+        } else if (parentType == ParentType.LeftLeggingPivot) {
+            poseStack.translate(-2 / 16f, -12 / 16f, 0);
+        } else if (parentType == ParentType.RightLeggingPivot) {
+            poseStack.translate(2 / 16f, -12 / 16f, 0);
+        } else if (parentType == ParentType.LeftBootPivot) {
+            poseStack.translate(-2 / 16f, -24 / 16f, 0);
+        } else if (parentType == ParentType.RightBootPivot) {
+            poseStack.translate(2 / 16f, -24 / 16f, 0);
+        }
+    }
 
     @Unique
     private void figura$prepareArmorRender(PoseStack stack) {
