@@ -12,6 +12,8 @@ import org.figuramc.figura.avatar.local.CacheAvatarLoader;
 import org.figuramc.figura.avatar.local.LocalAvatarFetcher;
 import org.figuramc.figura.avatar.local.LocalAvatarLoader;
 import org.figuramc.figura.backend2.NetworkStuff;
+import org.figuramc.figura.compat.GeckoLibCompat;
+import org.figuramc.figura.compat.SimpleVCCompat;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.entries.EntryPointManager;
 import org.figuramc.figura.font.Emojis;
@@ -62,6 +64,9 @@ public class FiguraMod {
         CacheAvatarLoader.init();
         FiguraDocsManager.init();
         FiguraRuntimeResources.init();
+
+        GeckoLibCompat.init();
+        SimpleVCCompat.init();
     }
 
     public static List<FiguraResourceListener> getResourceListeners() {
@@ -146,16 +151,15 @@ public class FiguraMod {
         LoadingCache<String, CompletableFuture<Optional<GameProfile>>> cache = SkullBlockEntityAccessor.getProfileCache();
         if (cache == null) return null;
 
-        Optional<GameProfile> profile = null;
+        Optional<GameProfile> profile = Optional.empty();
         try {
             try {
                 profile = cache.get(playerName).get();
             } catch (InterruptedException ignored) {
             }
-        } catch (ExecutionException e) {
-            profile = Optional.empty();
+        } catch (ExecutionException ignored) {
         }
-        return profile.isEmpty() ? null : profile.get().getId();
+        return profile.map(GameProfile::getId).orElse(null);
     }
 
     public static Style getAccentColor() {

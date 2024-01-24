@@ -23,15 +23,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.armortrim.ArmorTrim;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
+import org.figuramc.figura.compat.GeckoLibCompat;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.FiguraArmorPartRenderer;
 import org.figuramc.figura.utils.RenderUtils;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -49,6 +47,8 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
     @Shadow
     protected abstract void renderArmorPiece(PoseStack matrices, MultiBufferSource vertexConsumers, T entity, EquipmentSlot armorSlot, int light, A model);
 
+    @Shadow @Final private A innerModel;
+    @Shadow @Final private A outerModel;
     @Unique
     private boolean figura$renderingVanillaArmor;
 
@@ -64,10 +64,9 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
         figura$avatar = AvatarManager.getAvatar(livingEntity);
     }
 
-    @Inject(at = @At(value = "TAIL"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")
+    @Inject(at = @At(value = "INVOKE", shift = At.Shift.AFTER, ordinal = 3, target = "Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;renderArmorPiece(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/EquipmentSlot;ILnet/minecraft/client/model/HumanoidModel;)V"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")
     public void onRenderEnd(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
         if (figura$avatar == null) return;
-
 
         figura$tryRenderArmorPart(EquipmentSlot.HEAD,  this::figura$helmetRenderer, poseStack, livingEntity, multiBufferSource, i, ParentType.HelmetPivot);
         figura$tryRenderArmorPart(EquipmentSlot.CHEST, this::figura$chestplateRenderer, poseStack, livingEntity, multiBufferSource, i, ParentType.LeftShoulderPivot, ParentType.ChestplatePivot, ParentType.RightShoulderPivot);
@@ -118,6 +117,8 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
         // Make sure the item in the equipment slot is actually a piece of armor
         if ((itemStack.getItem() instanceof ArmorItem armorItem && armorItem.getEquipmentSlot() == slot)) {
             A armorModel = getArmorModel(slot);
+
+            // Bones have to be their defaults to prevent issues with clipping
             armorModel.body.xRot = 0.0f;
             armorModel.rightLeg.z = 0.0f;
             armorModel.leftLeg.z = 0.0f;
@@ -127,24 +128,30 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
             armorModel.body.y = 0.0f;
             armorModel.leftArm.y = 2.0f;
             armorModel.rightArm.y = 2.0f;
+            armorModel.leftArm.x = 5.0f;
+            armorModel.rightArm.x = -5.0f;
+            armorModel.leftArm.z = 0.0f;
+            armorModel.rightArm.z = 0.0f;
+
             boolean allFailed = true;
 
-            // Go through each parent type needed to render the current piece of armor
-            for (ParentType parentType : parentTypes) {
+            // Don't render armor if GeckoLib is already doing the rendering
+            if (!GeckoLibCompat.armorHasCustomModel(itemStack)) {
+                // Go through each parent type needed to render the current piece of armor
+                for (ParentType parentType : parentTypes) {
+                            // Try to render the pivot part
+                        boolean renderedPivot = figura$avatar.pivotPartRender(parentType, stack -> {
+                                stack.pushPose();
+                                figura$prepareArmorRender(stack);
+                                renderer.renderArmorPart(stack, vertexConsumers, light, armorModel, entity, itemStack, slot, armorItem, parentType);
+                                stack.popPose();
+                            });
 
-                // Try to render the pivot part
-                boolean renderedPivot = figura$avatar.pivotPartRender(parentType, stack -> {
-                    stack.pushPose();
-                    figura$prepareArmorRender(stack);
-                    renderer.renderArmorPart(stack, vertexConsumers, light, armorModel, entity, itemStack, slot, armorItem, parentType);
-                    stack.popPose();
-                });
-
-                if (renderedPivot) {
-                    allFailed = false;
-                }
+                            if (renderedPivot) {
+                                allFailed = false;
+                            }
+                        }
             }
-
             // As a fallback, render armor the vanilla way
             if (allFailed) {
                 figura$renderingVanillaArmor = true;

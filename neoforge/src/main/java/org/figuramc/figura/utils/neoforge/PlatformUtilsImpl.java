@@ -12,7 +12,7 @@ public class PlatformUtilsImpl {
     }
 
     public static String getFiguraModVersionString() {
-        return ModList.get().getModContainerById(FiguraMod.MOD_ID).get().getModInfo().getVersion().getQualifier();
+        return ModList.get().getModContainerById(FiguraMod.MOD_ID).get().getModInfo().getVersion().toString();
     }
 
     public static Path getConfigDir() {

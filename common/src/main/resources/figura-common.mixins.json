@@ -3,7 +3,8 @@
   "minVersion": "0.8",
   "package": "org.figuramc.figura.mixin",
   "compatibilityLevel": "JAVA_17",
-  "mixins": [],
+  "mixins": [
+  ],
   "client": [
     "MinecraftAccesor",
     "AABBInvoker",
@@ -21,6 +22,7 @@
     "ReloadableResourceManagerMixin",
     "SkullBlockEntityAccessor",
     "TextDisplayMixin",
+    "compat.SimpleVCMixin",
     "font.BakedGlyphMixin",
     "font.BitmapGlyphMixin",
     "font.FontSetMixin",
@@ -83,13 +85,14 @@
     "render.renderers.PlayerRendererMixin",
     "render.renderers.ScreenEffectRendererMixin",
     "render.renderers.SignRendererMixin",
-    "render.renderers.SimpleVCMixin",
     "render.renderers.SkullBlockRendererMixin",
     "render.renderers.TridentRendererMixin",
     "sound.ChannelHandleMixin",
     "sound.SoundEngineMixin",
     "sound.SoundManagerAccessor",
-    "sound.SubtitleOverlayMixin"
+    "sound.SubtitleOverlayMixin",
+    "compat.GeckolibGeoRendererMixin",
+    "compat.GeckolibGeoArmorRendererMixin"
   ],
   "server": [
   ],

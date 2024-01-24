@@ -48,7 +48,7 @@ public class FiguraModClientNeoForge extends FiguraMod {
     @SubscribeEvent
     public static void registerOverlays(RegisterGuiOverlaysEvent event) {
         event.registerAboveAll(new ResourceLocation(FiguraMod.MOD_ID, "figura_overlay"), new GuiOverlay());
-        event.registerBelowAll(new ResourceLocation(FiguraMod.MOD_ID,"figura_underlay"), new GuiUnderlay());
+        event.registerBelowAll(new ResourceLocation(FiguraMod.MOD_ID, "figura_underlay"), new GuiUnderlay());
     }
 
     private static final List<NamedGuiOverlay> vanillaOverlays = new ArrayList<>();
