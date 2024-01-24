@@ -60,12 +60,20 @@ dependencies {
     } else {
         modCompileOnly("maven.modrinth:modmenu:$modmenu")
     }
+    if (rootProject.run_with_geckolib == "true")
+        modRuntimeOnly("software.bernie.geckolib:geckolib-fabric-$geckolib_version")
+
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 }
 
-
+// Fixes issues if multiple fabric loader version are present from dependencies
+configurations.all {
+    resolutionStrategy {
+        force("net.fabricmc:fabric-loader:$fabric_loader_version")
+    }
+}
 
 processResources {
     Map<String, Object> properties = new HashMap<>()
