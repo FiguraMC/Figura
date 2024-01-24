@@ -40,6 +40,10 @@ dependencies {
 
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
 
+    if (rootProject.run_with_geckolib == "true") {
+        modRuntimeOnly("software.bernie.geckolib:geckolib-forge-$geckolib_version")
+        forgeRuntimeLibrary(group: 'com.eliotlash.mclib', name: 'mclib', version: "${mclib_version}")
+    }
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 }

@@ -2,17 +2,25 @@ package org.figuramc.figura.mixin.sound;
 
 import com.mojang.blaze3d.audio.Channel;
 import com.mojang.blaze3d.audio.Library;
+import com.mojang.blaze3d.audio.Listener;
+
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.components.SubtitleOverlay;
+import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.client.resources.sounds.SoundInstance.Attenuation;
 import net.minecraft.client.sounds.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceProvider;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.phys.Vec3;
+
+import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.ducks.ChannelHandleAccessor;
 import org.figuramc.figura.ducks.SoundEngineAccessor;
 import org.figuramc.figura.ducks.SubtitleOverlayAccessor;
-import org.figuramc.figura.lua.api.sound.FiguraSoundListener;
 import org.figuramc.figura.lua.api.sound.LuaSound;
+import org.figuramc.figura.math.vector.FiguraVec3;
+import org.figuramc.figura.permissions.Permissions;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,6 +36,7 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
     @Shadow @Final private SoundEngineExecutor executor;
     @Shadow @Final private SoundBufferLibrary soundBuffers;
     @Shadow private boolean loaded;
+    @Shadow private Listener listener;
 
     @Shadow protected abstract float getVolume(@Nullable SoundSource category);
     @Shadow @Final private List<SoundEventListener> listeners;
@@ -41,7 +50,6 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
     @Inject(at = @At("RETURN"), method = "<init>")
     private void soundEngineInit(SoundManager soundManager, Options options, ResourceProvider resourceProvider, CallbackInfo ci) {
         figuraChannel = new ChannelAccess(this.library, this.executor);
-        addEventListener(new FiguraSoundListener());
     }
 
     @Inject(at = @At("RETURN"), method = "tick")
@@ -96,14 +104,43 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
             figura$stopAllSounds();
     }
 
+    // targeting getGain is more likely to target more versions of Minecraft, but targeting the `listeners` list blocks subtitles. I believe blocking subtitles was more important.
+    // If we end up targeting a version of minecraft with no subtitles, use getGain. In vanilla, `listeners` is only used for subtitles and may not be in versions without subtitles.
+    //@Inject(at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/audio/Listener;getGain()Z"), method = "play", cancellable = true)
+    @Inject(at = @At(value = "INVOKE", target = "Ljava/util/List;isEmpty()Z"), method = "play", cancellable = true)
+    public void play(SoundInstance sound, CallbackInfo c) {
+        // "Can hear sound" check stolen from 381 of SoundEngine
+        float g = Math.max(sound.getVolume(), 1.0F) * (float)sound.getSound().getAttenuationDistance();
+        Vec3 pos = new Vec3(sound.getX(), sound.getY(), sound.getZ());
+        if (sound.isRelative() || sound.getAttenuation() == Attenuation.NONE || this.listener.getListenerPosition().distanceToSqr(pos) < (double)(g * g)){
+            // Run sound event
+            AvatarManager.executeAll("playSoundEvent", avatar -> {
+                boolean cancel = avatar.playSoundEvent(
+                    sound.getLocation().toString(),
+                    FiguraVec3.fromVec3(pos),
+                    sound.getVolume(), sound.getPitch(),
+                    sound.isLooping(),
+                    sound.getSource().name(),
+                    sound.getSound().getLocation().toString()
+                );
+                if (avatar.permissions.get(Permissions.CANCEL_SOUNDS) >= 1) {
+                    avatar.noPermissions.remove(Permissions.CANCEL_SOUNDS);
+                    if (cancel)
+                        c.cancel(); // calling cancel multple times is fine, right?
+                }
+                else {
+                    avatar.noPermissions.add(Permissions.CANCEL_SOUNDS);
+                }
+            });
+        }
+    }
+
     @Override @Intrinsic
     public void figura$addSound(LuaSound sound) {
         figuraHandlers.add(sound);
         for (SoundEventListener listener : this.listeners) {
             if (listener instanceof SubtitleOverlay overlay)
                 ((SubtitleOverlayAccessor) overlay).figura$PlaySound(sound);
-            else if (listener instanceof FiguraSoundListener figuraListener)
-                figuraListener.figuraPlaySound(sound);
         }
     }
 
