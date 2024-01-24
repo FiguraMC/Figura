@@ -50,4 +50,14 @@ public class PlatformUtils {
         }
         return 0;
     }
+
+    public enum ModLoader {
+        FORGE,
+        FABRIC
+    }
+
+    @ExpectPlatform
+    public static ModLoader getModLoader(){
+        throw new AssertionError();
+    }
 }

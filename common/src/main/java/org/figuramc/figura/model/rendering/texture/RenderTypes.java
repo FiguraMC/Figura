@@ -3,10 +3,12 @@ package org.figuramc.figura.model.rendering.texture;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.Util;
+import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.OptionalDouble;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public enum RenderTypes {
@@ -14,6 +16,7 @@ public enum RenderTypes {
 
     CUTOUT(RenderType::entityCutoutNoCull),
     CUTOUT_CULL(RenderType::entityCutout),
+    CUTOUT_EMISSIVE_SOLID(resourceLocation -> FiguraRenderType.CUTOUT_EMISSIVE_SOLID.apply(resourceLocation, true)),
 
     TRANSLUCENT(RenderType::entityTranslucent),
     TRANSLUCENT_CULL(RenderType::entityTranslucentCull),
@@ -85,6 +88,19 @@ public enum RenderTypes {
                         .setCullState(NO_CULL)
                         .createCompositeState(false)
         );
+
+        private static final BiFunction<ResourceLocation, Boolean, RenderType> CUTOUT_EMISSIVE_SOLID = Util.memoize(
+                (texture, affectsOutline) ->
+                        create("figura_cutout_emissive_solid", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, true,
+                                CompositeState.builder()
+                                        .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_EMISSIVE_SHADER)
+                                        .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
+                                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                                        .setCullState(NO_CULL)
+                                        .setWriteMaskState(COLOR_DEPTH_WRITE)
+                                        .setOverlayState(OVERLAY)
+                                        .createCompositeState(affectsOutline)));
+
 
         public static final Function<ResourceLocation, RenderType> TEXTURED_PORTAL = Util.memoize(
                 texture -> create(

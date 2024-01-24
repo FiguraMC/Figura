@@ -20,6 +20,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.DyeableArmorItem;
 import net.minecraft.world.item.ItemStack;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.compat.GeckoLibCompat;
@@ -27,6 +28,7 @@ import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.FiguraArmorPartRenderer;
+import org.figuramc.figura.utils.PlatformUtils;
 import org.figuramc.figura.utils.RenderUtils;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
@@ -110,13 +112,11 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
 
         ItemStack itemStack = entity.getItemBySlot(slot);
 
-        // Don't render armor if GeckoLib is already doing the rendering
-        if (GeckoLibCompat.armorHasCustomModel(itemStack)) return;
-
         // Make sure the item in the equipment slot is actually a piece of armor
         if ((itemStack.getItem() instanceof ArmorItem armorItem && armorItem.getSlot() == slot)) {
             A armorModel = getArmorModel(slot);
 
+            // Bones have to be their defaults to prevent issues with clipping
             armorModel.body.xRot = 0.0f;
             armorModel.rightLeg.z = 0.0f;
             armorModel.leftLeg.z = 0.0f;
@@ -126,26 +126,32 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
             armorModel.body.y = 0.0f;
             armorModel.leftArm.y = 2.0f;
             armorModel.rightArm.y = 2.0f;
+            armorModel.leftArm.x = 5.0f;
+            armorModel.rightArm.x = -5.0f;
+            armorModel.leftArm.z = 0.0f;
+            armorModel.rightArm.z = 0.0f;
+
             boolean allFailed = true;
 
-            // Go through each parent type needed to render the current piece of armor
-            for (ParentType parentType : parentTypes) {
+            // Don't render armor if GeckoLib is already doing the rendering
+            if (!GeckoLibCompat.armorHasCustomModel(itemStack)) {
+                // Go through each parent type needed to render the current piece of armor
+                for (ParentType parentType : parentTypes) {
+                            // Try to render the pivot part
+                        boolean renderedPivot = figura$avatar.pivotPartRender(parentType, stack -> {
+                                stack.pushPose();
+                                figura$prepareArmorRender(stack);
+                                renderer.renderArmorPart(stack, vertexConsumers, light, armorModel, entity, itemStack, slot, armorItem, parentType);
+                                stack.popPose();
+                            });
 
-                // Try to render the pivot part
-                boolean renderedPivot = figura$avatar.pivotPartRender(parentType, stack -> {
-                    stack.pushPose();
-                    figura$prepareArmorRender(stack);
-                    renderer.renderArmorPart(stack, vertexConsumers, light, armorModel, entity, itemStack, slot, armorItem, parentType);
-                    stack.popPose();
-                });
-
-                if (renderedPivot) {
-                    allFailed = false;
-                }
+                            if (renderedPivot) {
+                                allFailed = false;
+                            }
+                        }
             }
-
-            // As a fallback, render armor the vanilla way
-            if (allFailed) {
+            // As a fallback, render armor the vanilla way, but avoid rendering if it's a geckolib armor as it would render twice on fabric, funky
+            if (allFailed && (!GeckoLibCompat.armorHasCustomModel(itemStack) || PlatformUtils.getModLoader().equals(PlatformUtils.ModLoader.FORGE))) {
                 figura$renderingVanillaArmor = true;
                 renderArmorPiece(vanillaPoseStack, vertexConsumers, entity, slot, light, armorModel);
                 figura$renderingVanillaArmor = false;

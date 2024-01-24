@@ -3,6 +3,7 @@ package org.figuramc.figura.utils.forge;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.utils.PlatformUtils;
 
 import java.nio.file.Path;
 
@@ -12,7 +13,7 @@ public class PlatformUtilsImpl {
     }
 
     public static String getFiguraModVersionString() {
-        return ModList.get().getModContainerById(FiguraMod.MOD_ID).get().getModInfo().getVersion().getQualifier();
+        return ModList.get().getModContainerById(FiguraMod.MOD_ID).get().getModInfo().getVersion().toString();
     }
 
     public static Path getConfigDir() {
@@ -25,5 +26,9 @@ public class PlatformUtilsImpl {
 
     public static String getModVersion(String modId) {
         return ModList.get().getModContainerById(modId).get().getModInfo().getVersion().getQualifier();
+    }
+
+    public static PlatformUtils.ModLoader getModLoader() {
+        return PlatformUtils.ModLoader.FORGE;
     }
 }

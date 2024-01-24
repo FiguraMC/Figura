@@ -2,6 +2,7 @@ package org.figuramc.figura.utils.fabric;
 
 import net.fabricmc.loader.api.FabricLoader;
 import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.utils.PlatformUtils;
 
 import java.nio.file.Path;
 
@@ -24,5 +25,9 @@ public class PlatformUtilsImpl {
 
     public static String getModVersion(String modId) {
         return FabricLoader.getInstance().getModContainer(modId).get().getMetadata().getVersion().getFriendlyString();
+    }
+
+    public static PlatformUtils.ModLoader getModLoader() {
+        return PlatformUtils.ModLoader.FABRIC;
     }
 }

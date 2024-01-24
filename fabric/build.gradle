@@ -60,12 +60,27 @@ dependencies {
     } else {
         modCompileOnly("maven.modrinth:modmenu:$modmenu")
     }
+    if (rootProject.run_with_geckolib == "true") {
+        modImplementation(fabricApi.module("fabric-rendering-v1", rootProject.fabric_api))
+        modImplementation("software.bernie.geckolib:geckolib-fabric-$geckolib_version")
+    } else {
+        modCompileOnly(fabricApi.module("fabric-rendering-v1", rootProject.fabric_api))
+        modCompileOnly ("software.bernie.geckolib:geckolib-fabric-$geckolib_version") {
+            exclude group: "net.fabricmc"
+        }
+    }
+
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 }
 
-
+// Fixes issues if multiple fabric loader version are present from dependencies
+configurations.all {
+    resolutionStrategy {
+        force("net.fabricmc:fabric-loader:$fabric_loader_version")
+    }
+}
 
 processResources {
     Map<String, Object> properties = new HashMap<>()
