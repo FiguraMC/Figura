@@ -14,6 +14,7 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
+import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.permissions.Permissions;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -61,6 +62,33 @@ public class RenderUtils {
             case FEET -> avatar.luaRuntime.vanilla_model.BOOTS;
             default -> null;
         };
+    }
+
+    public static EquipmentSlot slotFromPart(ParentType type) {
+        switch (type){
+            case Head, HelmetItemPivot, HelmetPivot, Skull -> {
+                return EquipmentSlot.HEAD;
+            }
+            case Body, ChestplatePivot, LeftShoulderPivot, RightShoulderPivot, LeftElytra, RightElytra, ElytraPivot -> {
+                return EquipmentSlot.CHEST;
+            }
+            case LeftArm, LeftItemPivot, LeftSpyglassPivot -> {
+                return EquipmentSlot.OFFHAND;
+            }
+            case RightArm, RightItemPivot, RightSpyglassPivot -> {
+                return EquipmentSlot.MAINHAND;
+            }
+            case LeftLeggingPivot, RightLeggingPivot, LeftLeg, RightLeg, LeggingsPivot -> {
+                return EquipmentSlot.LEGS;
+            }
+            case LeftBootPivot, RightBootPivot -> {
+                return EquipmentSlot.FEET;
+            }
+            default -> {
+                return null;
+            }
+        }
+
     }
 
     public static boolean renderArmItem(Avatar avatar, boolean lefty, CallbackInfo ci) {

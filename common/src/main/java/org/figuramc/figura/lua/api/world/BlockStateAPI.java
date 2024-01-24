@@ -3,6 +3,7 @@ package org.figuramc.figura.lua.api.world;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
@@ -306,21 +307,23 @@ public class BlockStateAPI {
         HashMap<String, Set<String>> map = new HashMap<>();
 
         RenderShape renderShape = blockState.getRenderShape();
-        if (renderShape != RenderShape.MODEL)
-            return map;
 
-        BlockRenderDispatcher blockRenderer = Minecraft.getInstance().getBlockRenderer();
-        BakedModel bakedModel = blockRenderer.getBlockModel(blockState);
-        RandomSource randomSource = RandomSource.create();
-        long seed = 42L;
+        if (renderShape == RenderShape.MODEL) {
+            BlockRenderDispatcher blockRenderer = Minecraft.getInstance().getBlockRenderer();
 
-        for (Direction direction : Direction.values())
-            map.put(direction.name(), getTexturesForFace(blockState, direction, randomSource, bakedModel, seed));
-        map.put("NONE", getTexturesForFace(blockState, null, randomSource, bakedModel, seed));
+            BakedModel bakedModel = blockRenderer.getBlockModel(blockState);
+            RandomSource randomSource = RandomSource.create();
+            long seed = 42L;
 
-        TextureAtlasSprite particle = blockRenderer.getBlockModelShaper().getParticleIcon(blockState);
-        map.put("PARTICLE", Set.of(getTextureName(particle)));
+            for (Direction direction : Direction.values())
+                map.put(direction.name(), getTexturesForFace(blockState, direction, randomSource, bakedModel, seed));
+            map.put("NONE", getTexturesForFace(blockState, null, randomSource, bakedModel, seed));
 
+            TextureAtlasSprite particle = blockRenderer.getBlockModelShaper().getParticleIcon(blockState);
+            map.put("PARTICLE", Set.of(getTextureName(particle)));
+        } else if (renderShape == RenderShape.ENTITYBLOCK_ANIMATED) {
+            map.put("PARTICLE", Set.of(getTextureName(Minecraft.getInstance().getItemRenderer().getModel(blockState.getBlock().asItem().getDefaultInstance(), WorldAPI.getCurrentWorld(), null, 42).getParticleIcon())));
+        }
         return map;
     }
 
