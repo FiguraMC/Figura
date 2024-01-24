@@ -20,6 +20,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.DyeableArmorItem;
 import net.minecraft.world.item.ItemStack;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.compat.GeckoLibCompat;
@@ -27,6 +28,7 @@ import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.FiguraArmorPartRenderer;
+import org.figuramc.figura.utils.PlatformUtils;
 import org.figuramc.figura.utils.RenderUtils;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
@@ -148,8 +150,8 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
                             }
                         }
             }
-            // As a fallback, render armor the vanilla way
-            if (allFailed) {
+            // As a fallback, render armor the vanilla way, but avoid rendering if it's a geckolib armor as it would render twice on fabric, funky
+            if (allFailed && (!GeckoLibCompat.armorHasCustomModel(itemStack) || PlatformUtils.getModLoader().equals(PlatformUtils.ModLoader.FORGE))) {
                 figura$renderingVanillaArmor = true;
                 renderArmorPiece(vanillaPoseStack, vertexConsumers, entity, slot, light, armorModel);
                 figura$renderingVanillaArmor = false;

@@ -16,13 +16,17 @@ public class GeckoLibCompat {
     // For older versions of GeckoLib
     private static ClassWrapper GLGeoArmorRenderer;
     private static FieldWrapper renderers;
+    private static FieldWrapper CONSTRUCTORS;
 
     public static void init() {
         GLRenderUtils = new ClassWrapper("software.bernie.geckolib.util.RenderUtils");
         getGeoModelForArmor = GLRenderUtils.getMethod("getGeoModelForArmor", ItemStack.class);
 
         GLGeoArmorRenderer = new ClassWrapper("software.bernie.geckolib3.renderers.geo.GeoArmorRenderer");
+        // Fabric
         renderers = GLGeoArmorRenderer.getField("renderers");
+        // Forge
+        CONSTRUCTORS = GLGeoArmorRenderer.getField("CONSTRUCTORS");
     }
 
     public static boolean armorHasCustomModel(ItemStack stack) {
@@ -39,6 +43,10 @@ public class GeckoLibCompat {
                     return map.containsKey(stack.getItem().getClass());
                 }
                 renderers.markErrored();
+            } else if (CONSTRUCTORS.exists()) {
+                if (CONSTRUCTORS.getValue(null) instanceof Map<?, ?> map) {
+                    return map.containsKey(stack.getItem().getClass());
+                }
             }
 
             return false;

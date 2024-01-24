@@ -88,8 +88,6 @@
     "sound.SoundEngineMixin",
     "sound.SoundManagerAccessor",
     "sound.SubtitleOverlayMixin",
-    "compat.GeckolibGeoRendererMixin",
-    "compat.GeckolibGeoArmorRendererMixin"
   ],
   "server": [
   ],

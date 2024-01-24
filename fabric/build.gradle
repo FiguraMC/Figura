@@ -60,8 +60,15 @@ dependencies {
     } else {
         modCompileOnly("maven.modrinth:modmenu:$modmenu")
     }
-    if (rootProject.run_with_geckolib == "true")
-        modRuntimeOnly("software.bernie.geckolib:geckolib-fabric-$geckolib_version")
+    if (rootProject.run_with_geckolib == "true") {
+        modImplementation(fabricApi.module("fabric-rendering-v1", rootProject.fabric_api))
+        modImplementation("software.bernie.geckolib:geckolib-fabric-$geckolib_version")
+    } else {
+        modCompileOnly(fabricApi.module("fabric-rendering-v1", rootProject.fabric_api))
+        modCompileOnly ("software.bernie.geckolib:geckolib-fabric-$geckolib_version") {
+            exclude group: "net.fabricmc"
+        }
+    }
 
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }

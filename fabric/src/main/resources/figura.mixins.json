@@ -4,7 +4,9 @@
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "client": [
-    "CommandSuggestionsMixinFabric"
+    "CommandSuggestionsMixinFabric",
+    "compat.GeckolibIGeoRendererMixin",
+    "compat.GeckolibGeoArmorRendererMixin"
   ],
   "mixins": [
   ],
