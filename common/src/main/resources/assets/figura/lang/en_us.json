@@ -1280,6 +1280,7 @@
     "figura.docs.model_part.add_task": "Adds the given Render Task on this part",
     "figura.docs.model_part.get_task": "Gets the Render Task with the given name from this part\nReturns a table with all tasks if a name is not given",
     "figura.docs.model_part.remove_task": "Removes the Task with the given name from this part\nRemoves ALL tasks if a name is not given",
+    "figura.docs.model_part.remove": "Removes this part from the parent model part",
     "figura.docs.model_part.get_vertices": "Return a table with all vertices from the given texture id\nReturns nil if no vertices were found",
     "figura.docs.model_part.get_all_vertices": "Return a table of all texture ids and their vertices",
     "figura.docs.model_part.move_to": "Moves this part to be a child of the given part",
