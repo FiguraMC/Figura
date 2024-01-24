@@ -3,7 +3,8 @@
   "minVersion": "0.8",
   "package": "org.figuramc.figura.mixin",
   "compatibilityLevel": "JAVA_17",
-  "mixins": [],
+  "mixins": [
+  ],
   "client": [
     "AABBInvoker",
     "BiomeAccessor",
@@ -19,6 +20,7 @@
     "MinecraftMixin",
     "ReloadableResourceManagerMixin",
     "SkullBlockEntityAccessor",
+    "compat.SimpleVCMixin",
     "font.BakedGlyphMixin",
     "font.BitmapGlyphMixin",
     "font.FontAccessor",
@@ -40,8 +42,8 @@
     "gui.ScreenAccessor",
     "gui.ScreenMixin",
     "gui.SplashManagerMixin",
-    "gui.SuggestionsListMixin",
     "gui.TitleScreenMixin",
+    "gui.SuggestionsListMixin",
     "gui.books.BookViewScreenMixin",
     "gui.books.LineInfoMixin",
     "input.InputConstantsTypeMixin",
@@ -82,13 +84,14 @@
     "render.renderers.PlayerRendererMixin",
     "render.renderers.ScreenEffectRendererMixin",
     "render.renderers.SignRendererMixin",
-    "render.renderers.SimpleVCMixin",
     "render.renderers.SkullBlockRendererMixin",
     "render.renderers.TridentRendererMixin",
     "sound.ChannelHandleMixin",
     "sound.SoundEngineMixin",
     "sound.SoundManagerAccessor",
-    "sound.SubtitleOverlayMixin"
+    "sound.SubtitleOverlayMixin",
+    "compat.GeckolibGeoRendererMixin",
+    "compat.GeckolibGeoArmorRendererMixin"
   ],
   "server": [
   ],
