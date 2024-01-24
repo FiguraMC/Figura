@@ -15,6 +15,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -334,7 +335,10 @@ public class HostAPI {
     public ItemStackAPI getSlot(@LuaNotNil Object slot) {
         if (!isHost()) return null;
         Entity e = this.owner.luaRuntime.getUser();
-        return ItemStackAPI.verify(e.getSlot(LuaUtils.parseSlot(slot, null)).get());
+        if (e == null || !e.isAlive())
+            return ItemStackAPI.verify(ItemStack.EMPTY);
+        SlotAccess slotAccess = e.getSlot(LuaUtils.parseSlot(slot, null));
+        return ItemStackAPI.verify(slotAccess.get());
     }
 
     @LuaWhitelist
