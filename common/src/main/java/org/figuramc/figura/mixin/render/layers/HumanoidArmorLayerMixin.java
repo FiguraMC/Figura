@@ -118,7 +118,7 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
         if ((itemStack.getItem() instanceof ArmorItem armorItem && armorItem.getEquipmentSlot() == slot)) {
             A armorModel = getArmorModel(slot);
 
-
+            // Bones have to be their defaults to prevent issues with clipping
             armorModel.body.xRot = 0.0f;
             armorModel.rightLeg.z = 0.0f;
             armorModel.leftLeg.z = 0.0f;
@@ -128,6 +128,11 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
             armorModel.body.y = 0.0f;
             armorModel.leftArm.y = 2.0f;
             armorModel.rightArm.y = 2.0f;
+            armorModel.leftArm.x = 5.0f;
+            armorModel.rightArm.x = -5.0f;
+            armorModel.leftArm.z = 0.0f;
+            armorModel.rightArm.z = 0.0f;
+
             boolean allFailed = true;
 
             // Don't render armor if GeckoLib is already doing the rendering

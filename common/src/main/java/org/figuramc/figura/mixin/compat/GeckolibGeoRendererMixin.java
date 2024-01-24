@@ -31,7 +31,8 @@ public interface GeckolibGeoRendererMixin<T extends GeoAnimatable> {
 
     /**
      * @author UnlikePaladin
-     * @reason Upstream Mixin, that is anything that's not Fabric's fork doesn't support interface injection so we have to overwrite :(
+     * @reason Upstream Sponge Mixin, that is anything that's not Fabric's fork doesn't support interface injection so we have to overwrite :(
+     *  The functionality is the same as geckolib's but calls our pivots first
      */
     @Overwrite
     default void actuallyRender(PoseStack poseStack, T animatable, BakedGeoModel model, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
@@ -48,6 +49,7 @@ public interface GeckolibGeoRendererMixin<T extends GeoAnimatable> {
         }
     }
 
+    @Unique
     default void figura$renderPivots(PoseStack poseStack, GeoAnimatable geoAnimatable, BakedGeoModel model, RenderType renderType, MultiBufferSource multiBufferSource, VertexConsumer vertexConsumer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha, CallbackInfo ci){
         boolean allFailed = true;
 
@@ -114,7 +116,7 @@ public interface GeckolibGeoRendererMixin<T extends GeoAnimatable> {
 
             stack.pushPose();
             figura$prepareArmorRender(stack);
-            figura$transformStackBasedOnType(stack, parentType);
+            figura$transformBasedOnType(geoBone, stack, parentType);
 
             ((GeckolibGeoArmorAccessor)armorRenderer).figura$setEntityRenderTranslations(stack.last().pose());
 
@@ -135,10 +137,17 @@ public interface GeckolibGeoRendererMixin<T extends GeoAnimatable> {
 
     // Based on the values from HumanoidArmorLayerMixin
     @Unique
-    default void figura$transformStackBasedOnType(PoseStack poseStack, ParentType parentType) {
+    default void figura$transformBasedOnType(GeoBone bone, PoseStack poseStack, ParentType parentType) {
+        // Arm Bones have to be moved to 0, as the vanilla hitting animation moves them, but we do too when copying the transforms, this fixes clipping issues
         if (parentType == ParentType.LeftShoulderPivot) {
+            bone.setPosY(0.0f);
+            bone.setPosZ(0.0f);
+            bone.setPosX(0.0f);
             poseStack.translate(-6 / 16f, 0f, 0f);
         }  else if (parentType == ParentType.RightShoulderPivot) {
+            bone.setPosY(0.0f);
+            bone.setPosZ(0.0f);
+            bone.setPosX(0.0f);
             poseStack.translate(6 / 16f, 0f, 0f);
         } else if (parentType == ParentType.LeggingsPivot) {
             poseStack.translate(0, -12 / 16f, 0);

@@ -24,7 +24,7 @@ public abstract class GeckolibGeoArmorRendererMixin implements GeckolibGeoArmorA
     private Avatar figura$avatar;
 
     @Inject(method = "prepForRender", at = @At(value = "HEAD"))
-    private void renderArmor(Entity entity, ItemStack stack, EquipmentSlot slot, HumanoidModel<?> baseModel, CallbackInfo ci){
+    private void figura$prepAvatar(Entity entity, ItemStack stack, EquipmentSlot slot, HumanoidModel<?> baseModel, CallbackInfo ci){
         if (entity != null)
             figura$avatar = AvatarManager.getAvatar(entity);
         else {
