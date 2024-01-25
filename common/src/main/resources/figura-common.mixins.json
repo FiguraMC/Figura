@@ -31,7 +31,6 @@
     "gui.ClickEventActionMixin",
     "gui.DebugScreenOverlayMixin",
     "gui.GuiAccessor",
-    "gui.GuiMessageLineMixin",
     "gui.GuiMessageMixin",
     "gui.GuiMixin",
     "gui.InventoryScreenMixin",

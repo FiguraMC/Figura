@@ -21,6 +21,7 @@ configurations {
 
 dependencies {
     mappings loom.layered {
+        mappings(file("$rootProject.projectDir/mappings/gecko-mojmap-fix.tiny"))
         mappings("org.quiltmc:quilt-mappings:$minecraft_version+build.$mappings:intermediary-v2")
         officialMojangMappings()
     }
@@ -62,10 +63,10 @@ dependencies {
     }
     if (rootProject.run_with_geckolib == "true") {
         modImplementation(fabricApi.module("fabric-rendering-v1", rootProject.fabric_api))
-        modImplementation("software.bernie.geckolib:geckolib-fabric-$geckolib_version")
+        modImplementation("software.bernie.geckolib:geckolib-fabric-$geckolib_version_fabric")
     } else {
         modCompileOnly(fabricApi.module("fabric-rendering-v1", rootProject.fabric_api))
-        modCompileOnly ("software.bernie.geckolib:geckolib-fabric-$geckolib_version") {
+        modCompileOnly ("software.bernie.geckolib:geckolib-fabric-$geckolib_version_fabric") {
             exclude group: "net.fabricmc"
         }
     }

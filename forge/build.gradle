@@ -29,6 +29,7 @@ configurations {
 
 dependencies {
     mappings loom.layered {
+        mappings(file("$rootProject.projectDir/mappings/gecko-mojmap-fix.tiny"))
         mappings("org.quiltmc:quilt-mappings:$minecraft_version+build.$mappings:intermediary-v2")
         officialMojangMappings()
     }
@@ -41,9 +42,9 @@ dependencies {
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
 
     if (rootProject.run_with_geckolib == "true") {
-        modImplementation("software.bernie.geckolib:geckolib-forge-$geckolib_version")
+        modImplementation("software.bernie.geckolib:geckolib-forge-$geckolib_version_forge")
     } else {
-        modCompileOnly("software.bernie.geckolib:geckolib-forge-$geckolib_version")
+        modCompileOnly("software.bernie.geckolib:geckolib-forge-$geckolib_version_forge")
     }
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }

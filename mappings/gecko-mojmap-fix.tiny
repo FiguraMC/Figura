@@ -1,0 +1,15 @@
+tiny	2	0	intermediary	named
+c	software/bernie/geckolib3/renderers/geo/IGeoRenderer	software/bernie/geckolib3/renderers/geo/IGeoRenderer
+	m	(Ljava/lang/Object;)Lnet/minecraft/class_2960;	getTextureLocation	gl$getTextureLocation
+c	software/bernie/geckolib3/renderers/geo/GeoArmorRenderer	software/bernie/geckolib3/renderers/geo/GeoArmorRenderer
+	m	(Lnet/minecraft/class_1738;)Lnet/minecraft/class_2960;	getTextureLocation	gl$getTextureLocation
+c	software/bernie/geckolib3/renderers/geo/GeoBlockRenderer	software/bernie/geckolib3/renderers/geo/GeoBlockRenderer
+	m	(Lnet/minecraft/class_2586;)Lnet/minecraft/class_2960;	getTextureLocation	gl$getTextureLocation
+c	software/bernie/geckolib3/renderers/geo/GeoReplacedEntityRenderer	software/bernie/geckolib3/renderers/geo/GeoReplacedEntityRenderer
+	m	(Ljava/lang/Object;)Lnet/minecraft/class_2960;	getTextureLocation	gl$getTextureLocation
+c	software/bernie/geckolib3/renderers/geo/GeoEntityRenderer	software/bernie/geckolib3/renderers/geo/GeoEntityRenderer
+	m	(Lnet/minecraft/class_1309;)Lnet/minecraft/class_2960;	getTextureLocation	gl$getTextureLocation
+c	software/bernie/geckolib3/renderers/geo/GeoItemRenderer	software/bernie/geckolib3/renderers/geo/GeoItemRenderer
+	m	(Lnet/minecraft/class_1792;)Lnet/minecraft/class_2960;	getTextureLocation	gl$getTextureLocation
+c	software/bernie/geckolib3/renderers/geo/GeoProjectilesRenderer	software/bernie/geckolib3/renderers/geo/GeoProjectilesRenderer
+	m	(Lnet/minecraft/class_1297;)Lnet/minecraft/class_2960;	getTextureLocation	gl$getTextureLocation
