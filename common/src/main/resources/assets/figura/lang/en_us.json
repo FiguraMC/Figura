@@ -1416,7 +1416,7 @@
     "figura.docs.sprite_task.get_vertices": "Returns a table with all 4 vertices of this sprite\nChanging the values through other functions will reset those vertices",
     "figura.docs.entity_task": "A task for rendering an Entity",
     "figura.docs.entity_task.as_entity": "Returns the entity associated with this task, or nil if the entity could not exist for any reason.\nDue to the special circumstances some readings of the subsequent value may be completely useless",
-    "figura.docs.entity_task.set_nbt": "Sets the nbt of the entity, expecting an id field for the type of the entity",
+    "figura.docs.entity_task.set_nbt": "Sets [the nbt of] the entity",
     "figura.docs.entity_task.update_walking_distance": "Updates the walking animations given the new information, if applicable. For an expected result it should be called every tick with the appropriate value",
     "figura.docs.entity_task.set_head_rotation": "Updates the head rotation of the entity, if applicable",
     "figura.docs.renderer": "A global API providing functions that change the way Minecraft renders your player",
