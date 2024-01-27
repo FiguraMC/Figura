@@ -1308,7 +1308,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                     argumentTypes = String.class,
                     argumentNames = "taskName"
             ),
-            value = "model_part.new_block")
+            value = "model_part.new_entity")
     public EntityTask newEntity(@LuaNotNil String name) {
         EntityTask task = new EntityTask(name, owner, this);
         this.renderTasks.put(name, task);
