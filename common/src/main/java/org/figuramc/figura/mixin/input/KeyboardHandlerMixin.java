@@ -16,6 +16,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Arrays;
+
 @Mixin(KeyboardHandler.class)
 public class KeyboardHandlerMixin {
 
@@ -50,6 +52,6 @@ public class KeyboardHandlerMixin {
     private void charTyped(long window, int codePoint, int modifiers, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (avatar != null)
-            avatar.charTypedEvent(Character.toString(codePoint), modifiers, codePoint);
+            avatar.charTypedEvent(new String(Character.toChars(codePoint)), modifiers, codePoint);
     }
 }

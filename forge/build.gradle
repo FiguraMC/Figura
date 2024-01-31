@@ -30,8 +30,8 @@ configurations {
 dependencies {
     mappings loom.layered {
         mappings(file("$rootProject.projectDir/mappings/gecko-mojmap-fix.tiny"))
-        mappings("org.quiltmc:quilt-mappings:$minecraft_version+build.$mappings:intermediary-v2")
         officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-1.16.5:2022.03.06@zip")
     }
 
     // Libraries

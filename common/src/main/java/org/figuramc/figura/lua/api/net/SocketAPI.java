@@ -36,18 +36,18 @@ public class SocketAPI {
         try {
             parent.securityCheck(host);
         } catch (NetworkingAPI.LinkNotAllowedException e) {
-            parent.error(NetworkingAPI.LogSource.SOCKET, new TextComponent("Tried to establish connection to not allowed host %s".formatted(host)));
+            parent.error(NetworkingAPI.LogSource.SOCKET, new TextComponent(String.format("Tried to establish connection to not allowed host %s", host)));
             throw e.luaError;
         }
         int maxSockets = parent.owner.permissions.get(Permissions.MAX_SOCKETS);
         if (parent.owner.openSockets.size() > maxSockets)
-            throw new LuaError("You can't open more than %s sockets".formatted(maxSockets));
+            throw new LuaError(String.format("You can't open more than %s sockets", maxSockets));
         FiguraFuture<FiguraSocket> future = new FiguraFuture<>();
         CompletableFuture.supplyAsync(() -> {
             try {
                 FiguraSocket socket = new FiguraSocket(host, port, parent.owner);
                 parent.owner.openSockets.add(socket);
-                parent.log(NetworkingAPI.LogSource.SOCKET, new TextComponent("Established connection to host %s".formatted(host)));
+                parent.log(NetworkingAPI.LogSource.SOCKET, new TextComponent(String.format("Established connection to host %s", host)));
                 return socket;
             } catch (IOException e) {
                 throw new LuaError(e);

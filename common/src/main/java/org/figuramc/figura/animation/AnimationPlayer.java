@@ -65,27 +65,28 @@ public class AnimationPlayer {
                 type.apply(part, transform, merge);
 
                 switch (type) {
-                    case ROTATION, GLOBAL_ROT -> {
+                    case ROTATION:
+                    case GLOBAL_ROT:
                         if (anim.getOverrideRot())
                             part.animationOverride |= 1;
                         else if (!merge) {
                             part.animationOverride = part.animationOverride & 6;
                         }
-                    }
-                    case POSITION -> {
+                        break;
+                    case POSITION:
                         if (anim.getOverridePos())
                             part.animationOverride |= 2;
                         else if (!merge) {
                             part.animationOverride = part.animationOverride & 5;
                         }
-                    }
-                    case SCALE -> {
+                        break;
+                    case SCALE:
                         if (anim.getOverrideScale())
                             part.animationOverride |= 4;
                         else if (!merge) {
                             part.animationOverride = part.animationOverride & 3;
                         }
-                    }
+                        break;
                 }
 
                 limit--;

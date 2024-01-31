@@ -10,6 +10,7 @@ import org.figuramc.figura.gui.cards.CardBackground;
 import org.figuramc.figura.parsers.AvatarMetadataParser;
 import org.figuramc.figura.utils.FileTexture;
 import org.figuramc.figura.utils.IOUtils;
+import org.figuramc.figura.utils.NbtType;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -18,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -112,7 +114,7 @@ public class LocalAvatarFetcher {
     public static void load() {
         IOUtils.readCacheFile("avatars", nbt -> {
             // loading
-            ListTag list = nbt.getList("properties", Tag.TAG_COMPOUND);
+            ListTag list = nbt.getList("properties", NbtType.COMPOUND.getValue());
             for (Tag tag : list) {
                 CompoundTag compound = (CompoundTag) tag;
 
@@ -176,7 +178,7 @@ public class LocalAvatarFetcher {
         for (Path path : paths) {
             Path dest = getLocalAvatarDirectory();
             try (Stream<Path> stream = Files.walk(path)) {
-                for (Path p : stream.toList()) {
+                for (Path p : stream.collect(Collectors.toList())) {
                     Util.copyBetweenDirs(path.getParent(), dest, p);
                 }
             }
@@ -241,7 +243,7 @@ public class LocalAvatarFetcher {
                     String str = IOUtils.readFile(path.resolve("avatar.json"));
                     AvatarMetadataParser.Metadata metadata = AvatarMetadataParser.read(str);
 
-                    name = Configs.WARDROBE_FILE_NAMES.value || metadata.name == null || metadata.name.isBlank() ? filename : metadata.name;
+                    name = Configs.WARDROBE_FILE_NAMES.value || metadata.name == null || metadata.name.trim().isEmpty() ? filename : metadata.name;
                     description = metadata.description == null ? "" : metadata.description;
                     bg = CardBackground.parse(metadata.background);
                 } catch (Exception e) {
@@ -384,7 +386,7 @@ public class LocalAvatarFetcher {
                     }
                 } else if (IOUtils.getFileNameOrEmpty(path).endsWith(".zip")) {
                     try {
-                        FileSystem opened = FileSystems.newFileSystem(path);
+                        FileSystem opened = FileSystems.newFileSystem(path.toUri(), new HashMap<>());
                         if ("jar".equalsIgnoreCase(opened.provider().getScheme())) {
                             Path newPath = opened.getPath("");
                             if (isAvatar(newPath)) {

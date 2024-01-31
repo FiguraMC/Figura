@@ -1,12 +1,17 @@
 package org.figuramc.figura.utils;
 
 import com.mojang.authlib.GameProfile;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -15,17 +20,31 @@ import org.figuramc.figura.mixin.ClientLevelInvoker;
 import org.figuramc.figura.mixin.EntityAccessor;
 import org.figuramc.figura.mixin.gui.PlayerTabOverlayAccessor;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class EntityUtils {
 
+    protected static Map<UUID, Integer> uuidToNetworkID = new HashMap<>();
+    private static Level level;
     public static Entity getEntityByUUID(UUID uuid) {
         if (Minecraft.getInstance().level == null)
             return null;
-        return ((ClientLevelInvoker) Minecraft.getInstance().level).getEntityGetter().get(uuid);
+        // Invalidate if the level has changed
+        if (level == null)
+            level = Minecraft.getInstance().level;
+        if (level != Minecraft.getInstance().level)
+            uuidToNetworkID.clear();
+
+        if (uuidToNetworkID.containsKey(uuid))
+            return Minecraft.getInstance().level.getEntity(uuidToNetworkID.get(uuid));
+
+        for (Entity entity : ((ClientLevelInvoker) Minecraft.getInstance().level).getEntityIds().values())
+            if (uuid.equals(entity.getUUID())) {
+                uuidToNetworkID.put(uuid, entity.getId());
+                return entity;
+            }
+
+        return null;
     }
 
     public static Entity getViewedEntity(float distance) {
@@ -72,7 +91,7 @@ public class EntityUtils {
     public static Map<String, UUID> getPlayerList() {
         ClientPacketListener connection = Minecraft.getInstance().getConnection();
         if (connection == null || connection.getOnlinePlayerIds().isEmpty())
-            return Map.of();
+            return new HashMap<>();
 
         Map<String, UUID> playerList = new HashMap<>();
 
@@ -88,7 +107,7 @@ public class EntityUtils {
     public static List<PlayerInfo> getTabList() {
         ClientPacketListener clientPacketListener = Minecraft.getInstance().getConnection();
         if (clientPacketListener == null)
-            return List.of();
+            return new ArrayList<>();
 
         return PlayerTabOverlayAccessor.getPlayerOrdering().sortedCopy(clientPacketListener.getOnlinePlayers());
     }
@@ -103,6 +122,14 @@ public class EntityUtils {
 
         GameProfile profile = playerInfo.getProfile();
         String name = profile.getName();
-        return name != null && (name.isBlank() || name.charAt(0) == '\u0000');
+        return name != null && (name.trim().isEmpty() || name.charAt(0) == '\u0000');
+    }
+
+    public static boolean isEntityUpsideDown(LivingEntity livingEntity) {
+        String string;
+        if ((livingEntity instanceof Player || livingEntity.hasCustomName()) && ("Dinnerbone".equals(string = ChatFormatting.stripFormatting(livingEntity.getName().getString())) || "Grumm".equals(string))) {
+            return !(livingEntity instanceof Player) || ((Player)livingEntity).isModelPartShown(PlayerModelPart.CAPE);
+        }
+        return false;
     }
 }

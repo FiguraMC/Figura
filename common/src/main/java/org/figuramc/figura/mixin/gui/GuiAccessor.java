@@ -29,4 +29,44 @@ public interface GuiAccessor {
     @Intrinsic
     @Accessor("overlayMessageTime")
     int getActionbarTime();
+
+    @Intrinsic
+    @Accessor("titleFadeInTime")
+    void setTitleFadeInTime(int time);
+
+    @Intrinsic
+    @Accessor("titleStayTime")
+    void setTitleStayTime(int time);
+
+    @Intrinsic
+    @Accessor("titleFadeOutTime")
+    void setTitleFadeOutTime(int time);
+
+    @Intrinsic
+    @Accessor("titleTime")
+    void setTitleTime(int time);
+
+    @Intrinsic
+    @Accessor("titleFadeInTime")
+    int getTitleFadeInTime();
+
+    @Intrinsic
+    @Accessor("titleStayTime")
+    int getTitleStayTime();
+
+    @Intrinsic
+    @Accessor("titleFadeOutTime")
+    int getTitleFadeOutTime();
+
+    @Intrinsic
+    @Accessor("titleTime")
+    int getTitleTime();
+
+    @Intrinsic
+    @Accessor("title")
+    void setTitle(Component title);
+
+    @Intrinsic
+    @Accessor("title")
+    void setSubtitle(Component subtitle);
 }

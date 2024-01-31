@@ -63,8 +63,10 @@ public class ContextMenu extends AbstractContainerElement {
 
         if (nestedContext != null) {
             nestedContext.render(poseStack, mouseX, mouseY, delta);
-            if (nestedContext.parent instanceof Button button)
+            if (nestedContext.parent instanceof Button) {
+                Button button = (Button) nestedContext.parent;
                 button.setHovered(true);
+            }
         }
     }
 
@@ -136,8 +138,10 @@ public class ContextMenu extends AbstractContainerElement {
         // children
         for (ContextButton button : entries) {
             button.setX(x + 1);
-            if (button instanceof TabButton tab)
+            if (button instanceof TabButton) {
+                TabButton tab = (TabButton) button;
                 tab.context.setX(tab.getX() + tab.getWidth());
+            }
         }
     }
 
@@ -158,8 +162,10 @@ public class ContextMenu extends AbstractContainerElement {
             button.setY(heigth);
             heigth += button.getHeight();
 
-            if (button instanceof TabButton tab)
+            if (button instanceof TabButton) {
+                TabButton tab = (TabButton) button;
                 tab.context.setY(tab.getY() - 1);
+            }
         }
     }
 

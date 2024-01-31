@@ -3,6 +3,7 @@ package org.figuramc.figura.gui.screens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.entity.LivingEntity;
 import org.figuramc.figura.gui.widgets.EntityPreview;
+import org.figuramc.figura.gui.widgets.PanelSelectorWidget;
 import org.figuramc.figura.utils.FiguraText;
 
 public class AvatarScreen extends AbstractPanelScreen {

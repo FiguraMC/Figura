@@ -7,6 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.lua.api.sound.SoundAPI;
+import org.figuramc.figura.mixin.font.StyleAccessor;
 import org.figuramc.figura.permissions.PermissionManager;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.ColorUtils;
@@ -31,8 +32,10 @@ public class Badges {
         Pair<BitSet, BitSet> pair = AvatarManager.getBadges(id);
         if (pair == null)
             return TextComponent.EMPTY.copy();
+        Style style = Style.EMPTY.withFont(FONT).withColor(ChatFormatting.WHITE);
+        ((StyleAccessor)style).setObfuscated(false);
 
-        MutableComponent badges = TextComponent.EMPTY.copy().withStyle(Style.EMPTY.withFont(FONT).withColor(ChatFormatting.WHITE).withObfuscated(false));
+        MutableComponent badges = TextComponent.EMPTY.copy().withStyle(style);
 
         // avatar badges
         Avatar avatar = AvatarManager.getAvatarForPlayer(id);
@@ -59,7 +62,7 @@ public class Badges {
                     }
 
                     // mark fallback
-                    badges.append(System.DEFAULT.badge.copy().withStyle(Style.EMPTY.withColor(ColorUtils.rgbToInt(ColorUtils.userInputHex(avatar.color)))));
+                    badges.append(System.DEFAULT.badge.copy().withStyle(Style.EMPTY.withColor(TextColor.fromRgb(ColorUtils.rgbToInt(ColorUtils.userInputHex(avatar.color))))));
                 }
 
                 // error
@@ -98,7 +101,7 @@ public class Badges {
                     if (avatar.badgeToColor.containsKey(special.name().toLowerCase())) {
                         color = ColorUtils.rgbToInt(ColorUtils.userInputHex(avatar.badgeToColor.get(special.name().toLowerCase())));
                     }
-                    Component badge = color != null ? special.badge.copy().withStyle(Style.EMPTY.withColor(color)) : special.badge;
+                    Component badge = color != null ? special.badge.copy().withStyle(Style.EMPTY.withColor(TextColor.fromRgb(color))) : special.badge;
                     badges.append(badge);
                 }
             }
@@ -140,7 +143,7 @@ public class Badges {
 
         // no custom badges text
         if (!custom)
-            return badges.getString().isBlank() ? text : text.copy().append(" ").append(badges);
+            return badges.getString().trim().isEmpty() ? text : text.copy().append(" ").append(badges);
 
         text = TextUtils.replaceInText(text, "\\$\\{badges\\}(?s)", badges);
         text = TextUtils.replaceInText(text, "\\$\\{segdab\\}(?s)", TextUtils.reverse(badges));
@@ -220,7 +223,7 @@ public class Badges {
         Special(String unicode, Integer color) {
             this.desc = new FiguraText("badges.special." + this.name().toLowerCase());
             Style style = Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc));
-            if (color != null) style = style.withColor(color);
+            if (color != null) style = style.withColor(TextColor.fromRgb(color));
             this.color = color;
             this.badge = new TextComponent(unicode).withStyle(style);
         }

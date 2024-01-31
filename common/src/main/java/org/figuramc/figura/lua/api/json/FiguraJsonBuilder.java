@@ -29,21 +29,33 @@ public class FiguraJsonBuilder {
 
     @LuaWhitelist
     public Object __index(LuaValue k) {
-        return k.type() != LuaValue.TSTRING ? null : switch (k.checkjstring()) {
-            case "prettyPrinting" -> prettyPrinting;
-            case "htmlEscaping" -> htmlEscaping;
-            case "serializeNils" -> serializeNils;
-            default -> null;
-        };
+        if (k.type() != LuaValue.TSTRING)
+            return null;
+        switch (k.checkjstring()) {
+            case "prettyPrinting":
+                return prettyPrinting;
+            case "htmlEscaping":
+                return htmlEscaping;
+            case "serializeNils":
+                return serializeNils;
+            default:
+                return null;
+        }
     }
 
     @LuaWhitelist
     public void __newindex(LuaValue k, LuaValue v) {
         if (k.type() == LuaValue.TSTRING) {
             switch (k.checkjstring()) {
-                case "prettyPrinting" -> prettyPrinting = v.checkboolean();
-                case "htmlEscaping" -> htmlEscaping = v.checkboolean();
-                case "serializeNils" -> serializeNils = v.checkboolean();
+                case "prettyPrinting":
+                    prettyPrinting = v.checkboolean();
+                    break;
+                case "htmlEscaping":
+                    htmlEscaping = v.checkboolean();
+                    break;
+                case "serializeNils":
+                    serializeNils = v.checkboolean();
+                    break;
             }
         }
     }

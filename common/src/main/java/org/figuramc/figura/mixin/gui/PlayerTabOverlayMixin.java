@@ -17,6 +17,7 @@ import org.figuramc.figura.avatar.Badges;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.lua.api.nameplate.NameplateCustomization;
 import org.figuramc.figura.permissions.Permissions;
+import org.figuramc.figura.utils.EntityUtils;
 import org.figuramc.figura.utils.TextUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -81,7 +82,7 @@ public class PlayerTabOverlayMixin {
             Avatar avatar = AvatarManager.getAvatarForPlayer(uuid);
 
             Player player = this.minecraft.level.getPlayerByUUID(uuid);
-            boolean upsideDown = player != null && LivingEntityRenderer.isEntityUpsideDown(player);
+            boolean upsideDown = player != null && EntityUtils.isEntityUpsideDown(player);
 
             if (avatar != null && avatar.renderPortrait(p_93161_, p_93162_, p_93163_, p_93164_, 16, upsideDown))
                 return 0;

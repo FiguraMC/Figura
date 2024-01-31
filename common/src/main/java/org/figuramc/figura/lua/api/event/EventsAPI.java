@@ -85,7 +85,7 @@ public class EventsAPI {
     @LuaFieldDoc("events.resource_reload")
     public final LuaEvent RESOURCE_RELOAD = new LuaEvent();
 
-    private final Map<String, LuaEvent> events = new HashMap<>() {{
+    private final Map<String, LuaEvent> events = new HashMap<String, LuaEvent>() {{
             put("ENTITY_INIT", ENTITY_INIT);
             put("TICK", TICK);
             put("WORLD_TICK", WORLD_TICK);

@@ -10,6 +10,7 @@ import org.figuramc.figura.utils.FiguraClientCommandSource;
 import org.figuramc.figura.utils.FiguraText;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 class LoadCommand {
 
@@ -26,7 +27,7 @@ class LoadCommand {
         String str = StringArgumentType.getString(context, "path");
         try {
             // parse path
-            Path p = LocalAvatarFetcher.getLocalAvatarDirectory().resolve(Path.of(str));
+            Path p = LocalAvatarFetcher.getLocalAvatarDirectory().resolve(Paths.get(str));
 
             // try to load avatar
             AvatarManager.loadLocalAvatar(p);

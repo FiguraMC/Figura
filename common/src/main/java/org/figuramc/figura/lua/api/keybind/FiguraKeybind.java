@@ -267,19 +267,27 @@ public class FiguraKeybind {
     @LuaWhitelist
     public Object __index(String arg) {
         if (arg == null) return null;
-        return switch (arg) {
-            case "press" -> press;
-            case "release" -> release;
-            default -> null;
-        };
+        switch (arg) {
+            case "press":
+                return press;
+            case "release":
+                return release;
+            default:
+                return null;
+        }
     }
 
     @LuaWhitelist
     public void __newindex(@LuaNotNil String key, LuaFunction value) {
         switch (key) {
-            case "press" -> press = value;
-            case "release" -> release = value;
-            default -> throw new LuaError("Cannot assign value on key \"" + key + "\"");
+            case "press":
+                press = value;
+                break;
+            case "release":
+                release = value;
+                break;
+            default:
+                throw new LuaError("Cannot assign value on key \"" + key + "\"");
         }
     }
 

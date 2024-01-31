@@ -731,7 +731,10 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         if (tex == null) return LuaValue.NIL;
         Object val = tex.getValue();
         if (val == null) return LuaValue.NIL;
-        if (val instanceof String str) return LuaValue.valueOf(str);
+        if (val instanceof String) {
+            String str = (String) val;
+            return LuaValue.valueOf(str);
+        }
         return LuaValue.userdataOf(val);
     }
 
@@ -1517,21 +1520,32 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
 
         this.childCache.put(key, null);
 
-        return switch (key) {
-            case "preRender" -> preRender;
-            case "midRender" -> midRender;
-            case "postRender" -> postRender;
-            default -> null;
-        };
+        switch (key) {
+            case "preRender":
+                return preRender;
+            case "midRender":
+                return midRender;
+            case "postRender":
+                return postRender;
+            default:
+                return null;
+        }
     }
 
     @LuaWhitelist
     public void __newindex(@LuaNotNil String key, LuaFunction value) {
         switch (key) {
-            case "preRender" -> preRender = value;
-            case "midRender" -> midRender = value;
-            case "postRender" -> postRender = value;
-            default -> throw new LuaError("Cannot assign value on key \"" + key + "\"");
+            case "preRender":
+                preRender = value;
+                break;
+            case "midRender":
+                midRender = value;
+                break;
+            case "postRender":
+                postRender = value;
+                break;
+            default:
+                throw new LuaError("Cannot assign value on key \"" + key + "\"");
         }
     }
 

@@ -7,10 +7,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.User;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.util.EntityUtils;
 import org.figuramc.figura.FiguraMod;
 
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
 public class AuthHandler {
@@ -46,18 +49,22 @@ public class AuthHandler {
 
     // requests // 
 
-    protected static String request(HttpRequest request) throws Exception {
-        HttpResponse<String> response = NetworkStuff.client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
-        if (response.statusCode() != 200)
-            throw new Exception(response.body());
-        return response.body();
+    protected static String request(HttpUriRequest request) throws Exception {
+        HttpResponse response = NetworkStuff.client.execute(request);
+        if (response.getStatusLine().getStatusCode() != 200)
+            throw new Exception(EntityUtils.toString(response.getEntity()));
+        return EntityUtils.toString(response.getEntity());
     }
 
     private static String getServerID(String username) throws Exception {
-        return request(HttpRequest.newBuilder(HttpAPI.getUri("/auth/id?username=" + username)).build());
+        RequestBuilder requestBuilder = RequestBuilder.get()
+                .setUri(HttpAPI.getUri("/auth/id?username=" + username));
+        return request(requestBuilder.build());
     }
 
     private static String getToken(String serverID) throws Exception {
-        return request(HttpRequest.newBuilder(HttpAPI.getUri("/auth/verify?id=" + serverID)).build());
+        RequestBuilder requestBuilder = RequestBuilder.get()
+                .setUri(HttpAPI.getUri("/auth/verify?id=" + serverID));
+        return request(requestBuilder.build());
     }
 }

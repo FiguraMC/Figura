@@ -42,80 +42,80 @@ public class FiguraListDocs {
     // -- types --//
 
     public static final LinkedHashSet<String> KEYBINDS = new LinkedHashSet<>();
-    private static final LinkedHashMap<String, List<String>> PARENT_TYPES = new LinkedHashMap<>() {{
+    private static final LinkedHashMap<String, List<String>> PARENT_TYPES = new LinkedHashMap<String, List<String>>() {{
         for (ParentType value : ParentType.values())
             put(value.name(), Arrays.asList(value.aliases));
     }};
-    private static final LinkedHashMap<String, List<String>> STRING_ENCODINGS = new LinkedHashMap<>() {{
-        put("utf8", List.of("utf_8"));
-        put("utf16", List.of("utf_16"));
-        put("utf16be", List.of("utf_16_be"));
-        put("utf16le", List.of("utf_16_le"));
-        put("ascii", List.of());
-        put("iso88591", List.of("iso_8859_1"));
+    private static final LinkedHashMap<String, List<String>> STRING_ENCODINGS = new LinkedHashMap<String, List<String>>() {{
+        put("utf8", Collections.singletonList("utf_8"));
+        put("utf16", Collections.singletonList("utf_16"));
+        put("utf16be", Collections.singletonList("utf_16_be"));
+        put("utf16le", Collections.singletonList("utf_16_le"));
+        put("ascii", Collections.emptyList());
+        put("iso88591", Collections.singletonList("iso_8859_1"));
     }};
-    private static final LinkedHashSet<String> RENDER_TYPES = new LinkedHashSet<>() {{
+    private static final LinkedHashSet<String> RENDER_TYPES = new LinkedHashSet<String>() {{
         for (RenderTypes value : RenderTypes.values())
             add(value.name());
     }};
-    private static final LinkedHashSet<String> TEXTURE_TYPES = new LinkedHashSet<>() {{
+    private static final LinkedHashSet<String> TEXTURE_TYPES = new LinkedHashSet<String>() {{
         for (FiguraTextureSet.OverrideType value : FiguraTextureSet.OverrideType.values())
             add(value.name());
     }};
-    private static final LinkedHashSet<String> ENTITY_POSES = new LinkedHashSet<>() {{
+    private static final LinkedHashSet<String> ENTITY_POSES = new LinkedHashSet<String>() {{
         for (Pose value : Pose.values())
             add(value.name());
     }};
-    private static final LinkedHashSet<String> ITEM_DISPLAY_MODES = new LinkedHashSet<>() {{
+    private static final LinkedHashSet<String> ITEM_DISPLAY_MODES = new LinkedHashSet<String>() {{
         for (ItemTransforms.TransformType value : ItemTransforms.TransformType.values())
             add(value.name());
     }};
-    private static final LinkedHashSet<String> POST_EFFECTS = new LinkedHashSet<>() {{
+    private static final LinkedHashSet<String> POST_EFFECTS = new LinkedHashSet<String>() {{
         for (ResourceLocation effect : GameRendererAccessor.getEffects()) {
             String[] split = effect.getPath().split("/");
             String name = split[split.length - 1];
             add(name.split("\\.")[0]);
         }
     }};
-    private static final LinkedHashSet<String> PLAY_STATES = new LinkedHashSet<>() {{
+    private static final LinkedHashSet<String> PLAY_STATES = new LinkedHashSet<String>() {{
         for (Animation.PlayState value : Animation.PlayState.values())
             add(value.name());
     }};
-    private static final LinkedHashSet<String> LOOP_MODES = new LinkedHashSet<>() {{
+    private static final LinkedHashSet<String> LOOP_MODES = new LinkedHashSet<String>() {{
         for (Animation.LoopMode value : Animation.LoopMode.values())
             add(value.name());
     }};
-    private static final LinkedHashMap<String, List<String>> COLORS = new LinkedHashMap<>() {{
+    private static final LinkedHashMap<String, List<String>> COLORS = new LinkedHashMap<String, List<String>>() {{
         for (ColorUtils.Colors value : ColorUtils.Colors.values())
-            put(value.name(), List.of(value.name()));
+            put(value.name(), Collections.singletonList(value.name()));
     }};
-    private static final LinkedHashSet<String> PLAYER_MODEL_PARTS = new LinkedHashSet<>() {{
+    private static final LinkedHashSet<String> PLAYER_MODEL_PARTS = new LinkedHashSet<String>() {{
         for (PlayerModelPart value : PlayerModelPart.values()) {
             String name = value.name();
             add(name.endsWith("_LEG") ? name.substring(0, name.length() - 4) : name);
         }
     }};
-    private static final LinkedHashSet<String> USE_ACTIONS = new LinkedHashSet<>() {{
+    private static final LinkedHashSet<String> USE_ACTIONS = new LinkedHashSet<String>() {{
         for (UseAnim value : UseAnim.values())
             add(value.name());
     }};
-    private static final LinkedHashSet<String> RENDER_MODES = new LinkedHashSet<>() {{
+    private static final LinkedHashSet<String> RENDER_MODES = new LinkedHashSet<String>() {{
         for (EntityRenderMode value : EntityRenderMode.values())
             add(value.name());
     }};
-    private static final LinkedHashSet<String> BLOCK_RAYCAST_TYPE = new LinkedHashSet<>() {{
+    private static final LinkedHashSet<String> BLOCK_RAYCAST_TYPE = new LinkedHashSet<String>() {{
         for (ClipContext.Block value : ClipContext.Block.values())
             add(value.name());
     }};
-    private static final LinkedHashSet<String> FLUID_RAYCAST_TYPE = new LinkedHashSet<>() {{
+    private static final LinkedHashSet<String> FLUID_RAYCAST_TYPE = new LinkedHashSet<String>() {{
         for (ClipContext.Fluid value : ClipContext.Fluid.values())
             add(value.name());
     }};
-    private static final LinkedHashSet<String> HEIGHTMAP_TYPE = new LinkedHashSet<>() {{
+    private static final LinkedHashSet<String> HEIGHTMAP_TYPE = new LinkedHashSet<String>() {{
         for (Heightmap.Types value : Heightmap.Types.values())
             add(value.name());
     }};
-    private static final LinkedHashSet<String> REGISTRIES = new LinkedHashSet<>() {{
+    private static final LinkedHashSet<String> REGISTRIES = new LinkedHashSet<String>() {{
         for (ResourceLocation resourceLocation : Registry.REGISTRY.keySet())
             add(resourceLocation.getPath());
     }};
@@ -125,7 +125,7 @@ public class FiguraListDocs {
         PARENT_TYPES(() -> FiguraListDocs.PARENT_TYPES, "ParentTypes", "parent_types", 1),
         RENDER_TYPES(() -> FiguraListDocs.RENDER_TYPES, "RenderTypes", "render_types", 1),
         TEXTURE_TYPES(() -> FiguraListDocs.TEXTURE_TYPES, "TextureTypes", "texture_types", 1),
-        KEY_IDS(() -> new LinkedHashSet<>() {{this.addAll(KeyMappingAccessor.getAll().keySet());}}, "KeyIDs", "key_ids", 2),
+        KEY_IDS(() -> new LinkedHashSet<String>() {{this.addAll(KeyMappingAccessor.getAll().keySet());}}, "KeyIDs", "key_ids", 2),
         ENTITY_POSES(() -> FiguraListDocs.ENTITY_POSES, "EntityPoses", "entity_poses", 2),
         ITEM_RENDER_TYPES(() -> FiguraListDocs.ITEM_DISPLAY_MODES, "ItemDisplayModes", "item_display_modes", 1),
         POST_EFFECTS(() -> FiguraListDocs.POST_EFFECTS, "PostEffects", "post_effects", 2),
@@ -154,11 +154,13 @@ public class FiguraListDocs {
 
         private Collection<?> get() {
             Object obj = supplier.get();
-            if (obj instanceof LinkedHashSet<?> set)
+            if (obj instanceof LinkedHashSet<?>) {
+                LinkedHashSet<?> set = (LinkedHashSet<?>) obj;
                 return set;
-            else if (obj instanceof Map<?, ?> map)
+            } else if (obj instanceof Map<?, ?>) {
+                Map<?, ?> map = (Map<?, ?>) obj;
                 return map.entrySet();
-            else
+            } else
                 throw new UnsupportedOperationException("Invalid object " + obj);
         }
 
@@ -176,7 +178,8 @@ public class FiguraListDocs {
 
             JsonArray entries = new JsonArray();
             for (Object o : coll) {
-                if (o instanceof Map.Entry e) {
+                if (o instanceof Map.Entry) {
+                    Map.Entry e = (Map.Entry) o;
                     entries.add(e.getKey().toString());
                     for (String s : (List<String>) e.getValue())
                         entries.add(s);
@@ -221,7 +224,8 @@ public class FiguraListDocs {
                 for (Object o : coll) {
                     MutableComponent component;
 
-                    if (o instanceof Map.Entry e) {
+                    if (o instanceof Map.Entry) {
+                        Map.Entry e = (Map.Entry) o;
                         component = new TextComponent(e.getKey().toString()).withStyle(ChatFormatting.WHITE);
                         for (String s : (List<String>) e.getValue()) {
                             component.append(new TextComponent(" | ").withStyle(ChatFormatting.YELLOW))
@@ -243,14 +247,15 @@ public class FiguraListDocs {
             // add collection as child for easy navigation
             Collection<?> coll = get();
             for (Object o : coll) {
-                String text = o instanceof Map.Entry e ? e.getKey().toString() : o.toString();
+                String text = o instanceof Map.Entry ? ((Map.Entry) o).getKey().toString() : o.toString();
                 LiteralArgumentBuilder<FiguraClientCommandSource> entry = LiteralArgumentBuilder.literal(text);
                 entry.executes(context -> {
                     FiguraMod.sendChatMessage(new TextComponent(text).withStyle(ColorUtils.Colors.AWESOME_BLUE.style));
                     return 1;
                 });
 
-                if (o instanceof Map.Entry e) {
+                if (o instanceof Map.Entry) {
+                    Map.Entry e = (Map.Entry) o;
                     for (String s : (List<String>) e.getValue()) {
                         LiteralArgumentBuilder<FiguraClientCommandSource> child = LiteralArgumentBuilder.literal(s);
                         child.executes(context -> {
@@ -312,7 +317,8 @@ public class FiguraListDocs {
             Collection<?> enumValues = enumListDoc.get();
             List<String> enumValueList = new ArrayList<>();
             for (Object value : enumValues) {
-                if (value instanceof Map.Entry<?, ?> entry) {
+                if (value instanceof Map.Entry<?, ?>) {
+                    Map.Entry<?, ?> entry = (Map.Entry<?, ?>) value;
                     enumValueList.add(entry.getKey().toString());
                     if (entry.getValue() instanceof Collection<?>) {
                         for (Object alias : (Collection<?>) entry.getValue()) {

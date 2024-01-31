@@ -18,7 +18,7 @@ public class NameplateCustomizationGroup {
     private final List<NameplateCustomization> customizations;
 
     public NameplateCustomizationGroup(NameplateCustomization... customizations) {
-        this.customizations = Arrays.stream(customizations).toList();
+        this.customizations = Arrays.asList(customizations);
     }
 
     @LuaWhitelist

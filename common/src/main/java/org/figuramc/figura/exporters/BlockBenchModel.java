@@ -81,8 +81,10 @@ public class BlockBenchModel {
     }
 
     public void addElement(Element element, Group parent) {
-        if (element instanceof Cube cube)
+        if (element instanceof Cube) {
+            Cube cube = (Cube) element;
             elements.add(cube);
+        }
 
         if (parent == null) {
             outliner.add(element);

@@ -25,7 +25,8 @@ public class ScreenMixin {
         if (event == null)
             return;
 
-        if (event instanceof TextUtils.FiguraClickEvent figuraEvent) {
+        if (event instanceof TextUtils.FiguraClickEvent) {
+            TextUtils.FiguraClickEvent figuraEvent = (TextUtils.FiguraClickEvent) event;
             figuraEvent.onClick.run();
             cir.setReturnValue(true);
         } else if (event.getAction() == ClickEvent.Action.getByName("figura_function")) {

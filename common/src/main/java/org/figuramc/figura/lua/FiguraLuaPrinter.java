@@ -3,6 +3,7 @@ package org.figuramc.figura.lua;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
 import net.minecraft.world.entity.EntityType;
+import org.apache.commons.lang3.StringUtils;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.config.Configs;
@@ -30,7 +31,7 @@ public class FiguraLuaPrinter {
 
     public static void updateDecimalFormatting() {
         int config = Configs.LOG_NUMBER_LENGTH.value;
-        df = new DecimalFormat("0" + (config > 0 ? "." + "#".repeat(config) : ""));
+        df = new DecimalFormat("0" + (config > 0 ? "." + StringUtils.repeat("#", config) : ""));
         df.setRoundingMode(RoundingMode.DOWN);
     }
 
@@ -54,7 +55,7 @@ public class FiguraLuaPrinter {
                 .append(new TextComponent("[lua] ").withStyle(ColorUtils.Colors.LUA_LOG.style))
                 .append(new TextComponent(owner))
                 .append(new TextComponent(" : ").withStyle(ColorUtils.Colors.LUA_LOG.style))
-                .append(message instanceof Component c ? c : new TextComponent(message.toString()))
+                .append(message instanceof Component ? (Component) message : new TextComponent(message.toString()))
                 .append(new TextComponent("\n"));
 
         if (Configs.LOG_LOCATION.value == 0)
@@ -245,7 +246,7 @@ public class FiguraLuaPrinter {
                 .append(new TextComponent("table:").withStyle(getTypeColor(value)))
                 .append(new TextComponent(" {\n").withStyle(ChatFormatting.GRAY));
 
-        String spacing = "\t".repeat(indent - 1);
+        String spacing = StringUtils.repeat("\t",indent - 1);
 
         LuaTable table = value.checktable();
         for (LuaValue key : table.keys())
@@ -266,7 +267,7 @@ public class FiguraLuaPrinter {
                 .append(new TextComponent("userdata:").withStyle(getTypeColor(value)))
                 .append(new TextComponent(" {\n").withStyle(ChatFormatting.GRAY));
 
-        String spacing = "\t".repeat(indent - 1);
+        String spacing = StringUtils.repeat("\t",indent - 1);
 
         Object data = value.checkuserdata();
         Class<?> clazz = data.getClass();

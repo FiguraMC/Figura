@@ -19,9 +19,9 @@ public class FiguraConfirmScreen extends AbstractPanelScreen {
     private final Component message;
 
     public FiguraConfirmScreen(BooleanConsumer callback, Object title, Object message, Screen parentScreen) {
-        super(parentScreen, title instanceof Component c ? c : new TextComponent(title.toString()));
+        super(parentScreen, title instanceof Component ? (Component) title : new TextComponent(title.toString()));
         this.callback = callback;
-        this.message = message instanceof Component c ? c : new TextComponent(message.toString()).withStyle(FiguraMod.getAccentColor());
+        this.message = message instanceof Component ? (Component) message : new TextComponent(message.toString()).withStyle(FiguraMod.getAccentColor());
     }
 
     @Override
@@ -71,11 +71,6 @@ public class FiguraConfirmScreen extends AbstractPanelScreen {
     protected void run(boolean bool) {
         this.callback.accept(bool);
         onClose();
-    }
-
-    @Override
-    public Component getNarrationMessage() {
-        return CommonComponents.joinForNarration(super.getNarrationMessage(), this.message);
     }
 
     public static class FiguraConfirmLinkScreen extends FiguraConfirmScreen {

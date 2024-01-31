@@ -36,34 +36,34 @@ public class PauseScreenMixin extends Screen {
 
         int config = Configs.BUTTON_LOCATION.value;
         switch (config) {
-            case 1 -> { // top left
+            case 1: // top left
                 x = 4;
                 y = 4;
-            }
-            case 2 -> {// top right
+                break;
+            case 2: // top right
                 x = this.width - 68;
                 y = 4;
-            }
-            case 3 -> { // bottom left
+                break;
+            case 3: // bottom left
                 x = 4;
                 y = this.height - 24;
-            }
-            case 4 -> { // bottom right
+                break;
+            case 4: // bottom right
                 x = this.width - 68;
                 y = this.height - 24;
-            }
-            default -> { // icon
+                break;
+            default: // icon
                 x = this.width / 2 + 106;
                 y = this.height / 4 + 80;
-            }
+                break;
         }
 
         if (config > 0) { // button
-            addRenderableWidget(new Button(x, y, 64, 20, new FiguraText(), null, btn -> this.minecraft.setScreen(new WardrobeScreen(this))) {
+            addButton(new Button(x, y, 64, 20, new FiguraText(), null, btn -> this.minecraft.setScreen(new WardrobeScreen(this))) {
                 @Override
                 public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
                     ChatFormatting color;
-                    if (this.isHoveredOrFocused()) {
+                    if (this.isHovered() || this.isFocused()) {
                         color = ChatFormatting.AQUA;
                     } else if (AvatarManager.panic) {
                         color = ChatFormatting.GRAY;
@@ -80,7 +80,7 @@ public class PauseScreenMixin extends Screen {
                 protected void renderDefaultTexture(PoseStack stack, float delta) {}
             });
         } else { // icon
-            addRenderableWidget(new Button(x, y, 20, 20, 0, 0, 20, FIGURA_ICON, 60, 20, null, btn -> this.minecraft.setScreen(new WardrobeScreen(this))) {
+            addButton(new Button(x, y, 20, 20, 0, 0, 20, FIGURA_ICON, 60, 20, null, btn -> this.minecraft.setScreen(new WardrobeScreen(this))) {
                 @Override
                 public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
                     renderVanillaBackground(stack, mouseX, mouseY, delta);

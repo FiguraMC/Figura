@@ -110,6 +110,6 @@ public class FiguraSocket implements AutoCloseable {
     @Override
     public String toString() {
         InetAddress address = parentSocket.getInetAddress();
-        return "Socket(%s;%s)".formatted(address.getHostAddress(), parentSocket.getPort());
+        return String.format("Socket(%s;%s)", address.getHostAddress(), parentSocket.getPort());
     }
 }

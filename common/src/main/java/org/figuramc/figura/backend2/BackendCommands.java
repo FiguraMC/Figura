@@ -64,7 +64,7 @@ public class BackendCommands {
     private static int runRequest(CommandContext<FiguraClientCommandSource> context, String request) {
         try {
             HttpAPI.runString(
-                    NetworkStuff.api.header(request).build(),
+                    NetworkStuff.api.header(request),
                     (code, data) -> FiguraMod.sendChatMessage(new TextComponent(data))
             );
             return 1;

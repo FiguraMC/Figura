@@ -66,15 +66,20 @@ public class CategoryWidget extends AbstractContainerElement {
         int width = getWidth();
 
         AbstractConfigElement element;
-        if (config instanceof ConfigType.BoolConfig boolConfig) {
+        if (config instanceof ConfigType.BoolConfig) {
+            ConfigType.BoolConfig boolConfig = (ConfigType.BoolConfig) config;
             element = new BooleanElement(width, boolConfig, parent, this);
-        } else if (config instanceof ConfigType.EnumConfig enumConfig) {
+        } else if (config instanceof ConfigType.EnumConfig) {
+            ConfigType.EnumConfig enumConfig = (ConfigType.EnumConfig) config;
             element = new EnumElement(width, enumConfig, parent, this);
-        } else if (config instanceof ConfigType.InputConfig<?> inputConfig) {
+        } else if (config instanceof ConfigType.InputConfig<?>) {
+            ConfigType.InputConfig<?> inputConfig = (ConfigType.InputConfig<?>) config;
             element = new InputElement(width, inputConfig, parent, this);
-        } else if (config instanceof ConfigType.KeybindConfig keybindConfig) {
+        } else if (config instanceof ConfigType.KeybindConfig) {
+            ConfigType.KeybindConfig keybindConfig = (ConfigType.KeybindConfig) config;
             element = new KeybindElement(width, keybindConfig, parent, this);
-        } else if (config instanceof ConfigType.ButtonConfig buttonConfig) {
+        } else if (config instanceof ConfigType.ButtonConfig) {
+            ConfigType.ButtonConfig buttonConfig = (ConfigType.ButtonConfig) config;
             element = new ButtonElement(width, buttonConfig, parent, this);
         } else {
             return;
@@ -139,8 +144,10 @@ public class CategoryWidget extends AbstractContainerElement {
 
     public void updateKeybinds() {
         for (AbstractConfigElement element : entries) {
-            if (element instanceof KeybindElement keybind)
+            if (element instanceof KeybindElement) {
+                KeybindElement keybind = (KeybindElement) element;
                 keybind.updateText();
+            }
         }
     }
 

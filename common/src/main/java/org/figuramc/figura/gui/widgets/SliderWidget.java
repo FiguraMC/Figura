@@ -103,7 +103,7 @@ public class SliderWidget extends ScrollBarWidget {
 
         // draw header
         lerpPos(delta);
-        blit(poseStack, (int) (x + Math.round(Mth.lerp(scrollPos, 0, width - headWidth))), y, isActive() ? (isHoveredOrFocused() || isScrolling ? headWidth * 2 : headWidth) : 0f, 5f, headWidth, headHeight, 33, 16);
+        blit(poseStack, (int) (x + Math.round(Mth.lerp(scrollPos, 0, width - headWidth))), y, isActive() ? ((this.isFocused() || this.isHovered()) || isScrolling ? headWidth * 2 : headWidth) : 0f, 5f, headWidth, headHeight, 33, 16);
     }
 
     // -- getters and setters -- //

@@ -353,7 +353,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         // render children
         FiguraMod.popPushProfiler("children");
-        for (FiguraModelPart child : List.copyOf(part.children)) {
+        for (FiguraModelPart child : new ArrayList<>(part.children)) {
             if (!renderPart(child, remainingComplexity, thisPassedPredicate)) {
                 breakRender = true;
                 break;
@@ -534,7 +534,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         uvFixer.set(textureSet.getWidth(), textureSet.getHeight(), 1); // Dividing by this makes uv 0 to 1
 
         int overlay = customization.overlay;
-        int light = vertexData.fullBright ? LightTexture.FULL_BRIGHT : customization.light;
+        int light = vertexData.fullBright ? 15 << 20 | 15 << 4 : customization.light;
 
         VERTEX_BUFFER.getBufferFor(vertexData.renderType, vertexData.primary, vertexConsumer -> {
             for (int i = 0; i < vertCount; i++) {

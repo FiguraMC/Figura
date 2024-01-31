@@ -14,6 +14,7 @@ import org.figuramc.figura.parsers.LuaScriptParser;
 import org.figuramc.figura.utils.FiguraResourceListener;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.IOUtils;
+import org.figuramc.figura.utils.NbtType;
 
 import java.io.*;
 import java.nio.file.*;
@@ -95,7 +96,7 @@ public class LocalAvatarLoader {
         loadState = LoadState.UNKNOWN;
         resetWatchKeys();
         try {
-            path = path == null ? null : path.getFileSystem() == FileSystems.getDefault() ? Path.of(path.toFile().getCanonicalPath()) : path.normalize();
+            path = path == null ? null : path.getFileSystem() == FileSystems.getDefault() ? Paths.get(path.toFile().getCanonicalPath()) : path.normalize();
         } catch (IOException e) {
         }
         lastLoadedPath = path;
@@ -144,7 +145,7 @@ public class LocalAvatarLoader {
                     nbt.put("animations", animations);
                 CompoundTag metadataTag = nbt.getCompound("metadata");
                 if (metadataTag.contains("resources_paths")) {
-                    loadResources(nbt, metadataTag.getList("resources_paths", Tag.TAG_STRING), finalPath);
+                    loadResources(nbt, metadataTag.getList("resources_paths", NbtType.STRING.getValue()), finalPath);
                     metadataTag.remove("resource_paths");
                 }
 
@@ -187,7 +188,7 @@ public class LocalAvatarLoader {
     }
 
     private static String unixifyPath(String original) {
-        Path p = Path.of(original);
+        Path p = Paths.get(original);
         String[] components = new String[p.getNameCount()];
         for (int i = 0; i < components.length; i++) {
             components[i] = p.getName(i).toString();
@@ -277,7 +278,7 @@ public class LocalAvatarLoader {
                         textures.put("src", new CompoundTag());
                     }
 
-                    textures.getList("data", Tag.TAG_COMPOUND).addAll(dataTag.getList("data", Tag.TAG_COMPOUND));
+                    textures.getList("data", NbtType.COMPOUND.getValue()).addAll(dataTag.getList("data", NbtType.COMPOUND.getValue()));
                     textures.getCompound("src").merge(dataTag.getCompound("src"));
                 }
             }

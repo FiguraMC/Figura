@@ -57,12 +57,19 @@ public class JsonAPI {
             )
     )
     public static boolean isSerializable(LuaValue val) {
-        return switch (val.type()) {
-            case LuaValue.TNIL, LuaValue.TBOOLEAN, LuaValue.TINT, LuaValue.TNUMBER, LuaValue.TSTRING,
-                    LuaValue.TTABLE -> true;
-            case LuaValue.TUSERDATA -> val.checkuserdata() instanceof FiguraJsonSerializer.JsonValue;
-            default -> false;
-        };
+        switch (val.type()) {
+            case LuaValue.TNIL:
+            case LuaValue.TBOOLEAN:
+            case LuaValue.TINT:
+            case LuaValue.TNUMBER:
+            case LuaValue.TSTRING:
+            case LuaValue.TTABLE:
+                return true;
+            case LuaValue.TUSERDATA:
+                return val.checkuserdata() instanceof FiguraJsonSerializer.JsonValue;
+            default:
+                return false;
+        }
     }
 
     @Override

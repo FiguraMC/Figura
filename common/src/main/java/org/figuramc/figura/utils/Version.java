@@ -77,9 +77,9 @@ public class Version implements Comparable<Version> {
         else if (patch != o.patch)
             ret = patch - o.patch;
 
-        else if (pre.isBlank() && !o.pre.isBlank())
+        else if (pre.trim().isEmpty() && !o.pre.trim().isEmpty())
             ret = 1;
-        else if (!pre.isBlank() && o.pre.isBlank())
+        else if (!pre.trim().isEmpty() && o.pre.trim().isEmpty())
             ret = -1;
 
         else {
@@ -120,7 +120,7 @@ public class Version implements Comparable<Version> {
             return src;
 
         String ver = major + "." + minor + "." + patch;
-        if (!pre.isBlank())
+        if (!pre.trim().isEmpty())
             ver += "-" + pre;
 
         return ver;
@@ -132,9 +132,9 @@ public class Version implements Comparable<Version> {
             return src;
 
         String ver = major + "." + minor + "." + patch;
-        if (!pre.isBlank())
+        if (!pre.trim().isEmpty())
             ver += "-" + pre;
-        if (!build.isBlank())
+        if (!build.trim().isEmpty())
             ver += "+" + build;
         return ver;
     }

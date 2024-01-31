@@ -58,11 +58,16 @@ public class WizardEntry {
     }
 
     public boolean validate(Object object) {
-        return switch (type) {
-            case TOGGLE -> object instanceof Boolean;
-            case TEXT -> object instanceof String;
-            case CATEGORY -> true;
-        };
+        switch (type) {
+            case TOGGLE:
+                return object instanceof Boolean;
+            case TEXT:
+                return object instanceof String;
+            case CATEGORY:
+                return true;
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 
     public boolean asBool(HashMap<WizardEntry, Object> map) {

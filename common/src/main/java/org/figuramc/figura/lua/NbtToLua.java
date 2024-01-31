@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 public class NbtToLua {
 
-    private static final HashMap<Class<?>, Function<Tag, LuaValue>> CONVERTERS = new HashMap<>() {{
+    private static final HashMap<Class<?>, Function<Tag, LuaValue>> CONVERTERS = new HashMap<Class<?>, Function<Tag, LuaValue>>() {{
         // primitive types
         put(ByteTag.class, tag -> LuaValue.valueOf(((ByteTag) tag).getAsByte()));
         put(ShortTag.class, tag -> LuaValue.valueOf(((ShortTag) tag).getAsShort()));

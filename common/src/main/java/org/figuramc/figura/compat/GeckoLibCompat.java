@@ -39,12 +39,14 @@ public class GeckoLibCompat {
 
         if (GLGeoArmorRenderer.isLoaded) {
             if (renderers.exists()) {
-                if (renderers.getValue(null) instanceof Map<?, ?> map) {
+                if (renderers.getValue(null) instanceof Map<?, ?>) {
+                    Map<?, ?> map = (Map<?, ?>) renderers.getValue(null);
                     return map.containsKey(stack.getItem().getClass());
                 }
                 renderers.markErrored();
             } else if (CONSTRUCTORS.exists()) {
-                if (CONSTRUCTORS.getValue(null) instanceof Map<?, ?> map) {
+                if (CONSTRUCTORS.getValue(null) instanceof Map<?, ?>) {
+                    Map<?, ?> map = (Map<?, ?>) CONSTRUCTORS.getValue(null);
                     return map.containsKey(stack.getItem().getClass());
                 }
             }

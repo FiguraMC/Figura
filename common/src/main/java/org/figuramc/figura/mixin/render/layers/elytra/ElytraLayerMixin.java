@@ -84,7 +84,7 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, M extends EntityM
 
 
         ItemStack itemStack = livingEntity.getItemBySlot(EquipmentSlot.CHEST);
-        if (!itemStack.is(Items.ELYTRA) && !PlatformUtils.isModLoaded("origins")) {
+        if (itemStack.getItem() != Items.ELYTRA && !PlatformUtils.isModLoaded("origins")) {
             return;
         }
         if (figura$avatar != null && figura$avatar.luaRuntime != null && figura$avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1 && figura$avatar.luaRuntime.vanilla_model.ELYTRA.checkVisible()) {

@@ -1,11 +1,12 @@
 package org.figuramc.figura.config;
 
-import net.minecraft.client.multiplayer.resolver.ServerAddress;
+import com.google.common.net.HostAndPort;
 import org.figuramc.figura.gui.widgets.TextField;
 import org.figuramc.figura.utils.ColorUtils;
 
+import java.net.IDN;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.function.Predicate;
 
 public enum InputType {
@@ -45,12 +46,12 @@ public enum InputType {
     HEX_COLOR(s -> ColorUtils.userInputHex(s, null) != null),
     FOLDER_PATH(s -> {
         try {
-            return s.isBlank() || Files.isDirectory(Path.of(s.trim()));
+            return s.trim().isEmpty() || Files.isDirectory(Paths.get(s.trim()));
         } catch (Exception ignored) {
             return false;
         }
     }),
-    IP(ServerAddress::isValidAddress);
+    IP(InputType::isValidAddress);
 
     public final Predicate<String> validator;
     public final TextField.HintType hint;
@@ -59,4 +60,18 @@ public enum InputType {
         this.validator = predicate;
         this.hint = TextField.HintType.valueOf(this.name());
     }
+
+    public static boolean isValidAddress(String address) {
+        try {
+            HostAndPort hostAndPort = HostAndPort.fromString(address);
+            String string = hostAndPort.getHost();
+            if (!string.isEmpty()) {
+                IDN.toASCII(string);
+                return true;
+            }
+        } catch (IllegalArgumentException ignored) {
+        }
+        return false;
+    }
+
 }

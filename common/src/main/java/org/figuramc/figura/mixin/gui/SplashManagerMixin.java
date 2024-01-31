@@ -4,8 +4,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.SplashManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.world.level.levelgen.RandomSource;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Badges;
 import org.figuramc.figura.config.Configs;
@@ -19,10 +19,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @Mixin(SplashManager.class)
 public class SplashManagerMixin {
@@ -31,7 +28,7 @@ public class SplashManagerMixin {
     @Shadow @Final private List<String> splashes;
 
     @Unique
-    private static final List<Component> FIGURA_SPLASHES = List.of(
+    private static final List<Component> FIGURA_SPLASHES = Collections.singletonList(
             new TextComponent("Also try ears ")
                     .append(new TextComponent("\uD83D\uDC3E").withStyle(Style.EMPTY.withFont(UIHelper.SPECIAL_FONT).withColor(ChatFormatting.WHITE)))
                     .append("!")
@@ -50,17 +47,17 @@ public class SplashManagerMixin {
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
         switch (calendar.get(Calendar.MONTH)) {
-            case Calendar.MARCH -> {
+            case Calendar.MARCH:
                 if (day == 24) who = FiguraMod.MOD_NAME;
-            }
-            case Calendar.JULY -> {
+                break;
+            case Calendar.JULY:
                 if (day == 4) who = "Skylar";
-            }
+                break;
         }
 
         if (who != null) {
             FiguraMod.splashText = new TextComponent("Happy birthday " + who + " ")
-                    .append(Badges.System.DEFAULT.badge.copy().withStyle(Style.EMPTY.withFont(Badges.FONT).withColor(ColorUtils.Colors.DEFAULT.hex)))
+                    .append(Badges.System.DEFAULT.badge.copy().withStyle(Style.EMPTY.withFont(Badges.FONT).withColor(TextColor.fromRgb(ColorUtils.Colors.DEFAULT.hex))))
                     .append("!");
         } else {
             int size = this.splashes.size();

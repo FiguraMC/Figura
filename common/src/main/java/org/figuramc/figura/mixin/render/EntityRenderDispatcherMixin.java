@@ -69,7 +69,7 @@ public class EntityRenderDispatcherMixin {
         if (this.camera == null)
             ci.cancel();
 
-        Entity owner = entity.getFirstPassenger();
+        Entity owner = entity.getPassengers().get(0);
         if (owner == null)
             return;
 

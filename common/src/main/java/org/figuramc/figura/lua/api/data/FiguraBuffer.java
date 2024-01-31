@@ -17,6 +17,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Objects;
 import java.util.Stack;
 
 @LuaWhitelist
@@ -53,8 +54,8 @@ public class FiguraBuffer implements AutoCloseable {
 
     private void ensureBufCapacity(int cap) {
         if (cap > getMaxCapacity())
-            throw new LuaError("Can't increase this buffer capacity to %s, max capacity is %s"
-                    .formatted(cap, getMaxCapacity()));
+            throw new LuaError(String.format("Can't increase this buffer capacity to %s, max capacity is %s",
+                    cap, getMaxCapacity()));
         if (cap > buf.length) {
             buf = Arrays.copyOf(buf, Math.min(buf.length+CAPACITY_INCREASE_STEP, getMaxCapacity()));
         }
@@ -233,14 +234,35 @@ public class FiguraBuffer implements AutoCloseable {
     public String readString(Integer length, String encoding) {
         checkIsClosed();
         length = length == null ? available() : Math.max(length, 0);
-        Charset charset = encoding == null ? StandardCharsets.UTF_8 : switch (encoding.toLowerCase()) {
-            case "utf_16", "utf16" -> StandardCharsets.UTF_16;
-            case "utf_16be", "utf16be" -> StandardCharsets.UTF_16BE;
-            case "utf_16le", "utf16le" -> StandardCharsets.UTF_16LE;
-            case "ascii" -> StandardCharsets.US_ASCII;
-            case "iso_8859_1", "iso88591" -> StandardCharsets.ISO_8859_1;
-            default -> StandardCharsets.UTF_8;
-        };
+        Charset charset;
+        if (encoding == null)
+            charset = StandardCharsets.UTF_8;
+        else
+            switch (encoding.toLowerCase()) {
+                case "utf_16":
+                case "utf16":
+                    charset = StandardCharsets.UTF_16;
+                    break;
+                case "utf_16be":
+                case "utf16be":
+                    charset = StandardCharsets.UTF_16BE;
+                    break;
+                case "utf_16le":
+                case "utf16le":
+                    charset = StandardCharsets.UTF_16LE;
+                    break;
+                case "ascii":
+                    charset = StandardCharsets.US_ASCII;
+                    break;
+                case "iso_8859_1":
+                case "iso88591":
+                    charset = StandardCharsets.ISO_8859_1;
+                    break;
+                default:
+                    charset = StandardCharsets.UTF_8;
+                    break;
+            }
+        ;
         byte[] strBuf = readNBytes(length);
         return new String(strBuf, charset);
     }
@@ -324,7 +346,7 @@ public class FiguraBuffer implements AutoCloseable {
             write((s >> 8) & 0xFF);
             write(s & 0xFF);
         }
-        else throw new LuaError("Value %s is out of range [%s; %s]".formatted(val, Short.MIN_VALUE, Short.MAX_VALUE));
+        else throw new LuaError(String.format("Value %s is out of range [%s; %s]", val, Short.MIN_VALUE, Short.MAX_VALUE));
     }
 
     @LuaWhitelist
@@ -342,7 +364,7 @@ public class FiguraBuffer implements AutoCloseable {
             write((s >> 8) & 0xFF);
             write(s & 0xFF);
         }
-        else throw new LuaError("Value %s is out of range [%s; %s]".formatted(val, 0, (int) Character.MAX_VALUE));
+        else throw new LuaError(String.format("Value %s is out of range [%s; %s]", val, 0, (int) Character.MAX_VALUE));
     }
 
     @LuaWhitelist
@@ -422,7 +444,7 @@ public class FiguraBuffer implements AutoCloseable {
             write(s & 0xFF);
             write((s >> 8) & 0xFF);
         }
-        else throw new LuaError("Value %s is out of range [%s; %s]".formatted(val, Short.MIN_VALUE, Short.MAX_VALUE));
+        else throw new LuaError(String.format("Value %s is out of range [%s; %s]", val, Short.MIN_VALUE, Short.MAX_VALUE));
     }
 
     @LuaWhitelist
@@ -440,7 +462,7 @@ public class FiguraBuffer implements AutoCloseable {
             write(s & 0xFF);
             write((s >> 8) & 0xFF);
         }
-        else throw new LuaError("Value %s is out of range [%s; %s]".formatted(val, 0, (int) Character.MAX_VALUE));
+        else throw new LuaError(String.format("Value %s is out of range [%s; %s]", val, 0, (int) Character.MAX_VALUE));
     }
 
     @LuaWhitelist
@@ -523,14 +545,35 @@ public class FiguraBuffer implements AutoCloseable {
     )
     public int writeString(@LuaNotNil String val, String encoding) {
         checkIsClosed();
-        Charset charset = encoding == null ? StandardCharsets.UTF_8 : switch (encoding.toLowerCase()) {
-            case "utf_16", "utf16" -> StandardCharsets.UTF_16;
-            case "utf_16be", "utf16be" -> StandardCharsets.UTF_16BE;
-            case "utf_16le", "utf16le" -> StandardCharsets.UTF_16LE;
-            case "ascii" -> StandardCharsets.US_ASCII;
-            case "iso_8859_1", "iso88591" -> StandardCharsets.ISO_8859_1;
-            default -> StandardCharsets.UTF_8;
-        };
+        Charset charset;
+        if (encoding == null)
+            charset = StandardCharsets.UTF_8;
+        else
+            switch (encoding.toLowerCase()) {
+                case "utf_16":
+                case "utf16":
+                    charset = StandardCharsets.UTF_16;
+                    break;
+                case "utf_16be":
+                case "utf16be":
+                    charset = StandardCharsets.UTF_16BE;
+                    break;
+                case "utf_16le":
+                case "utf16le":
+                    charset = StandardCharsets.UTF_16LE;
+                    break;
+                case "ascii":
+                    charset = StandardCharsets.US_ASCII;
+                    break;
+                case "iso_8859_1":
+                case "iso88591":
+                    charset = StandardCharsets.ISO_8859_1;
+                    break;
+                default:
+                    charset = StandardCharsets.UTF_8;
+                    break;
+            }
+
         byte[] strBytes = val.getBytes(charset);
         writeBytes(strBytes);
         return strBytes.length;
@@ -567,10 +610,11 @@ public class FiguraBuffer implements AutoCloseable {
     )
     public int writeByteArray(@LuaNotNil LuaValue val) {
         checkIsClosed();
-        if (!(val instanceof LuaString byteArray)) {
-            throw new LuaError("Expected string, got %s".formatted(val.typename()));
+        if (!(val instanceof LuaString)) {
+            throw new LuaError(String.format("Expected string, got %s", val.typename()));
         }
         else {
+            LuaString byteArray = (LuaString) val;
             byte[] bytes = new byte[byteArray.length()];
             byteArray.copyInto(0, bytes, 0, bytes.length);
             writeBytes(bytes);
@@ -753,7 +797,36 @@ public class FiguraBuffer implements AutoCloseable {
             return parent.available();
         }
 
-        private record Mark(int pos, int readLimit) {
+        public static class Mark {
+            private final int pos;
+            private final int readLimit;
+
+            public Mark(int pos, int readLimit) {
+                this.pos = pos;
+                this.readLimit = readLimit;
+            }
+
+            public int getPos() {
+                return pos;
+            }
+
+            public int getReadLimit() {
+                return readLimit;
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (!(o instanceof Mark)) return false;
+                Mark mark = (Mark) o;
+                return pos == mark.pos && readLimit == mark.readLimit;
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(pos, readLimit);
+            }
         }
+
     }
 }

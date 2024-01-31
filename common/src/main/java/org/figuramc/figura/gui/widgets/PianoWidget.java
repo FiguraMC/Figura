@@ -115,7 +115,7 @@ public class PianoWidget extends AbstractContainerElement {
             UIHelper.fillRounded(stack, getX(), getY(), getWidth(), getHeight(), (isSharp ? 0 : 0xFFFFFF) + (0xFF << 24));
             UIHelper.renderSliced(stack, getX(), getY(), getWidth(), getHeight(), UIHelper.OUTLINE);
 
-            if (isHoveredOrFocused())
+            if ((this.isFocused() || this.isHovered()))
                 UIHelper.fillRounded(stack, getX(), getY(), getWidth(), getHeight(), (FiguraMod.getAccentColor().getColor().getValue()) + (0xA0 << 24));
 
             Font font = Minecraft.getInstance().font;

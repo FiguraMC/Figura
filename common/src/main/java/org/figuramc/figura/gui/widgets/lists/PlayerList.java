@@ -155,7 +155,7 @@ public class PlayerList extends AbstractList {
 
         // for all players
         ClientPacketListener connection = Minecraft.getInstance().getConnection();
-        List<UUID> playerList = connection == null ? List.of() : new ArrayList<>(connection.getOnlinePlayerIds());
+        List<UUID> playerList = connection == null ? new ArrayList<>() : new ArrayList<>(connection.getOnlinePlayerIds());
         for (UUID uuid : playerList) {
             // get player
             PlayerInfo player = connection.getPlayerInfo(uuid);
@@ -216,15 +216,20 @@ public class PlayerList extends AbstractList {
         sortList();
 
         // select local if current selected is missing
-        if (selectedEntry instanceof PlayerPermPackElement player && missingPlayers.contains(player.getOwner()))
+        if (selectedEntry instanceof PlayerPermPackElement && missingPlayers.contains(((PlayerPermPackElement) selectedEntry).getOwner())) {
+            PlayerPermPackElement player = (PlayerPermPackElement) selectedEntry;
             selectLocalPlayer();
+        }
     }
 
     private void sortList() {
         permissionsList.sort(AbstractPermPackElement::compareTo);
         children.sort((element1, element2) -> {
-            if (element1 instanceof AbstractPermPackElement container1 && element2 instanceof AbstractPermPackElement container2)
+            if (element1 instanceof AbstractPermPackElement && element2 instanceof AbstractPermPackElement) {
+                AbstractPermPackElement container1 = (AbstractPermPackElement) element1;
+                AbstractPermPackElement container2 = (AbstractPermPackElement) element2;
                 return container1.compareTo(container2);
+            }
             return 0;
         });
     }
@@ -267,8 +272,10 @@ public class PlayerList extends AbstractList {
     public int getCategoryAt(double y) {
         int ret = -1;
         for (AbstractPermPackElement element : permissionsList)
-            if (element instanceof CategoryPermPackElement group && group.isVisible() && y >= group.getY())
+            if (element instanceof CategoryPermPackElement && ((CategoryPermPackElement) element).isVisible() && y >= ((CategoryPermPackElement) element).getY()) {
+                CategoryPermPackElement group = (CategoryPermPackElement) element;
                 ret++;
+            }
         return Math.max(ret, 0);
     }
 

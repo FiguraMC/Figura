@@ -3,6 +3,7 @@ package org.figuramc.figura.lua;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
+import org.apache.commons.io.IOUtils;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.api.AvatarAPI;
@@ -128,7 +129,7 @@ public class FiguraLuaRuntime {
         // actual sandbox file
         try (InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/scripts/sandbox.lua")) {
             if (inputStream == null) throw new IOException("Unable to get resource");
-            userGlobals.load(new String(inputStream.readAllBytes()), "sandbox").call();
+            userGlobals.load(new String(IOUtils.toByteArray(inputStream)), "sandbox").call();
         } catch (Exception e) {
             error(new LuaError("Failed to load builtin sandbox script:\n" + e.getMessage()));
         }
@@ -158,7 +159,7 @@ public class FiguraLuaRuntime {
         // load math library
         try (InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/scripts/math.lua")) {
             if (inputStream == null) throw new IOException("Unable to get resource");
-            userGlobals.load(new String(inputStream.readAllBytes()), "math").call();
+            userGlobals.load(new String(IOUtils.toByteArray(inputStream)), "math").call();
         } catch (Exception e) {
             error(new LuaError("Failed to load builtin math script:\n" + e.getMessage()));
         }
@@ -314,36 +315,37 @@ public class FiguraLuaRuntime {
             return "function: loadstring";
         }
 
-        // Class that creates input stream from 
-        private static class FuncStream extends InputStream {
-            private final LuaFunction function;
-            // start at the end of empty string so next index will get first result
-            private String string = "";
-            private int index = 0;
-
-            public FuncStream(LuaFunction function) {
-                this.function = function;
-            }
-
-            @Override
-            public int read() {
-                // if next index is out of bounds
-                if (++index >= string.length()) {
-                    // reset index
-                    index = 0;
-                    // fetch next functon value
-                    Varargs result = function.invoke();
-                    // check if we hit the end, that is nil, no value or empty string
-                    if (!result.isstring(1) || result.arg1().length() < 1)
-                        return -1;
-                    // get string from result of calling function
-                    string = new String(result.checkstring(1).m_bytes, StandardCharsets.UTF_8);
-                }
-                // return next index
-                return string.charAt(index);
-            }
-        }
     };
+
+    // Class that creates input stream from
+    private static class FuncStream extends InputStream {
+        private final LuaFunction function;
+        // start at the end of empty string so next index will get first result
+        private String string = "";
+        private int index = 0;
+
+        public FuncStream(LuaFunction function) {
+            this.function = function;
+        }
+
+        @Override
+        public int read() {
+            // if next index is out of bounds
+            if (++index >= string.length()) {
+                // reset index
+                index = 0;
+                // fetch next functon value
+                Varargs result = function.invoke();
+                // check if we hit the end, that is nil, no value or empty string
+                if (!result.isstring(1) || result.arg1().length() < 1)
+                    return -1;
+                // get string from result of calling function
+                string = new String(result.checkstring(1).m_bytes, StandardCharsets.UTF_8);
+            }
+            // return next index
+            return string.charAt(index);
+        }
+    }
 
     // init event //
 
@@ -411,7 +413,7 @@ public class FiguraLuaRuntime {
     }
 
     public static LuaError parseError(Throwable e) {
-        return e instanceof LuaError lua ? lua : e instanceof StackOverflowError ? new LuaError("Stack Overflow") : new LuaError(e);
+        return e instanceof LuaError ? (LuaError) e : e instanceof StackOverflowError ? new LuaError("Stack Overflow") : new LuaError(e);
     }
 
     // avatar limiting //
@@ -460,13 +462,16 @@ public class FiguraLuaRuntime {
         // get and call event
         try {
             Varargs ret;
-            if (toRun instanceof LuaEvent event)
+            if (toRun instanceof LuaEvent) {
+                LuaEvent event = (LuaEvent) toRun;
                 ret = event.call(val);
-            else if (toRun instanceof String event)
+            } else if (toRun instanceof String) {
+                String event = (String) toRun;
                 ret = events.__index(event).call(val);
-            else if (toRun instanceof LuaValue func)
+            } else if (toRun instanceof LuaValue) {
+                LuaValue func = (LuaValue) toRun;
                 ret = func.invoke(val);
-            else
+            } else
                 throw new IllegalArgumentException("Internal event error - Invalid type to run! (" + toRun.getClass().getSimpleName() + ")");
 
             // use instructions

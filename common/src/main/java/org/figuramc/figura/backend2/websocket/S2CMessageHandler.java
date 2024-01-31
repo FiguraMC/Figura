@@ -92,8 +92,12 @@ public class S2CMessageHandler {
 
         byte type = bytes.get();
         switch (type) {
-            case 0 -> FiguraToast.sendToast(new FiguraText("backend.warning"), new FiguraText("backend.ping_size"), FiguraToast.ToastType.ERROR);
-            case 1 -> FiguraToast.sendToast(new FiguraText("backend.warning"), new FiguraText("backend.ping_rate"), FiguraToast.ToastType.ERROR);
+            case 0:
+                FiguraToast.sendToast(new FiguraText("backend.warning"), new FiguraText("backend.ping_size"), FiguraToast.ToastType.ERROR);
+                break;
+            case 1:
+                FiguraToast.sendToast(new FiguraText("backend.warning"), new FiguraText("backend.ping_rate"), FiguraToast.ToastType.ERROR);
+                break;
         }
     }
 }

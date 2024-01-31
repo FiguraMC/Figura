@@ -1,7 +1,13 @@
 package org.figuramc.figura.lua.api.net;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.impl.client.HttpClients;
 import org.figuramc.figura.lua.api.data.FiguraBuffer;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.luaj.vm2.LuaError;
@@ -15,14 +21,11 @@ import org.figuramc.figura.lua.api.data.FiguraInputStream;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -34,7 +37,7 @@ public class HttpRequestsAPI {
     private final HttpClient httpClient;
     HttpRequestsAPI(NetworkingAPI parent) {
         this.parent = parent;
-        httpClient = HttpClient.newBuilder().build();
+        httpClient = HttpClients.createDefault();
     }
 
     @LuaWhitelist
@@ -110,7 +113,7 @@ public class HttpRequestsAPI {
 
         @Override
         public String toString() {
-            return "HttpResponse(%s)".formatted(responseCode);
+            return String.format("HttpResponse(%s)", responseCode);
         }
     }
     @LuaWhitelist
@@ -156,7 +159,7 @@ public class HttpRequestsAPI {
                 )
         )
         public HttpRequestBuilder method(String method) {
-            this.method = Objects.requireNonNullElse(method, "GET");
+            this.method = (method != null) ? method : "GET";
             return this;
         }
 
@@ -251,19 +254,26 @@ public class HttpRequestsAPI {
         }
 
         private InputStream inputStreamSupplier() {
-            return data instanceof InputStream  is ? is : ((FiguraBuffer) data).asInputStream();
+            return data instanceof InputStream ? (InputStream) data : ((FiguraBuffer) data).asInputStream();
         }
 
-        private HttpRequest getRequest() {
-            HttpRequest.Builder builder = HttpRequest.newBuilder(URI.create(uri));
-            HttpRequest.BodyPublisher bp = data != null ?
-                    HttpRequest.BodyPublishers.ofInputStream(this::inputStreamSupplier) : HttpRequest.BodyPublishers.noBody();
-            for (Map.Entry<String, String> entry :
-                    getHeaders().entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
+        private HttpUriRequest getRequest() {
+            RequestBuilder requestBuilder = RequestBuilder.create(getMethod())
+                    .setUri(URI.create(uri));
+
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                requestBuilder.addHeader(entry.getKey(), entry.getValue());
             }
-            builder.method(getMethod(), bp);
-            return builder.build();
+
+            if (data != null) {
+                HttpEntity entity = new InputStreamEntity(this.inputStreamSupplier());
+                requestBuilder.setEntity(entity);
+            } else {
+                requestBuilder.setEntity(null);
+            }
+
+
+            return requestBuilder.build();
         }
 
         @LuaWhitelist
@@ -273,25 +283,67 @@ public class HttpRequestsAPI {
             try {
                 parent.parent.securityCheck(uri);
             } catch (NetworkingAPI.LinkNotAllowedException e) {
-                parent.parent.error(NetworkingAPI.LogSource.HTTP, new TextComponent("Tried to send %s request to not allowed link %s".formatted(method, uri)));
+                parent.parent.error(NetworkingAPI.LogSource.HTTP, new TextComponent(String.format("Tried to send %s request to not allowed link %s", method, uri)));
                 throw e.luaError;
             }
-            parent.parent.log(NetworkingAPI.LogSource.HTTP, new TextComponent("Sent %s request to %s".formatted(method, uri)));
-            HttpRequest req = this.getRequest();
+            parent.parent.log(NetworkingAPI.LogSource.HTTP, new TextComponent(String.format("Sent %s request to %s", method, uri)));
+            HttpUriRequest req = this.getRequest();
             FiguraFuture<HttpResponse> future = new FiguraFuture<>();
-            var asyncResponse = parent.httpClient.sendAsync(req, java.net.http.HttpResponse.BodyHandlers.ofInputStream());
+            CompletableFuture<org.apache.http.HttpResponse> asyncResponse = sendAsyncRequest(req);
             asyncResponse.whenCompleteAsync((response, t) -> {
                 if (t != null) future.error(t);
-                else future.complete(new HttpResponse(new FiguraInputStream(response.body()),
-                        response.statusCode(), response.headers().map()));
+                else {
+                    try {
+                        future.complete(new HttpResponse(new FiguraInputStream(response.getEntity().getContent()),
+                                response.getStatusLine().getStatusCode(), convertHeaders(response.getAllHeaders())));
+                    } catch (IOException e) {
+                        parent.parent.log(NetworkingAPI.LogSource.HTTP, new TextComponent("Error while trying to read input from stream"));
+                    }
+                }
             });
             return future;
         }
 
         @Override
         public String toString() {
-            return "HttpRequestBuilder(%s:%s)".formatted(method, uri);
+            return String.format("HttpRequestBuilder(%s:%s)", method, uri);
         }
+
+        public CompletableFuture<org.apache.http.HttpResponse> sendAsyncRequest(HttpUriRequest request) {
+            CompletableFuture<org.apache.http.HttpResponse> future = new CompletableFuture<>();
+            CompletableFuture.runAsync(() -> {
+                try {
+                    parent.httpClient.execute(request, response -> {
+                        try {
+                            future.complete(response);
+                        } catch (Exception e) {
+                            future.completeExceptionally(e);
+                        }
+                        /// ????
+                        return null;
+                    });
+                } catch (IOException e) {
+                    future.completeExceptionally(e);
+                }
+            });
+
+            return future;
+        }
+
+
+        private static Map<String, List<String>> convertHeaders(Header[] headers) {
+            Map<String, List<String>> headersMap = new HashMap<>();
+
+            for (Header header : headers) {
+                String name = header.getName();
+                String value = header.getValue();
+
+                headersMap.computeIfAbsent(name, k -> new ArrayList<>()).add(value);
+            }
+
+            return headersMap;
+        }
+
     }
 
     @Override

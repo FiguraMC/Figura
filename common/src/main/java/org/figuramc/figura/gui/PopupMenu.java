@@ -26,6 +26,7 @@ import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.MathUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -48,7 +49,7 @@ public class PopupMenu {
             .append(" ")
             .append(Badges.System.PERMISSIONS.desc.copy().withStyle(ChatFormatting.BLUE));
 
-    private static final List<Pair<Component, Consumer<UUID>>> BUTTONS = List.of(
+    private static final List<Pair<Component, Consumer<UUID>>> BUTTONS = Arrays.asList(
             Pair.of(new FiguraText("popup_menu.cancel"), id -> {}),
             Pair.of(new FiguraText("popup_menu.reload"), id -> {
                 AvatarManager.reloadAvatar(id);

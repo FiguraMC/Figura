@@ -1,10 +1,12 @@
 package org.figuramc.figura.lua.api.world;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.tags.TagKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.*;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.NbtToLua;
@@ -95,12 +97,11 @@ public class ItemStackAPI {
 
         Registry<Item> registry = WorldAPI.getCurrentWorld().registryAccess().registryOrThrow(Registry.ITEM_REGISTRY);
         Optional<ResourceKey<Item>> key = registry.getResourceKey(itemStack.getItem());
-
-        if (key.isEmpty())
+        if (Minecraft.getInstance().getConnection() == null || Minecraft.getInstance().getConnection().getTags() == null)
             return list;
 
-        for (TagKey<Item> itemTagKey : registry.getHolderOrThrow(key.get()).tags().toList())
-            list.add(itemTagKey.location().toString());
+        for (ResourceLocation resourceLocation : Minecraft.getInstance().getConnection().getTags().getItems().getMatchingTags(itemStack.getItem()))
+            list.add(resourceLocation.toString());
 
         return list;
     }
@@ -205,7 +206,7 @@ public class ItemStackAPI {
     @LuaWhitelist
     @LuaMethodDoc("itemstack.get_equipment_slot")
     public String getEquipmentSlot() {
-        return LivingEntity.getEquipmentSlotForItem(itemStack).name();
+        return Mob.getEquipmentSlotForItem(itemStack).name();
     }
 
     @LuaWhitelist
@@ -217,7 +218,7 @@ public class ItemStackAPI {
     @LuaWhitelist
     @LuaMethodDoc("itemstack.get_blockstate")
     public BlockStateAPI getBlockstate() {
-        return itemStack.getItem() instanceof BlockItem blockItem ? new BlockStateAPI(blockItem.getBlock().defaultBlockState(), null) : null;
+        return itemStack.getItem() instanceof BlockItem ? new BlockStateAPI(((BlockItem) itemStack.getItem()).getBlock().defaultBlockState(), null) : null;
     }
 
     @LuaWhitelist
@@ -229,7 +230,7 @@ public class ItemStackAPI {
         ItemStack o = other.itemStack;
         if (t.getCount() != o.getCount())
             return false;
-        if (!t.is(o.getItem()))
+        if (!(t.getItem() == o.getItem()))
             return false;
 
         CompoundTag tag1 = t.getTag();
@@ -243,11 +244,14 @@ public class ItemStackAPI {
     @LuaWhitelist
     public Object __index(String arg) {
         if (arg == null) return null;
-        return switch (arg) {
-            case "id" -> id;
-            case "tag" -> tag;
-            default -> null;
-        };
+        switch (arg) {
+            case "id":
+                return id;
+            case "tag":
+                return tag;
+            default:
+                return null;
+        }
     }
 
     @Override

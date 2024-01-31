@@ -71,14 +71,16 @@ public class AbstractPermPackElement extends Button implements Comparable<Abstra
         int len = Permissions.Category.values().length;
 
         int i;
-        if (this instanceof PlayerPermPackElement p && p.dragged) {
+        if (this instanceof PlayerPermPackElement && ((PlayerPermPackElement) this).dragged) {
+            PlayerPermPackElement p = (PlayerPermPackElement) this;
             i = Math.min(p.index, len - 1);
         } else {
             i = this.pack.getCategory().index;
         }
 
         int j;
-        if (other instanceof PlayerPermPackElement p && p.dragged) {
+        if (other instanceof PlayerPermPackElement && ((PlayerPermPackElement) other).dragged) {
+            PlayerPermPackElement p = (PlayerPermPackElement) other;
             j = Math.min(p.index, len - 1);
         } else {
             j = other.pack.getCategory().index;
@@ -92,7 +94,9 @@ public class AbstractPermPackElement extends Button implements Comparable<Abstra
             if (this instanceof PlayerPermPackElement && other instanceof CategoryPermPackElement)
                 return 1;
 
-            if (this instanceof PlayerPermPackElement player1 && other instanceof PlayerPermPackElement player2) {
+            if (this instanceof PlayerPermPackElement && other instanceof PlayerPermPackElement) {
+                PlayerPermPackElement player2 = (PlayerPermPackElement) other;
+                PlayerPermPackElement player1 = (PlayerPermPackElement) this;
                 Avatar avatar1 = AvatarManager.getAvatarForPlayer(player1.getOwner());
                 Avatar avatar2 = AvatarManager.getAvatarForPlayer(player2.getOwner());
 

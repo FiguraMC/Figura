@@ -6,6 +6,7 @@ import net.minecraft.Util;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import org.figuramc.figura.utils.VertexFormatMode;
 
 import java.util.OptionalDouble;
 import java.util.function.BiFunction;
@@ -91,7 +92,7 @@ public enum RenderTypes {
 
         private static final BiFunction<ResourceLocation, Boolean, RenderType> CUTOUT_EMISSIVE_SOLID = Util.memoize(
                 (texture, affectsOutline) ->
-                        create("figura_cutout_emissive_solid", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 256, true, true,
+                        create("figura_cutout_emissive_solid", DefaultVertexFormat.BLOCK, VertexFormatMode.QUADS.asGLMode, 256, true, true,
                                 CompositeState.builder()
                                         .setShaderState(RenderStateShard.RENDERTYPE_BEACON_BEAM_SHADER)
                                         .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))

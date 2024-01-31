@@ -12,6 +12,7 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -38,9 +39,27 @@ public class IOUtils {
         return result;
     }
 
+    public static byte[] readNBytes(InputStream inputStream, int n) throws IOException {
+        byte[] buffer = new byte[n];
+        int bytesRead = 0;
+
+        while (bytesRead < n) {
+            int count = inputStream.read(buffer, bytesRead, n - bytesRead);
+
+            if (count == -1) {
+                // End of stream reached before reading 'n' bytes
+                return Arrays.copyOf(buffer, bytesRead);
+            }
+
+            bytesRead += count;
+        }
+
+        return buffer;
+    }
+
     public static String readFile(Path file) throws IOException {
         try (InputStream stream = Files.newInputStream(file)) {
-            return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+            return new String(org.apache.commons.io.IOUtils.toByteArray(stream), StandardCharsets.UTF_8);
         } catch (IOException e) {
             FiguraMod.LOGGER.error("Failed to read File: " + file);
             throw e;
@@ -49,7 +68,7 @@ public class IOUtils {
 
     public static byte[] readFileBytes(Path file) throws IOException {
         try (InputStream stream = Files.newInputStream(file)) {
-            return stream.readAllBytes();
+            return org.apache.commons.io.IOUtils.toByteArray(stream);
         } catch (IOException e) {
             FiguraMod.LOGGER.error("Failed to read File: " + file);
             throw e;

@@ -1,8 +1,10 @@
 package org.figuramc.figura;
 
+import com.mojang.authlib.GameProfile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.world.entity.Entity;
 import org.figuramc.figura.avatar.Avatar;
@@ -152,14 +154,14 @@ public class FiguraMod {
         GameProfileCache cache = SkullBlockEntityAccessor.getProfileCache();
         if (cache == null) return null;
 
-        var profile = cache.get(playerName);
-        return profile.isEmpty() ? null : profile.get().getId();
+        GameProfile profile = cache.get(playerName);
+        return profile == null ? null : profile.getId();
     }
 
     public static Style getAccentColor() {
         Avatar avatar = AvatarManager.getAvatarForPlayer(getLocalPlayerUUID());
         int color = avatar != null ? ColorUtils.rgbToInt(ColorUtils.userInputHex(avatar.color, ColorUtils.Colors.AWESOME_BLUE.vec)) : ColorUtils.Colors.AWESOME_BLUE.hex;
-        return Style.EMPTY.withColor(color);
+        return Style.EMPTY.withColor(TextColor.fromRgb(color));
     }
 
     // -- profiler -- //

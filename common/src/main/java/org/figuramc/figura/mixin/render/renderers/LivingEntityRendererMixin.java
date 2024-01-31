@@ -2,14 +2,16 @@ package org.figuramc.figura.mixin.render.renderers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
@@ -36,8 +38,8 @@ import java.util.List;
 @Mixin(LivingEntityRenderer.class)
 public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extends EntityModel<T>> extends EntityRenderer<T> implements RenderLayerParent<T, M> {
 
-    protected LivingEntityRendererMixin(EntityRendererProvider.Context context) {
-        super(context);
+    protected LivingEntityRendererMixin(EntityRenderDispatcher dispatcher) {
+        super(dispatcher);
     }
 
     @Shadow @Final protected List<RenderLayer<T, M>> layers;
@@ -144,13 +146,15 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         }
     }
 
-    @Inject(method = "isEntityUpsideDown", at = @At("HEAD"), cancellable = true)
-    private static void isEntityUpsideDown(LivingEntity entity, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "setupRotations", at = @At("TAIL"))
+    private void figura$isEntityUpsideDown(T entity, PoseStack matrixStack, float ageInTicks, float rotationYaw, float partialTicks, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatar(entity);
         if (RenderUtils.vanillaModelAndScript(avatar)) {
             Boolean upsideDown = avatar.luaRuntime.renderer.upsideDown;
-            if (upsideDown != null)
-                cir.setReturnValue(upsideDown);
+            if (upsideDown != null && upsideDown) {
+                matrixStack.translate(0.0, entity.getBbHeight() + 0.1f, 0.0);
+                matrixStack.mulPose(Vector3f.ZP.rotationDegrees(180.0f));
+            }
         }
     }
 }

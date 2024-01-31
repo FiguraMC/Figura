@@ -53,7 +53,7 @@ public class FiguraJsonArray implements FiguraJsonSerializer.JsonValue {
             overloads = @LuaMethodOverload(argumentTypes = LuaValue.class, argumentNames = "elem", returnType = Boolean.class)
     )
     public boolean add(LuaValue o) {
-        if (!isSerializable(o)) throw new IllegalArgumentException("Type %s can't be serialized".formatted(o.typename()));
+        if (!isSerializable(o)) throw new IllegalArgumentException(String.format("Type %s can't be serialized", o.typename()));
         return contents.add(o);
     }
 
@@ -66,7 +66,7 @@ public class FiguraJsonArray implements FiguraJsonSerializer.JsonValue {
             )
     )
     public void insert(@LuaNotNil Integer i, LuaValue o) {
-        if (!isSerializable(o)) throw new IllegalArgumentException("Type %s can't be serialized".formatted(o.typename()));
+        if (!isSerializable(o)) throw new IllegalArgumentException(String.format("Type %s can't be serialized", o.typename()));
         contents.add(i-1, o);
     }
 
@@ -79,7 +79,7 @@ public class FiguraJsonArray implements FiguraJsonSerializer.JsonValue {
             )
     )
     public void set(@LuaNotNil Integer i, LuaValue o) {
-        if (!isSerializable(o)) throw new IllegalArgumentException("Type %s can't be serialized".formatted(o.typename()));
+        if (!isSerializable(o)) throw new IllegalArgumentException(String.format("Type %s can't be serialized", o.typename()));
         contents.set(i-1, o);
     }
 
@@ -154,7 +154,7 @@ public class FiguraJsonArray implements FiguraJsonSerializer.JsonValue {
     public void __newindex(LuaValue k, LuaValue o) {
         if (k.isint()) {
             int ind = k.checkint();
-            if (ind < 1 || ind > size() + 1) throw new IndexOutOfBoundsException("Index must be in range [1; %s+1], got %s".formatted(size(), ind));
+            if (ind < 1 || ind > size() + 1) throw new IndexOutOfBoundsException(String.format("Index must be in range [1; %s+1], got %s", size(), ind));
             if (ind == size()+1) add(o);
             else set(ind, o);
         }

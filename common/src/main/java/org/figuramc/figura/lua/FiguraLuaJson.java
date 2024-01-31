@@ -40,11 +40,11 @@ public class FiguraLuaJson {
             return "function: toJson";
         }
     };
-
+    static JsonParser parser = new JsonParser();
     public static LuaValue jsonStringToTable(String json) {
         JsonElement jsonElement;
         try {
-            jsonElement = JsonParser.parseString(json);
+            jsonElement = parser.parse(json);
         } catch (JsonSyntaxException e) {
             throw new LuaError("Failed to parse malformed Json: " + e.getCause());
         }
@@ -52,6 +52,6 @@ public class FiguraLuaJson {
     }
 
     public static String tableToJsonString(LuaValue value) {
-        return Objects.requireNonNullElse(LuaUtils.asJsonValue(value), "null").toString();
+        return (value != null && LuaUtils.asJsonValue(value) != null) ? Objects.requireNonNull(LuaUtils.asJsonValue(value)).toString() : "null";
     }
 }

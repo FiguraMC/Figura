@@ -70,7 +70,7 @@ public class WorldAPI {
     )
     public static BiomeAPI getBiome(Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("getBiome", x, y, z);
-        return new BiomeAPI(getCurrentWorld().getBiome(pos.asBlockPos()).value(), pos.asBlockPos());
+        return new BiomeAPI(getCurrentWorld().getBiome(pos.asBlockPos()), pos.asBlockPos());
     }
 
     @SuppressWarnings("deprecation")
@@ -508,7 +508,7 @@ public class WorldAPI {
     @LuaMethodDoc("world.get_build_height")
     public static int[] getBuildHeight() {
         Level world = getCurrentWorld();
-        return new int[]{world.getMinBuildHeight(), world.getMaxBuildHeight()};
+        return new int[]{0, world.getMaxBuildHeight()};
     }
 
     @LuaWhitelist

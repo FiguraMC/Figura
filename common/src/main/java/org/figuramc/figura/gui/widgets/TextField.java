@@ -115,16 +115,6 @@ public class TextField extends AbstractContainerElement {
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput output) {
-        field.updateNarration(output);
-    }
-
-    @Override
-    public NarrationPriority narrationPriority() {
-        return field.narrationPriority();
-    }
-
-    @Override
     public void setVisible(boolean visible) {
         if (visible == isVisible())
             return;

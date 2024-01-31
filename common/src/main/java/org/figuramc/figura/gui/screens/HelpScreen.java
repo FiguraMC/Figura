@@ -57,7 +57,7 @@ public class HelpScreen extends AbstractPanelScreen {
         this.addRenderableWidget(new IconButton(middle - 40, y, 80, 24, 20, 20, 20, ICONS, 60, 40, new TextComponent("GitHub"), null, bx -> UIHelper.openURL(FiguraMod.Links.Github.url).run()) {
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                if (Configs.EASTER_EGGS.value && this.isHoveredOrFocused() && this.isMouseOver(mouseX, mouseY) && button == 1) {
+                if (Configs.EASTER_EGGS.value && (this.isHovered() || this.isFocused()) && this.isMouseOver(mouseX, mouseY) && button == 1) {
                     int dim = getTextureSize();
                     int x = (int) (Math.random() * dim) + getX() + 2;
                     int y = (int) (Math.random() * dim) + getY() + 2;
@@ -87,7 +87,7 @@ public class HelpScreen extends AbstractPanelScreen {
     public void tick() {
         super.tick();
 
-        if (FiguraMod.ticks % 5 == 0 && kofi.isHoveredOrFocused()) {
+        if (FiguraMod.ticks % 5 == 0 && (kofi.isHovered() || kofi.isFocused())) {
             int x = (int) (Math.random() * kofi.getWidth()) + kofi.getX();
             int y = (int) (Math.random() * kofi.getHeight()) + kofi.getY();
             addRenderableOnly(new ParticleWidget(x, y, ParticleTypes.HAPPY_VILLAGER));

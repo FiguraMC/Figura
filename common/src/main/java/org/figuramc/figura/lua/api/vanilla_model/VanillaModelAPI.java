@@ -270,7 +270,7 @@ public class VanillaModelAPI {
 
         PARROTS = addPart(new VanillaGroupPart(owner, "PARROTS", LEFT_PARROT, RIGHT_PARROT));
 
-        List<VanillaGroupPart> groups = new ArrayList<>() {{
+        List<VanillaGroupPart> groups = new ArrayList<VanillaGroupPart>() {{
             add(PLAYER);
             add(CAPE);
             add(ARMOR);

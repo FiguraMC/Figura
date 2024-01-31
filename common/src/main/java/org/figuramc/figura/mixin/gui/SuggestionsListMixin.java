@@ -46,6 +46,6 @@ public class SuggestionsListMixin implements SuggestionsListAccessor {
     @Intrinsic
     public void figura$setFiguraList(boolean bool) {
         figuraList = bool;
-        if (bool) this.rect.setWidth(this.rect.getWidth() + 8 + Minecraft.getInstance().font.width(" "));
+        if (bool) ((Rect2iAccessor)this.rect).setWidth(this.rect.getWidth() + 8 + Minecraft.getInstance().font.width(" "));
     }
 }

@@ -55,7 +55,7 @@ public class AvatarWizard {
 
     public boolean canBuild() {
         String name = (String) map.get(WizardEntry.NAME);
-        return name != null && !name.isBlank();
+        return name != null && !name.trim().isEmpty();
     }
 
     public boolean checkDependency(WizardEntry entry) {
@@ -73,11 +73,18 @@ public class AvatarWizard {
             if (obj == null || !dependency.validate(obj))
                 return false;
 
-            boolean bl = switch (dependency.type) {
-                case TOGGLE -> (boolean) obj;
-                case TEXT -> !((String) obj).isBlank();
-                default -> true;
-            };
+            boolean bl;
+            switch (dependency.type) {
+                case TOGGLE:
+                    bl = (boolean) obj;
+                    break;
+                case TEXT:
+                    bl = !((String) obj).trim().isEmpty();
+                    break;
+                default:
+                    bl = true;
+                    break;
+            }
             if (!bl) return false;
         }
 
@@ -158,66 +165,56 @@ public class AvatarWizard {
 
         //hide player
         if (hasPlayerModel && WizardEntry.HIDE_PLAYER.asBool(map))
-            script += """
-
-                    --hide vanilla model
-                    vanilla_model.PLAYER:setVisible(false)
-                    """;
-
+            script +=(
+                    "\n--hide vanilla model\n" +
+                            "vanilla_model.PLAYER:setVisible(false)\n");
         //hide armor
         boolean hideArmor = WizardEntry.HIDE_ARMOR.asBool(map);
         if (hideArmor)
-            script += """
-
-                    --hide vanilla armor model
-                    vanilla_model.ARMOR:setVisible(false)
-                    """;
+            script += (
+                    "\n--hide vanilla armor model\n" +
+                            "vanilla_model.ARMOR:setVisible(false)\n"
+            );
 
         //helmet item fix :3
         if (hasPlayerModel && hideArmor && WizardEntry.HELMET_ITEM_PIVOT.asBool(map))
-            script += """
-                    --re-enable the helmet item
-                    vanilla_model.HELMET_ITEM:setVisible(true)
-                    """;
+            script += (
+                    "\n--re-enable the helmet item\n" +
+                    "vanilla_model.HELMET_ITEM:setVisible(true)"
+            );
 
         //hide cape
         if (WizardEntry.HIDE_CAPE.asBool(map))
-            script += """
-
-                    --hide vanilla cape model
-                    vanilla_model.CAPE:setVisible(false)
-                    """;
+            script += "\n" +
+                      "--hide vanilla cape model\n" +
+                      "vanilla_model.CAPE:setVisible(false)\n";
 
         //hide cape
         if (WizardEntry.HIDE_ELYTRA.asBool(map))
-            script += """
-
-                    --hide vanilla elytra model
-                    vanilla_model.ELYTRA:setVisible(false)
-                    """;
+            script += "\n" +
+                      "--hide vanilla elytra model\n" +
+                      "vanilla_model.ELYTRA:setVisible(false)\n";
 
         //empty events
         if (WizardEntry.EMPTY_EVENTS.asBool(map))
-            script += """
-
-                    --entity init event, used for when the avatar entity is loaded for the first time
-                    function events.entity_init()
-                      --player functions goes here
-                    end
-
-                    --tick event, called 20 times per second
-                    function events.tick()
-                      --code goes here
-                    end
-
-                    --render event, called every time your avatar is rendered
-                    --it have two arguments, "delta" and "context"
-                    --"delta" is the percentage between the last and the next tick (as a decimal value, 0.0 to 1.0)
-                    --"context" is a string that tells from where this render event was called (the paperdoll, gui, player render, first person)
-                    function events.render(delta, context)
-                      --code goes here
-                    end
-                    """;
+            script += "\n" +
+                      "--entity init event, used for when the avatar entity is loaded for the first time\n" +
+                      "function events.entity_init()\n" +
+                      "  --player functions goes here\n" +
+                      "end\n" +
+                      "\n" +
+                      "--tick event, called 20 times per second\n" +
+                      "function events.tick()\n" +
+                      "  --code goes here\n" +
+                      "end\n" +
+                      "\n" +
+                      "--render event, called every time your avatar is rendered\n" +
+                      "--it have two arguments, \"delta\" and \"context\"\n" +
+                      "--\"delta\" is the percentage between the last and the next tick (as a decimal value, 0.0 to 1.0)\n" +
+                      "--\"context\" is a string that tells from where this render event was called (the paperdoll, gui, player render, first person)\n" +
+                      "function events.render(delta, context)\n" +
+                      "  --code goes here\n" +
+                      "end\n";
 
         //return
         return script.getBytes();

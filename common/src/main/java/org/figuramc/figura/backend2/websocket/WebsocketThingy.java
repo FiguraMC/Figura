@@ -1,6 +1,6 @@
 package org.figuramc.figura.backend2.websocket;
 
-import net.minecraft.client.multiplayer.resolver.ServerAddress;
+import net.minecraft.client.multiplayer.ServerAddress;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.config.Configs;
@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class WebsocketThingy extends WebSocketClient {
 
-    public static final Map<Integer, String> ERROR_CODES = new HashMap<>() {{
+    public static final Map<Integer, String> ERROR_CODES = new HashMap<Integer, String>() {{
         put(1000, "Normal Closure");
         put(1001, "Going Away");
         put(1002, "Protocol Error");
@@ -75,7 +75,7 @@ public class WebsocketThingy extends WebSocketClient {
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
-        reason = reason.isBlank() ? ERROR_CODES.getOrDefault(code, "Unknown") : reason;
+        reason = reason.trim().isEmpty() ? ERROR_CODES.getOrDefault(code, "Unknown") : reason;
         FiguraMod.LOGGER.info("Closed connection: " + reason + ", Code: " + code + ", Remote: " + remote);
 
         handleClose(code, reason + (FiguraMod.debugModeEnabled() ? "\n\nCode: " + code + "\nRemote: " + remote : ""));

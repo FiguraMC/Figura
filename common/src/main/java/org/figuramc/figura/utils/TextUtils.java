@@ -68,6 +68,7 @@ public class TextUtils {
         return ret;
     }
 
+    private static JsonParser parser = new JsonParser();
     public static Component tryParseJson(String text) {
         if (text == null)
             return TextComponent.EMPTY.copy();
@@ -77,7 +78,7 @@ public class TextUtils {
 
         try {
             // check if its valid json text
-            JsonParser.parseString(text);
+            parser.parse(text);
 
             // attempt to parse json
             finalText = Component.Serializer.fromJsonLenient(text);

@@ -3,7 +3,6 @@ package org.figuramc.figura.gui.widgets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -41,7 +40,7 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (!this.isActive() || !this.isHoveredOrFocused() || !this.isMouseOver(mouseX, mouseY))
+        if (!this.isActive() || !(this.isFocused() || this.isHovered()) || !this.isMouseOver(mouseX, mouseY))
             return false;
 
         if (button == 0) {
@@ -163,7 +162,7 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
 
         // render head
         lerpPos(delta);
-        blit(stack, x, (int) (y + Math.round(Mth.lerp(scrollPos, 0, height - headHeight))), 0f, isHoveredOrFocused() || isScrolling ? headHeight : 0f, headWidth, headHeight, 20, 40);
+        blit(stack, x, (int) (y + Math.round(Mth.lerp(scrollPos, 0, height - headHeight))), 0f, (this.isFocused() || this.isHovered()) || isScrolling ? headHeight : 0f, headWidth, headHeight, 20, 40);
     }
 
     // -- getters and setters -- //
@@ -219,7 +218,6 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
         this.height = height;
     }
 
-    @Override
     public boolean isActive() {
         return this.active;
     }
@@ -260,10 +258,6 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
     // set scroll ratio
     public void setScrollRatio(double entryHeight, double heightDiff) {
         scrollRatio = (getHeight() + entryHeight) / (heightDiff / 2d);
-    }
-
-    @Override
-    public void updateNarration(NarrationElementOutput builder) {
     }
 
     // press action

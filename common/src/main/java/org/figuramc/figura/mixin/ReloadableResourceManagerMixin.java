@@ -2,18 +2,20 @@ package org.figuramc.figura.mixin;
 
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
+import net.minecraft.server.packs.resources.SimpleReloadableResourceManager;
 import org.figuramc.figura.resources.FiguraRuntimeResources;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Mixin(ReloadableResourceManager.class)
+@Mixin(SimpleReloadableResourceManager.class)
 public class ReloadableResourceManagerMixin {
 
-    @ModifyVariable(at = @At(value = "HEAD"), method = "createReload", argsOnly = true)
+    @ModifyVariable(at = @At(value = "HEAD"), method = "createFullReload", argsOnly = true)
     private List<PackResources> createReload(List<PackResources> packs) {
         List<PackResources> list = new ArrayList<>(packs);
 

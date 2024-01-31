@@ -72,11 +72,11 @@ public class SwitchButton extends Button {
         int y = getY();
 
         // render switch
-        blit(stack, x + 5, y + 5, 20, 10, 10f, (this.toggled ? 20f : 0f) + (this.isHoveredOrFocused() ? 10f : 0f), 20, 10, 30, 40);
+        blit(stack, x + 5, y + 5, 20, 10, 10f, (this.toggled ? 20f : 0f) + ((this.isFocused() || this.isHovered()) ? 10f : 0f), 20, 10, 30, 40);
 
         // render head
         headPos = (float) Mth.lerp(1f - Math.pow(0.2f, delta), headPos, this.toggled ? 20f : 0f);
-        blit(stack, Math.round(x + headPos), y, 10, 20, 0f, this.isHoveredOrFocused() ? 20f : 0f, 10, 20, 30, 40);
+        blit(stack, Math.round(x + headPos), y, 10, 20, 0f, (this.isFocused() || this.isHovered()) ? 20f : 0f, 10, 20, 30, 40);
     }
 
     @Override

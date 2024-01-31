@@ -131,11 +131,13 @@ public class SoundAPI {
     )
     public SoundAPI newSound(@LuaNotNil String name, @LuaNotNil Object object) {
         byte[] bytes;
-        if (object instanceof LuaTable table) {
+        if (object instanceof LuaTable) {
+            LuaTable table = (LuaTable) object;
             bytes = new byte[table.length()];
             for(int i = 0; i < bytes.length; i++)
                 bytes[i] = (byte) table.get(i + 1).checkint();
-        } else if (object instanceof String s) {
+        } else if (object instanceof String) {
+            String s = (String) object;
             bytes = Base64.getDecoder().decode(s);
         } else {
             throw new LuaError("Invalid type for newSound \"" + object.getClass().getSimpleName() + "\"");

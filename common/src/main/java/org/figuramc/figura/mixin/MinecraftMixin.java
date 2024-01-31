@@ -26,6 +26,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
@@ -107,12 +108,13 @@ public abstract class MinecraftMixin {
         }
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getInventory()Lnet/minecraft/world/entity/player/Inventory;"), method = "handleKeybinds", locals = LocalCapture.CAPTURE_FAILSOFT)
-    private void handleHotbarSlots(CallbackInfo ci, int i) {
+    @ModifyVariable(at = @At(value = "STORE", ordinal = 1), ordinal = 0, method = "handleKeybinds")
+    private int handleHotbarSlots(int i) {
         if (PopupMenu.isEnabled())
             PopupMenu.hotbarKeyPressed(i);
         if (ActionWheel.isEnabled())
             ActionWheel.hotbarKeyPressed(i);
+        return i;
     }
 
     @Inject(at = @At("HEAD"), method = "setScreen")

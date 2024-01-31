@@ -37,6 +37,7 @@ public class FiguraRuntimeResources {
         IOUtils.deleteFile(getRootDirectory());
     }
 
+    static JsonParser parser = new JsonParser();
     public static CompletableFuture<Void> init() {
         return future = CompletableFuture.runAsync(() -> {
             FiguraMod.LOGGER.info("Fetching backend resources...");
@@ -46,16 +47,16 @@ public class FiguraRuntimeResources {
             // get old hashes
             Path hashesPath = getRootDirectory().resolve("hashes.json");
             try (BufferedReader reader = Files.newBufferedReader(hashesPath)) {
-                oldHashes = JsonParser.parseReader(reader).getAsJsonObject();
+                oldHashes = parser.parse(reader).getAsJsonObject();
             } catch (Exception ignored) {
                 oldHashes = new JsonObject();
             }
 
             // get new hashes
             try (InputStream stream = NetworkStuff.getResourcesHashes(ASSETS_VERSION)) {
-                byte[] bytes = stream.readAllBytes();
+                byte[] bytes = org.apache.commons.io.IOUtils.toByteArray(stream);
                 String s = new String(bytes);
-                hashes = JsonParser.parseString(s).getAsJsonObject();
+                hashes = parser.parse(s).getAsJsonObject();
 
                 // save new hashes
                 try (OutputStream fs = Files.newOutputStream(hashesPath)) {
@@ -108,7 +109,7 @@ public class FiguraRuntimeResources {
         Path target = getAssetsDirectory().resolve(path);
         IOUtils.createDirIfNeeded(target.getParent());
         try (InputStream resource = NetworkStuff.getResource(ASSETS_VERSION, path); OutputStream fs = Files.newOutputStream(target)) {
-            fs.write(resource.readAllBytes());
+            fs.write(org.apache.commons.io.IOUtils.toByteArray(resource));
             FiguraMod.debug("Downloaded resource \"" + path + "\"");
         }
     }

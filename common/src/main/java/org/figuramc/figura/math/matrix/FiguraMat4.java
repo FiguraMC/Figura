@@ -2,6 +2,7 @@ package org.figuramc.figura.math.matrix;
 
 import com.mojang.math.Matrix4f;
 import net.minecraft.world.phys.Vec3;
+import org.figuramc.figura.ducks.extensions.Matrix4fExtension;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
@@ -36,13 +37,13 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
     public Matrix4f toMatrix4f() {
         writeToBuffer();
         Matrix4f result = new Matrix4f();
-        result.load(copyingBuffer);
+        ((Matrix4fExtension)(Object)result).figura$load(copyingBuffer);
         return result;
     }
 
     public void copyDataTo(Matrix4f vanillaMatrix) {
         writeToBuffer();
-        vanillaMatrix.load(copyingBuffer);
+        ((Matrix4fExtension)(Object)vanillaMatrix).figura$load(copyingBuffer);
     }
 
     private void writeToBuffer() {
@@ -78,12 +79,12 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
     @Override
     protected double calculateDeterminant() {
         // https://stackoverflow.com/a/44446912
-        var A2323 = v33 * v44 - v34 * v43 ;
-        var A1323 = v32 * v44 - v34 * v42 ;
-        var A1223 = v32 * v43 - v33 * v42 ;
-        var A0323 = v31 * v44 - v34 * v41 ;
-        var A0223 = v31 * v43 - v33 * v41 ;
-        var A0123 = v31 * v42 - v32 * v41 ;
+        double A2323 = v33 * v44 - v34 * v43 ;
+        double A1323 = v32 * v44 - v34 * v42 ;
+        double A1223 = v32 * v43 - v33 * v42 ;
+        double A0323 = v31 * v44 - v34 * v41 ;
+        double A0223 = v31 * v43 - v33 * v41 ;
+        double A0123 = v31 * v42 - v32 * v41 ;
 
         return v11 * ( v22 * A2323 - v23 * A1323 + v24 * A1223 )
                 - v12 * ( v21 * A2323 - v23 * A0323 + v24 * A0223 )
@@ -113,7 +114,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
     }
     @Override
     public boolean equals(Object other) {
-        return other instanceof FiguraMat4 o && equals(o);
+        return other instanceof FiguraMat4 && equals((FiguraMat4) other);
     }
     @Override
     public String toString() {
@@ -131,13 +132,18 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
             value = "matrix_n.get_column"
     )
     public FiguraVec4 getColumn(int col) {
-        return switch (col) {
-            case 1 -> FiguraVec4.of(v11, v21, v31, v41);
-            case 2 -> FiguraVec4.of(v12, v22, v32, v42);
-            case 3 -> FiguraVec4.of(v13, v23, v33, v43);
-            case 4 -> FiguraVec4.of(v14, v24, v34, v44);
-            default -> throw new LuaError("Column must be 1 to " + cols());
-        };
+        switch (col) {
+            case 1:
+                return FiguraVec4.of(v11, v21, v31, v41);
+            case 2:
+                return FiguraVec4.of(v12, v22, v32, v42);
+            case 3:
+                return FiguraVec4.of(v13, v23, v33, v43);
+            case 4:
+                return FiguraVec4.of(v14, v24, v34, v44);
+            default:
+                throw new LuaError("Column must be 1 to " + cols());
+        }
     }
 
     @Override
@@ -151,13 +157,18 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
             value = "matrix_n.get_row"
     )
     public FiguraVec4 getRow(int row) {
-        return switch (row) {
-            case 1 -> FiguraVec4.of(v11, v12, v13, v14);
-            case 2 -> FiguraVec4.of(v21, v22, v23, v24);
-            case 3 -> FiguraVec4.of(v31, v32, v33, v34);
-            case 4 -> FiguraVec4.of(v41, v42, v43, v44);
-            default -> throw new LuaError("Row must be 1 to " + rows());
-        };
+        switch (row) {
+            case 1:
+                return FiguraVec4.of(v11, v12, v13, v14);
+            case 2:
+                return FiguraVec4.of(v21, v22, v23, v24);
+            case 3:
+                return FiguraVec4.of(v31, v32, v33, v34);
+            case 4:
+                return FiguraVec4.of(v41, v42, v43, v44);
+            default:
+                throw new LuaError("Row must be 1 to " + rows());
+        }
     }
 
     @Override
@@ -356,24 +367,24 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
         } else {
             // https://stackoverflow.com/a/44446912
 
-            var A2323 = v33 * v44 - v34 * v43 ;
-            var A1323 = v32 * v44 - v34 * v42 ;
-            var A1223 = v32 * v43 - v33 * v42 ;
-            var A0323 = v31 * v44 - v34 * v41 ;
-            var A0223 = v31 * v43 - v33 * v41 ;
-            var A0123 = v31 * v42 - v32 * v41 ;
-            var A2313 = v23 * v44 - v24 * v43 ;
-            var A1313 = v22 * v44 - v24 * v42 ;
-            var A1213 = v22 * v43 - v23 * v42 ;
-            var A2312 = v23 * v34 - v24 * v33 ;
-            var A1312 = v22 * v34 - v24 * v32 ;
-            var A1212 = v22 * v33 - v23 * v32 ;
-            var A0313 = v21 * v44 - v24 * v41 ;
-            var A0213 = v21 * v43 - v23 * v41 ;
-            var A0312 = v21 * v34 - v24 * v31 ;
-            var A0212 = v21 * v33 - v23 * v31 ;
-            var A0113 = v21 * v42 - v22 * v41 ;
-            var A0112 = v21 * v32 - v22 * v31 ;
+            double A2323 = v33 * v44 - v34 * v43 ;
+            double A1323 = v32 * v44 - v34 * v42 ;
+            double A1223 = v32 * v43 - v33 * v42 ;
+            double A0323 = v31 * v44 - v34 * v41 ;
+            double A0223 = v31 * v43 - v33 * v41 ;
+            double A0123 = v31 * v42 - v32 * v41 ;
+            double A2313 = v23 * v44 - v24 * v43 ;
+            double A1313 = v22 * v44 - v24 * v42 ;
+            double A1213 = v22 * v43 - v23 * v42 ;
+            double A2312 = v23 * v34 - v24 * v33 ;
+            double A1312 = v22 * v34 - v24 * v32 ;
+            double A1212 = v22 * v33 - v23 * v32 ;
+            double A0313 = v21 * v44 - v24 * v41 ;
+            double A0213 = v21 * v43 - v23 * v41 ;
+            double A0312 = v21 * v34 - v24 * v31 ;
+            double A0212 = v21 * v33 - v23 * v31 ;
+            double A0113 = v21 * v42 - v22 * v41 ;
+            double A0112 = v21 * v32 - v22 * v31 ;
 
             double det = v11 * ( v22 * A2323 - v23 * A1323 + v24 * A1223 )
                     - v12 * ( v21 * A2323 - v23 * A0323 + v24 * A0223 )
@@ -849,12 +860,16 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
     }
     @LuaWhitelist
     public Object __mul(@LuaNotNil Object o) {
-        if (o instanceof FiguraMat4 mat)
+        if (o instanceof FiguraMat4) {
+            FiguraMat4 mat = (FiguraMat4) o;
             return mat.times(this);
-        else if (o instanceof FiguraVec4 vec)
+        } else if (o instanceof FiguraVec4) {
+            FiguraVec4 vec = (FiguraVec4) o;
             return this.times(vec);
-        else if (o instanceof Number n)
+        } else if (o instanceof Number) {
+            Number n = (Number) o;
             return this.copy().rawScale(n.doubleValue());
+        }
 
         throw new LuaError("Invalid types to Matrix4 __mul: " + o.getClass().getSimpleName());
     }
@@ -874,86 +889,175 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
     public Object __index(String string) {
         if (string == null)
             return null;
-        return switch (string) {
-            case "1", "c1" -> this.getColumn(1);
-            case "2", "c2" -> this.getColumn(2);
-            case "3", "c3" -> this.getColumn(3);
-            case "4", "c4" -> this.getColumn(4);
-
-            case "r1" -> this.getRow(1);
-            case "r2" -> this.getRow(2);
-            case "r3" -> this.getRow(3);
-            case "r4" -> this.getRow(4);
-
-            case "v11" -> this.v11;
-            case "v12" -> this.v12;
-            case "v13" -> this.v13;
-            case "v14" -> this.v14;
-            case "v21" -> this.v21;
-            case "v22" -> this.v22;
-            case "v23" -> this.v23;
-            case "v24" -> this.v24;
-            case "v31" -> this.v31;
-            case "v32" -> this.v32;
-            case "v33" -> this.v33;
-            case "v34" -> this.v34;
-            case "v41" -> this.v41;
-            case "v42" -> this.v42;
-            case "v43" -> this.v43;
-            case "v44" -> this.v44;
-            default -> null;
-        };
+        switch (string) {
+            case "1":
+            case "c1":
+                return this.getColumn(1);
+            case "2":
+            case "c2":
+                return this.getColumn(2);
+            case "3":
+            case "c3":
+                return this.getColumn(3);
+            case "4":
+            case "c4":
+                return this.getColumn(4);
+            case "r1":
+                return this.getRow(1);
+            case "r2":
+                return this.getRow(2);
+            case "r3":
+                return this.getRow(3);
+            case "r4":
+                return this.getRow(4);
+            case "v11":
+                return this.v11;
+            case "v12":
+                return this.v12;
+            case "v13":
+                return this.v13;
+            case "v14":
+                return this.v14;
+            case "v21":
+                return this.v21;
+            case "v22":
+                return this.v22;
+            case "v23":
+                return this.v23;
+            case "v24":
+                return this.v24;
+            case "v31":
+                return this.v31;
+            case "v32":
+                return this.v32;
+            case "v33":
+                return this.v33;
+            case "v34":
+                return this.v34;
+            case "v41":
+                return this.v41;
+            case "v42":
+                return this.v42;
+            case "v43":
+                return this.v43;
+            case "v44":
+                return this.v44;
+            default:
+                return null;
+        }
     }
 
     @LuaWhitelist
     public void __newindex(@LuaNotNil String string, Object value) {
-        if (value instanceof FiguraVec4 vec4) {
+        if (value instanceof FiguraVec4) {
+            FiguraVec4 vec4 = (FiguraVec4) value;
             switch (string) {
-                case "1", "c1" -> {
-                    v11 = vec4.x; v21 = vec4.y; v31 = vec4.z; v41 = vec4.w;
-                }
-                case "2", "c2" -> {
-                    v12 = vec4.x; v22 = vec4.y; v32 = vec4.z; v42 = vec4.w;
-                }
-                case "3", "c3" -> {
-                    v13 = vec4.x; v23 = vec4.y; v33 = vec4.z; v43 = vec4.w;
-                }
-                case "4", "c4" -> {
-                    v14 = vec4.x; v24 = vec4.y; v34 = vec4.z; v44 = vec4.w;
-                }
-                case "r1" -> {
-                    v11 = vec4.x; v12 = vec4.y; v13 = vec4.z; v14 = vec4.w;
-                }
-                case "r2" -> {
-                    v21 = vec4.x; v22 = vec4.y; v23 = vec4.z; v24 = vec4.w;
-                }
-                case "r3" -> {
-                    v31 = vec4.x; v32 = vec4.y; v33 = vec4.z; v34 = vec4.w;
-                }
-                case "r4" -> {
-                    v41 = vec4.x; v42 = vec4.y; v43 = vec4.z; v44 = vec4.w;
-                }
+                case "1":
+                case "c1":
+                    v11 = vec4.x;
+                    v21 = vec4.y;
+                    v31 = vec4.z;
+                    v41 = vec4.w;
+                    break;
+                case "2":
+                case "c2":
+                    v12 = vec4.x;
+                    v22 = vec4.y;
+                    v32 = vec4.z;
+                    v42 = vec4.w;
+                    break;
+                case "3":
+                case "c3":
+                    v13 = vec4.x;
+                    v23 = vec4.y;
+                    v33 = vec4.z;
+                    v43 = vec4.w;
+                    break;
+                case "4":
+                case "c4":
+                    v14 = vec4.x;
+                    v24 = vec4.y;
+                    v34 = vec4.z;
+                    v44 = vec4.w;
+                    break;
+                case "r1":
+                    v11 = vec4.x;
+                    v12 = vec4.y;
+                    v13 = vec4.z;
+                    v14 = vec4.w;
+                    break;
+                case "r2":
+                    v21 = vec4.x;
+                    v22 = vec4.y;
+                    v23 = vec4.z;
+                    v24 = vec4.w;
+                    break;
+                case "r3":
+                    v31 = vec4.x;
+                    v32 = vec4.y;
+                    v33 = vec4.z;
+                    v34 = vec4.w;
+                    break;
+                case "r4":
+                    v41 = vec4.x;
+                    v42 = vec4.y;
+                    v43 = vec4.z;
+                    v44 = vec4.w;
+                    break;
             }
             return;
         }
-        if (value instanceof Number num) {
+        if (value instanceof Number) {
+            Number num = (Number) value;
             switch (string) {
-                case "v11" -> this.v11 = num.doubleValue();
-                case "v12" -> this.v12 = num.doubleValue();
-                case "v13" -> this.v13 = num.doubleValue();
-                case "v14" -> this.v14 = num.doubleValue();
-                case "v21" -> this.v21 = num.doubleValue();
-                case "v22" -> this.v22 = num.doubleValue();
-                case "v23" -> this.v23 = num.doubleValue();
-                case "v24" -> this.v24 = num.doubleValue();
-                case "v31" -> this.v31 = num.doubleValue();
-                case "v32" -> this.v32 = num.doubleValue();
-                case "v33" -> this.v33 = num.doubleValue();
-                case "v34" -> this.v34 = num.doubleValue();
-                case "v41" -> this.v41 = num.doubleValue();
-                case "v42" -> this.v42 = num.doubleValue();
-                case "v43" -> this.v43 = num.doubleValue();
-                case "v44" -> this.v44 = num.doubleValue();
+                case "v11":
+                    this.v11 = num.doubleValue();
+                    break;
+                case "v12":
+                    this.v12 = num.doubleValue();
+                    break;
+                case "v13":
+                    this.v13 = num.doubleValue();
+                    break;
+                case "v14":
+                    this.v14 = num.doubleValue();
+                    break;
+                case "v21":
+                    this.v21 = num.doubleValue();
+                    break;
+                case "v22":
+                    this.v22 = num.doubleValue();
+                    break;
+                case "v23":
+                    this.v23 = num.doubleValue();
+                    break;
+                case "v24":
+                    this.v24 = num.doubleValue();
+                    break;
+                case "v31":
+                    this.v31 = num.doubleValue();
+                    break;
+                case "v32":
+                    this.v32 = num.doubleValue();
+                    break;
+                case "v33":
+                    this.v33 = num.doubleValue();
+                    break;
+                case "v34":
+                    this.v34 = num.doubleValue();
+                    break;
+                case "v41":
+                    this.v41 = num.doubleValue();
+                    break;
+                case "v42":
+                    this.v42 = num.doubleValue();
+                    break;
+                case "v43":
+                    this.v43 = num.doubleValue();
+                    break;
+                case "v44":
+                    this.v44 = num.doubleValue();
+                    break;
             }
             return;
         }

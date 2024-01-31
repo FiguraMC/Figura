@@ -8,6 +8,14 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.chat.Component;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.HttpClients;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -29,15 +37,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.ByteBuffer;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.BiConsumer;
@@ -46,7 +48,7 @@ import java.util.function.Function;
 
 public class NetworkStuff {
 
-    protected static final HttpClient client = HttpClient.newHttpClient();
+    protected static final HttpClient client = HttpClients.createDefault();
     protected static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
     private static final ConcurrentLinkedQueue<Request<HttpAPI>> API_REQUESTS = new ConcurrentLinkedQueue<>();
@@ -264,7 +266,7 @@ public class NetworkStuff {
     public static void checkVersion() {
         queueString(Util.NIL_UUID, HttpAPI::getVersion, (code, data) -> {
             responseDebug("checkVersion", code, data);
-            JsonObject json = JsonParser.parseString(data).getAsJsonObject();
+            JsonObject json = parser.parse(data).getAsJsonObject();
             int config = Configs.UPDATE_CHANNEL.value;
             latestVersion = new Version(json.get(config <= 1 ? "release" : "prerelease").getAsString());
             if (config == 0)
@@ -277,7 +279,7 @@ public class NetworkStuff {
     public static void setLimits() {
         queueString(Util.NIL_UUID, HttpAPI::getLimits, (code, data) -> {
             responseDebug("setLimits", code, data);
-            JsonObject json = JsonParser.parseString(data).getAsJsonObject();
+            JsonObject json = parser.parse(data).getAsJsonObject();
 
             JsonObject rate = json.getAsJsonObject("rate");
             uploadRate.set(rate.get("upload").getAsInt() * 0.95);
@@ -288,6 +290,7 @@ public class NetworkStuff {
         });
     }
 
+    static JsonParser parser = new JsonParser();
     public static void getUser(UserData user) {
         if (checkUUID(user.id))
             return;
@@ -305,7 +308,7 @@ public class NetworkStuff {
 
             //success
 
-            JsonObject json = JsonParser.parseString(data).getAsJsonObject();
+            JsonObject json = parser.parse(data).getAsJsonObject();
 
             //avatars
             ArrayList<Pair<String, Pair<String, UUID>>> avatars = new ArrayList<>();
@@ -356,16 +359,24 @@ public class NetworkStuff {
 
                 if (code == 200) {
                     //TODO - profile screen
-                    equipAvatar(List.of(Pair.of(avatar.owner, id)));
+                    equipAvatar(Collections.singletonList(Pair.of(avatar.owner, id)));
                     AvatarManager.localUploaded = true;
                 }
 
                 //feedback
                 switch (code) {
-                    case 200 -> FiguraToast.sendToast(new FiguraText("backend.upload_success"));
-                    case 413 -> FiguraToast.sendToast(new FiguraText("backend.upload_too_big"), FiguraToast.ToastType.ERROR);
-                    case 507 -> FiguraToast.sendToast(new FiguraText("backend.upload_too_many"), FiguraToast.ToastType.ERROR);
-                    default -> FiguraToast.sendToast(new FiguraText("backend.upload_error"), FiguraToast.ToastType.ERROR);
+                    case 200:
+                        FiguraToast.sendToast(new FiguraText("backend.upload_success"));
+                        break;
+                    case 413:
+                        FiguraToast.sendToast(new FiguraText("backend.upload_too_big"), FiguraToast.ToastType.ERROR);
+                        break;
+                    case 507:
+                        FiguraToast.sendToast(new FiguraText("backend.upload_too_many"), FiguraToast.ToastType.ERROR);
+                        break;
+                    default:
+                        FiguraToast.sendToast(new FiguraText("backend.upload_error"), FiguraToast.ToastType.ERROR);
+                        break;
                 }
             });
             uploadRate.use();
@@ -381,9 +392,15 @@ public class NetworkStuff {
             responseDebug("deleteAvatar", code, data);
 
             switch (code) {
-                case 200 -> FiguraToast.sendToast(new FiguraText("backend.delete_success"));
-                case 404 -> FiguraToast.sendToast(new FiguraText("backend.avatar_not_found"), FiguraToast.ToastType.ERROR);
-                default -> FiguraToast.sendToast(new FiguraText("backend.delete_error"), FiguraToast.ToastType.ERROR);
+                case 200:
+                    FiguraToast.sendToast(new FiguraText("backend.delete_success"));
+                    break;
+                case 404:
+                    FiguraToast.sendToast(new FiguraText("backend.avatar_not_found"), FiguraToast.ToastType.ERROR);
+                    break;
+                default:
+                    FiguraToast.sendToast(new FiguraText("backend.delete_error"), FiguraToast.ToastType.ERROR);
+                    break;
             }
         });
     }
@@ -412,7 +429,7 @@ public class NetworkStuff {
         queueStream(target.id, api -> api.getAvatar(owner, id), (code, stream) -> {
             String s;
             try {
-                s = code == 200 ? "<avatar data>" : new String(stream.readAllBytes());
+                s = code == 200 ? "<avatar data>" : new String(IOUtils.toByteArray(stream));
             } catch (Exception e) {
                 s = e.getMessage();
             }
@@ -514,16 +531,22 @@ public class NetworkStuff {
 
 
     private static InputStream request(HttpRequest request) throws Exception {
-        HttpResponse<InputStream> response = NetworkStuff.client.send(request, HttpResponse.BodyHandlers.ofInputStream());
-        return response.body();
+        HttpResponse response = NetworkStuff.client.execute((HttpUriRequest) request);
+        return response.getEntity().getContent();
     }
 
     public static InputStream getResourcesHashes(String version) throws Exception {
-        return request(HttpRequest.newBuilder(HttpAPI.getUri("/assets/" + version)).timeout(Duration.ofSeconds(15)).build());
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectTimeout(15000)
+                .setSocketTimeout(15000)
+                .build();
+        HttpGet httpGet = new HttpGet(HttpAPI.getUri("/assets/" + version));
+        httpGet.setConfig(requestConfig);
+        return request(httpGet);
     }
 
     public static InputStream getResource(String version, String resource) throws Exception {
-        return request(HttpRequest.newBuilder(HttpAPI.getUri("/assets/" + version + "/" + resource)).build());
+        return request(new HttpGet(HttpAPI.getUri("/assets/" + version + "/" + resource)));
     }
 
 
@@ -546,11 +569,40 @@ public class NetworkStuff {
     // -- request subclass -- //
 
 
-    private record Request<T>(UUID owner, Consumer<T> consumer) {
+    private static final class Request<T> {
+        private final UUID owner;
+        private final Consumer<T> consumer;
+
+        private Request(UUID owner, Consumer<T> consumer) {
+            this.owner = owner;
+            this.consumer = consumer;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            return o instanceof Request request && owner.equals(request.owner);
+            return o instanceof Request && owner.equals(((Request) o).owner);
         }
+
+        public UUID owner() {
+            return owner;
+        }
+
+        public Consumer<T> consumer() {
+            return consumer;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(owner, consumer);
+        }
+
+        @Override
+        public String toString() {
+            return "Request[" +
+                   "owner=" + owner + ", " +
+                   "consumer=" + consumer + ']';
+        }
+
     }
 }

@@ -24,10 +24,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ItemRenderer.class)
 public abstract class ItemRendererMixin {
 
-    @Shadow public abstract BakedModel getModel(ItemStack stack, @Nullable Level world, @Nullable LivingEntity entity, int seed);
+    @Shadow public abstract BakedModel getModel(ItemStack stack, @Nullable Level world, @Nullable LivingEntity entity);
 
-    @Inject(at = @At("HEAD"), method = "renderStatic(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/client/renderer/block/model/ItemTransforms$TransformType;ZLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/level/Level;III)V", cancellable = true)
-    private void renderStatic(LivingEntity entity, ItemStack item, ItemTransforms.TransformType itemDisplayContext, boolean leftHanded, PoseStack stack, MultiBufferSource buffer, Level world, int light, int overlay, int seed, CallbackInfo ci) {
+    @Inject(at = @At("HEAD"), method = "renderStatic(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/client/renderer/block/model/ItemTransforms$TransformType;ZLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/level/Level;II)V", cancellable = true)
+    private void renderStatic(LivingEntity entity, ItemStack item, ItemTransforms.TransformType itemDisplayContext, boolean leftHanded, PoseStack stack, MultiBufferSource buffer, Level world, int light, int overlay, CallbackInfo ci) {
         if (entity == null || item.isEmpty())
             return;
 
@@ -35,7 +35,7 @@ public abstract class ItemRendererMixin {
         if (avatar == null)
             return;
 
-        BakedModel bakedModel = this.getModel(item, world, entity, seed);
+        BakedModel bakedModel = this.getModel(item, world, entity);
         ItemTransform transform = bakedModel.getTransforms().getTransform(itemDisplayContext);
 
         if (avatar.itemRenderEvent(ItemStackAPI.verify(item), itemDisplayContext.name(), FiguraVec3.fromVec3f(transform.translation), FiguraVec3.of(transform.rotation.z(), transform.rotation.y(), transform.rotation.x()), FiguraVec3.fromVec3f(transform.scale), leftHanded, stack, buffer, light, overlay))

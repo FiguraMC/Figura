@@ -23,6 +23,7 @@ import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.model.VanillaModelData;
 import org.figuramc.figura.model.rendering.texture.FiguraTexture;
 import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
+import org.figuramc.figura.utils.NbtType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -90,13 +91,13 @@ public abstract class AvatarRenderer {
             if (bytes.length > 0) {
                 textures.put(key, new FiguraTexture(avatar, key, bytes));
             } else {
-                ListTag size = src.getList(key, Tag.TAG_INT);
+                ListTag size = src.getList(key, NbtType.INT.getValue());
                 textures.put(key, new FiguraTexture(avatar, key, size.getInt(0), size.getInt(1)));
             }
         }
 
         // data files
-        ListTag texturesList = nbt.getList("data", Tag.TAG_COMPOUND);
+        ListTag texturesList = nbt.getList("data", NbtType.COMPOUND.getValue());
         for (Tag t : texturesList) {
             CompoundTag tag = (CompoundTag) t;
             textureSets.add(new FiguraTextureSet(
@@ -235,7 +236,7 @@ public abstract class AvatarRenderer {
     public void setMatrices(double camX, double camY, double camZ, PoseStack matrices) {
         // pos
         Matrix4f posMat = new Matrix4f(matrices.last().pose());
-        posMat.multiplyWithTranslation((float) -camX, (float) -camY, (float) -camZ);
+        posMat.multiply(Matrix4f.createTranslateMatrix((float) -camX, (float) -camY, (float) -camZ));
         posMat.multiply(Matrix4f.createScaleMatrix(-1, -1, 1));
         this.posMat.set(posMat);
 

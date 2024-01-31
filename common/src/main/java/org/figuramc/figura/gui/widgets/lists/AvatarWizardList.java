@@ -52,10 +52,12 @@ public class AvatarWizardList extends AbstractList {
         int size = 0;
         for (List<GuiEventListener> list : map.values()) {
             for (GuiEventListener widget : list) {
-                if (widget instanceof WizardInputBox ib) {
+                if (widget instanceof WizardInputBox) {
+                    WizardInputBox ib = (WizardInputBox) widget;
                     ib.setVisible(wizard.checkDependency(ib.entry));
                     if (ib.isVisible()) size++;
-                } else if (widget instanceof WizardToggleButton tb) {
+                } else if (widget instanceof WizardToggleButton) {
+                    WizardToggleButton tb = (WizardToggleButton) widget;
                     tb.setVisible(wizard.checkDependency(tb.entry));
                     if (tb.isVisible()) size++;
                 }
@@ -102,8 +104,10 @@ public class AvatarWizardList extends AbstractList {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         // fix mojang focusing for text fields
         for (GuiEventListener widget : children()) {
-            if (widget instanceof TextField field)
+            if (widget instanceof TextField) {
+                TextField field = (TextField) widget;
                 field.getField().setFocus(field.isEnabled() && field.isMouseOver(mouseX, mouseY));
+            }
         }
 
         return super.mouseClicked(mouseX, mouseY, button);
@@ -122,17 +126,20 @@ public class AvatarWizardList extends AbstractList {
 
         for (WizardEntry value : WizardEntry.all()) {
             switch (value.type) {
-                case CATEGORY -> {
+                case CATEGORY:
                     if (!lastList.isEmpty()) {
                         map.put(lastName, lastList);
                         children.addAll(lastList);
                     }
-
                     lastName = new FiguraText("gui.avatar_wizard." + value.name.toLowerCase());
                     lastList = new ArrayList<>();
-                }
-                case TEXT -> lastList.add(new WizardInputBox(x, width, this, value));
-                case TOGGLE -> lastList.add(new WizardToggleButton(x, width, this, value));
+                    break;
+                case TEXT:
+                    lastList.add(new WizardInputBox(x, width, this, value));
+                    break;
+                case TOGGLE:
+                    lastList.add(new WizardToggleButton(x, width, this, value));
+                    break;
             }
         }
 
@@ -161,7 +168,7 @@ public class AvatarWizardList extends AbstractList {
 
             Font font = Minecraft.getInstance().font;
             MutableComponent name = this.name.copy();
-            if (!this.getField().getValue().isBlank())
+            if (!this.getField().getValue().trim().isEmpty())
                 name.setStyle(FiguraMod.getAccentColor());
             font.draw(stack, name, getX() - getWidth() - 8, (int) (getY() + (getHeight() - font.lineHeight) / 2f), 0xFFFFFF);
         }

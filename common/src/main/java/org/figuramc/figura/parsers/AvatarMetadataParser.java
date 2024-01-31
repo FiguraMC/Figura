@@ -10,6 +10,7 @@ import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.model.rendering.texture.RenderTypes;
+import org.figuramc.figura.utils.NbtType;
 import org.figuramc.figura.utils.PathUtils;
 import org.figuramc.figura.utils.Version;
 
@@ -29,16 +30,17 @@ public class AvatarMetadataParser {
         return metadata == null ? new Metadata() : metadata;
     }
 
+    static JsonParser parser = new JsonParser();
     public static CompoundTag parse(String json, String filename) {
         // parse json -> object
         Metadata metadata = read(json);
 
         // nbt
         CompoundTag nbt = new CompoundTag();
-        JsonElement jsonElement = JsonParser.parseString(json);
+        JsonElement jsonElement = parser.parse(json);
         if (jsonElement != null && !jsonElement.isJsonNull() && !jsonElement.getAsJsonObject().entrySet().isEmpty()) {
             for (Map.Entry<String, JsonElement> jsonElementEntry : jsonElement.getAsJsonObject().entrySet()) {
-                if (jsonElementEntry.getKey() != null && !jsonElementEntry.getKey().isBlank() && jsonElementEntry.getKey().contains("badge_color_")) {
+                if (jsonElementEntry.getKey() != null && !jsonElementEntry.getKey().trim().isEmpty() && jsonElementEntry.getKey().contains("badge_color_")) {
                     nbt.putString(jsonElementEntry.getKey(), jsonElementEntry.getValue().getAsString());
                 }
             }
@@ -49,7 +51,7 @@ public class AvatarMetadataParser {
         if (version.invalid)
             version = FiguraMod.VERSION;
 
-        nbt.putString("name", metadata.name == null || metadata.name.isBlank() ? filename : metadata.name);
+        nbt.putString("name", metadata.name == null || metadata.name.trim().isEmpty() ? filename : metadata.name);
         nbt.putString("ver", version.toString());
         if (metadata.color != null) nbt.putString("color", metadata.color);
         if (metadata.background != null) nbt.putString("bg", metadata.background);
@@ -114,7 +116,7 @@ public class AvatarMetadataParser {
             CompoundTag modelPart = getTag(models, entry.getKey(), true);
             CompoundTag targetPart = getTag(models, entry.getValue(), false);
 
-            ListTag list = !targetPart.contains("chld") ? new ListTag() : targetPart.getList("chld", Tag.TAG_COMPOUND);
+            ListTag list = !targetPart.contains("chld") ? new ListTag() : targetPart.getList("chld", NbtType.COMPOUND.getValue());
             list.add(modelPart);
             targetPart.put("chld", list);
         }
@@ -176,7 +178,7 @@ public class AvatarMetadataParser {
             if (!current.contains("chld"))
                 throw new IOException("Invalid part path: \"" + path + "\"");
 
-            ListTag children = current.getList("chld", Tag.TAG_COMPOUND);
+            ListTag children = current.getList("chld", NbtType.COMPOUND.getValue());
             int j = 0;
             for (; j < children.size(); j++) {
                 CompoundTag child = children.getCompound(j);

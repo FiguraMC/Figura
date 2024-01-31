@@ -38,7 +38,7 @@ public abstract class CapeLayerMixin extends RenderLayer<AbstractClientPlayer, P
     @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/player/AbstractClientPlayer;FFFFFF)V", at = @At("HEAD"))
     private void preRender(PoseStack poseStack, MultiBufferSource multiBufferSource, int light, AbstractClientPlayer entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch, CallbackInfo ci) {
         ItemStack itemStack = entity.getItemBySlot(EquipmentSlot.CHEST);
-        if (entity.isInvisible() || itemStack.is(Items.ELYTRA))
+        if (entity.isInvisible() || itemStack.getItem() == Items.ELYTRA)
             return;
 
         avatar = AvatarManager.getAvatar(entity);
@@ -100,11 +100,9 @@ public abstract class CapeLayerMixin extends RenderLayer<AbstractClientPlayer, P
         }
 
         // rot
-        fakeCloak.setRotation(
-                (float) Math.toRadians(6f + r / 2f + q),
-                (float) -Math.toRadians(s / 2f),
-                (float) Math.toRadians(s / 2f)
-        );
+        fakeCloak.xRot = (float) Math.toRadians(6f + r / 2f + q);
+        fakeCloak.yRot = (float) -Math.toRadians(s / 2f);
+        fakeCloak.zRot = (float) Math.toRadians(s / 2f);
 
         // Copy rotations from fake cloak
         if (avatar.luaRuntime != null) {

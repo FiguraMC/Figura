@@ -21,6 +21,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -102,7 +104,8 @@ public class ConfigAPI {
         if (val.isboolean()) {
             obj.addProperty("type", Type.BOOL.name());
             obj.addProperty("data", val.checkboolean());
-        } else if (val instanceof LuaString str) {
+        } else if (val instanceof LuaString) {
+            LuaString str = (LuaString) val;
             writeString(str, obj);
         } else if (val.isint()) {
             obj.addProperty("type", Type.INT.name());
@@ -171,6 +174,7 @@ public class ConfigAPI {
         obj.add("data", mat);
     }
 
+    static JsonParser parser = new JsonParser();
     // read
     private void init() {
         if (loaded) return;
@@ -184,12 +188,12 @@ public class ConfigAPI {
             return;
 
         try (BufferedReader reader = Files.newBufferedReader(path)) {
-            JsonElement element = JsonParser.parseReader(reader);
+            JsonElement element = parser.parse(reader);
             if (element.isJsonNull())
                 return;
 
             root = element.getAsJsonObject();
-            for (String key : root.keySet())
+            for (String key : root.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toList()))
                 luaTable.set(key, readArg(root.get(key), owner));
         } catch (Exception e) {
             FiguraMod.LOGGER.error("", e);
@@ -203,15 +207,24 @@ public class ConfigAPI {
         JsonObject obj = json.getAsJsonObject();
         Type type = Type.valueOf(obj.get("type").getAsString());
         JsonElement data = obj.get("data");
-        return switch (type) {
-            case BOOL -> LuaBoolean.valueOf(data.getAsBoolean());
-            case INT -> LuaInteger.valueOf(data.getAsInt());
-            case DOUBLE -> LuaDouble.valueOf(data.getAsDouble());
-            case STRING -> LuaString.valueOf(Base64.getDecoder().decode(data.getAsString()));
-            case TABLE -> readTable(data.getAsJsonArray(), owner);
-            case VECTOR -> owner.luaRuntime.typeManager.javaToLua(readVec(data.getAsJsonArray())).arg1();
-            case MATRIX -> owner.luaRuntime.typeManager.javaToLua(readMat(data.getAsJsonArray())).arg1();
-        };
+        switch (type) {
+            case BOOL:
+                return LuaBoolean.valueOf(data.getAsBoolean());
+            case INT:
+                return LuaInteger.valueOf(data.getAsInt());
+            case DOUBLE:
+                return LuaDouble.valueOf(data.getAsDouble());
+            case STRING:
+                return LuaString.valueOf(Base64.getDecoder().decode(data.getAsString()));
+            case TABLE:
+                return readTable(data.getAsJsonArray(), owner);
+            case VECTOR:
+                return owner.luaRuntime.typeManager.javaToLua(readVec(data.getAsJsonArray())).arg1();
+            case MATRIX:
+                return owner.luaRuntime.typeManager.javaToLua(readMat(data.getAsJsonArray())).arg1();
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 
     private static LuaValue readTable(JsonArray arr, Avatar owner) {

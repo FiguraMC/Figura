@@ -132,9 +132,6 @@ public class BackendMotdWidget extends AbstractWidget implements Widget, GuiEven
         mouseDown = mouseClickedScroll(mouseX, mouseY, button);
         return mouseDown;
     }
-    public void updateNarration(NarrationElementOutput builder) {
-        builder.add(NarratedElementType.TITLE, this.getMessage());
-    }
 
     public void setHeight(int height) {
         this.height = height;

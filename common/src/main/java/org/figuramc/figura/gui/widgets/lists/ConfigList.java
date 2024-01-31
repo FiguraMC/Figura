@@ -81,7 +81,8 @@ public class ConfigList extends AbstractList {
         // fix mojang focusing for text fields
         for (CategoryWidget categoryWidget : configs) {
             for (GuiEventListener children : categoryWidget.children()) {
-                if (children instanceof InputElement inputElement) {
+                if (children instanceof InputElement) {
+                    InputElement inputElement = (InputElement) children;
                     TextField field = inputElement.getTextField();
                     field.getField().setFocus(field.isEnabled() && field.isMouseOver(mouseX, mouseY));
                 }

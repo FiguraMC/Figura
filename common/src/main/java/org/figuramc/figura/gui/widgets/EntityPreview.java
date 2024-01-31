@@ -118,7 +118,7 @@ public class EntityPreview extends AbstractContainerElement {
 
         switch (button) {
             // left click - rotate
-            case 0 -> {
+            case 0: {
                 // set anchor rotation
 
                 // get starter mouse pos
@@ -134,7 +134,7 @@ public class EntityPreview extends AbstractContainerElement {
             }
 
             // right click - move
-            case 1 -> {
+            case 1: {
                 // get starter mouse pos
                 dragDeltaX = (float) mouseX;
                 dragDeltaY = (float) mouseY;
@@ -148,7 +148,7 @@ public class EntityPreview extends AbstractContainerElement {
             }
 
             // middle click - reset pos
-            case 2 -> {
+            case 2: {
                 isRotating = false;
                 isDragging = false;
                 anchorX = 0f;

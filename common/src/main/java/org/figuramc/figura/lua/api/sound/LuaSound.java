@@ -11,6 +11,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.sounds.SoundSource;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
+import org.figuramc.figura.ducks.ChannelAccessor;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
@@ -187,7 +188,7 @@ public class LuaSound {
     @LuaMethodDoc("sound.is_playing")
     public boolean isPlaying() {
         if (handle != null)
-            handle.execute(channel -> this.playing = channel.playing());
+            handle.execute(channel -> this.playing = ((ChannelAccessor)channel).figura$isPlaying());
         return this.playing;
     }
 
