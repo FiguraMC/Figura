@@ -1,7 +1,9 @@
 package org.figuramc.figura.model.rendering.texture;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormatElement;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
@@ -9,6 +11,8 @@ import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.utils.ResourceUtils;
 import org.figuramc.figura.utils.VertexFormatMode;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.OptionalDouble;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -18,7 +22,7 @@ public enum RenderTypes {
 
     CUTOUT(RenderType::entityCutoutNoCull),
     CUTOUT_CULL(RenderType::entityCutout),
-    CUTOUT_EMISSIVE_SOLID(resourceLocation -> FiguraRenderType.CUTOUT_EMISSIVE_SOLID.apply(resourceLocation, true)),
+    CUTOUT_EMISSIVE_SOLID(resourceLocation -> FiguraRenderType.CUTOUT_EMISSIVE_SOLID.apply(resourceLocation, true)), //TODO FIX ME
 
     TRANSLUCENT(RenderType::entityTranslucent),
     TRANSLUCENT_CULL(RenderType::entityTranslucentCull),
@@ -27,16 +31,16 @@ public enum RenderTypes {
     EMISSIVE_SOLID(resourceLocation -> RenderType.beaconBeam(resourceLocation, false)),
     EYES(RenderType::eyes),
 
-    END_PORTAL(t -> RenderType.endPortal(0), false),
-    END_GATEWAY(t -> RenderType.endPortal(1), false),
-    TEXTURED_PORTAL(FiguraRenderType.TEXTURED_PORTAL),
+    END_PORTAL(t -> RenderType.endPortal(1), false), //TODO FIX ME
+    END_GATEWAY(t -> RenderType.endPortal(2), false), //TODO FIX ME
+    TEXTURED_PORTAL(FiguraRenderType.TEXTURED_PORTAL),  //TODO FIX ME
 
     GLINT(t -> RenderType.entityGlintDirect(), false, false),
     GLINT2(t -> RenderType.glintDirect(), false, false),
     TEXTURED_GLINT(FiguraRenderType.TEXTURED_GLINT, true, false),
 
     LINES(t -> RenderType.lines(), false),
-    LINES_STRIP(t -> RenderType.lines(), false),
+    LINES_STRIP(t -> FiguraRenderType.LINE_STRIP, false), //TODO FIX ME
     SOLID(t -> FiguraRenderType.SOLID, false),
 
     BLURRY(FiguraRenderType.BLURRY);
@@ -69,7 +73,7 @@ public enum RenderTypes {
         return id == null || func == null ? null : func.apply(id);
     }
 
-    private static class FiguraRenderType extends RenderType {
+    public static class FiguraRenderType extends RenderType {
 
         public FiguraRenderType(String name, VertexFormat vertexFormat, VertexFormatMode drawMode, int expectedBufferSize, boolean hasCrumbling, boolean translucent, Runnable startAction, Runnable endAction) {
             super(name, vertexFormat, drawMode.asGLMode, expectedBufferSize, hasCrumbling, translucent, startAction, endAction);
@@ -99,6 +103,7 @@ public enum RenderTypes {
                                         .setCullState(NO_CULL)
                                         .setWriteMaskState(COLOR_DEPTH_WRITE)
                                         .setOverlayState(OVERLAY)
+                                        .setFogState(NO_FOG)
                                         .createCompositeState(affectsOutline)));
 
 
@@ -154,5 +159,14 @@ public enum RenderTypes {
                                 .createCompositeState(false)
                 )
         );
+        static ImmutableList.Builder<VertexFormatElement> builder = ImmutableList.builder();
+        static {
+            builder.add(DefaultVertexFormat.ELEMENT_POSITION);
+            builder.add(DefaultVertexFormat.ELEMENT_COLOR);
+            builder.add(DefaultVertexFormat.ELEMENT_NORMAL);
+            builder.add(DefaultVertexFormat.ELEMENT_PADDING);
+        }
+        public static final RenderType LINE_STRIP = RenderType.create("line_strip", new VertexFormat(builder.build()), VertexFormatMode.LINE_STRIP.asGLMode, 256, CompositeState.builder().setLineState(new RenderStateShard.LineStateShard(OptionalDouble.empty())).setLayeringState(VIEW_OFFSET_Z_LAYERING).setTransparencyState(TRANSLUCENT_TRANSPARENCY).setOutputState(ITEM_ENTITY_TARGET).setWriteMaskState(COLOR_DEPTH_WRITE).setCullState(NO_CULL).createCompositeState(false));
+        public static final Function<ResourceLocation, RenderType> TEXT_POLYGON_OFFSET = ResourceUtils.memoize(texture -> RenderType.create("text_polygon_offset", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormatMode.QUADS.asGLMode, 256, false, true, CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(texture, false, false)).setTransparencyState(TRANSLUCENT_TRANSPARENCY).setLightmapState(LIGHTMAP).setLayeringState(POLYGON_OFFSET_LAYERING).createCompositeState(false)));
     }
 }
