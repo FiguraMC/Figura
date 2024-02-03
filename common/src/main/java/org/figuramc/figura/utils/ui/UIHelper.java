@@ -24,6 +24,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
+import org.figuramc.figura.ducks.extensions.FontExtension;
 import org.figuramc.figura.utils.VertexFormatMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
@@ -137,7 +138,7 @@ public class UIHelper extends GuiComponent {
         double yPos = 0d;
 
         switch (renderMode) {
-            case PAPERDOLL -> {
+            case PAPERDOLL: {
                 // rotations
                 xRot = pitch;
                 yRot = yaw + bodyY + 180;
@@ -153,14 +154,14 @@ public class UIHelper extends GuiComponent {
                     entity.xRot = 0f;
                 }
 
-                // lightning ??? Apparently lighting wasn't set in 1.16 TODO investigate this
-                //RenderSystem.set.setupForEntityInInventory();
+                RenderUtils.setLights(RenderUtils.INVENTORY_DIFFUSE_LIGHT_0, RenderUtils.INVENTORY_DIFFUSE_LIGHT_1);
 
                 // invisibility
                 if (Configs.PAPERDOLL_INVISIBLE.value)
                     entity.setInvisible(false);
+                break;
             }
-            case FIGURA_GUI -> {
+            case FIGURA_GUI: {
                 // rotations
                 xRot = pitch;
                 yRot = yaw + bodyY + 180;
@@ -175,13 +176,13 @@ public class UIHelper extends GuiComponent {
 
                 // set up lighting
                 Lighting.setupForFlatItems();
-                // Also doesn't exist apparently
-                //RenderSystem.setShaderLights(Util.make(new Vector3f(-0.2f, -1f, -1f), Vector3f::normalize), Util.make(new Vector3f(-0.2f, 0.4f, -0.3f), Vector3f::normalize));
+                RenderUtils.setLights(Util.make(new Vector3f(-0.2f, -1f, -1f), Vector3f::normalize), Util.make(new Vector3f(-0.2f, 0.4f, -0.3f), Vector3f::normalize));
 
                 // invisibility
                 entity.setInvisible(false);
+                break;
             }
-            default -> {
+            default: {
                 // rotations
                 xRot = pitch;
                 yRot = yaw + bodyY + 180;
@@ -191,7 +192,8 @@ public class UIHelper extends GuiComponent {
 
                 // lightning
 
-                //Lighting.setupForEntityInInventory(); doesn't exist exist
+                RenderUtils.setLights(RenderUtils.INVENTORY_DIFFUSE_LIGHT_0, RenderUtils.INVENTORY_DIFFUSE_LIGHT_1);
+                break;
             }
         }
 
@@ -255,9 +257,8 @@ public class UIHelper extends GuiComponent {
     public static void setupTexture(ResourceLocation texture) {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShaderTexture(0, texture);
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        Minecraft.getInstance().getTextureManager().bind(texture);
+        RenderSystem.color4f(1f, 1f, 1f, 1f);
     }
 
     public static void renderTexture(PoseStack stack, int x, int y, int width, int height, ResourceLocation texture) {
@@ -505,7 +506,7 @@ public class UIHelper extends GuiComponent {
 
     public static void renderOutlineText(PoseStack stack, Font textRenderer, Component text, int x, int y, int color, int outline) {
         MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-        textRenderer.drawInBatch8xOutline(text.getVisualOrderText(), x, y, color, outline, stack.last().pose(), bufferSource, 15 << 20 | 15 << 4);
+        ((FontExtension)textRenderer).figura$drawInBatch8xOutline(text.getVisualOrderText(), x, y, color, outline, stack.last().pose(), bufferSource, 15 << 20 | 15 << 4);
         bufferSource.endBatch();
     }
 

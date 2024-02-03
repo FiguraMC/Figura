@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -109,7 +110,7 @@ public class FiguraMod {
     // mod root directory
     public static Path getFiguraDirectory() {
         String config = Configs.MAIN_DIR.value;
-        Path p = config.isBlank() ? GAME_DIR.resolve(MOD_ID) : Path.of(config);
+        Path p = config.trim().isEmpty() ? GAME_DIR.resolve(MOD_ID) : Paths.get(config);
         return IOUtils.createDirIfNeeded(p);
     }
 
@@ -171,7 +172,7 @@ public class FiguraMod {
     }
 
     public static void pushProfiler(Avatar avatar) {
-        Minecraft.getInstance().getProfiler().push(avatar.entityName.isBlank() ? avatar.owner.toString() : avatar.entityName);
+        Minecraft.getInstance().getProfiler().push(avatar.entityName.trim().isEmpty() ? avatar.owner.toString() : avatar.entityName);
     }
 
     public static void popPushProfiler(String name) {

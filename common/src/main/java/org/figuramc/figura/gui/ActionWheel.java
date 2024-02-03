@@ -85,7 +85,7 @@ public class ActionWheel {
         renderTextures(stack, currentPage);
 
         // reset colours
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        RenderSystem.color4f(1f, 1f, 1f, 1f);
 
         // render items
         FiguraMod.popPushProfiler("items");
@@ -174,7 +174,7 @@ public class ActionWheel {
             UIHelper.setupTexture(ICONS);
 
             if (color != null)
-                RenderSystem.setShaderColor((float) color.x, (float) color.y, (float) color.z, 1f);
+                RenderSystem.color4f((float) color.x, (float) color.y, (float) color.z, 1f);
             UIHelper.blit(stack,
                     (int) Math.round(x), (int) Math.round(y),
                     8, 8,
@@ -217,17 +217,15 @@ public class ActionWheel {
                 continue;
 
             // render
-            PoseStack modelStack = RenderSystem.getModelViewStack();
-            modelStack.pushPose();
-            modelStack.translate(x, y, 0);
-            modelStack.scale(scale, scale, scale);
+            RenderSystem.pushMatrix();
+            RenderSystem.translatef(x, y, 0);
+            RenderSystem.scalef(scale, scale, scale);
 
             minecraft.getItemRenderer().renderGuiItem(item, (int) Math.round(xOff - 8), (int) Math.round(yOff - 8));
             if (Configs.ACTION_WHEEL_DECORATIONS.value)
                 minecraft.getItemRenderer().renderGuiItemDecorations(minecraft.font, item, (int) Math.round(xOff - 8), (int) Math.round(yOff - 8));
 
-            modelStack.popPose();
-            RenderSystem.applyModelViewMatrix();
+            RenderSystem.popMatrix();
         }
     }
 
@@ -473,7 +471,7 @@ public class ActionWheel {
 
             UIHelper.setupTexture(TEXTURE);
             if (color != null)
-                RenderSystem.setShaderColor((float) color.x, (float) color.y, (float) color.z, 1f);
+                RenderSystem.color4f((float) color.x, (float) color.y, (float) color.z, 1f);
             UIHelper.blit(stack, 0, y, 64, h, u, color == null ? v : v + 128, 64, rh, 256, 256);
 
             stack.popPose();

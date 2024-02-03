@@ -18,6 +18,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Score;
 import net.minecraft.world.scores.Scoreboard;
+import org.figuramc.figura.ducks.extensions.FontExtension;
 import org.figuramc.figura.lua.api.nameplate.EntityNameplateCustomization;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
 import org.figuramc.figura.math.vector.FiguraVec3;
@@ -175,7 +176,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
                 font.drawInBatch(text1, x, y, 0x20FFFFFF, false, matrix4f, multiBufferSource, notSneaking, bgColor, light);
                 if (notSneaking) {
                     if (outline)
-                        font.drawInBatch8xOutline(text1.getVisualOrderText(), x, y, -1, outlineColor, matrix4f, multiBufferSource, light);
+                        ((FontExtension)font).figura$drawInBatch8xOutline(text1.getVisualOrderText(), x, y, -1, outlineColor, matrix4f, multiBufferSource, light);
                     else
                         font.drawInBatch(text1, x, y, -1, shadow, textMatrix, multiBufferSource, false, 0, light);
                 }
@@ -200,7 +201,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
             font.drawInBatch(text1, x, y, 0x20FFFFFF, false, matrix4f, multiBufferSource, notSneaking, bgColor, light);
             if (notSneaking) {
                 if (outline)
-                    font.drawInBatch8xOutline(text1.getVisualOrderText(), x, y, -1, outlineColor, matrix4f, multiBufferSource, light);
+                    ((FontExtension)font).figura$drawInBatch8xOutline(text1.getVisualOrderText(), x, y, -1, outlineColor, matrix4f, multiBufferSource, light);
                 else
                     font.drawInBatch(text1, x, y, -1, shadow, textMatrix, multiBufferSource, false, 0, light);
             }

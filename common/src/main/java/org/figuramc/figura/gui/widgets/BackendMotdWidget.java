@@ -13,8 +13,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.narration.NarratedElementType;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
@@ -22,6 +20,7 @@ import net.minecraft.network.chat.TextComponent;
 import org.figuramc.figura.utils.ClickableTextHelper;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.Mth;
+import org.figuramc.figura.utils.VertexFormatMode;
 import org.figuramc.figura.utils.ui.UIHelper;
 
 import java.util.Arrays;
@@ -172,10 +171,9 @@ public class BackendMotdWidget extends AbstractWidget implements Widget, GuiEven
         int k = this.x + this.width + 8;
         int l = Math.max(this.y, (int)this.scrollAmount * (this.height - i) / this.getMaxScrollAmount() + this.y);
         int m = l + i;
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tesselator.getBuilder();
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        bufferBuilder.begin(VertexFormatMode.QUADS.asGLMode, DefaultVertexFormat.POSITION_COLOR);
         bufferBuilder.vertex(j, m, 0.0).color(128, 128, 128, 255).endVertex();
         bufferBuilder.vertex(k, m, 0.0).color(128, 128, 128, 255).endVertex();
         bufferBuilder.vertex(k, l, 0.0).color(128, 128, 128, 255).endVertex();

@@ -7,6 +7,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
@@ -20,16 +21,14 @@ import org.figuramc.figura.gui.screens.WardrobeScreen;
 import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.utils.FiguraText;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+@Debug(export = true)
 @Mixin(Minecraft.class)
 public abstract class MinecraftMixin {
 
@@ -108,13 +107,13 @@ public abstract class MinecraftMixin {
         }
     }
 
-    @ModifyVariable(at = @At(value = "STORE", ordinal = 1), ordinal = 0, method = "handleKeybinds")
-    private int handleHotbarSlots(int i) {
+    @ModifyVariable(at = @At(value = "FIELD", target = "Lnet/minecraft/world/entity/player/Inventory;selected:I"), method = "handleKeybinds")
+    private int handleHotbarSlots(int value) {
         if (PopupMenu.isEnabled())
-            PopupMenu.hotbarKeyPressed(i);
+            PopupMenu.hotbarKeyPressed(value);
         if (ActionWheel.isEnabled())
-            ActionWheel.hotbarKeyPressed(i);
-        return i;
+            ActionWheel.hotbarKeyPressed(value);
+        return value;
     }
 
     @Inject(at = @At("HEAD"), method = "setScreen")

@@ -8,5 +8,7 @@ public class FiguraModForge {
     // dummy empty mod class, we are client only
     public FiguraModForge() {
         MinecraftForge.EVENT_BUS.addListener(FiguraModClientForge::cancelVanillaOverlays);
+        MinecraftForge.EVENT_BUS.addListener(FiguraModClientForge::renderOverlay);
+        MinecraftForge.EVENT_BUS.addListener(FiguraModClientForge::renderUnderlay);
     }
 }

@@ -386,7 +386,7 @@ public class LocalAvatarFetcher {
                     }
                 } else if (IOUtils.getFileNameOrEmpty(path).endsWith(".zip")) {
                     try {
-                        FileSystem opened = FileSystems.newFileSystem(path.toUri(), new HashMap<>());
+                        FileSystem opened = FileSystems.newFileSystem(path, (ClassLoader) null);
                         if ("jar".equalsIgnoreCase(opened.provider().getScheme())) {
                             Path newPath = opened.getPath("");
                             if (isAvatar(newPath)) {
@@ -402,7 +402,9 @@ public class LocalAvatarFetcher {
                             }
                         } else
                             opened.close();
-                    } catch (IOException ignored) {}
+                    } catch (IOException ignored) {
+                        FiguraMod.LOGGER.error("Failed to load avatar from zip ", ignored);
+                    }
                 }
             }
 

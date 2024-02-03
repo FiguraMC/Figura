@@ -41,7 +41,7 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
 
     public void copyDataTo(Matrix3f vanillaMatrix) {
         writeToBuffer();
-        vanillaMatrix.load(copyingBuffer);
+        ((Matrix3fExtension)(Object)vanillaMatrix).figura$load(copyingBuffer);
     }
 
     private void writeToBuffer() {

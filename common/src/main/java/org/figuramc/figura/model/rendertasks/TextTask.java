@@ -17,6 +17,7 @@ import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.Badges;
 import org.figuramc.figura.ducks.BakedGlyphAccessor;
+import org.figuramc.figura.ducks.extensions.FontExtension;
 import org.figuramc.figura.font.Emojis;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
@@ -99,7 +100,7 @@ public class TextTask extends RenderTask {
             int x = -alignment.apply(font, text);
 
             if (outline) {
-                font.drawInBatch8xOutline(text.getVisualOrderText(), x, j, -1, out, matrix, buffer, l);
+                ((FontExtension)font).figura$drawInBatch8xOutline(text.getVisualOrderText(), x, j, -1, out, matrix, buffer, l);
                 if (seeThrough)
                     font.drawInBatch(text, x, j, op, shadow, matrix, buffer, true, 0, l);
             } else {
