@@ -16,6 +16,6 @@ public class SignRendererMixin {
     //TODO: Set last remap to false, add the rest, OF is lambda$render$0
     @ModifyArg(method = "method_3583", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;split(Lnet/minecraft/network/chat/FormattedText;I)Ljava/util/List;", remap = true), remap = true)
     private static FormattedText modifyText(FormattedText charSequence) {
-        return Configs.EMOJIS.value > 0 && charSequence instanceof Component text ? Emojis.applyEmojis(text) : charSequence;
+        return Configs.EMOJIS.value > 0 && charSequence instanceof Component ? Emojis.applyEmojis((Component) charSequence) : charSequence;
     }
 }

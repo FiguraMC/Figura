@@ -105,7 +105,7 @@ public class TextUtils {
 
     public static Component replaceInText(FormattedText text, String regex, Object replacement, BiPredicate<String, Style> predicate, int beginIndex, int times) {
         // fix replacement object
-        Component replace = replacement instanceof Component c ? c : new TextComponent(replacement.toString());
+        Component replace = replacement instanceof Component ? (Component) replacement : new TextComponent(replacement.toString());
         MutableComponent ret = TextComponent.EMPTY.copy();
 
         int[] ints = {beginIndex, times};
@@ -183,13 +183,17 @@ public class TextUtils {
 
         for (Object object : text) {
             int w;
-            if (object instanceof Component component) // instanceof switch case only for java 17 experimental ;-;
+            if (object instanceof Component) // instanceof switch case only for java 17 experimental ;-;
+            {
+                Component component = (Component) object;
                 w = font.width(component);
-            else if (object instanceof FormattedCharSequence charSequence)
+            } else if (object instanceof FormattedCharSequence) {
+                FormattedCharSequence charSequence = (FormattedCharSequence) object;
                 w = font.width(charSequence);
-            else if (object instanceof String s)
+            } else if (object instanceof String) {
+                String s = (String) object;
                 w = font.width(s);
-            else
+            } else
                 w = 0;
 
             width = Math.max(width, w);
@@ -263,8 +267,10 @@ public class TextUtils {
     }
 
     public static Component formattedTextToText(FormattedText formattedText) {
-        if (formattedText instanceof Component c)
+        if (formattedText instanceof Component) {
+            Component c = (Component) formattedText;
             return c;
+        }
 
         MutableComponent builder = TextComponent.EMPTY.copy();
         formattedText.visit((style, string) -> {

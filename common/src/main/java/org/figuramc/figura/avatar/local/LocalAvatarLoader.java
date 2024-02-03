@@ -353,7 +353,7 @@ public class LocalAvatarLoader {
 
         try {
             WatchEvent.Kind<?>[] events = {StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY};
-            WatchKey key = IS_WINDOWS ? path.register(watcher, events, com.sun.nio.file.ExtendedWatchEventModifier.FILE_TREE) : path.register(watcher, events);
+            WatchKey key = IS_WINDOWS ? path.register(watcher, events, ExtendedWatchEventModifier.FILE_TREE) : path.register(watcher, events);
 
             consumer.accept(path, key);
 
@@ -386,5 +386,9 @@ public class LocalAvatarLoader {
         SOUNDS,
         MODELS,
         METADATA
+    }
+
+    private enum ExtendedWatchEventModifier implements WatchEvent.Modifier {
+        FILE_TREE;
     }
 }

@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.players.GameProfileCache;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -189,7 +190,7 @@ public class FiguraMod {
     }
 
     public static void popProfiler(int times) {
-        var profiler = Minecraft.getInstance().getProfiler();
+        ProfilerFiller profiler = Minecraft.getInstance().getProfiler();
         for (int i = 0; i < times; i++)
             profiler.pop();
     }

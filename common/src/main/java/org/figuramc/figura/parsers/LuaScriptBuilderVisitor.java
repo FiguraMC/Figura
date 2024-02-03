@@ -9,6 +9,7 @@ import org.luaj.vm2.ast.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class LuaScriptBuilderVisitor extends Visitor {
     private static final char[] chars = new char[63];
@@ -58,7 +59,7 @@ public class LuaScriptBuilderVisitor extends Visitor {
     private void pushScope(NameScope scope) {
         a: for (Variable variable : scope.namedVariables.values())
             if(variable.isLocal()) {
-                for (Variable var : vars.keySet().stream().sorted(Comparator.comparing(var -> var.name)).toList()) {
+                for (Variable var : vars.keySet().stream().sorted(Comparator.comparing(var -> var.name)).collect(Collectors.toList())) {
                     if (var == variable) continue a;
                     if (var.name.equals(variable.name)) {
                         vars.put(variable, vars.get(var));
@@ -236,7 +237,8 @@ public class LuaScriptBuilderVisitor extends Visitor {
     @Override
     public void visit(FuncArgs args) {
         List<Exp> exps = args.exps;
-        if (exps != null && exps.size() == 1 && exps.get(0) instanceof Exp.Constant constant && constant.value instanceof LuaString) {
+        if (exps != null && exps.size() == 1 && exps.get(0) instanceof Exp.Constant && ((Exp.Constant) exps.get(0)).value instanceof LuaString) {
+            Exp.Constant constant = (Exp.Constant) exps.get(0);
             constant.accept(this);
         } else {
             builder.append("(");
@@ -270,22 +272,38 @@ public class LuaScriptBuilderVisitor extends Visitor {
     public void visit(Exp.BinopExp exp) {
         exp.lhs.accept(this);
         switch (exp.op) {
-            case Lua.OP_ADD    -> builder.append("+");
-            case Lua.OP_SUB    -> builder.append("-");
-            case Lua.OP_GT     -> builder.append(">");
-            case Lua.OP_GE     -> builder.append(">=");
-            case Lua.OP_LT     -> builder.append("<");
-            case Lua.OP_LE     -> builder.append("<=");
-            case Lua.OP_EQ     -> builder.append("==");
-            case Lua.OP_NEQ    -> builder.append("~=");
-            case Lua.OP_MUL    -> builder.append("*");
-            case Lua.OP_DIV    -> builder.append("/");
-            case Lua.OP_MOD    -> builder.append("%");
-            case Lua.OP_POW    -> builder.append("^");
-            case Lua.OP_AND    -> spaceIfName("and");
-            case Lua.OP_OR     -> spaceIfName("or");
-            case Lua.OP_CONCAT -> builder.append("..");
-            default -> throw new IllegalStateException("unhandled operator: " + exp.op);
+            case Lua.OP_ADD:
+                builder.append("+"); break;
+            case Lua.OP_SUB:
+                builder.append("-"); break;
+            case Lua.OP_GT:
+                builder.append(">"); break;
+            case Lua.OP_GE:
+                builder.append(">="); break;
+            case Lua.OP_LT:
+                builder.append("<"); break;
+            case Lua.OP_LE:
+                builder.append("<="); break;
+            case Lua.OP_EQ:
+                builder.append("=="); break;
+            case Lua.OP_NEQ:
+                builder.append("~="); break;
+            case Lua.OP_MUL:
+                builder.append("*"); break;
+            case Lua.OP_DIV:
+                builder.append("/"); break;
+            case Lua.OP_MOD:
+                builder.append("%"); break;
+            case Lua.OP_POW:
+                builder.append("^"); break;
+            case Lua.OP_AND:
+                spaceIfName("and");break;
+            case Lua.OP_OR:
+                spaceIfName("or"); break;
+            case Lua.OP_CONCAT:
+                builder.append(".."); break;
+            default:
+                throw new IllegalStateException("unhandled operator: " + exp.op);
         }
         exp.rhs.accept(this);
     }
@@ -293,7 +311,8 @@ public class LuaScriptBuilderVisitor extends Visitor {
     @Override
     public void visit(Exp.Constant exp) {
         LuaValue value = exp.value;
-        if (value instanceof LuaString str) {
+        if (value instanceof LuaString) {
+            LuaString str = (LuaString) value;
             String input = new String(str.m_bytes, StandardCharsets.UTF_8);
             int sdq = 0;
             for (char c : input.toCharArray()) {
@@ -348,10 +367,17 @@ public class LuaScriptBuilderVisitor extends Visitor {
     @Override
     public void visit(Exp.UnopExp exp) {
         switch (exp.op) {
-            case Lua.OP_UNM -> builder.append("-");
-            case Lua.OP_NOT -> spaceIfName("not");
-            case Lua.OP_LEN -> builder.append("#");
-            default -> throw new IllegalStateException("unhandled op " + exp.op);
+            case Lua.OP_UNM:
+                builder.append("-");
+                break;
+            case Lua.OP_NOT:
+                spaceIfName("not");
+                break;
+            case Lua.OP_LEN:
+                builder.append("#");
+                break;
+            default:
+                throw new IllegalStateException("unhandled op " + exp.op);
         }
         super.visit(exp);
     }

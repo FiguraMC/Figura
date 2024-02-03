@@ -101,8 +101,10 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
     }
     @Override
     public boolean equals(Object other) {
-        if (other instanceof FiguraMat3 o)
+        if (other instanceof FiguraMat3) {
+            FiguraMat3 o = (FiguraMat3) other;
             return equals(o);
+        }
         return false;
     }
     @Override

@@ -41,7 +41,7 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
     private final int maxSize;
 
     private final Font font;
-    private final List<Component> values = new ArrayList<>() {{
+    private final List<Component> values = new ArrayList<Component>() {{
         for (Component ignored : TITLES)
             this.add(UNKNOWN);
     }};

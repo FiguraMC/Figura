@@ -1340,11 +1340,13 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             },
             value = "model_part.remove_task")
     public FiguraModelPart removeTask(Object x) {
-        if (x instanceof String s)
+        if (x instanceof String) {
+            String s = (String) x;
             this.renderTasks.remove(s);
-        else if (x instanceof RenderTask t)
+        } else if (x instanceof RenderTask) {
+            RenderTask t = (RenderTask) x;
             this.renderTasks.remove(t.getName());
-        else if (x == null)
+        } else if (x == null)
             this.renderTasks.clear();
         else
             throw new LuaError("Illegal argument to removeTask(): " + x.getClass().getSimpleName());

@@ -46,8 +46,10 @@ public abstract class CustomHeadLayerMixin<T extends LivingEntity, M extends Ent
     @Inject(at = @At("HEAD"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V", cancellable = true)
     private void render(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
         ItemStack itemStack = livingEntity.getItemBySlot(EquipmentSlot.HEAD);
-        if (itemStack.getItem() instanceof ArmorItem armorItem && armorItem.getSlot() == EquipmentSlot.HEAD)
+        if (itemStack.getItem() instanceof ArmorItem && ((ArmorItem) itemStack.getItem()).getSlot() == EquipmentSlot.HEAD) {
+            ArmorItem armorItem = (ArmorItem) itemStack.getItem();
             return;
+        }
 
         Avatar avatar = AvatarManager.getAvatar(livingEntity);
         if (!RenderUtils.vanillaModel(avatar))
@@ -60,7 +62,7 @@ public abstract class CustomHeadLayerMixin<T extends LivingEntity, M extends Ent
         }
 
         // pivot part
-        if (itemStack.getItem() instanceof BlockItem block && block.getBlock() instanceof AbstractSkullBlock) {
+        if (itemStack.getItem() instanceof BlockItem && ((BlockItem) itemStack.getItem()).getBlock() instanceof AbstractSkullBlock) {
             // fetch skull data
             GameProfile gameProfile;
             if (itemStack.hasTag()) {

@@ -28,33 +28,41 @@ public class MathUtils {
     public static final double RAD_TO_DEG = 180 / Math.PI;
 
     public static FiguraVector<?, ?> sizedVector(double... vals) {
-        return switch (vals.length) {
-            case 2 -> FiguraVec2.of(vals[0], vals[1]);
-            case 3 -> FiguraVec3.of(vals[0], vals[1], vals[2]);
-            case 4 -> FiguraVec4.of(vals[0], vals[1], vals[2], vals[3]);
-            default -> throw new IllegalStateException("Cannot create vector of size: " + vals.length);
-        };
+        switch (vals.length) {
+            case 2:
+                return FiguraVec2.of(vals[0], vals[1]);
+            case 3:
+                return FiguraVec3.of(vals[0], vals[1], vals[2]);
+            case 4:
+                return FiguraVec4.of(vals[0], vals[1], vals[2], vals[3]);
+            default:
+                throw new IllegalStateException("Cannot create vector of size: " + vals.length);
+        }
     }
 
     public static FiguraMatrix<?, ?> sizedMat(FiguraVector<?, ?>... vectors) {
-        return switch (vectors.length) {
-            case 4 -> FiguraMat4.of(
-                    vectors[0].index(0), vectors[0].index(1), vectors[0].index(2), vectors[0].index(3),
-                    vectors[1].index(0), vectors[1].index(1), vectors[1].index(2), vectors[1].index(3),
-                    vectors[2].index(0), vectors[2].index(1), vectors[2].index(2), vectors[2].index(3),
-                    vectors[3].index(0), vectors[3].index(1), vectors[3].index(2), vectors[3].index(3)
-            );
-            case 3 -> FiguraMat3.of(
-                    vectors[0].index(0), vectors[0].index(1), vectors[0].index(2),
-                    vectors[1].index(0), vectors[1].index(1), vectors[1].index(2),
-                    vectors[2].index(0), vectors[2].index(1), vectors[2].index(2)
-            );
-            case 2 -> FiguraMat2.of(
-                    vectors[0].index(0), vectors[0].index(1),
-                    vectors[1].index(0), vectors[1].index(1)
-            );
-            default -> throw new IllegalStateException("Cannot create matrix of size: " + vectors.length);
-        };
+        switch (vectors.length) {
+            case 4:
+                return FiguraMat4.of(
+                        vectors[0].index(0), vectors[0].index(1), vectors[0].index(2), vectors[0].index(3),
+                        vectors[1].index(0), vectors[1].index(1), vectors[1].index(2), vectors[1].index(3),
+                        vectors[2].index(0), vectors[2].index(1), vectors[2].index(2), vectors[2].index(3),
+                        vectors[3].index(0), vectors[3].index(1), vectors[3].index(2), vectors[3].index(3)
+                );
+            case 3:
+                return FiguraMat3.of(
+                        vectors[0].index(0), vectors[0].index(1), vectors[0].index(2),
+                        vectors[1].index(0), vectors[1].index(1), vectors[1].index(2),
+                        vectors[2].index(0), vectors[2].index(1), vectors[2].index(2)
+                );
+            case 2:
+                return FiguraMat2.of(
+                        vectors[0].index(0), vectors[0].index(1),
+                        vectors[1].index(0), vectors[1].index(1)
+                );
+            default:
+                throw new IllegalStateException("Cannot create matrix of size: " + vectors.length);
+        }
     }
 
     // maya pls check those // ty <3 <3

@@ -35,12 +35,24 @@ public class S2CMessageHandler {
             FiguraMod.debug("Got ws message of type: " + b);
 
         switch (b) {
-            case AUTH -> auth();
-            case PING -> ping(bytes);
-            case EVENT -> event(bytes);
-            case TOAST -> toast(bytes);
-            case CHAT -> chat(bytes);
-            case NOTICE -> notice(bytes);
+            case AUTH:
+                auth();
+                break;
+            case PING:
+                ping(bytes);
+                break;
+            case EVENT:
+                event(bytes);
+                break;
+            case TOAST:
+                toast(bytes);
+                break;
+            case CHAT:
+                chat(bytes);
+                break;
+            case NOTICE:
+                notice(bytes);
+                break;
         }
     }
 

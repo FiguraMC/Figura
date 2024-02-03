@@ -14,6 +14,7 @@ import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.Varargs;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @LuaWhitelist
@@ -90,7 +91,7 @@ public class FiguraKeybind {
 
     public static boolean set(List<FiguraKeybind> bindings, InputConstants.Key key, boolean pressed, int modifiers) {
         boolean overrided = false;
-        for (FiguraKeybind keybind : List.copyOf(bindings)) {
+        for (FiguraKeybind keybind : new ArrayList<>(bindings)) {
             if (keybind.key == key && keybind.enabled && (keybind.gui || Minecraft.getInstance().screen == null))
                 overrided = keybind.setDown(pressed, modifiers) || overrided;
         }
