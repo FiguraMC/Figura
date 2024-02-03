@@ -2,6 +2,8 @@ package org.figuramc.figura.forge;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.server.packs.resources.SimpleReloadableResourceManager;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -35,10 +37,9 @@ public class FiguraModClientForge extends FiguraMod {
         vanillaOverlays.addAll(Arrays.asList(RenderGameOverlayEvent.ElementType.values()));
     }
 
-    //TODO: THIS MIGHT NOT WORK
-    @SubscribeEvent
-    public static void registerResourceListener(AddReloadListenerEvent event) {
-        getResourceListeners().forEach(figuraResourceListener -> event.addListener((FiguraResourceListenerImpl)figuraResourceListener));
+
+    public static void registerResourceListeners() {
+        FiguraMod.getResourceListeners().forEach(figuraResourceListener -> ((SimpleReloadableResourceManager)Minecraft.getInstance().getResourceManager()).registerReloadListener((PreparableReloadListener) figuraResourceListener));
     }
 
     private static final List<RenderGameOverlayEvent.ElementType> vanillaOverlays = new ArrayList<>();
