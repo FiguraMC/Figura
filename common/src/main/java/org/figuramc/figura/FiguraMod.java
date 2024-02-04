@@ -8,6 +8,8 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.local.CacheAvatarLoader;
@@ -27,8 +29,6 @@ import org.figuramc.figura.permissions.PermissionManager;
 import org.figuramc.figura.resources.FiguraRuntimeResources;
 import org.figuramc.figura.utils.*;
 import org.figuramc.figura.wizards.AvatarWizard;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,7 +45,7 @@ public class FiguraMod {
     public static final Version VERSION = new Version(PlatformUtils.getFiguraModVersionString());
     public static final Calendar CALENDAR = Calendar.getInstance();
     public static final Path GAME_DIR = PlatformUtils.getGameDir().normalize();
-    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
+    public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
     public static final float VERTEX_OFFSET = -0.0005f;
 
     public static int ticks;

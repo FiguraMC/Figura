@@ -21,7 +21,9 @@ import org.figuramc.figura.lua.api.entity.EntityAPI;
 import org.figuramc.figura.lua.api.world.BlockStateAPI;
 import org.figuramc.figura.lua.api.world.ItemStackAPI;
 import org.figuramc.figura.permissions.Permissions;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -30,6 +32,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(SkullBlockRenderer.class)
 public abstract class SkullBlockRendererMixin extends BlockEntityRenderer<SkullBlockEntity> {
+
+    @Shadow
+    private static RenderType getRenderType(SkullBlock.Type type, @Nullable GameProfile gameProfile) {
+        throw new AssertionError();
+    }
 
     @Unique
     private static Avatar avatar;
@@ -41,7 +48,9 @@ public abstract class SkullBlockRendererMixin extends BlockEntityRenderer<SkullB
     }
 
     @Inject(at = @At("HEAD"), method = "renderSkull", cancellable = true)
-    private static void renderSkull(Direction direction, float yaw, SkullBlock.Type type, GameProfile gameProfile, float animationProgress, PoseStack stack, MultiBufferSource bufferSource, int light, CallbackInfo ci) {
+    private static void figura$renderSkull(Direction direction, float yaw, SkullBlock.Type type, GameProfile gameProfile, float animationProgress, PoseStack stack, MultiBufferSource bufferSource, int light, CallbackInfo ci) {
+        RenderType renderType = getRenderType(type, gameProfile);
+
         // parse block and items first, so we can yeet them in case of a missed event
         SkullBlockEntity localBlock = block;
         block = null;
@@ -86,7 +95,7 @@ public abstract class SkullBlockRendererMixin extends BlockEntityRenderer<SkullB
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/blockentity/SkullBlockRenderer;renderSkull(Lnet/minecraft/core/Direction;FLnet/minecraft/world/level/block/SkullBlock$Type;Lcom/mojang/authlib/GameProfile;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V"), method = "render(Lnet/minecraft/world/level/block/entity/SkullBlockEntity;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;II)V")
-    public void render(SkullBlockEntity skullBlockEntity, float f, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j, CallbackInfo ci) {
+    public void figura$render(SkullBlockEntity skullBlockEntity, float f, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j, CallbackInfo ci) {
         block = skullBlockEntity;
         SkullBlockRendererAccessor.setRenderMode(SkullBlockRendererAccessor.SkullRenderMode.BLOCK);
     }
@@ -98,7 +107,7 @@ public abstract class SkullBlockRendererMixin extends BlockEntityRenderer<SkullB
     }
 
     @Inject(at = @At("HEAD"), method = "getRenderType")
-    private static void getRenderType(SkullBlock.Type type, GameProfile profile, CallbackInfoReturnable<RenderType> cir) {
+    private static void figura$getRenderType(SkullBlock.Type type, GameProfile profile, CallbackInfoReturnable<RenderType> cir) {
         avatar = (profile != null && profile.getId() != null) ? AvatarManager.getAvatarForPlayer(profile.getId()) : null;
     }
 }
