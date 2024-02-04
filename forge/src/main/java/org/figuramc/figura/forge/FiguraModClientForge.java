@@ -15,6 +15,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
+import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.config.ConfigManager;
 import org.figuramc.figura.config.forge.ModConfig;
 import org.figuramc.figura.gui.FiguraGui;
@@ -32,6 +33,7 @@ public class FiguraModClientForge extends FiguraMod {
 
     @SubscribeEvent
     public static void onInitializeClient(FMLClientSetupEvent event) {
+        NetworkStuff.initializeHttpClient();
         onClientInit();
         ModConfig.registerConfigScreen();
         vanillaOverlays.addAll(Arrays.asList(RenderGameOverlayEvent.ElementType.values()));

@@ -22,6 +22,7 @@ import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.Badges;
 import org.figuramc.figura.avatar.UserData;
 import org.figuramc.figura.avatar.local.CacheAvatarLoader;
+import org.figuramc.figura.backend2.trust.KeyStoreHelper;
 import org.figuramc.figura.backend2.websocket.C2SMessageHandler;
 import org.figuramc.figura.backend2.websocket.WebsocketThingy;
 import org.figuramc.figura.config.Configs;
@@ -48,7 +49,7 @@ import java.util.function.Function;
 
 public class NetworkStuff {
 
-    protected static final HttpClient client = HttpClients.createDefault();
+    protected static HttpClient client;
     protected static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
     private static final ConcurrentLinkedQueue<Request<HttpAPI>> API_REQUESTS = new ConcurrentLinkedQueue<>();
@@ -65,7 +66,7 @@ public class NetworkStuff {
     public static int backendStatus = 1;
     public static String disconnectedReason;
 
-    public static boolean debug = false;
+    public static boolean debug = true;
     @Nullable
     public static Component motd;
 
@@ -78,7 +79,9 @@ public class NetworkStuff {
             uploadRate = new RefilledNumber(),
             downloadRate = new RefilledNumber();
     private static int maxAvatarSize = Integer.MAX_VALUE;
-
+    public static void initializeHttpClient() {
+        client = KeyStoreHelper.httpClientWithBackendCertificates();
+    }
     public static void tick() {
         //limits
         uploadRate.tick();
@@ -457,7 +460,7 @@ public class NetworkStuff {
 
     private static void connectWS(String token) {
         if (ws != null) ws.close();
-        ws = new WebsocketThingy(token);
+        ws = KeyStoreHelper.websocketWithBackendCertificates(token);
         ws.connect();
     }
 
