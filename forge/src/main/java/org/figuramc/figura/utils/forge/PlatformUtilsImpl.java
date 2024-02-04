@@ -8,10 +8,8 @@ import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.utils.PlatformUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class PlatformUtilsImpl {
@@ -39,8 +37,8 @@ public class PlatformUtilsImpl {
         return PlatformUtils.ModLoader.FORGE;
     }
 
-    public static InputStream loadFileFromRoot(String path) throws FileNotFoundException {
-        File file = ModList.get().getModFileById(FiguraMod.MOD_ID).getFile().findResource(path).toFile();
-        return new FileInputStream(file);
+    public static InputStream loadFileFromRoot(String path) throws IOException {
+        Path file = ModList.get().getModFileById(FiguraMod.MOD_ID).getFile().findResource(path);
+        return Files.newInputStream(file);
     }
 }

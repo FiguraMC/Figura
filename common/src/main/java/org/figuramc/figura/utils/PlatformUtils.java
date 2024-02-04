@@ -5,6 +5,7 @@ import net.minecraft.SharedConstants;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 
@@ -65,7 +66,7 @@ public class PlatformUtils {
     }
 
     @ExpectPlatform
-    public static InputStream loadFileFromRoot(String file) throws FileNotFoundException {
+    public static InputStream loadFileFromRoot(String file) throws IOException {
         throw new AssertionError();
     }
 }
