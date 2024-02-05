@@ -9,6 +9,7 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.backend2.trust.KeyStoreHelper;
 
 @Mod("figura")
 public class FiguraModForge {

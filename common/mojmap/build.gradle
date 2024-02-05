@@ -13,7 +13,7 @@ dependencies {
 	// Libraries
 	implementation("com.github.FiguraMC.LuaJ:luaj-core:$luaj-figura")
 	implementation("com.github.FiguraMC.LuaJ:luaj-jse:$luaj-figura")
-	implementation("org.java-websocket:Java-WebSocket:$websocket")
+	implementation("com.neovisionaries:nv-websocket-client:$nv_websocket")
 }
 
 task mojmapJar(type: RemapJarTask) {
