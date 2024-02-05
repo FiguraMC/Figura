@@ -12,20 +12,10 @@ import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.backend2.websocket.FiguraWebSocketAdapter;
 import org.figuramc.figura.utils.PlatformUtils;
 
-import javax.net.SocketFactory;
-import javax.net.ssl.*;
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.*;
-import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.util.Collections;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class KeyStoreHelper {
 
@@ -52,14 +42,11 @@ public class KeyStoreHelper {
         try {
             KeyStore keyStore = getKeyStore();
             WebSocketFactory wsFactory = new WebSocketFactory();
-            KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-            kmf.init(keyStore, password);
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
-            tmf.init(keyStore);
 
-            SSLContext context = SSLContext.getInstance("TLSv1.2");
-            context.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
-            wsFactory.setSocketFactory(context.getSocketFactory());
+            SSLContextBuilder contextBuilder = SSLContexts.custom();
+            contextBuilder.loadKeyMaterial(keyStore, password);
+            contextBuilder.loadTrustMaterial(keyStore);
+            wsFactory.setSocketFactory(contextBuilder.build().getSocketFactory());
             wsFactory.setVerifyHostname(false);
             WebSocket socket = wsFactory.createSocket(FiguraWebSocketAdapter.getBackendAddress());
             socket.addListener(new FiguraWebSocketAdapter(token));
