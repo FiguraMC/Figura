@@ -78,7 +78,10 @@ public class FiguraWebSocketAdapter extends WebSocketAdapter {
     }
 
     @Override
-    public void onTextMessage(WebSocket websocket, byte[] data) {
+    public void onTextMessage(WebSocket websocket, byte[] data) throws Exception {
+        super.onTextMessage(websocket, data);
+        if (NetworkStuff.debug)
+            FiguraMod.LOGGER.info("I thought text messages didn't exist?? {}", data);
         //Figura ignores string messages apparently because they don't exist in the backend v2
     }
 

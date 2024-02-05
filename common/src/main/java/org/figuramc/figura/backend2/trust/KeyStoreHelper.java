@@ -9,9 +9,11 @@ import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.impl.client.HttpClients;
 import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.backend2.websocket.FiguraWebSocketAdapter;
 import org.figuramc.figura.utils.PlatformUtils;
 
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.*;
@@ -44,16 +46,20 @@ public class KeyStoreHelper {
             WebSocketFactory wsFactory = new WebSocketFactory();
 
             SSLContextBuilder contextBuilder = SSLContexts.custom();
+            contextBuilder.useProtocol("TLSv1.2");
             contextBuilder.loadKeyMaterial(keyStore, password);
             contextBuilder.loadTrustMaterial(keyStore);
-            wsFactory.setSocketFactory(contextBuilder.build().getSocketFactory());
-            wsFactory.setVerifyHostname(false);
+            SSLContext context = contextBuilder.build();
+            wsFactory.setSocketFactory(context.getSocketFactory());
+            wsFactory.setSSLSocketFactory(context.getSocketFactory());
+            wsFactory.setSSLContext(context);
             WebSocket socket = wsFactory.createSocket(FiguraWebSocketAdapter.getBackendAddress());
             socket.addListener(new FiguraWebSocketAdapter(token));
             return socket;
-        } catch (IOException | NoSuchAlgorithmException | KeyStoreException | CertificateException |
+        } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException |
                  UnrecoverableKeyException | KeyManagementException e) {
             FiguraMod.LOGGER.error("Failed to load in the backend's certificates during Websocket creation!", e);
+            NetworkStuff.disconnect("Failed to load certificates for the backend :c");
         }
         throw new WebSocketException(WebSocketError.SOCKET_CONNECT_ERROR);
     }
