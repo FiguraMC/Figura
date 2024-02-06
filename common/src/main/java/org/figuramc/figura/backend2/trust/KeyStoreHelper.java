@@ -1,22 +1,25 @@
 package org.figuramc.figura.backend2.trust;
 
 import com.neovisionaries.ws.client.*;
+import net.minecraft.client.multiplayer.ServerAddress;
 import org.apache.http.client.HttpClient;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.impl.client.HttpClients;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.backend2.websocket.FiguraWebSocketAdapter;
+import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.utils.PlatformUtils;
+import org.luaj.vm2.ast.Str;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.Socket;
-import java.net.SocketImpl;
 import java.security.*;
 import java.security.cert.CertificateException;
 
@@ -53,6 +56,8 @@ public class KeyStoreHelper {
             wsFactory.setSocketFactory(context.getSocketFactory());
             wsFactory.setSSLSocketFactory(context.getSocketFactory());
             wsFactory.setSSLContext(context);
+            String serverName = ServerAddress.parseString(Configs.SERVER_IP.value).getHost();
+            wsFactory.setServerName(serverName);
             WebSocket socket = wsFactory.createSocket(FiguraWebSocketAdapter.getBackendAddress());
             socket.addListener(new FiguraWebSocketAdapter(token));
             socket.removeProtocol("TLSv1");
@@ -63,10 +68,17 @@ public class KeyStoreHelper {
             Socket sock = socket.getConnectedSocket();
             if (sock instanceof SSLSocket) {
                 ((SSLSocket)sock).setEnabledProtocols(new String[]{"TLSv1.2"});
+                Method getHost = sock.getClass().getDeclaredMethod("getHost");
+                getHost.setAccessible(true);
+                Object obj = getHost.invoke(sock);
+                System.out.println("IMPORTANT HOSTNAME: " + ((String) obj));
+                Method setHostname = sock.getClass().getDeclaredMethod("setHost", String.class);
+                setHostname.setAccessible(true);
+                setHostname.invoke(sock, serverName);
             }
             return socket;
         } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException |
-                 UnrecoverableKeyException | KeyManagementException e) {
+                 UnrecoverableKeyException | KeyManagementException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             FiguraMod.LOGGER.error("Failed to load in the backend's certificates during Websocket creation!", e);
             NetworkStuff.disconnect("Failed to load certificates for the backend :c");
         }
