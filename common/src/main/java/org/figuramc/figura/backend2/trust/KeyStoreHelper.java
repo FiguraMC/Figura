@@ -1,10 +1,8 @@
 package org.figuramc.figura.backend2.trust;
 
-import com.neovisionaries.ws.client.WebSocket;
-import com.neovisionaries.ws.client.WebSocketError;
-import com.neovisionaries.ws.client.WebSocketException;
-import com.neovisionaries.ws.client.WebSocketFactory;
+import com.neovisionaries.ws.client.*;
 import org.apache.http.client.HttpClient;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.impl.client.HttpClients;
@@ -14,8 +12,11 @@ import org.figuramc.figura.backend2.websocket.FiguraWebSocketAdapter;
 import org.figuramc.figura.utils.PlatformUtils;
 
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Socket;
+import java.net.SocketImpl;
 import java.security.*;
 import java.security.cert.CertificateException;
 
@@ -44,7 +45,6 @@ public class KeyStoreHelper {
         try {
             KeyStore keyStore = getKeyStore();
             WebSocketFactory wsFactory = new WebSocketFactory();
-
             SSLContextBuilder contextBuilder = SSLContexts.custom();
             contextBuilder.useProtocol("TLSv1.2");
             contextBuilder.loadKeyMaterial(keyStore, password);
@@ -55,6 +55,15 @@ public class KeyStoreHelper {
             wsFactory.setSSLContext(context);
             WebSocket socket = wsFactory.createSocket(FiguraWebSocketAdapter.getBackendAddress());
             socket.addListener(new FiguraWebSocketAdapter(token));
+            socket.removeProtocol("TLSv1");
+            socket.removeProtocol("TLSv1.1");
+            socket.clearProtocols();
+            socket.addProtocol("TLSv1.2");
+            socket.addExtension(WebSocketExtension.PERMESSAGE_DEFLATE);
+            Socket sock = socket.getConnectedSocket();
+            if (sock instanceof SSLSocket) {
+                ((SSLSocket)sock).setEnabledProtocols(new String[]{"TLSv1.2"});
+            }
             return socket;
         } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException |
                  UnrecoverableKeyException | KeyManagementException e) {
