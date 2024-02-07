@@ -11,15 +11,10 @@ import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.backend2.websocket.FiguraWebSocketAdapter;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.utils.PlatformUtils;
-import org.luaj.vm2.ast.Str;
 
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocket;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.Socket;
 import java.security.*;
 import java.security.cert.CertificateException;
 
@@ -65,20 +60,9 @@ public class KeyStoreHelper {
             socket.clearProtocols();
             socket.addProtocol("TLSv1.2");
             socket.addExtension(WebSocketExtension.PERMESSAGE_DEFLATE);
-            Socket sock = socket.getConnectedSocket();
-            if (sock instanceof SSLSocket) {
-                ((SSLSocket)sock).setEnabledProtocols(new String[]{"TLSv1.2"});
-                Method getHost = sock.getClass().getDeclaredMethod("getHost");
-                getHost.setAccessible(true);
-                Object obj = getHost.invoke(sock);
-                System.out.println("IMPORTANT HOSTNAME: " + ((String) obj));
-                Method setHostname = sock.getClass().getDeclaredMethod("setHost", String.class);
-                setHostname.setAccessible(true);
-                setHostname.invoke(sock, serverName);
-            }
             return socket;
         } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException |
-                 UnrecoverableKeyException | KeyManagementException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                 UnrecoverableKeyException | KeyManagementException e) {
             FiguraMod.LOGGER.error("Failed to load in the backend's certificates during Websocket creation!", e);
             NetworkStuff.disconnect("Failed to load certificates for the backend :c");
         }
