@@ -42,6 +42,12 @@ public abstract class AbstractPanelScreen extends Screen {
         this.parentScreen = parentScreen;
     }
 
+    @Override
+    public void init(Minecraft minecraft, int width, int height) {
+        this.renderables.clear();
+        super.init(minecraft, width, height);
+    }
+
     public Class<? extends Screen> getSelectedPanel() {
         return this.getClass();
     };
