@@ -15,8 +15,15 @@ import org.figuramc.figura.utils.PlatformUtils;
 import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.*;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.util.Collections;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class KeyStoreHelper {
 
@@ -69,15 +76,45 @@ public class KeyStoreHelper {
         throw new WebSocketException(WebSocketError.SOCKET_CONNECT_ERROR);
     }
 
+    // Derived from https://github.com/MinecraftForge/Installer/blob/1.x/src/main/java/net/minecraftforge/installer/FixSSL.java
     private static KeyStore getKeyStore() throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
-        InputStream in = PlatformUtils.loadFileFromRoot("figurakeystore.jks");
+        final KeyStore jdkKeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+        Path ksPath = Paths.get(System.getProperty("java.home"),"lib", "security", "cacerts");
+        jdkKeyStore.load(Files.newInputStream(ksPath), "changeit".toCharArray());
+        final Map<String, Certificate> jdkTrustStore = Collections.list(jdkKeyStore.aliases()).stream().collect(Collectors.toMap(a -> a, (String alias) -> {
+            try {
+                return jdkKeyStore.getCertificate(alias);
+            } catch (KeyStoreException e) {
+                FiguraMod.LOGGER.error("Could not find default certificates!", e);
+            }
+            return null;
+        }));
 
-        // Create the socket with the custom context and keystore
-        KeyStore keyStore = KeyStore.getInstance("JKS");
-        keyStore.load(in, password);
+
+        InputStream in = PlatformUtils.loadFileFromRoot("figurakeystore.jks");
+        KeyStore figuraKeyStore = KeyStore.getInstance("JKS");
+        figuraKeyStore.load(in, password);
         if (in != null) {
             in.close();
         }
-        return keyStore;
+        final Map<String, Certificate> figuraTrustStore = Collections.list(figuraKeyStore.aliases()).stream().collect(Collectors.toMap(a -> a, (String alias) -> {
+            try {
+                return figuraKeyStore.getCertificate(alias);
+            } catch (KeyStoreException e) {
+                FiguraMod.LOGGER.error("Could not find default certificates!", e);
+            }
+            return null;
+        }));
+
+        final KeyStore mergedTrustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+        mergedTrustStore.load(null, new char[0]);
+        for (Map.Entry<String, Certificate> entry : jdkTrustStore.entrySet()) {
+            mergedTrustStore.setCertificateEntry(entry.getKey(), entry.getValue());
+        }
+        for (Map.Entry<String , Certificate> entry : figuraTrustStore.entrySet()) {
+            mergedTrustStore.setCertificateEntry(entry.getKey(), entry.getValue());
+        }
+
+        return mergedTrustStore;
     }
 }
