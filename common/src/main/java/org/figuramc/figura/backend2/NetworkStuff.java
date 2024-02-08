@@ -69,7 +69,7 @@ public class NetworkStuff {
     public static int backendStatus = 1;
     public static String disconnectedReason;
 
-    public static boolean debug = true;
+    public static boolean debug = false;
     @Nullable
     public static Component motd;
 

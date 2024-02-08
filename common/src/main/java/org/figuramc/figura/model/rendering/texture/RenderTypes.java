@@ -1,18 +1,16 @@
 package org.figuramc.figura.model.rendering.texture;
 
-import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormatElement;
-import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.utils.ResourceUtils;
 import org.figuramc.figura.utils.VertexFormatMode;
+import org.lwjgl.opengl.GL11;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.OptionalDouble;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -40,7 +38,7 @@ public enum RenderTypes {
     TEXTURED_GLINT(FiguraRenderType.TEXTURED_GLINT, true, false),
 
     LINES(t -> RenderType.lines(), false),
-    LINES_STRIP(t -> FiguraRenderType.LINE_STRIP, false), //TODO FIX ME
+    LINES_STRIP(t -> FiguraRenderType.LINE_STRIP, false),
     SOLID(t -> FiguraRenderType.SOLID, false),
 
     BLURRY(FiguraRenderType.BLURRY);
@@ -159,14 +157,18 @@ public enum RenderTypes {
                                 .createCompositeState(false)
                 )
         );
-        static ImmutableList.Builder<VertexFormatElement> builder = ImmutableList.builder();
-        static {
-            builder.add(DefaultVertexFormat.ELEMENT_POSITION);
-            builder.add(DefaultVertexFormat.ELEMENT_COLOR);
-            builder.add(DefaultVertexFormat.ELEMENT_NORMAL);
-            builder.add(DefaultVertexFormat.ELEMENT_PADDING);
-        }
-        public static final RenderType LINE_STRIP = RenderType.create("line_strip", new VertexFormat(builder.build()), VertexFormatMode.LINE_STRIP.asGLMode, 256, CompositeState.builder().setLineState(new RenderStateShard.LineStateShard(OptionalDouble.empty())).setLayeringState(VIEW_OFFSET_Z_LAYERING).setTransparencyState(TRANSLUCENT_TRANSPARENCY).setOutputState(ITEM_ENTITY_TARGET).setWriteMaskState(COLOR_DEPTH_WRITE).setCullState(NO_CULL).createCompositeState(false));
+        protected static final OutputStateShard WIREFRAME_ITEM_ENTITY_TARGET = new OutputStateShard("item_entity_target", () -> {
+            RenderSystem.polygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+            if (Minecraft.useShaderTransparency()) {
+                Minecraft.getInstance().levelRenderer.getItemEntityTarget().bindWrite(false);
+            }
+        }, () -> {
+            RenderSystem.polygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+            if (Minecraft.useShaderTransparency()) {
+                Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
+            }
+        });
+        public static final RenderType LINE_STRIP = RenderType.create("line_strip", DefaultVertexFormat.POSITION_COLOR, VertexFormatMode.LINE_STRIP.asGLMode, 256, CompositeState.builder().setLineState(new LineStateShard(OptionalDouble.of(0.5))).setLayeringState(VIEW_OFFSET_Z_LAYERING).setTransparencyState(TRANSLUCENT_TRANSPARENCY).setOutputState(WIREFRAME_ITEM_ENTITY_TARGET).setWriteMaskState(COLOR_DEPTH_WRITE).setCullState(NO_CULL).createCompositeState(false));
         public static final Function<ResourceLocation, RenderType> TEXT_POLYGON_OFFSET = ResourceUtils.memoize(texture -> RenderType.create("text_polygon_offset", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormatMode.QUADS.asGLMode, 256, false, true, CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(texture, false, false)).setTransparencyState(TRANSLUCENT_TRANSPARENCY).setLightmapState(LIGHTMAP).setLayeringState(POLYGON_OFFSET_LAYERING).createCompositeState(false)));
     }
 }
