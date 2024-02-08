@@ -33,7 +33,7 @@ public class KeyStoreHelper {
             KeyStore keyStore = getKeyStore();
             WebSocketFactory wsFactory = new WebSocketFactory();
             SSLContextBuilder contextBuilder = SSLContexts.custom();
-            contextBuilder.useProtocol("TLSv1.2");
+            contextBuilder.setProtocol("TLSv1.2");
             contextBuilder.loadKeyMaterial(keyStore, password);
             contextBuilder.loadTrustMaterial(keyStore, null);
             SSLContext context = contextBuilder.build();
