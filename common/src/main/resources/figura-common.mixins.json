@@ -4,6 +4,7 @@
   "package": "org.figuramc.figura.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "SNIHelperMixin",
     "font.FontSetAccessor",
     "font.StringRenderOutputMixin"
   ],
