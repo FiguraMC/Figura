@@ -4,9 +4,6 @@
   "package": "org.figuramc.figura.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "SNIHelperMixin",
-    "font.FontSetAccessor",
-    "font.StringRenderOutputMixin"
   ],
   "client": [
     "AABBInvoker",
@@ -100,7 +97,11 @@
     "sound.ChannelMixin",
     "sound.SoundEngineMixin",
     "sound.SoundManagerAccessor",
-    "sound.SubtitleOverlayMixin"
+    "sound.SubtitleOverlayMixin",
+    "SNIHelperMixin",
+    "font.FontSetAccessor",
+    "font.StringRenderOutputAccessor",
+    "font.StringRenderOutputMixin"
   ],
   "server": [
   ],

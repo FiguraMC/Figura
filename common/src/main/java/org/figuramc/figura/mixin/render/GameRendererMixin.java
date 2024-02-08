@@ -161,13 +161,13 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
         poseStack.popPose();
     }
 
-    // Optifine slightly changes the locals here, adds an extra boolean
+    // Optifine slightly changes the locals here, adds an extra posestack
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;last()Lcom/mojang/blaze3d/vertex/PoseStack$Pose;", shift = At.Shift.BEFORE),
             slice = @Slice(
                     from = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;bobHurt(Lcom/mojang/blaze3d/vertex/PoseStack;F)V"),
                     to = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;resetProjectionMatrix(Lcom/mojang/math/Matrix4f;)V")
             ), locals = LocalCapture.CAPTURE_FAILSOFT, require = 0)
-    private void renderLevelSaveBobbingOF(float tickDelta, long limitTime, PoseStack matrix, CallbackInfo ci, boolean bl, boolean bl2, Camera camera, PoseStack poseStack, float d) {
+    private void renderLevelSaveBobbingOF(float tickDelta, long limitTime, PoseStack matrix, CallbackInfo ci, boolean bl, boolean of, Camera camera, PoseStack poseStack, PoseStack stack, float g) {
         if (hasShaders) return;
         bobbingMatrix = new Matrix4f(poseStack.last().pose());
         poseStack.popPose();
