@@ -1,26 +1,26 @@
 package org.figuramc.figura.backend2.trust;
 
-import com.neovisionaries.ws.client.WebSocket;
-import com.neovisionaries.ws.client.WebSocketError;
-import com.neovisionaries.ws.client.WebSocketException;
-import com.neovisionaries.ws.client.WebSocketFactory;
+import com.neovisionaries.ws.client.*;
+import net.minecraft.client.multiplayer.resolver.ServerAddress;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.SSLContexts;
 import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.backend2.websocket.FiguraWebSocketAdapter;
+import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.utils.PlatformUtils;
 
-import javax.net.SocketFactory;
-import javax.net.ssl.*;
-import java.io.*;
+import javax.net.ssl.SSLContext;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class KeyStoreHelper {
@@ -32,34 +32,71 @@ public class KeyStoreHelper {
         try {
             KeyStore keyStore = getKeyStore();
             WebSocketFactory wsFactory = new WebSocketFactory();
-            KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-            kmf.init(keyStore, password);
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
-            tmf.init(keyStore);
-
-            SSLContext context = SSLContext.getInstance("TLSv1.2");
-            context.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+            SSLContextBuilder contextBuilder = SSLContexts.custom();
+            contextBuilder.useProtocol("TLSv1.2");
+            contextBuilder.loadKeyMaterial(keyStore, password);
+            contextBuilder.loadTrustMaterial(keyStore, null);
+            SSLContext context = contextBuilder.build();
             wsFactory.setSocketFactory(context.getSocketFactory());
-            wsFactory.setVerifyHostname(false);
+            wsFactory.setSSLSocketFactory(context.getSocketFactory());
+            wsFactory.setSSLContext(context);
+            String serverName = ServerAddress.parseString(Configs.SERVER_IP.value).getHost();
+            wsFactory.setServerName(serverName);
             WebSocket socket = wsFactory.createSocket(FiguraWebSocketAdapter.getBackendAddress());
             socket.addListener(new FiguraWebSocketAdapter(token));
+            socket.removeProtocol("TLSv1");
+            socket.removeProtocol("TLSv1.1");
+            socket.clearProtocols();
+            socket.addProtocol("TLSv1.2");
+            socket.addExtension(WebSocketExtension.PERMESSAGE_DEFLATE);
             return socket;
-        } catch (IOException | NoSuchAlgorithmException | KeyStoreException | CertificateException |
+        } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException |
                  UnrecoverableKeyException | KeyManagementException e) {
             FiguraMod.LOGGER.error("Failed to load in the backend's certificates during Websocket creation!", e);
+            NetworkStuff.disconnect("Failed to load certificates for the backend :c");
         }
         throw new WebSocketException(WebSocketError.SOCKET_CONNECT_ERROR);
     }
 
+    // Derived from https://github.com/MinecraftForge/Installer/blob/1.x/src/main/java/net/minecraftforge/installer/FixSSL.java
     private static KeyStore getKeyStore() throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
-        InputStream in = PlatformUtils.loadFileFromRoot("figurakeystore.jks");
+        final KeyStore jdkKeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+        Path ksPath = Paths.get(System.getProperty("java.home"),"lib", "security", "cacerts");
+        jdkKeyStore.load(Files.newInputStream(ksPath), "changeit".toCharArray());
+        final Map<String, Certificate> jdkTrustStore = Collections.list(jdkKeyStore.aliases()).stream().collect(Collectors.toMap(a -> a, (String alias) -> {
+            try {
+                return jdkKeyStore.getCertificate(alias);
+            } catch (KeyStoreException e) {
+                FiguraMod.LOGGER.error("Could not find default certificates!", e);
+            }
+            return null;
+        }));
 
-        // Create the socket with the custom context and keystore
-        KeyStore keyStore = KeyStore.getInstance("JKS");
-        keyStore.load(in, password);
+
+        InputStream in = PlatformUtils.loadFileFromRoot("figurakeystore.jks");
+        KeyStore figuraKeyStore = KeyStore.getInstance("JKS");
+        figuraKeyStore.load(in, password);
         if (in != null) {
             in.close();
         }
-        return keyStore;
+        final Map<String, Certificate> figuraTrustStore = Collections.list(figuraKeyStore.aliases()).stream().collect(Collectors.toMap(a -> a, (String alias) -> {
+            try {
+                return figuraKeyStore.getCertificate(alias);
+            } catch (KeyStoreException e) {
+                FiguraMod.LOGGER.error("Could not find default certificates!", e);
+            }
+            return null;
+        }));
+
+        final KeyStore mergedTrustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+        mergedTrustStore.load(null, new char[0]);
+        for (Map.Entry<String, Certificate> entry : jdkTrustStore.entrySet()) {
+            mergedTrustStore.setCertificateEntry(entry.getKey(), entry.getValue());
+        }
+        for (Map.Entry<String , Certificate> entry : figuraTrustStore.entrySet()) {
+            mergedTrustStore.setCertificateEntry(entry.getKey(), entry.getValue());
+        }
+
+        return mergedTrustStore;
     }
 }
