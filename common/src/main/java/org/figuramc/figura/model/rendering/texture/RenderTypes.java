@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.blockentity.TheEndPortalRenderer;
 import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.utils.ResourceUtils;
 import org.figuramc.figura.utils.VertexFormatMode;
@@ -20,7 +21,7 @@ public enum RenderTypes {
 
     CUTOUT(RenderType::entityCutoutNoCull),
     CUTOUT_CULL(RenderType::entityCutout),
-    CUTOUT_EMISSIVE_SOLID(resourceLocation -> FiguraRenderType.CUTOUT_EMISSIVE_SOLID.apply(resourceLocation, true)), //TODO FIX ME
+    CUTOUT_EMISSIVE_SOLID(resourceLocation -> FiguraRenderType.CUTOUT_EMISSIVE_SOLID.apply(resourceLocation, false)),
 
     TRANSLUCENT(RenderType::entityTranslucent),
     TRANSLUCENT_CULL(RenderType::entityTranslucentCull),
@@ -29,9 +30,9 @@ public enum RenderTypes {
     EMISSIVE_SOLID(resourceLocation -> RenderType.beaconBeam(resourceLocation, false)),
     EYES(RenderType::eyes),
 
-    END_PORTAL(t -> RenderType.endPortal(1), false), //TODO FIX ME
-    END_GATEWAY(t -> RenderType.endPortal(2), false), //TODO FIX ME
-    TEXTURED_PORTAL(FiguraRenderType.TEXTURED_PORTAL),  //TODO FIX ME
+    END_PORTAL(t -> RenderType.endPortal(0), false), //TODO FIX ME
+    END_GATEWAY(t -> RenderType.endPortal(0), false), //TODO FIX ME
+    TEXTURED_PORTAL(resourceLocation -> FiguraRenderType.getTexturedPortal(resourceLocation, 0)),  //TODO FIX ME
 
     GLINT(t -> RenderType.entityGlintDirect(), false, false),
     GLINT2(t -> RenderType.glintDirect(), false, false),
@@ -100,26 +101,35 @@ public enum RenderTypes {
                                         .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                                         .setCullState(NO_CULL)
                                         .setWriteMaskState(COLOR_DEPTH_WRITE)
-                                        .setOverlayState(OVERLAY)
+                                        .setOverlayState(NO_OVERLAY)
                                         .setFogState(NO_FOG)
                                         .createCompositeState(affectsOutline)));
 
-
-        public static final Function<ResourceLocation, RenderType> TEXTURED_PORTAL = ResourceUtils.memoize(
-                texture -> create(
-                        "figura_textured_portal",
-                        DefaultVertexFormat.POSITION,
-                        VertexFormatMode.QUADS.asGLMode,
-                        256,
-                        false,
-                        false,
-                        CompositeState.builder()
-                                .setTextureState(
-                                        new TextureStateShard(texture, false, false)
-                                ).setTexturingState(new PortalTexturingStateShard(1))
-                                .createCompositeState(false)
-                )
-        );
+        public static RenderType getTexturedPortal(ResourceLocation texture, int i) {
+            TextureStateShard textureStateShard;
+            TransparencyStateShard transparencyStateShard;
+            if (i <= 1) {
+                transparencyStateShard = TRANSLUCENT_TRANSPARENCY;
+                textureStateShard = new TextureStateShard(texture, false, false);
+            } else {
+                transparencyStateShard = ADDITIVE_TRANSPARENCY;
+                textureStateShard = new TextureStateShard(texture, false, false);
+            }
+            return create(
+                    "figura_textured_portal",
+                            DefaultVertexFormat.POSITION_COLOR,
+                            VertexFormatMode.QUADS.asGLMode,
+                            256,
+                            false,
+                            false,
+                            CompositeState.builder()
+                                    .setTextureState(
+                                            textureStateShard
+                                    ).setTexturingState(new PortalTexturingStateShard(i))
+                                    .setTransparencyState(transparencyStateShard)
+                                    .createCompositeState(false)
+            );
+        }
 
         public static final Function<ResourceLocation, RenderType> BLURRY = ResourceUtils.memoize(
                 texture -> create(
