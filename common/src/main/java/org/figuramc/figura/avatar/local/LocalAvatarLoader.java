@@ -17,6 +17,8 @@ import org.figuramc.figura.utils.IOUtils;
 import org.figuramc.figura.utils.NbtType;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -353,8 +355,28 @@ public class LocalAvatarLoader {
 
         try {
             WatchEvent.Kind<?>[] events = {StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY};
-            WatchKey key = IS_WINDOWS ? path.register(watcher, events, ExtendedWatchEventModifier.FILE_TREE) : path.register(watcher, events);
-
+            WatchKey key = null;
+            if (IS_WINDOWS) {
+                Class c = Class.forName("com.sun.nio.file.ExtendedWatchEventModifier");
+                for (Object obj : c.getEnumConstants()) {
+                    try {
+                        Method m = c.getMethod("value", null);
+                        Object modifier = m.invoke(obj, null);
+                        if (modifier instanceof WatchEvent.Modifier) {
+                            key = path.register(watcher, events, (WatchEvent.Modifier) obj);
+                        } else {
+                            key = path.register(watcher, events);
+                        }
+                        break;
+                    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
+                        FiguraMod.LOGGER.warn("Could not find tree file modifier, avatar list might not refresh automatically!");
+                        key = path.register(watcher, events);
+                        break;
+                    }
+                }
+            } else {
+                key = path.register(watcher, events);
+            }
             consumer.accept(path, key);
 
             List<Path> children = IOUtils.listPaths(path);
@@ -386,9 +408,5 @@ public class LocalAvatarLoader {
         SOUNDS,
         MODELS,
         METADATA
-    }
-
-    private enum ExtendedWatchEventModifier implements WatchEvent.Modifier {
-        FILE_TREE;
     }
 }

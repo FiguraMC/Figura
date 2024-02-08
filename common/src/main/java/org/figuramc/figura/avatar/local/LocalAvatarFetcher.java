@@ -386,9 +386,9 @@ public class LocalAvatarFetcher {
                     }
                 } else if (IOUtils.getFileNameOrEmpty(path).endsWith(".zip")) {
                     try {
-                        FileSystem opened = FileSystems.newFileSystem(path, (ClassLoader) null);
+                        FileSystem opened = FileSystems.newFileSystem(path, null);
                         if ("jar".equalsIgnoreCase(opened.provider().getScheme())) {
-                            Path newPath = opened.getPath("");
+                            Path newPath = opened.getPath("/");
                             if (isAvatar(newPath)) {
                                 children.add(new AvatarPath(newPath, folderPath, path));
                                 found = true;
