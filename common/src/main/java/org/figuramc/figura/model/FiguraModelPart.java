@@ -1349,6 +1349,15 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("model_part.remove")
+    public FiguraModelPart remove() {
+        if (parent != null)
+            this.parent.removeChild(this);
+
+        return this;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
                     argumentTypes = String.class,

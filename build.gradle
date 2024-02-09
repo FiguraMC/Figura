@@ -20,6 +20,14 @@ subprojects {
 		maven { url 'https://maven.terraformersmc.com/releases/' }
 		maven { url 'https://api.modrinth.com/maven' }
 		maven { url 'https://maven.quiltmc.org/repository/release/' }
+		maven {
+			name = 'GeckoLib'
+			url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+			content {
+				includeGroupByRegex("software\\.bernie.*")
+				includeGroup("com.eliotlash.mclib")
+			}
+		}
 	}
 
 	dependencies {
@@ -29,6 +37,7 @@ subprojects {
 		// Mods
 		modCompileOnly "maven.modrinth:iris:$iris"
 		modCompileOnly "maven.modrinth:immediatelyfast:$immediately_fast"
+		modCompileOnly "maven.modrinth:iris:$iris"
 	}
 }
 
@@ -39,7 +48,7 @@ allprojects {
 
 	java_version = rootProject.java_version
 	archivesBaseName = rootProject.archives_base_name
-	version = rootProject.mod_version + "-" + rootProject.minecraft_version
+	version = rootProject.mod_version + "+" + rootProject.minecraft_version
 	group = rootProject.maven_group
 	if (project.hasProperty("release")) {
 		jarVersion = version

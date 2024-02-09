@@ -416,8 +416,10 @@ public class Avatar {
         return rendered;
     }
 
-    public void playSoundEvent(String id, FiguraVec3 pos, float vol, float pitch, boolean loop, String category, String file) {
-        if (loaded) run("ON_PLAY_SOUND", tick, id, pos, vol, pitch, loop, category, file);
+    public boolean playSoundEvent(String id, FiguraVec3 pos, float vol, float pitch, boolean loop, String category, String file) {
+        Varargs result = null;
+        if (loaded) result = run("ON_PLAY_SOUND", tick, id, pos, vol, pitch, loop, category, file);
+        return isCancelled(result);
     }
 
     public void resourceReloadEvent() {
@@ -805,8 +807,8 @@ public class Avatar {
             return false;
 
         stack.pushPose();
-        Quaternionf quaternionf = Axis.ZP.rotationDegrees(-90f);
-        Quaternionf quaternionf2 = Axis.YP.rotationDegrees(-90f);
+        Quaternionf quaternionf = Axis.ZP.rotationDegrees(90f);
+        Quaternionf quaternionf2 = Axis.YP.rotationDegrees(90f);
         quaternionf.mul(quaternionf2);
         stack.mulPose(quaternionf);
 

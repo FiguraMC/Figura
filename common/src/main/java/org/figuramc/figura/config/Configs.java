@@ -242,7 +242,7 @@ public class Configs {
             LOCAL_ASSETS = new ConfigType.BoolConfig("local_assets", DEV, false, false);
 
     public static final ConfigType.BoolConfig
-            CONNECTION_TOASTS = new ConfigType.BoolConfig("connection_toasts", DEV, false),
+            CONNECTION_TOASTS = new ConfigType.BoolConfig("connection_toasts", DEV, true),
             LOG_OTHERS = new ConfigType.BoolConfig("log_others", DEV, false);
     public static final ConfigType.EnumConfig
             LOG_PINGS = new ConfigType.EnumConfig("log_pings", DEV, 0, 3);

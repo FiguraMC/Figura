@@ -1,4 +1,4 @@
-package org.figuramc.figura.mixin.render.renderers;
+package org.figuramc.figura.mixin.compat;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
