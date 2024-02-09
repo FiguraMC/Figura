@@ -152,19 +152,48 @@ public class LuaTypeManager {
                         throw new LuaError("bad argument: " + method.getName() + " " + argIndex + " do not allow nil values, expected " + FiguraDocsManager.getNameFor(argumentTypes[i]));
                     if (argIndex <= args.narg() && !nil) {
                         try {
-                            actualArgs[i] = switch (argumentTypes[i].getName()) {
-                                case "java.lang.Number", "java.lang.Double", "double" -> args.checkdouble(argIndex);
-                                case "java.lang.String" -> args.checkjstring(argIndex);
-                                case "java.lang.Boolean", "boolean" -> args.toboolean(argIndex);
-                                case "java.lang.Float", "float" -> (float) args.checkdouble(argIndex);
-                                case "java.lang.Integer", "int" -> args.checkint(argIndex);
-                                case "java.lang.Long", "long" -> args.checklong(argIndex);
-                                case "org.luaj.vm2.LuaTable" -> args.checktable(argIndex);
-                                case "org.luaj.vm2.LuaFunction" -> args.checkfunction(argIndex);
-                                case "org.luaj.vm2.LuaValue" -> args.arg(argIndex);
-                                case "java.lang.Object" -> luaToJava(args.arg(argIndex));
-                                default -> argumentTypes[i].getName().startsWith("[") ? luaVarargToJava(args, argIndex, argumentTypes[i]) : args.checkuserdata(argIndex, argumentTypes[i]);
-                            };
+                            switch (argumentTypes[i].getName()) {
+                                case "java.lang.Number":
+                                case "java.lang.Double":
+                                case "double":
+                                    actualArgs[i] = args.checkdouble(argIndex);
+                                    break;
+                                case "java.lang.String":
+                                    actualArgs[i] = args.checkjstring(argIndex);
+                                    break;
+                                case "java.lang.Boolean":
+                                case "boolean":
+                                    actualArgs[i] = args.toboolean(argIndex);
+                                    break;
+                                case "java.lang.Float":
+                                case "float":
+                                    actualArgs[i] = (float) args.checkdouble(argIndex);
+                                    break;
+                                case "java.lang.Integer":
+                                case "int":
+                                    actualArgs[i] = args.checkint(argIndex);
+                                    break;
+                                case "java.lang.Long":
+                                case "long":
+                                    actualArgs[i] = args.checklong(argIndex);
+                                    break;
+                                case "org.luaj.vm2.LuaTable":
+                                    actualArgs[i] = args.checktable(argIndex);
+                                    break;
+                                case "org.luaj.vm2.LuaFunction":
+                                    actualArgs[i] = args.checkfunction(argIndex);
+                                    break;
+                                case "org.luaj.vm2.LuaValue":
+                                    actualArgs[i] = args.arg(argIndex);
+                                    break;
+                                case "java.lang.Object":
+                                    actualArgs[i] = luaToJava(args.arg(argIndex));
+                                    break;
+                                default:
+                                    actualArgs[i] = argumentTypes[i].getName().startsWith("[") ? luaVarargToJava(args, argIndex, argumentTypes[i]) : args.checkuserdata(argIndex, argumentTypes[i]);
+                                    break;
+                            }
+                            ;
                         } catch (LuaError err) {
                             String expectedType = FiguraDocsManager.getNameFor(argumentTypes[i]);
                             String actualType;
@@ -175,14 +204,27 @@ public class LuaTypeManager {
                             throw new LuaError("Invalid argument " + argIndex + " to function " + method.getName() + ". Expected " + expectedType + ", but got " + actualType);
                         }
                     } else {
-                        actualArgs[i] = switch (argumentTypes[i].getName()) {
-                            case "double" -> 0D;
-                            case "int" -> 0;
-                            case "long" -> 0L;
-                            case "float" -> 0f;
-                            case "boolean" -> false;
-                            default -> null;
-                        };
+                        switch (argumentTypes[i].getName()) {
+                            case "double":
+                                actualArgs[i] = 0D;
+                                break;
+                            case "int":
+                                actualArgs[i] = 0;
+                                break;
+                            case "long":
+                                actualArgs[i] = 0L;
+                                break;
+                            case "float":
+                                actualArgs[i] = 0f;
+                                break;
+                            case "boolean":
+                                actualArgs[i] = false;
+                                break;
+                            default:
+                                actualArgs[i] = null;
+                                break;
+                        }
+                        ;
                     }
                 }
 
@@ -191,11 +233,11 @@ public class LuaTypeManager {
                 try {
                     result = method.invoke(caller, actualArgs);
                 } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw e.getCause() instanceof LuaError l ? l : new LuaError(e.getCause());
+                    throw e.getCause() instanceof LuaError ? (LuaError) e.getCause() : new LuaError(e.getCause());
                 }
 
                 // Convert the return value
-                return result instanceof Varargs v ? v : javaToLua(result);
+                return result instanceof Varargs ? (Varargs) result : javaToLua(result);
             }
 
             @Override
@@ -259,19 +301,48 @@ public class LuaTypeManager {
         } else {
             Object[] obj = new Object[args.narg() - argIndex + 1];
             for (int start = argIndex; argIndex <= args.narg(); argIndex++) {
-                obj[argIndex - start] = switch (argumentType.getName()) {
-                    case "[Ljava.lang.Number;", "[Ljava.lang.Double;", "[D" -> args.checkdouble(argIndex);
-                    case "[Ljava.lang.String;" -> args.checkjstring(argIndex);
-                    case "[Ljava.lang.Boolean;", "[B" -> args.toboolean(argIndex);
-                    case "[Ljava.lang.Float;", "[F" -> (float) args.checkdouble(argIndex);
-                    case "[Ljava.lang.Integer;", "[I" -> args.checkint(argIndex);
-                    case "[Ljava.lang.Long;", "[J" -> args.checklong(argIndex);
-                    case "[Lorg.luaj.vm2.LuaTable;" -> args.checktable(argIndex);
-                    case "[Lorg.luaj.vm2.LuaFunction;" -> args.checkfunction(argIndex);
-                    case "[Lorg.luaj.vm2.LuaValue;" -> args.arg(argIndex);
-                    case "[Ljava.lang.Object;" -> luaToJava(args.arg(argIndex));
-                    default -> args.checkuserdata(argIndex, argumentType);
-                };
+                switch (argumentType.getName()) {
+                    case "[Ljava.lang.Number;":
+                    case "[Ljava.lang.Double;":
+                    case "[D":
+                        obj[argIndex - start] = args.checkdouble(argIndex);
+                        break;
+                    case "[Ljava.lang.String;":
+                        obj[argIndex - start] = args.checkjstring(argIndex);
+                        break;
+                    case "[Ljava.lang.Boolean;":
+                    case "[B":
+                        obj[argIndex - start] = args.toboolean(argIndex);
+                        break;
+                    case "[Ljava.lang.Float;":
+                    case "[F":
+                        obj[argIndex - start] = (float) args.checkdouble(argIndex);
+                        break;
+                    case "[Ljava.lang.Integer;":
+                    case "[I":
+                        obj[argIndex - start] = args.checkint(argIndex);
+                        break;
+                    case "[Ljava.lang.Long;":
+                    case "[J":
+                        obj[argIndex - start] = args.checklong(argIndex);
+                        break;
+                    case "[Lorg.luaj.vm2.LuaTable;":
+                        obj[argIndex - start] = args.checktable(argIndex);
+                        break;
+                    case "[Lorg.luaj.vm2.LuaFunction;":
+                        obj[argIndex - start] = args.checkfunction(argIndex);
+                        break;
+                    case "[Lorg.luaj.vm2.LuaValue;":
+                        obj[argIndex - start] = args.arg(argIndex);
+                        break;
+                    case "[Ljava.lang.Object;":
+                        obj[argIndex - start] = luaToJava(args.arg(argIndex));
+                        break;
+                    default:
+                        obj[argIndex - start] = args.checkuserdata(argIndex, argumentType);
+                        break;
+                }
+                ;
             }
             return Arrays.copyOf(obj, obj.length, (Class<? extends Object[]>) argumentType);
         }
@@ -283,11 +354,15 @@ public class LuaTypeManager {
         if (val.istable())
             return val.checktable();
         else if (val.isnumber())
-            if (val instanceof LuaInteger i) // dumb
+            if (val instanceof LuaInteger) // dumb
+            {
+                LuaInteger i = (LuaInteger) val;
                 return i.checkint();
-            else if (val.isint() && val instanceof LuaString s) // very dumb
+            } else if (val.isint() && val instanceof LuaString) // very dumb
+            {
+                LuaString s = (LuaString) val;
                 return s.checkint();
-            else
+            } else
                 return val.checkdouble();
         else if (val.isstring())
             return val.checkjstring();
@@ -304,35 +379,48 @@ public class LuaTypeManager {
     public Varargs javaToLua(Object val) {
         if (val == null)
             return LuaValue.NIL;
-        else if (val instanceof LuaValue l)
+        else if (val instanceof LuaValue) {
+            LuaValue l = (LuaValue) val;
             return l;
-        else if (val instanceof Double d)
+        } else if (val instanceof Double) {
+            Double d = (Double) val;
             return LuaValue.valueOf(d);
-        else if (val instanceof String s)
+        } else if (val instanceof String) {
+            String s = (String) val;
             return LuaValue.valueOf(s);
-        else if (val instanceof Boolean b)
+        } else if (val instanceof Boolean) {
+            Boolean b = (Boolean) val;
             return LuaValue.valueOf(b);
-        else if (val instanceof Integer i)
+        } else if (val instanceof Integer) {
+            Integer i = (Integer) val;
             return LuaValue.valueOf(i);
-        else if (val instanceof Float f)
+        } else if (val instanceof Float) {
+            Float f = (Float) val;
             return LuaValue.valueOf(f);
-        else if (val instanceof Byte b)
+        } else if (val instanceof Byte) {
+            Byte b = (Byte) val;
             return LuaValue.valueOf(b);
-        else if (val instanceof Long l)
+        } else if (val instanceof Long) {
+            Long l = (Long) val;
             return LuaValue.valueOf(l);
-        else if (val instanceof Character c)
+        } else if (val instanceof Character) {
+            Character c = (Character) val;
             return LuaValue.valueOf(c);
-        else if (val instanceof Short s)
+        } else if (val instanceof Short) {
+            Short s = (Short) val;
             return LuaValue.valueOf(s);
-        else if (val instanceof Map<?,?> map)
+        } else if (val instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) val;
             return wrapMap(map);
-        else if (val instanceof Collection<?> collection)
+        } else if (val instanceof Collection<?>) {
+            Collection<?> collection = (Collection<?>) val;
             return wrapCollection(collection);
-        else if (val.getClass().isArray())
+        } else if (val.getClass().isArray())
             return wrapArray(val);
-        else if (val instanceof Component c)
+        else if (val instanceof Component) {
+            Component c = (Component) val;
             return LuaValue.valueOf(Component.Serializer.toJson(c));
-        else
+        } else
             return wrap(val);
     }
 }

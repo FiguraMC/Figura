@@ -731,7 +731,10 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         if (tex == null) return LuaValue.NIL;
         Object val = tex.getValue();
         if (val == null) return LuaValue.NIL;
-        if (val instanceof String str) return LuaValue.valueOf(str);
+        if (val instanceof String) {
+            String str = (String) val;
+            return LuaValue.valueOf(str);
+        }
         return LuaValue.userdataOf(val);
     }
 
@@ -1337,11 +1340,13 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             },
             value = "model_part.remove_task")
     public FiguraModelPart removeTask(Object x) {
-        if (x instanceof String s)
+        if (x instanceof String) {
+            String s = (String) x;
             this.renderTasks.remove(s);
-        else if (x instanceof RenderTask t)
+        } else if (x instanceof RenderTask) {
+            RenderTask t = (RenderTask) x;
             this.renderTasks.remove(t.getName());
-        else if (x == null)
+        } else if (x == null)
             this.renderTasks.clear();
         else
             throw new LuaError("Illegal argument to removeTask(): " + x.getClass().getSimpleName());
@@ -1517,21 +1522,32 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
 
         this.childCache.put(key, null);
 
-        return switch (key) {
-            case "preRender" -> preRender;
-            case "midRender" -> midRender;
-            case "postRender" -> postRender;
-            default -> null;
-        };
+        switch (key) {
+            case "preRender":
+                return preRender;
+            case "midRender":
+                return midRender;
+            case "postRender":
+                return postRender;
+            default:
+                return null;
+        }
     }
 
     @LuaWhitelist
     public void __newindex(@LuaNotNil String key, LuaFunction value) {
         switch (key) {
-            case "preRender" -> preRender = value;
-            case "midRender" -> midRender = value;
-            case "postRender" -> postRender = value;
-            default -> throw new LuaError("Cannot assign value on key \"" + key + "\"");
+            case "preRender":
+                preRender = value;
+                break;
+            case "midRender":
+                midRender = value;
+                break;
+            case "postRender":
+                postRender = value;
+                break;
+            default:
+                throw new LuaError("Cannot assign value on key \"" + key + "\"");
         }
     }
 

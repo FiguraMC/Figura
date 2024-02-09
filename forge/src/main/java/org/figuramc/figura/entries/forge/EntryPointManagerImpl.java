@@ -32,8 +32,8 @@ public class EntryPointManagerImpl {
             for (ModFileScanData scanData : modFileScanDataList) {
                 Iterable<ModFileScanData.AnnotationData> annotations = scanData.getAnnotations();
                 for (ModFileScanData.AnnotationData a : annotations) {
-                    if (Objects.equals(a.annotationType(), annotationType)) {
-                        String memberName = a.memberName();
+                    if (Objects.equals(a.getAnnotationType(), annotationType)) {
+                        String memberName = a.getMemberName();
                         pluginClassNames.add(memberName);
                     }
                 }

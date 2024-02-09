@@ -3,6 +3,7 @@ package org.figuramc.figura.parsers;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import java.util.Arrays;
 import java.util.List;
 
 // dummy class for gson reflection
@@ -70,7 +71,7 @@ public class BlockbenchModel {
     }
 
     public static class CubeFace {
-        static final List<String> FACES = List.of("north", "south", "west", "east", "up", "down");
+        static final List<String> FACES = Arrays.asList("north", "south", "west", "east", "up", "down");
 
         float[] uv;
         float rotation;

@@ -1,5 +1,5 @@
 package org.figuramc.figura.utils.ui;
-
+/*
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -9,10 +9,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
-
+*/
+// We don't use the CustomFramebuffer anywhere, no need to backport it for now
 public class CustomFramebuffer {
 
-    private int fbo = -1;
+  /*  private int fbo = -1;
     private int colorAttachment = -1;
     private int depthStencilAttachment = -1;
 
@@ -24,6 +25,7 @@ public class CustomFramebuffer {
      * @param nWidth  The new width
      * @param nHeight The new height
      */
+    /*
     public void setSize(int nWidth, int nHeight) {
 
         // Minimized window, we don't even need the framebuffer, so...
@@ -109,5 +111,5 @@ public class CustomFramebuffer {
         shader.clear();
         GlStateManager._depthMask(true);
         GlStateManager._colorMask(true, true, true, true);
-    }
+    }*/
 }

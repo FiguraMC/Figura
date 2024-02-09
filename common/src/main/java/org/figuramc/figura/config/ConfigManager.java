@@ -28,13 +28,13 @@ public final class ConfigManager {
         loadConfig();
         saveConfig();
     }
-
+    private static JsonParser parser = new JsonParser();
     public static void loadConfig() {
         try {
             if (FILE.exists()) {
                 initializing = true;
                 BufferedReader br = new BufferedReader(new FileReader(FILE));
-                JsonObject json = JsonParser.parseReader(br).getAsJsonObject();
+                JsonObject json = parser.parse(br).getAsJsonObject();
 
                 JsonElement version = json.get("CONFIG_VERSION");
                 if (version != null && version.getAsInt() != Configs.CONFIG_VERSION) {
@@ -44,14 +44,17 @@ public final class ConfigManager {
                         JsonElement object = json.get(config.id.toLowerCase());
                         if (object == null)
                             continue;
-                        if (config instanceof ConfigType.SerializableConfig s) {
+                        if (config instanceof ConfigType.SerializableConfig) {
+                            ConfigType.SerializableConfig s = (ConfigType.SerializableConfig) config;
                             s.deserialize(object);
                             continue;
                         }
                         String obj = object.getAsString();
-                        if (config instanceof ConfigType.KeybindConfig keybind) {
+                        if (config instanceof ConfigType.KeybindConfig) {
+                            ConfigType.KeybindConfig keybind = (ConfigType.KeybindConfig) config;
                             keybind.keyBind.setKey(InputConstants.getKey(obj));
-                        } else if (config instanceof ConfigType.InputConfig<?> input) {
+                        } else if (config instanceof ConfigType.InputConfig<?>) {
+                            ConfigType.InputConfig<?> input = (ConfigType.InputConfig<?>) config;
                             if (input.inputType.validator.test(obj))
                                 config.setValue(obj);
                         } else {
@@ -84,15 +87,19 @@ public final class ConfigManager {
                     continue;
 
                 String id = config.id;
-                if (config instanceof ConfigType.SerializableConfig s)
+                if (config instanceof ConfigType.SerializableConfig) {
+                    ConfigType.SerializableConfig s = (ConfigType.SerializableConfig) config;
                     configJson.add(id, s.serialize());
-                else if (config.value instanceof Number n)
+                } else if (config.value instanceof Number) {
+                    Number n = (Number) config.value;
                     configJson.addProperty(id, n);
-                else if (config.value instanceof Character c)
+                } else if (config.value instanceof Character) {
+                    Character c = (Character) config.value;
                     configJson.addProperty(id, c);
-                else if (config.value instanceof Boolean b)
+                } else if (config.value instanceof Boolean) {
+                    Boolean b = (Boolean) config.value;
                     configJson.addProperty(id, b);
-                else if (config.value != null)
+                } else if (config.value != null)
                     configJson.addProperty(id, String.valueOf(config.value));
             }
 

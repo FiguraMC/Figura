@@ -91,8 +91,9 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
     public void update(LocalAvatarFetcher.AvatarPath path, String filter) {
         super.update(path, filter);
 
-        if (!(path instanceof LocalAvatarFetcher.FolderPath folderPath))
+        if (!(path instanceof LocalAvatarFetcher.FolderPath))
             return;
+        LocalAvatarFetcher.FolderPath folderPath = (LocalAvatarFetcher.FolderPath) path;
 
         for (AbstractAvatarWidget value : entries.values())
             value.filter = this.filter;
@@ -116,7 +117,7 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
 
             // add children
             this.entries.computeIfAbsent(str, s -> {
-                AbstractAvatarWidget entry = child instanceof LocalAvatarFetcher.FolderPath folder ? new AvatarFolderWidget(depth + 1, getWidth(), folder, parent) : new AvatarWidget(depth + 1, getWidth(), child, parent);
+                AbstractAvatarWidget entry = child instanceof LocalAvatarFetcher.FolderPath ? new AvatarFolderWidget(depth + 1, getWidth(), (LocalAvatarFetcher.FolderPath) child, parent) : new AvatarWidget(depth + 1, getWidth(), child, parent);
                 children.add(entry);
                 entry.setVisible(showChildren());
                 return entry;
@@ -132,8 +133,11 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
 
         // sort children
         children.sort((children1, children2) -> {
-            if (children1 instanceof AbstractAvatarWidget avatar1 && children2 instanceof AbstractAvatarWidget avatar2)
+            if (children1 instanceof AbstractAvatarWidget && children2 instanceof AbstractAvatarWidget) {
+                AbstractAvatarWidget avatar1 = (AbstractAvatarWidget) children1;
+                AbstractAvatarWidget avatar2 = (AbstractAvatarWidget) children2;
                 return avatar1.compareTo(avatar2);
+            }
             return 0;
         });
         sortedEntries.sort(AbstractAvatarWidget::compareTo);
@@ -149,8 +153,10 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
         for (AbstractAvatarWidget widget : entries.values()) {
             widget.setVisible(toggle);
 
-            if (widget instanceof AvatarFolderWidget folder)
+            if (widget instanceof AvatarFolderWidget) {
+                AvatarFolderWidget folder = (AvatarFolderWidget) widget;
                 folder.toggleEntries(toggle);
+            }
         }
 
         updateHeight();
@@ -161,8 +167,10 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
 
         boolean show = showChildren();
         for (AbstractAvatarWidget entry : entries.values()) {
-            if (entry instanceof AvatarFolderWidget folder)
+            if (entry instanceof AvatarFolderWidget) {
+                AvatarFolderWidget folder = (AvatarFolderWidget) entry;
                 folder.updateHeight();
+            }
             if (show) height += entry.getHeight() + 2;
         }
 

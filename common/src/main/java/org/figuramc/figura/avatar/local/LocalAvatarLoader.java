@@ -14,8 +14,11 @@ import org.figuramc.figura.parsers.LuaScriptParser;
 import org.figuramc.figura.utils.FiguraResourceListener;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.IOUtils;
+import org.figuramc.figura.utils.NbtType;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -95,7 +98,7 @@ public class LocalAvatarLoader {
         loadState = LoadState.UNKNOWN;
         resetWatchKeys();
         try {
-            path = path == null ? null : path.getFileSystem() == FileSystems.getDefault() ? Path.of(path.toFile().getCanonicalPath()) : path.normalize();
+            path = path == null ? null : path.getFileSystem() == FileSystems.getDefault() ? Paths.get(path.toFile().getCanonicalPath()) : path.normalize();
         } catch (IOException e) {
         }
         lastLoadedPath = path;
@@ -144,7 +147,7 @@ public class LocalAvatarLoader {
                     nbt.put("animations", animations);
                 CompoundTag metadataTag = nbt.getCompound("metadata");
                 if (metadataTag.contains("resources_paths")) {
-                    loadResources(nbt, metadataTag.getList("resources_paths", Tag.TAG_STRING), finalPath);
+                    loadResources(nbt, metadataTag.getList("resources_paths", NbtType.STRING.getValue()), finalPath);
                     metadataTag.remove("resource_paths");
                 }
 
@@ -187,7 +190,7 @@ public class LocalAvatarLoader {
     }
 
     private static String unixifyPath(String original) {
-        Path p = Path.of(original);
+        Path p = Paths.get(original);
         String[] components = new String[p.getNameCount()];
         for (int i = 0; i < components.length; i++) {
             components[i] = p.getName(i).toString();
@@ -277,7 +280,7 @@ public class LocalAvatarLoader {
                         textures.put("src", new CompoundTag());
                     }
 
-                    textures.getList("data", Tag.TAG_COMPOUND).addAll(dataTag.getList("data", Tag.TAG_COMPOUND));
+                    textures.getList("data", NbtType.COMPOUND.getValue()).addAll(dataTag.getList("data", NbtType.COMPOUND.getValue()));
                     textures.getCompound("src").merge(dataTag.getCompound("src"));
                 }
             }
@@ -352,8 +355,28 @@ public class LocalAvatarLoader {
 
         try {
             WatchEvent.Kind<?>[] events = {StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY};
-            WatchKey key = IS_WINDOWS ? path.register(watcher, events, com.sun.nio.file.ExtendedWatchEventModifier.FILE_TREE) : path.register(watcher, events);
-
+            WatchKey key = null;
+            if (IS_WINDOWS) {
+                Class c = Class.forName("com.sun.nio.file.ExtendedWatchEventModifier");
+                for (Object obj : c.getEnumConstants()) {
+                    try {
+                        Method m = c.getMethod("value", null);
+                        Object modifier = m.invoke(obj, null);
+                        if (modifier instanceof WatchEvent.Modifier) {
+                            key = path.register(watcher, events, (WatchEvent.Modifier) obj);
+                        } else {
+                            key = path.register(watcher, events);
+                        }
+                        break;
+                    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
+                        FiguraMod.LOGGER.warn("Could not find tree file modifier, avatar list might not refresh automatically!");
+                        key = path.register(watcher, events);
+                        break;
+                    }
+                }
+            } else {
+                key = path.register(watcher, events);
+            }
             consumer.accept(path, key);
 
             List<Path> children = IOUtils.listPaths(path);

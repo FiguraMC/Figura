@@ -62,15 +62,19 @@ public class EntityAPI<T extends Entity> {
     public static EntityAPI<?> wrap(Entity e) {
         if (e == null)
             return null;
-        if (e instanceof Player p)
+        if (e instanceof Player) {
+            Player p = (Player) e;
             return new PlayerAPI(p);
-        if (e instanceof LivingEntity le)
+        }
+        if (e instanceof LivingEntity) {
+            LivingEntity le = (LivingEntity) e;
             return new LivingEntityAPI<>(le);
+        }
         return new EntityAPI<>(e);
     }
 
     protected final void checkEntity() {
-        if (entity.isRemoved() || getLevel() != Minecraft.getInstance().level) {
+        if (entity.removed || getLevel() != Minecraft.getInstance().level) {
             T newEntityInstance = (T) EntityUtils.getEntityByUUID(entityUUID);
             thingy = newEntityInstance != null;
             if (thingy)
@@ -124,7 +128,7 @@ public class EntityAPI<T extends Entity> {
     public FiguraVec2 getRot(Float delta) {
         checkEntity();
         if (delta == null) delta = 1f;
-        return FiguraVec2.of(Mth.lerp(delta, entity.xRotO, entity.getXRot()), Mth.lerp(delta, entity.yRotO, entity.getYRot()));
+        return FiguraVec2.of(Mth.lerp(delta, entity.xRotO, entity.xRot), Mth.lerp(delta, entity.yRotO, entity.yRot));
     }
 
     @LuaWhitelist
@@ -158,7 +162,7 @@ public class EntityAPI<T extends Entity> {
     @LuaMethodDoc("entity.get_frozen_ticks")
     public int getFrozenTicks() {
         checkEntity();
-        return entity.getTicksFrozen();
+        return 0;
     }
 
     @LuaWhitelist
@@ -279,7 +283,7 @@ public class EntityAPI<T extends Entity> {
     @LuaMethodDoc("entity.is_glowing")
     public boolean isGlowing() {
         checkEntity();
-        return entity.isCurrentlyGlowing();
+        return entity.isGlowing();
     }
 
     @LuaWhitelist

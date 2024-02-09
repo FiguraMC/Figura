@@ -3,10 +3,12 @@ package org.figuramc.figura.permissions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.TagTypes;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.entries.FiguraPermissions;
 import org.figuramc.figura.utils.IOUtils;
+import org.figuramc.figura.utils.NbtType;
 
 import java.util.*;
 
@@ -48,8 +50,8 @@ public class PermissionManager {
     // read permissions from nbt, adding them into the hash maps
     private static void readNbt(CompoundTag nbt) {
         // get nbt lists
-        ListTag groupList = nbt.getList("groups", Tag.TAG_COMPOUND);
-        ListTag playerList = nbt.getList("players", Tag.TAG_COMPOUND);
+        ListTag groupList = nbt.getList("groups", NbtType.COMPOUND.getValue());
+        ListTag playerList = nbt.getList("players", NbtType.COMPOUND.getValue());
 
         // groups
         for (Tag nbtElement : groupList) {

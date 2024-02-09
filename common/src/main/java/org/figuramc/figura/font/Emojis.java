@@ -17,6 +17,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Emojis {
 
@@ -25,6 +26,7 @@ public class Emojis {
 
     public static final char DELIMITER = ':';
     public static final char ESCAPE = '\\';
+    private static final JsonParser parser = new JsonParser();
 
     // listener to load emojis from the resource pack
     public static final FiguraResourceListener RESOURCE_LISTENER = FiguraResourceListener.createResourceListener("emojis", manager -> {
@@ -41,7 +43,7 @@ public class Emojis {
             // open the resource as json
             try (InputStream stream = manager.getResource(location).getInputStream()) {
                 // add emoji
-                JsonObject json = JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonObject();
+                JsonObject json = parser.parse(new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonObject();
                 EmojiContainer container = new EmojiContainer(name, json);
                 EMOJIS.put(name, container);
                 container.getLookup().getShortcuts().forEach(shortcut -> SHORTCUT_LOOKUP.put(shortcut, container));
@@ -171,7 +173,7 @@ public class Emojis {
             // even: append text
             if (i % 2 == 0) {
                 // Find all emoji shortcuts in string
-                List<String> shortcuts = SHORTCUT_LOOKUP.keySet().stream().filter(s::contains).toList();
+                List<String> shortcuts = SHORTCUT_LOOKUP.keySet().stream().filter(s::contains).collect(Collectors.toList());
 
                 // Replace all shortcuts
                 if (shortcuts.size() > 0) {
@@ -251,7 +253,7 @@ public class Emojis {
 
     public static List<String> getMatchingEmojis(String query) {
         if (query.length() == 0 || query.charAt(0) != DELIMITER)
-            return List.of();
+            return new ArrayList<>();
 
         String name = query.substring(1);
         List<String> emojis = new ArrayList<>();

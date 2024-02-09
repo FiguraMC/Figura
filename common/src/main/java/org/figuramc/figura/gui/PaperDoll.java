@@ -17,7 +17,7 @@ public class PaperDoll {
 
     public static void render(PoseStack stack, boolean force) {
         Minecraft minecraft = Minecraft.getInstance();
-        LivingEntity entity = minecraft.getCameraEntity() instanceof LivingEntity e ? e : null;
+        LivingEntity entity = minecraft.getCameraEntity() instanceof LivingEntity ? (LivingEntity) minecraft.getCameraEntity() : null;
         Avatar avatar;
 
         if ((!Configs.HAS_PAPERDOLL.value && !force) ||
@@ -38,7 +38,7 @@ public class PaperDoll {
                     entity.isFallFlying() ||
                     entity.isBlocking() ||
                     entity.onClimbable() ||
-                    (entity instanceof Player p && p.getAbilities().flying))
+                    (entity instanceof Player && ((Player) entity).abilities.flying))
                 lastActivityTime = System.currentTimeMillis();
 
                 // if activity time is greater than duration - return

@@ -14,6 +14,7 @@ import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.Varargs;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @LuaWhitelist
@@ -90,7 +91,7 @@ public class FiguraKeybind {
 
     public static boolean set(List<FiguraKeybind> bindings, InputConstants.Key key, boolean pressed, int modifiers) {
         boolean overrided = false;
-        for (FiguraKeybind keybind : List.copyOf(bindings)) {
+        for (FiguraKeybind keybind : new ArrayList<>(bindings)) {
             if (keybind.key == key && keybind.enabled && (keybind.gui || Minecraft.getInstance().screen == null))
                 overrided = keybind.setDown(pressed, modifiers) || overrided;
         }
@@ -267,19 +268,27 @@ public class FiguraKeybind {
     @LuaWhitelist
     public Object __index(String arg) {
         if (arg == null) return null;
-        return switch (arg) {
-            case "press" -> press;
-            case "release" -> release;
-            default -> null;
-        };
+        switch (arg) {
+            case "press":
+                return press;
+            case "release":
+                return release;
+            default:
+                return null;
+        }
     }
 
     @LuaWhitelist
     public void __newindex(@LuaNotNil String key, LuaFunction value) {
         switch (key) {
-            case "press" -> press = value;
-            case "release" -> release = value;
-            default -> throw new LuaError("Cannot assign value on key \"" + key + "\"");
+            case "press":
+                press = value;
+                break;
+            case "release":
+                release = value;
+                break;
+            default:
+                throw new LuaError("Cannot assign value on key \"" + key + "\"");
         }
     }
 

@@ -49,13 +49,13 @@ public class KeybindWidgetHelper {
 
         // avatar conflicts
         Component avatar = checkForAvatarConflicts(keybind, keyBindings);
-        boolean hasAvatarConflict = avatar != null && !avatar.getString().isBlank();
+        boolean hasAvatarConflict = avatar != null && !avatar.getString().trim().isEmpty();
         if (hasAvatarConflict)
             text.append(avatar);
 
         // vanilla conflicts
         Component vanilla = checkForVanillaConflicts(keybind);
-        if (vanilla != null && !vanilla.getString().isBlank()) {
+        if (vanilla != null && !vanilla.getString().trim().isEmpty()) {
             if (hasAvatarConflict)
                 text.append("\n");
             text.append(vanilla);
@@ -70,7 +70,7 @@ public class KeybindWidgetHelper {
 
         // vanilla conflicts
         Component vanilla = checkForVanillaConflicts(keybind);
-        if (vanilla != null && !vanilla.getString().isBlank())
+        if (vanilla != null && !vanilla.getString().trim().isEmpty())
             text.append(vanilla);
 
         // set tooltip

@@ -15,6 +15,7 @@ import org.figuramc.figura.gui.widgets.SearchBar;
 import org.figuramc.figura.gui.widgets.lists.ConfigList;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.IOUtils;
+import org.figuramc.figura.utils.NbtType;
 import org.figuramc.figura.utils.TextUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
 
@@ -105,7 +106,7 @@ public class ConfigScreen extends AbstractPanelScreen {
 
     private static void loadNbt() {
         IOUtils.readCacheFile("settings", nbt -> {
-            ListTag groupList = nbt.getList("settings", Tag.TAG_COMPOUND);
+            ListTag groupList = nbt.getList("settings", NbtType.COMPOUND.getValue());
             for (Tag tag : groupList) {
                 CompoundTag compound = (CompoundTag) tag;
 

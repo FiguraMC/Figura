@@ -113,7 +113,8 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
         ItemStack itemStack = entity.getItemBySlot(slot);
 
         // Make sure the item in the equipment slot is actually a piece of armor
-        if ((itemStack.getItem() instanceof ArmorItem armorItem && armorItem.getSlot() == slot)) {
+        if ((itemStack.getItem() instanceof ArmorItem && ((ArmorItem) itemStack.getItem()).getSlot() == slot)) {
+            ArmorItem armorItem = (ArmorItem) itemStack.getItem();
             A armorModel = getArmorModel(slot);
 
             // Bones have to be their defaults to prevent issues with clipping
@@ -256,7 +257,8 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
         float tintG = 1;
         float tintB = 1;
 
-        if (armorItem instanceof DyeableArmorItem dyeableArmorItem) {
+        if (armorItem instanceof DyeableArmorItem) {
+            DyeableArmorItem dyeableArmorItem = (DyeableArmorItem) armorItem;
             int i = dyeableArmorItem.getColor(itemStack);
             tintR = (float) (i >> 16 & 255) / 255.0F;
             tintG = (float) (i >> 8 & 255) / 255.0F;

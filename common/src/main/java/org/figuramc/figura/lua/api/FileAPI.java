@@ -1,5 +1,6 @@
 package org.figuramc.figura.lua.api;
 
+import org.apache.commons.io.IOUtils;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.LuaNotNil;
@@ -16,6 +17,7 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -33,12 +35,12 @@ public class FileAPI {
     private Path securityCheck(String path) {
         if (!parent.isHost) throw new LuaError("You can't use FileAPI outside of host environment");
         Path p = relativizePath(path);
-        if (!isPathAllowed(p)) throw new LuaError("Path %s is not allowed in FileAPI".formatted(path));
+        if (!isPathAllowed(p)) throw new LuaError(String.format("Path %s is not allowed in FileAPI", path));
         return p;
     }
 
     private Path relativizePath(String path) {
-        Path p = Path.of(path);
+        Path p = Paths.get(path);
         if (p.isAbsolute()) return p.normalize();
         return rootFolderPath.resolve(path).toAbsolutePath().normalize();
     }
@@ -167,15 +169,36 @@ public class FileAPI {
     )
     public String readString(@LuaNotNil String path, String encoding) {
         try (FiguraInputStream fis = openReadStream(path)) {
-            byte[] data = fis.readAllBytes();
-            Charset charset = encoding == null ? StandardCharsets.UTF_8 : switch (encoding.toLowerCase()) {
-                case "utf_16", "utf16" -> StandardCharsets.UTF_16;
-                case "utf_16be", "utf16be" -> StandardCharsets.UTF_16BE;
-                case "utf_16le", "utf16le" -> StandardCharsets.UTF_16LE;
-                case "ascii" -> StandardCharsets.US_ASCII;
-                case "iso_8859_1", "iso88591" -> StandardCharsets.ISO_8859_1;
-                default -> StandardCharsets.UTF_8;
-            };
+            byte[] data = IOUtils.toByteArray(fis);
+            Charset charset;
+            if (encoding == null)
+                charset = StandardCharsets.UTF_8;
+            else
+                switch (encoding.toLowerCase()) {
+                    case "utf_16":
+                    case "utf16":
+                        charset = StandardCharsets.UTF_16;
+                        break;
+                    case "utf_16be":
+                    case "utf16be":
+                        charset = StandardCharsets.UTF_16BE;
+                        break;
+                    case "utf_16le":
+                    case "utf16le":
+                        charset = StandardCharsets.UTF_16LE;
+                        break;
+                    case "ascii":
+                        charset = StandardCharsets.US_ASCII;
+                        break;
+                    case "iso_8859_1":
+                    case "iso88591":
+                        charset = StandardCharsets.ISO_8859_1;
+                        break;
+                    default:
+                        charset = StandardCharsets.UTF_8;
+                        break;
+                }
+            ;
             return new String(data, charset);
         } catch (IOException e) {
             throw new LuaError(e);
@@ -192,14 +215,34 @@ public class FileAPI {
     )
     public void writeString(@LuaNotNil String path, @LuaNotNil String data, String encoding) {
         try (FiguraOutputStream fos = openWriteStream(path)) {
-            Charset charset = encoding == null ? StandardCharsets.UTF_8 : switch (encoding.toLowerCase()) {
-                case "utf_16", "utf16" -> StandardCharsets.UTF_16;
-                case "utf_16be", "utf16be" -> StandardCharsets.UTF_16BE;
-                case "utf_16le", "utf16le" -> StandardCharsets.UTF_16LE;
-                case "ascii" -> StandardCharsets.US_ASCII;
-                case "iso_8859_1", "iso88591" -> StandardCharsets.ISO_8859_1;
-                default -> StandardCharsets.UTF_8;
-            };
+            Charset charset;
+            if (encoding == null)
+                charset = StandardCharsets.UTF_8;
+            else
+                switch (encoding.toLowerCase()) {
+                    case "utf_16":
+                    case "utf16":
+                        charset = StandardCharsets.UTF_16;
+                        break;
+                    case "utf_16be":
+                    case "utf16be":
+                        charset = StandardCharsets.UTF_16BE;
+                        break;
+                    case "utf_16le":
+                    case "utf16le":
+                        charset = StandardCharsets.UTF_16LE;
+                        break;
+                    case "ascii":
+                        charset = StandardCharsets.US_ASCII;
+                        break;
+                    case "iso_8859_1":
+                    case "iso88591":
+                        charset = StandardCharsets.ISO_8859_1;
+                        break;
+                    default:
+                        charset = StandardCharsets.UTF_8;
+                        break;
+                } ;
             fos.write(data.getBytes(charset));
         } catch (IOException e) {
             throw new LuaError(e);

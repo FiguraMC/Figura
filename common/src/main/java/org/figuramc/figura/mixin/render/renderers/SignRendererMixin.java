@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 @Mixin(SignRenderer.class)
 public class SignRendererMixin {
 
-    // method_32159 corresponds to fabric intermediary, lambda$renderSignText$2 is the unmapped OF name, m_244733_ is the SRG name for Forge
-    @ModifyArg(method = {"m_hnarhlun", "method_32159", "lambda$render$2", "m_173652_"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;split(Lnet/minecraft/network/chat/FormattedText;I)Ljava/util/List;", remap = true), remap = false)
-    private FormattedText modifyText(FormattedText charSequence) {
-        return Configs.EMOJIS.value > 0 && charSequence instanceof Component text ? Emojis.applyEmojis(text) : charSequence;
+    // method_3583 corresponds to fabric intermediary, lambda$render$0 is the unmapped OF name, func_243502_a is the SRG name for Forge
+    @ModifyArg(method = {"method_3583", "func_243502_a", "lambda$render$0"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;split(Lnet/minecraft/network/chat/FormattedText;I)Ljava/util/List;", remap = true), remap = false)
+    private static FormattedText modifyText(FormattedText charSequence) {
+        return Configs.EMOJIS.value > 0 && charSequence instanceof Component ? Emojis.applyEmojis((Component) charSequence) : charSequence;
     }
 }

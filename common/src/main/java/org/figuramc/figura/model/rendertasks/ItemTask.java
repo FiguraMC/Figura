@@ -41,7 +41,7 @@ public class ItemTask extends RenderTask {
     public void renderTask(PoseStack poseStack, MultiBufferSource buffer, int light, int overlay) {
         poseStack.scale(-16, 16, -16);
 
-        LivingEntity entity = owner.renderer.entity instanceof LivingEntity living ? living : null;
+        LivingEntity entity = owner.renderer.entity instanceof LivingEntity ? (LivingEntity) owner.renderer.entity : null;
         int newLight = this.customization.light != null ? this.customization.light : light;
         int newOverlay = this.customization.overlay != null ? this.customization.overlay : overlay;
         int seed = entity != null ? entity.getId() + displayMode.ordinal() : 0;
@@ -49,7 +49,7 @@ public class ItemTask extends RenderTask {
         Minecraft.getInstance().getItemRenderer().renderStatic(
                 entity, item, displayMode, left,
                 poseStack, buffer, WorldAPI.getCurrentWorld(),
-                newLight, newOverlay, seed
+                newLight, newOverlay
         );
     }
 
@@ -85,7 +85,7 @@ public class ItemTask extends RenderTask {
         this.item = LuaUtils.parseItemStack("item", item);
         Minecraft client = Minecraft.getInstance();
         Random random = client.level != null ? client.level.random : new Random();
-        cachedComplexity = client.getItemRenderer().getModel(this.item, null, null, 0).getQuads(null, null, random).size();
+        cachedComplexity = client.getItemRenderer().getModel(this.item, null, null).getQuads(null, null, random).size();
         return this;
     }
 

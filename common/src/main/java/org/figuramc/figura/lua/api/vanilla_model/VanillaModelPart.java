@@ -98,7 +98,9 @@ public class VanillaModelPart extends VanillaPart {
         // rot
         if (rot != null) {
             FiguraVec3 rot = this.rot.toRad();
-            part.setRotation((float) -rot.x, (float) -rot.y, (float) rot.z);
+            part.xRot = (float) -rot.x;
+            part.yRot = (float) -rot.y;
+            part.zRot = (float) rot.z;
         }
         if (offsetRot != null) {
             FiguraVec3 rot = offsetRot.toRad();

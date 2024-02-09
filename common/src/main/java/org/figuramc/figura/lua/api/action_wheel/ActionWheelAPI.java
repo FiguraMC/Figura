@@ -128,9 +128,11 @@ public class ActionWheelAPI {
         Page currentPage;
         if (page == null) {
             currentPage = null;
-        } else if (page instanceof Page p) {
+        } else if (page instanceof Page) {
+            Page p = (Page) page;
             currentPage = p;
-        } else if (page instanceof String s) {
+        } else if (page instanceof String) {
+            String s = (String) page;
             currentPage = this.pages.get(s);
             if (currentPage == null) {
                 throw new LuaError("Page \"" + s + "\" not found");
@@ -194,22 +196,33 @@ public class ActionWheelAPI {
     @LuaWhitelist
     public Object __index(String arg) {
         if (arg == null) return null;
-        return switch (arg) {
-            case "leftClick" -> leftClick;
-            case "rightClick" -> rightClick;
-            case "scroll" -> scroll;
-            default -> null;
-        };
+        switch (arg) {
+            case "leftClick":
+                return leftClick;
+            case "rightClick":
+                return rightClick;
+            case "scroll":
+                return scroll;
+            default:
+                return null;
+        }
     }
 
     @LuaWhitelist
     public void __newindex(@LuaNotNil String key, Object value) {
-        LuaFunction val = value instanceof LuaFunction f ? f : null;
+        LuaFunction val = value instanceof LuaFunction ? (LuaFunction) value : null;
         switch (key) {
-            case "leftClick" -> leftClick = val;
-            case "rightClick" -> rightClick = val;
-            case "scroll" -> scroll = val;
-            default -> throw new LuaError("Cannot assign value on key \"" + key + "\"");
+            case "leftClick":
+                leftClick = val;
+                break;
+            case "rightClick":
+                rightClick = val;
+                break;
+            case "scroll":
+                scroll = val;
+                break;
+            default:
+                throw new LuaError("Cannot assign value on key \"" + key + "\"");
         }
     }
 

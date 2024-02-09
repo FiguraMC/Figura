@@ -5,8 +5,6 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.narration.NarratableEntry;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import org.figuramc.figura.utils.ui.UIHelper;
@@ -14,7 +12,7 @@ import org.figuramc.figura.utils.ui.UIHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractContainerElement extends AbstractContainerEventHandler implements FiguraTickable, FiguraWidget, NarratableEntry {
+public abstract class AbstractContainerElement extends AbstractContainerEventHandler implements FiguraTickable, FiguraWidget {
 
     public static final Component HOVERED_ARROW = new TextComponent("•");
 
@@ -35,16 +33,20 @@ public abstract class AbstractContainerElement extends AbstractContainerEventHan
     @Override
     public void tick() {
         for (GuiEventListener listener : this.children) {
-            if (listener instanceof FiguraTickable tickable)
+            if (listener instanceof FiguraTickable) {
+                FiguraTickable tickable = (FiguraTickable) listener;
                 tickable.tick();
+            }
         }
     }
 
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         for (GuiEventListener listener : this.children) {
-            if (listener instanceof Widget widget)
+            if (listener instanceof Widget) {
+                Widget widget = (Widget) listener;
                 widget.render(stack, mouseX, mouseY, delta);
+            }
         }
     }
 
@@ -52,8 +54,10 @@ public abstract class AbstractContainerElement extends AbstractContainerEventHan
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         //fix mojang focusing for text fields
         for (GuiEventListener listener : this.children) {
-            if (listener instanceof TextField field)
+            if (listener instanceof TextField) {
+                TextField field = (TextField) listener;
                 field.getField().setFocus(field.isEnabled() && field.isMouseOver(mouseX, mouseY));
+            }
         }
         return super.mouseClicked(mouseX, mouseY, button);
     }
@@ -100,10 +104,13 @@ public abstract class AbstractContainerElement extends AbstractContainerEventHan
         this.visible = visible;
 
         for (GuiEventListener listener : this.children) {
-            if (listener instanceof FiguraWidget drawable)
+            if (listener instanceof FiguraWidget) {
+                FiguraWidget drawable = (FiguraWidget) listener;
                 drawable.setVisible(visible);
-            else if (listener instanceof AbstractWidget widget)
+            } else if (listener instanceof AbstractWidget) {
+                AbstractWidget widget = (AbstractWidget) listener;
                 widget.visible = visible;
+            }
         }
     }
 
@@ -155,14 +162,5 @@ public abstract class AbstractContainerElement extends AbstractContainerEventHan
     @Override
     public List<? extends GuiEventListener> children() {
         return children;
-    }
-
-    @Override
-    public void updateNarration(NarrationElementOutput output) {
-    }
-
-    @Override
-    public NarrationPriority narrationPriority() {
-        return NarrationPriority.NONE;
     }
 }

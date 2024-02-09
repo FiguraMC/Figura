@@ -3,7 +3,12 @@ package org.figuramc.figura.utils;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.SharedConstants;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.function.Consumer;
 
 public class PlatformUtils {
 
@@ -60,4 +65,25 @@ public class PlatformUtils {
     public static ModLoader getModLoader(){
         throw new AssertionError();
     }
+
+    @ExpectPlatform
+    public static InputStream loadFileFromRoot(String file) throws IOException {
+        throw new AssertionError();
+    }
+
+    public static int getJavaVersion(Consumer<String> callback)
+    {
+        String javaVersion = System.getProperty("java.version");
+        callback.accept("Found java version " + javaVersion);
+        if (javaVersion != null && javaVersion.startsWith("1.8.0_")) {
+            try {
+                return Integer.parseInt(javaVersion.substring("1.8.0_".length()));
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                callback.accept("Could not parse java version!");
+            }
+        }
+        return 0;
+    }
+
 }

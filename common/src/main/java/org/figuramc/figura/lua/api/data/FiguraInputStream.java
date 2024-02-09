@@ -1,5 +1,6 @@
 package org.figuramc.figura.lua.api.data;
 
+import org.apache.commons.io.IOUtils;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
@@ -128,7 +129,6 @@ public class FiguraInputStream extends InputStream {
         return asyncOnly;
     }
 
-    @Override
     @LuaWhitelist
     @LuaMethodDoc(
             value = "input_stream.transfer_to",
@@ -139,7 +139,7 @@ public class FiguraInputStream extends InputStream {
             )
     )
     public long transferTo(OutputStream out) throws IOException {
-        return sourceStream.transferTo(out);
+        return IOUtils.copy(sourceStream, out);
     }
 
     @Override

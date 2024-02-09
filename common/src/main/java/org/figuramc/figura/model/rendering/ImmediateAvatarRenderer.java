@@ -1,5 +1,6 @@
 package org.figuramc.figura.model.rendering;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Pair;
@@ -30,6 +31,7 @@ import org.figuramc.figura.utils.ui.UIHelper;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
 public class ImmediateAvatarRenderer extends AvatarRenderer {
 
@@ -353,7 +355,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         // render children
         FiguraMod.popPushProfiler("children");
-        for (FiguraModelPart child : List.copyOf(part.children)) {
+        for (FiguraModelPart child : new ArrayList<>(part.children)) {
             if (!renderPart(child, remainingComplexity, thisPassedPredicate)) {
                 breakRender = true;
                 break;
@@ -521,12 +523,26 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             ret.renderType = types.get(id);
         }
 
+        if (ret.renderType == RenderTypes.END_PORTAL.get(id)) {
+            ret.endRenderType = 1;
+        } else if (ret.renderType == RenderTypes.END_GATEWAY.get(id)) {
+            ret.endRenderType = 2;
+        }else if (ret.renderType == RenderTypes.TEXTURED_PORTAL.get(id)) {
+            ret.endRenderType = 3;
+        } else {
+            ret.endRenderType = 0;
+        }
+
+        ret.texture = id;
+
         return ret;
     }
 
     private static final FiguraVec4 pos = FiguraVec4.of();
     private static final FiguraVec3 normal = FiguraVec3.of();
     private static final FiguraVec3 uv = FiguraVec3.of(0, 0, 1);
+    private static final List<RenderType> END_RENDER_TYPES = IntStream.range(0, 16).mapToObj(i -> RenderType.endPortal(i + 1)).collect(ImmutableList.toImmutableList());
+    private static final Map<Pair<Integer, ResourceLocation>, RenderType> TEXTURED_END_RENDER_TYPES = new HashMap<>();
     private void pushToBuffer(int faceCount, VertexData vertexData, PartCustomization customization, FiguraTextureSet textureSet, List<Vertex> vertices) {
         int vertCount = faceCount * 4;
 
@@ -534,31 +550,107 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         uvFixer.set(textureSet.getWidth(), textureSet.getHeight(), 1); // Dividing by this makes uv 0 to 1
 
         int overlay = customization.overlay;
-        int light = vertexData.fullBright ? LightTexture.FULL_BRIGHT : customization.light;
+        int light = vertexData.fullBright ? 15 << 20 | 15 << 4 : customization.light;
+        Random RANDOM = new Random(31100L);
 
-        VERTEX_BUFFER.getBufferFor(vertexData.renderType, vertexData.primary, vertexConsumer -> {
-            for (int i = 0; i < vertCount; i++) {
-                Vertex vertex = vertices.get(i);
+        if (vertexData.endRenderType >= 1) {
+            // Magical values from TheEndPortalRenderer
+            float r = (RANDOM.nextFloat() * 0.5f + 0.1f) * 0.15f;
+            float g = (RANDOM.nextFloat() * 0.5f + 0.4f) * 0.15f;
+            float b = (RANDOM.nextFloat() * 0.5f + 0.5f) * 0.15f;
+            float finalR1 = r;
+            float finalG1 = g;
+            float finalB1 = b;
+            VERTEX_BUFFER.getBufferFor(vertexData.renderType, vertexData.primary, vertexConsumer -> {
+                // Initial render with the end colors
+                for (int vert = 0; vert < vertCount; vert++) {
+                    Vertex vertex = vertices.get(vert);
 
-                pos.set(vertex.x, vertex.y, vertex.z, 1);
-                pos.transform(customization.positionMatrix);
-                pos.add(pos.normalized().scale(vertexData.vertexOffset));
-                normal.set(vertex.nx, vertex.ny, vertex.nz);
-                normal.transform(customization.normalMatrix);
-                uv.set(vertex.u, vertex.v, 1);
-                uv.divide(uvFixer);
-                uv.transform(customization.uvMatrix);
+                    pos.set(vertex.x, vertex.y, vertex.z, 1);
+                    pos.transform(customization.positionMatrix);
+                    pos.add(pos.normalized().scale(vertexData.vertexOffset));
+                    normal.set(vertex.nx, vertex.ny, vertex.nz);
+                    normal.transform(customization.normalMatrix);
+                    uv.set(vertex.u, vertex.v, 1);
+                    uv.divide(uvFixer);
+                    uv.transform(customization.uvMatrix);
 
-                vertexConsumer
-                        .vertex(pos.x, pos.y, pos.z)
-                        .color((float) vertexData.color.x, (float) vertexData.color.y, (float) vertexData.color.z, customization.alpha)
-                        .uv((float) uv.x, (float) uv.y)
-                        .overlayCoords(overlay)
-                        .uv2(light)
-                        .normal((float) normal.x, (float) normal.y, (float) normal.z)
-                        .endVertex();
+                    vertexConsumer
+                            .vertex(pos.x, pos.y, pos.z)
+                            .color(finalR1, finalG1, finalB1, customization.alpha)
+                            .uv((float) uv.x, (float) uv.y)
+                            .overlayCoords(overlay)
+                            .uv2(light)
+                            .normal((float) normal.x, (float) normal.y, (float) normal.z)
+                            .endVertex();
+                }
+            });
+            int passes = vertexData.endRenderType == 2 ? 16 : 15;
+            // Re render to get the portal effect, there's an extra pass on the gateway
+            for (int i = 1; i < passes; ++i) {
+                float color = 2.0f / (float)(18 - i);
+                r = (RANDOM.nextFloat() * 0.5f + 0.1f) * color;
+                g = (RANDOM.nextFloat() * 0.5f + 0.4f) * color;
+                b = (RANDOM.nextFloat() * 0.5f + 0.5f) * color;
+                float finalR = r;
+                float finalG = g;
+                float finalB = b;
+
+                RenderType renderType;
+                if (vertexData.endRenderType == 3){
+                    renderType = TEXTURED_END_RENDER_TYPES.computeIfAbsent(new Pair<>(i, vertexData.texture), integerResourceLocationPair -> RenderTypes.FiguraRenderType.getTexturedPortal(integerResourceLocationPair.getSecond(), integerResourceLocationPair.getFirst()));
+                } else {
+                    renderType = END_RENDER_TYPES.get(i);
+                }
+                VERTEX_BUFFER.getBufferFor(renderType, vertexData.primary, vertexConsumer -> {
+                    for (int vert = 0; vert < vertCount; vert++) {
+                        Vertex vertex = vertices.get(vert);
+
+                        pos.set(vertex.x, vertex.y, vertex.z, 1);
+                        pos.transform(customization.positionMatrix);
+                        pos.add(pos.normalized().scale(vertexData.vertexOffset));
+                        normal.set(vertex.nx, vertex.ny, vertex.nz);
+                        normal.transform(customization.normalMatrix);
+                        uv.set(vertex.u, vertex.v, 1);
+                        uv.divide(uvFixer);
+                        uv.transform(customization.uvMatrix);
+
+                        vertexConsumer
+                                .vertex(pos.x, pos.y, pos.z)
+                                .color(finalR, finalG, finalB, customization.alpha)
+                                .uv((float) uv.x, (float) uv.y)
+                                .overlayCoords(overlay)
+                                .uv2(light)
+                                .normal((float) normal.x, (float) normal.y, (float) normal.z)
+                                .endVertex();
+                    }
+                });
             }
-        });
+        } else {
+            VERTEX_BUFFER.getBufferFor(vertexData.renderType, vertexData.primary, vertexConsumer -> {
+                for (int i = 0; i < vertCount; i++) {
+                    Vertex vertex = vertices.get(i);
+
+                    pos.set(vertex.x, vertex.y, vertex.z, 1);
+                    pos.transform(customization.positionMatrix);
+                    pos.add(pos.normalized().scale(vertexData.vertexOffset));
+                    normal.set(vertex.nx, vertex.ny, vertex.nz);
+                    normal.transform(customization.normalMatrix);
+                    uv.set(vertex.u, vertex.v, 1);
+                    uv.divide(uvFixer);
+                    uv.transform(customization.uvMatrix);
+
+                    vertexConsumer
+                            .vertex(pos.x, pos.y, pos.z)
+                            .color((float) vertexData.color.x, (float) vertexData.color.y, (float) vertexData.color.z, customization.alpha)
+                            .uv((float) uv.x, (float) uv.y)
+                            .overlayCoords(overlay)
+                            .uv2(light)
+                            .normal((float) normal.x, (float) normal.y, (float) normal.z)
+                            .endVertex();
+                }
+            });
+        }
     }
 
     private static class VertexData {
@@ -567,6 +659,9 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         public float vertexOffset;
         public FiguraVec3 color;
         public boolean primary;
+        // EndPortal = 1; EndGateway = 2; FiguraPortal = 3; None = 0;
+        public int endRenderType;
+        public ResourceLocation texture;
     }
 
     private static class VertexBuffer {

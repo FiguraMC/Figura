@@ -182,9 +182,10 @@ public class PermissionsScreen extends AbstractPanelScreen {
         // set entity to render
         AbstractPermPackElement entity = playerList.selectedEntry;
         Level world = Minecraft.getInstance().level;
-        if (world != null && entity instanceof PlayerPermPackElement player)
+        if (world != null && entity instanceof PlayerPermPackElement) {
+            PlayerPermPackElement player = (PlayerPermPackElement) entity;
             entityWidget.setEntity(world.getPlayerByUUID(UUID.fromString(player.getPack().name)));
-        else
+        } else
             entityWidget.setEntity(null);
 
         // expand animation
@@ -234,7 +235,8 @@ public class PermissionsScreen extends AbstractPanelScreen {
         boolean bool = super.mouseClicked(mouseX, mouseY, button);
         dragged = null;
 
-        if (button == 0 && playerList.selectedEntry instanceof PlayerPermPackElement element && element.isMouseOver(mouseX, mouseY)) {
+        if (button == 0 && playerList.selectedEntry instanceof PlayerPermPackElement && ((PlayerPermPackElement) playerList.selectedEntry).isMouseOver(mouseX, mouseY)) {
+            PlayerPermPackElement element = (PlayerPermPackElement) playerList.selectedEntry;
             dragged = element;
             element.anchorX = (int) mouseX;
             element.anchorY = (int) mouseY;

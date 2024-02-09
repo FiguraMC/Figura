@@ -35,12 +35,24 @@ public class S2CMessageHandler {
             FiguraMod.debug("Got ws message of type: " + b);
 
         switch (b) {
-            case AUTH -> auth();
-            case PING -> ping(bytes);
-            case EVENT -> event(bytes);
-            case TOAST -> toast(bytes);
-            case CHAT -> chat(bytes);
-            case NOTICE -> notice(bytes);
+            case AUTH:
+                auth();
+                break;
+            case PING:
+                ping(bytes);
+                break;
+            case EVENT:
+                event(bytes);
+                break;
+            case TOAST:
+                toast(bytes);
+                break;
+            case CHAT:
+                chat(bytes);
+                break;
+            case NOTICE:
+                notice(bytes);
+                break;
         }
     }
 
@@ -92,8 +104,12 @@ public class S2CMessageHandler {
 
         byte type = bytes.get();
         switch (type) {
-            case 0 -> FiguraToast.sendToast(new FiguraText("backend.warning"), new FiguraText("backend.ping_size"), FiguraToast.ToastType.ERROR);
-            case 1 -> FiguraToast.sendToast(new FiguraText("backend.warning"), new FiguraText("backend.ping_rate"), FiguraToast.ToastType.ERROR);
+            case 0:
+                FiguraToast.sendToast(new FiguraText("backend.warning"), new FiguraText("backend.ping_size"), FiguraToast.ToastType.ERROR);
+                break;
+            case 1:
+                FiguraToast.sendToast(new FiguraText("backend.warning"), new FiguraText("backend.ping_rate"), FiguraToast.ToastType.ERROR);
+                break;
         }
     }
 }

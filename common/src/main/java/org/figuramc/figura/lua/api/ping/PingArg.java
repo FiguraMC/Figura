@@ -4,6 +4,7 @@ import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.math.matrix.FiguraMatrix;
 import org.figuramc.figura.math.vector.FiguraVector;
+import org.figuramc.figura.utils.IOUtils;
 import org.figuramc.figura.utils.MathUtils;
 import org.luaj.vm2.*;
 
@@ -50,7 +51,8 @@ public class PingArg {
     private static void writeArg(LuaValue val, DataOutputStream dos) throws IOException {
         if (val.isboolean()) {
             writeBool(val.checkboolean(), dos);
-        } else if (val instanceof LuaString valStr) {
+        } else if (val instanceof LuaString) {
+            LuaString valStr = (LuaString) val;
             dos.writeByte(STRING);
             writeString(valStr, dos);
         } else if (val.isint()) {
@@ -108,24 +110,38 @@ public class PingArg {
     }
 
     private static void writeVec(FiguraVector<?, ?> vector, DataOutputStream dos) throws IOException {
-        dos.writeByte(switch (vector.size()) {
-            case 2 -> VECTOR_2;
-            case 3 -> VECTOR_3;
-            case 4 -> VECTOR_4;
-            default -> throw new UnsupportedOperationException("Cannot write ping for vector size of " + vector.size());
-        });
+        switch (vector.size()) {
+            case 2:
+                dos.writeByte(VECTOR_2);
+                break;
+            case 3:
+                dos.writeByte(VECTOR_3);
+                break;
+            case 4:
+                dos.writeByte(VECTOR_4);
+                break;
+            default:
+                throw new UnsupportedOperationException("Cannot write ping for vector size of " + vector.size());
+        };
 
         for (int i = 0; i < vector.size(); i++)
             dos.writeDouble(vector.index(i));
     }
 
     private static void writeMat(FiguraMatrix<?, ?> matrix, DataOutputStream dos) throws IOException {
-        dos.writeByte(switch (matrix.cols()) {
-            case 2 -> MATRIX_2;
-            case 3 -> MATRIX_3;
-            case 4 -> MATRIX_4;
-            default -> throw new UnsupportedOperationException("Cannot write ping for matrix column of size " + matrix.cols());
-        });
+        switch (matrix.cols()) {
+            case 2:
+                dos.writeByte(MATRIX_2);
+                break;
+            case 3:
+                dos.writeByte(MATRIX_3);
+                break;
+            case 4:
+                dos.writeByte(MATRIX_4);
+                break;
+            default:
+                throw new UnsupportedOperationException("Cannot write ping for matrix column of size " + matrix.cols());
+        };
 
         for (int i = 0; i < matrix.cols(); i++) {
             FiguraVector<?, ?> vec = matrix.getColumn(i + 1);
@@ -155,27 +171,48 @@ public class PingArg {
     private static LuaValue readArg(DataInputStream dis, Avatar owner) throws IOException {
         byte type = dis.readByte();
 
-        return switch (type) {
-            case BOOL_TRUE -> LuaValue.valueOf(true);
-            case BOOL_FALSE -> LuaValue.valueOf(false);
-            case INT_1B, INT_2B, INT_3B, INT_4B -> LuaValue.valueOf(readInt(dis, type));
-            case DOUBLE -> LuaValue.valueOf(dis.readDouble());
-            case STRING -> LuaValue.valueOf(dis.readNBytes(dis.readUnsignedShort()));
-            case TABLE -> readTable(dis, owner);
-            case VECTOR_2, VECTOR_3, VECTOR_4 -> owner.luaRuntime.typeManager.javaToLua(readVec(dis, type)).arg1();
-            case MATRIX_2, MATRIX_3, MATRIX_4 -> owner.luaRuntime.typeManager.javaToLua(readMat(dis, type)).arg1();
-            default -> LuaValue.NIL;
-        };
+        switch (type) {
+            case BOOL_TRUE:
+                return LuaValue.valueOf(true);
+            case BOOL_FALSE:
+                return LuaValue.valueOf(false);
+            case INT_1B:
+            case INT_2B:
+            case INT_3B:
+            case INT_4B:
+                return LuaValue.valueOf(readInt(dis, type));
+            case DOUBLE:
+                return LuaValue.valueOf(dis.readDouble());
+            case STRING:
+                return LuaValue.valueOf(IOUtils.readNBytes(dis, dis.readUnsignedShort()));
+            case TABLE:
+                return readTable(dis, owner);
+            case VECTOR_2:
+            case VECTOR_3:
+            case VECTOR_4:
+                return owner.luaRuntime.typeManager.javaToLua(readVec(dis, type)).arg1();
+            case MATRIX_2:
+            case MATRIX_3:
+            case MATRIX_4:
+                return owner.luaRuntime.typeManager.javaToLua(readMat(dis, type)).arg1();
+            default:
+                return LuaValue.NIL;
+        }
     }
 
     private static int readInt(DataInputStream dis, byte type) throws IOException {
-        return switch (type) {
-            case INT_1B -> dis.readByte();
-            case INT_2B -> dis.readShort();
-            case INT_3B -> (int) dis.readShort() << 8 | dis.readByte() & 0xFF;
-            case INT_4B -> dis.readInt();
-            default -> 0;
-        };
+        switch (type) {
+            case INT_1B:
+                return dis.readByte();
+            case INT_2B:
+                return dis.readShort();
+            case INT_3B:
+                return (int) dis.readShort() << 8 | dis.readByte() & 0xFF;
+            case INT_4B:
+                return dis.readInt();
+            default:
+                return 0;
+        }
     }
 
     private static LuaValue readTable(DataInputStream dis, Avatar owner) throws IOException {
@@ -189,12 +226,20 @@ public class PingArg {
     }
 
     private static FiguraVector<?, ?> readVec(DataInputStream dis, byte type) throws IOException {
-        byte size = switch (type) {
-            case VECTOR_2 -> 2;
-            case VECTOR_3 -> 3;
-            case VECTOR_4 -> 4;
-            default -> throw new UnsupportedOperationException("Cannot read vector of unknown type " + type);
-        };
+        byte size;
+        switch (type) {
+            case VECTOR_2:
+                size = 2;
+                break;
+            case VECTOR_3:
+                size = 3;
+                break;
+            case VECTOR_4:
+                size = 4;
+                break;
+            default:
+                throw new UnsupportedOperationException("Cannot read vector of unknown type " + type);
+        }
 
         double[] array = new double[size];
         for (int i = 0; i < size; i++)
@@ -204,12 +249,20 @@ public class PingArg {
     }
 
     private static FiguraMatrix<?, ?> readMat(DataInputStream dis, byte type) throws IOException {
-        byte size = switch (type) {
-            case MATRIX_2 -> 2;
-            case MATRIX_3 -> 3;
-            case MATRIX_4 -> 4;
-            default -> throw new UnsupportedOperationException("Cannot read matrix of unknown type " + type);
-        };
+        byte size;
+        switch (type) {
+            case MATRIX_2:
+                size = 2;
+                break;
+            case MATRIX_3:
+                size = 3;
+                break;
+            case MATRIX_4:
+                size = 4;
+                break;
+            default:
+                throw new UnsupportedOperationException("Cannot read matrix of unknown type " + type);
+        }
 
         FiguraVector<?, ?>[] vectors = new FiguraVector[size];
         for (int i = 0; i < size; i++) {

@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class VanillaModelData {
 
-    public final Map<ParentType, PartData> partMap = new HashMap<>() {{
+    public final Map<ParentType, PartData> partMap = new HashMap<ParentType, PartData>() {{
         for (ParentType value : ParentType.values()) {
             if (value.provider != null)
                 put(value, new PartData());

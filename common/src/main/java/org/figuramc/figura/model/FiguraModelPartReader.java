@@ -2,10 +2,7 @@ package org.figuramc.figura.model;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.nbt.ByteTag;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.*;
 import net.minecraft.util.Mth;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.animation.Animation;
@@ -21,6 +18,7 @@ import org.figuramc.figura.model.rendering.Vertex;
 import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
 import org.figuramc.figura.model.rendering.texture.RenderTypes;
 import org.figuramc.figura.utils.MathUtils;
+import org.figuramc.figura.utils.NbtType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -88,7 +86,7 @@ public class FiguraModelPartReader {
         // Read children
         ArrayList<FiguraModelPart> children = new ArrayList<>(0);
         if (partCompound.contains("chld")) {
-            ListTag listTag = partCompound.getList("chld", Tag.TAG_COMPOUND);
+            ListTag listTag = partCompound.getList("chld", NbtType.COMPOUND.getValue());
             for (Tag tag : listTag)
                 children.add(read(owner, (CompoundTag) tag, textureSets, smoothNormals));
         }
@@ -108,7 +106,7 @@ public class FiguraModelPartReader {
 
         // Read animations :D
         if (partCompound.contains("anim")) {
-            ListTag nbt = partCompound.getList("anim", Tag.TAG_COMPOUND);
+            ListTag nbt = partCompound.getList("anim", NbtType.COMPOUND.getValue());
             for (Tag tag : nbt) {
                 CompoundTag compound = (CompoundTag) tag;
                 Animation animation;
@@ -118,19 +116,30 @@ public class FiguraModelPartReader {
 
                 CompoundTag animNbt = compound.getCompound("data");
                 for (String channelString : animNbt.getAllKeys()) {
-                    TransformType type = switch (channelString) {
-                        case "pos" -> TransformType.POSITION;
-                        case "rot" -> TransformType.ROTATION;
-                        case "grot" -> TransformType.GLOBAL_ROT;
-                        case "scl" -> TransformType.SCALE;
-                        default -> null;
-                    };
+                    TransformType type;
+                    switch (channelString) {
+                        case "pos":
+                            type = TransformType.POSITION;
+                            break;
+                        case "rot":
+                            type = TransformType.ROTATION;
+                            break;
+                        case "grot":
+                            type = TransformType.GLOBAL_ROT;
+                            break;
+                        case "scl":
+                            type = TransformType.SCALE;
+                            break;
+                        default:
+                            type = null;
+                            break;
+                    }
 
                     if (type == null)
                         continue;
 
                     List<Keyframe> keyframes = new ArrayList<>();
-                    ListTag keyframeList = animNbt.getList(channelString, Tag.TAG_COMPOUND);
+                    ListTag keyframeList = animNbt.getList(channelString, NbtType.COMPOUND.getValue());
 
                     for (Tag keyframeTag : keyframeList) {
                         CompoundTag keyframeNbt = (CompoundTag) keyframeTag;
@@ -178,13 +187,13 @@ public class FiguraModelPartReader {
         if (!keyframeNbt.contains(tag))
             return null;
 
-        ListTag floatList = keyframeNbt.getList(tag, Tag.TAG_FLOAT);
+        ListTag floatList = keyframeNbt.getList(tag, NbtType.FLOAT.getValue());
         if (!floatList.isEmpty()) {
             FiguraVec3 ret = FiguraVec3.of();
             readVec3(ret, floatList);
             return Pair.of(ret, null);
         } else {
-            ListTag stringList = keyframeNbt.getList(tag, Tag.TAG_STRING);
+            ListTag stringList = keyframeNbt.getList(tag, NbtType.STRING.getValue());
             return Pair.of(null, new String[]{stringList.getString(0), stringList.getString(1), stringList.getString(2)});
         }
     }
@@ -252,11 +261,15 @@ public class FiguraModelPartReader {
     }
 
     private static void readVec3(FiguraVec3 target, ListTag list) {
-        switch (list.getElementType()) {
-            case Tag.TAG_FLOAT -> target.set(list.getFloat(0), list.getFloat(1), list.getFloat(2));
-            case Tag.TAG_INT -> target.set(list.getInt(0), list.getInt(1), list.getInt(2));
-            case Tag.TAG_SHORT -> target.set(list.getShort(0), list.getShort(1), list.getShort(2));
-            case Tag.TAG_BYTE -> target.set(
+        byte elementType = list.getElementType();
+        if (elementType == NbtType.FLOAT.getValue()) {
+            target.set(list.getFloat(0), list.getFloat(1), list.getFloat(2));
+        } else if (elementType == NbtType.INT.getValue()) {
+            target.set(list.getInt(0), list.getInt(1), list.getInt(2));
+        } else if (elementType == NbtType.SHORT.getValue()) {
+            target.set(list.getShort(0), list.getShort(1), list.getShort(2));
+        } else if (elementType == NbtType.BYTE.getValue()) {
+            target.set(
                     ((ByteTag) list.get(0)).getAsByte(),
                     ((ByteTag) list.get(1)).getAsByte(),
                     ((ByteTag) list.get(2)).getAsByte()
@@ -267,11 +280,15 @@ public class FiguraModelPartReader {
     private static void readVec4(FiguraVec4 target, CompoundTag tag, String name) {
         if (tag.contains(name)) {
             ListTag list = (ListTag) tag.get(name);
-            switch (list.getElementType()) {
-                case Tag.TAG_FLOAT -> target.set(list.getFloat(0), list.getFloat(1), list.getFloat(2), list.getFloat(3));
-                case Tag.TAG_INT -> target.set(list.getInt(0), list.getInt(1), list.getInt(2), list.getInt(3));
-                case Tag.TAG_SHORT -> target.set(list.getShort(0), list.getShort(1), list.getShort(2), list.getShort(3));
-                case Tag.TAG_BYTE -> target.set(
+            byte elementType = list.getElementType();
+            if (elementType == NbtType.FLOAT.getValue()) {
+                target.set(list.getFloat(0), list.getFloat(1), list.getFloat(2), list.getFloat(3));
+            } else if (elementType == NbtType.INT.getValue()) {
+                target.set(list.getInt(0), list.getInt(1), list.getInt(2), list.getInt(3));
+            } else if (elementType == NbtType.SHORT.getValue()) {
+                target.set(list.getShort(0), list.getShort(1), list.getShort(2), list.getShort(3));
+            } else if (elementType == NbtType.BYTE.getValue()) {
+                target.set(
                         ((ByteTag) list.get(0)).getAsByte(),
                         ((ByteTag) list.get(1)).getAsByte(),
                         ((ByteTag) list.get(2)).getAsByte(),
@@ -284,61 +301,60 @@ public class FiguraModelPartReader {
     }
 
     private static boolean hasCubeData(CompoundTag partCompound) {
-        if (partCompound.contains("cube_data", Tag.TAG_COMPOUND))
+        if (partCompound.contains("cube_data", NbtType.COMPOUND.getValue()))
             return !partCompound.getCompound("cube_data").isEmpty();
         return false;
     }
 
     private static boolean hasMeshData(CompoundTag partCompound) {
-        if (partCompound.contains("mesh_data", Tag.TAG_COMPOUND))
+        if (partCompound.contains("mesh_data", NbtType.COMPOUND.getValue()))
             return !partCompound.getCompound("mesh_data").isEmpty();
         return false;
     }
-
-    private static final Map<String, FiguraVec3[]> faceData = ImmutableMap.of( // booze 🥴
-            "n", new FiguraVec3[] {
+    private static final Map<String, FiguraVec3[]> faceData = ImmutableMap.<String, FiguraVec3[]>builder() // booze 🥴
+            .put("n", new FiguraVec3[] {
                     FiguraVec3.of(1, 0, 0),
                     FiguraVec3.of(0, 0, 0),
                     FiguraVec3.of(0, 1, 0),
                     FiguraVec3.of(1, 1, 0),
                     FiguraVec3.of(0, 0, -1)
-            },
-            "s", new FiguraVec3[] {
+            })
+            .put("s", new FiguraVec3[] {
                     FiguraVec3.of(0, 0, 1),
                     FiguraVec3.of(1, 0, 1),
                     FiguraVec3.of(1, 1, 1),
                     FiguraVec3.of(0, 1, 1),
                     FiguraVec3.of(0, 0, 1)
-            },
-            "e", new FiguraVec3[] {
+            })
+            .put("e", new FiguraVec3[] {
                     FiguraVec3.of(1, 0, 1),
                     FiguraVec3.of(1, 0, 0),
                     FiguraVec3.of(1, 1, 0),
                     FiguraVec3.of(1, 1, 1),
                     FiguraVec3.of(1, 0, 0)
-            },
-            "w", new FiguraVec3[] {
+            })
+            .put("w", new FiguraVec3[] {
                     FiguraVec3.of(0, 0, 0),
                     FiguraVec3.of(0, 0, 1),
                     FiguraVec3.of(0, 1, 1),
                     FiguraVec3.of(0, 1, 0),
                     FiguraVec3.of(-1, 0, 0)
-            },
-            "u", new FiguraVec3[] {
+            })
+            .put("u", new FiguraVec3[] {
                     FiguraVec3.of(0, 1, 1),
                     FiguraVec3.of(1, 1, 1),
                     FiguraVec3.of(1, 1, 0),
                     FiguraVec3.of(0, 1, 0),
                     FiguraVec3.of(0, 1, 0)
-            },
-            "d", new FiguraVec3[] {
+            })
+            .put("d", new FiguraVec3[] {
                     FiguraVec3.of(0, 0, 0),
                     FiguraVec3.of(1, 0, 0),
                     FiguraVec3.of(1, 0, 1),
                     FiguraVec3.of(0, 0, 1),
                     FiguraVec3.of(0, -1, 0)
-            }
-    );
+            })
+            .build();
 
     private static final FiguraVec2[] uvValues = {
             FiguraVec2.of(0, 1),
@@ -409,9 +425,9 @@ public class FiguraModelPartReader {
         // "uvs": List<Float>, uv for each vertex
 
         // Get the vertex, UV, and texture lists from the mesh data
-        ListTag verts = meshData.getList("vtx", Tag.TAG_FLOAT);
-        ListTag uvs = meshData.getList("uvs", Tag.TAG_FLOAT);
-        ListTag tex = meshData.getList("tex", Tag.TAG_SHORT);
+        ListTag verts = meshData.getList("vtx", NbtType.FLOAT.getValue());
+        ListTag uvs = meshData.getList("uvs", NbtType.FLOAT.getValue());
+        ListTag tex = meshData.getList("tex", NbtType.SHORT.getValue());
 
         // Determine the best data type to use for the face list based on the size of the vertex list
         int bestType = 0; // byte
@@ -419,11 +435,18 @@ public class FiguraModelPartReader {
         if (verts.size() > 32767 * 3) bestType = 2; // int
 
         // Get the face list using the determined data type
-        ListTag fac = switch (bestType) {
-            case 0 -> meshData.getList("fac", Tag.TAG_BYTE);
-            case 1 -> meshData.getList("fac", Tag.TAG_SHORT);
-            default -> meshData.getList("fac", Tag.TAG_INT);
-        };
+        ListTag fac;
+        switch (bestType) {
+            case 0:
+                fac = meshData.getList("fac", NbtType.BYTE.getValue());
+                break;
+            case 1:
+                fac = meshData.getList("fac", NbtType.SHORT.getValue());
+                break;
+            default:
+                fac = meshData.getList("fac", NbtType.INT.getValue());
+                break;
+        }
 
         // Initialize counters for the vertex and UV lists
         int vi = 0, uvi = 0;
@@ -445,11 +468,18 @@ public class FiguraModelPartReader {
             // Extract the vertex and UV data for the current texture
             for (int j = 0; j < numVerts; j++) {
                 // Get the vertex ID based on the determined data type
-                int vid = switch (bestType) {
-                    case 0 -> ((ByteTag) fac.get(vi + j)).getAsByte() & 0xff;
-                    case 1 -> fac.getShort(vi + j) & 0xffff;
-                    default -> fac.getInt(vi + j);
-                };
+                int vid;
+                switch (bestType) {
+                    case 0:
+                        vid = ((ByteTag) fac.get(vi + j)).getAsByte() & 0xff;
+                        break;
+                    case 1:
+                        vid = fac.getShort(vi + j) & 0xffff;
+                        break;
+                    default:
+                        vid = fac.getInt(vi + j);
+                        break;
+                }
                 // Get the vertex position and UV data from the lists
                 posArr[3 * j] = verts.getFloat(3 * vid);
                 posArr[3 * j + 1] = verts.getFloat(3 * vid + 1);

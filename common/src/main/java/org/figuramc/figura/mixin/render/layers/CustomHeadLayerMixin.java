@@ -5,10 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HeadedModel;
-import net.minecraft.client.model.SkullModelBase;
-import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
@@ -28,6 +25,7 @@ import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.ducks.SkullBlockRendererAccessor;
 import org.figuramc.figura.model.ParentType;
+import org.figuramc.figura.utils.NbtType;
 import org.figuramc.figura.utils.RenderUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -45,13 +43,13 @@ public abstract class CustomHeadLayerMixin<T extends LivingEntity, M extends Ent
         super(renderLayerParent);
     }
 
-    @Shadow @Final private Map<SkullBlock.Type, SkullModelBase> skullModels;
-
     @Inject(at = @At("HEAD"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V", cancellable = true)
     private void render(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
         ItemStack itemStack = livingEntity.getItemBySlot(EquipmentSlot.HEAD);
-        if (itemStack.getItem() instanceof ArmorItem armorItem && armorItem.getSlot() == EquipmentSlot.HEAD)
+        if (itemStack.getItem() instanceof ArmorItem && ((ArmorItem) itemStack.getItem()).getSlot() == EquipmentSlot.HEAD) {
+            ArmorItem armorItem = (ArmorItem) itemStack.getItem();
             return;
+        }
 
         Avatar avatar = AvatarManager.getAvatar(livingEntity);
         if (!RenderUtils.vanillaModel(avatar))
@@ -64,18 +62,21 @@ public abstract class CustomHeadLayerMixin<T extends LivingEntity, M extends Ent
         }
 
         // pivot part
-        if (itemStack.getItem() instanceof BlockItem block && block.getBlock() instanceof AbstractSkullBlock) {
+        if (itemStack.getItem() instanceof BlockItem && ((BlockItem) itemStack.getItem()).getBlock() instanceof AbstractSkullBlock) {
             // fetch skull data
-            GameProfile gameProfile = null;
+            GameProfile gameProfile;
             if (itemStack.hasTag()) {
                 CompoundTag tag = itemStack.getTag();
-                if (tag != null && tag.contains("SkullOwner", Tag.TAG_COMPOUND))
+                if (tag != null && tag.contains("SkullOwner", NbtType.COMPOUND.getValue()))
                     gameProfile = NbtUtils.readGameProfile(itemStack.getTag().getCompound("SkullOwner"));
+                else {
+                    gameProfile = null;
+                }
+            } else {
+                gameProfile = null;
             }
 
             SkullBlock.Type type = ((AbstractSkullBlock) ((BlockItem) itemStack.getItem()).getBlock()).getType();
-            SkullModelBase skullModelBase = this.skullModels.get(type);
-            RenderType renderType = SkullBlockRenderer.getRenderType(type, gameProfile);
 
             // render!!
             if (avatar.pivotPartRender(ParentType.HelmetItemPivot, stack -> {
@@ -87,7 +88,7 @@ public abstract class CustomHeadLayerMixin<T extends LivingEntity, M extends Ent
                 SkullBlockRendererAccessor.setItem(itemStack);
                 SkullBlockRendererAccessor.setEntity(livingEntity);
                 SkullBlockRendererAccessor.setRenderMode(SkullBlockRendererAccessor.SkullRenderMode.HEAD);
-                SkullBlockRenderer.renderSkull(null, 0f, f, stack, multiBufferSource, i, skullModelBase, renderType);
+                SkullBlockRenderer.renderSkull(null, 0f, type, gameProfile, f, stack, multiBufferSource, i);
             })) {
                 ci.cancel();
             }
@@ -101,8 +102,8 @@ public abstract class CustomHeadLayerMixin<T extends LivingEntity, M extends Ent
         }
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/blockentity/SkullBlockRenderer;renderSkull(Lnet/minecraft/core/Direction;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/model/SkullModelBase;Lnet/minecraft/client/renderer/RenderType;)V"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")
-    private void renderSkull(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/blockentity/SkullBlockRenderer;renderSkull(Lnet/minecraft/core/Direction;FLnet/minecraft/world/level/block/SkullBlock$Type;Lcom/mojang/authlib/GameProfile;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")
+    private void renderSkull(PoseStack matrixStack, MultiBufferSource buffer, int packedLight, T livingEntity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo ci) {
         SkullBlockRendererAccessor.setItem(livingEntity.getItemBySlot(EquipmentSlot.HEAD));
         SkullBlockRendererAccessor.setEntity(livingEntity);
         SkullBlockRendererAccessor.setRenderMode(SkullBlockRendererAccessor.SkullRenderMode.HEAD);

@@ -57,7 +57,7 @@ public class FiguraJsonObject implements FiguraJsonSerializer.JsonValue {
     )
     public LuaValue put(@LuaNotNil String key, LuaValue value) {
         if (!JsonAPI.isSerializable(value))
-            throw new IllegalArgumentException("Type %s can't be serialized".formatted(value));
+            throw new IllegalArgumentException(String.format("Type %s can't be serialized", value));
         return contents.put(key, value);
     }
 
@@ -132,7 +132,8 @@ public class FiguraJsonObject implements FiguraJsonSerializer.JsonValue {
         public Varargs invoke(Varargs args) {
             if (keys.size() == 0) return LuaValue.NIL;
             Object o = args.checkuserdata(1);
-            if (!(o instanceof FiguraJsonObject obj)) return LuaValue.NIL;
+            if (!(o instanceof FiguraJsonObject)) return LuaValue.NIL;
+            FiguraJsonObject obj = (FiguraJsonObject) o;
             LuaValue a = args.arg(2);
             String k;
             if (a.isnil() || a.type() != LuaValue.TSTRING) k = keys.get(0);

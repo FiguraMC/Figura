@@ -130,11 +130,13 @@ public class LuaEvent {
     )
     public int remove(@LuaNotNil Object toRemove) {
         flushQueue();
-        if (toRemove instanceof LuaFunction func) {
+        if (toRemove instanceof LuaFunction) {
+            LuaFunction func = (LuaFunction) toRemove;
             removalQueue.add(func);
             names.values().remove(func);
             return 1;
-        } else if (toRemove instanceof String name) {
+        } else if (toRemove instanceof String) {
+            String name = (String) toRemove;
             int removed = 0;
 
             Set<LuaFunction> set = names.removeAll(name);

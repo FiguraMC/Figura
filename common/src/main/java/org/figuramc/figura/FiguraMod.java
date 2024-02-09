@@ -1,10 +1,15 @@
 package org.figuramc.figura;
 
+import com.mojang.authlib.GameProfile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.players.GameProfileCache;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.local.CacheAvatarLoader;
@@ -24,10 +29,9 @@ import org.figuramc.figura.permissions.PermissionManager;
 import org.figuramc.figura.resources.FiguraRuntimeResources;
 import org.figuramc.figura.utils.*;
 import org.figuramc.figura.wizards.AvatarWizard;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -41,7 +45,7 @@ public class FiguraMod {
     public static final Version VERSION = new Version(PlatformUtils.getFiguraModVersionString());
     public static final Calendar CALENDAR = Calendar.getInstance();
     public static final Path GAME_DIR = PlatformUtils.getGameDir().normalize();
-    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
+    public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
     public static final float VERTEX_OFFSET = -0.0005f;
 
     public static int ticks;
@@ -107,7 +111,7 @@ public class FiguraMod {
     // mod root directory
     public static Path getFiguraDirectory() {
         String config = Configs.MAIN_DIR.value;
-        Path p = config.isBlank() ? GAME_DIR.resolve(MOD_ID) : Path.of(config);
+        Path p = config.trim().isEmpty() ? GAME_DIR.resolve(MOD_ID) : Paths.get(config);
         return IOUtils.createDirIfNeeded(p);
     }
 
@@ -152,14 +156,14 @@ public class FiguraMod {
         GameProfileCache cache = SkullBlockEntityAccessor.getProfileCache();
         if (cache == null) return null;
 
-        var profile = cache.get(playerName);
-        return profile.isEmpty() ? null : profile.get().getId();
+        GameProfile profile = cache.get(playerName);
+        return profile == null ? null : profile.getId();
     }
 
     public static Style getAccentColor() {
         Avatar avatar = AvatarManager.getAvatarForPlayer(getLocalPlayerUUID());
         int color = avatar != null ? ColorUtils.rgbToInt(ColorUtils.userInputHex(avatar.color, ColorUtils.Colors.AWESOME_BLUE.vec)) : ColorUtils.Colors.AWESOME_BLUE.hex;
-        return Style.EMPTY.withColor(color);
+        return Style.EMPTY.withColor(TextColor.fromRgb(color));
     }
 
     // -- profiler -- //
@@ -169,7 +173,7 @@ public class FiguraMod {
     }
 
     public static void pushProfiler(Avatar avatar) {
-        Minecraft.getInstance().getProfiler().push(avatar.entityName.isBlank() ? avatar.owner.toString() : avatar.entityName);
+        Minecraft.getInstance().getProfiler().push(avatar.entityName.trim().isEmpty() ? avatar.owner.toString() : avatar.entityName);
     }
 
     public static void popPushProfiler(String name) {
@@ -186,7 +190,7 @@ public class FiguraMod {
     }
 
     public static void popProfiler(int times) {
-        var profiler = Minecraft.getInstance().getProfiler();
+        ProfilerFiller profiler = Minecraft.getInstance().getProfiler();
         for (int i = 0; i < times; i++)
             profiler.pop();
     }

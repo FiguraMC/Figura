@@ -1,6 +1,7 @@
 package org.figuramc.figura.math.matrix;
 
 import com.mojang.math.Matrix3f;
+import org.figuramc.figura.ducks.extensions.Matrix3fExtension;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
@@ -25,7 +26,7 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
 
     public FiguraMat3 set(Matrix3f mat) {
         copyingBuffer.clear();
-        mat.store(copyingBuffer);
+        ((Matrix3fExtension)(Object)mat).figura$store(copyingBuffer);
         return set(copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(),
                 copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(),
                 copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get());
@@ -34,13 +35,13 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
     public Matrix3f toMatrix3f() {
         writeToBuffer();
         Matrix3f result = new Matrix3f();
-        result.load(copyingBuffer);
+        ((Matrix3fExtension)(Object)result).figura$load(copyingBuffer);
         return result;
     }
 
     public void copyDataTo(Matrix3f vanillaMatrix) {
         writeToBuffer();
-        vanillaMatrix.load(copyingBuffer);
+        ((Matrix3fExtension)(Object)vanillaMatrix).figura$load(copyingBuffer);
     }
 
     private void writeToBuffer() {
@@ -100,8 +101,10 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
     }
     @Override
     public boolean equals(Object other) {
-        if (other instanceof FiguraMat3 o)
+        if (other instanceof FiguraMat3) {
+            FiguraMat3 o = (FiguraMat3) other;
             return equals(o);
+        }
         return false;
     }
     @Override
@@ -120,12 +123,16 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
             value = "matrix_n.get_column"
     )
     public FiguraVec3 getColumn(int col) {
-        return switch (col) {
-            case 1 -> FiguraVec3.of(v11, v21, v31);
-            case 2 -> FiguraVec3.of(v12, v22, v32);
-            case 3 -> FiguraVec3.of(v13, v23, v33);
-            default -> throw new LuaError("Column must be 1 to " + cols());
-        };
+        switch (col) {
+            case 1:
+                return FiguraVec3.of(v11, v21, v31);
+            case 2:
+                return FiguraVec3.of(v12, v22, v32);
+            case 3:
+                return FiguraVec3.of(v13, v23, v33);
+            default:
+                throw new LuaError("Column must be 1 to " + cols());
+        }
     }
 
     @Override
@@ -139,12 +146,16 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
             value = "matrix_n.get_row"
     )
     public FiguraVec3 getRow(int row) {
-        return switch (row) {
-            case 1 -> FiguraVec3.of(v11, v12, v13);
-            case 2 -> FiguraVec3.of(v21, v22, v23);
-            case 3 -> FiguraVec3.of(v31, v32, v33);
-            default -> throw new LuaError("Row must be 1 to " + rows());
-        };
+        switch (row) {
+            case 1:
+                return FiguraVec3.of(v11, v12, v13);
+            case 2:
+                return FiguraVec3.of(v21, v22, v23);
+            case 3:
+                return FiguraVec3.of(v31, v32, v33);
+            default:
+                throw new LuaError("Row must be 1 to " + rows());
+        }
     }
 
     @Override
@@ -707,12 +718,16 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
     }
     @LuaWhitelist
     public Object __mul(@LuaNotNil Object o) {
-        if (o instanceof FiguraMat3 mat)
+        if (o instanceof FiguraMat3) {
+            FiguraMat3 mat = (FiguraMat3) o;
             return mat.times(this);
-        else if (o instanceof FiguraVec3 vec)
+        } else if (o instanceof FiguraVec3) {
+            FiguraVec3 vec = (FiguraVec3) o;
             return this.times(vec);
-        else if (o instanceof Number n)
+        } else if (o instanceof Number) {
+            Number n = (Number) o;
             return this.copy().scale(n.doubleValue(), n.doubleValue(), n.doubleValue());
+        }
 
         throw new LuaError("Invalid types to Matrix3 __mul: " + o.getClass().getSimpleName());
     }
@@ -732,64 +747,116 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
     public Object __index(String string) {
         if (string == null)
             return null;
-        return switch (string) {
-            case "1", "c1" -> this.getColumn(1);
-            case "2", "c2" -> this.getColumn(2);
-            case "3", "c3" -> this.getColumn(3);
-
-            case "r1" -> this.getRow(1);
-            case "r2" -> this.getRow(2);
-            case "r3" -> this.getRow(3);
-
-            case "v11" -> this.v11;
-            case "v12" -> this.v12;
-            case "v13" -> this.v13;
-            case "v21" -> this.v21;
-            case "v22" -> this.v22;
-            case "v23" -> this.v23;
-            case "v31" -> this.v31;
-            case "v32" -> this.v32;
-            case "v33" -> this.v33;
-            default -> null;
-        };
+        switch (string) {
+            case "1":
+            case "c1":
+                return this.getColumn(1);
+            case "2":
+            case "c2":
+                return this.getColumn(2);
+            case "3":
+            case "c3":
+                return this.getColumn(3);
+            case "r1":
+                return this.getRow(1);
+            case "r2":
+                return this.getRow(2);
+            case "r3":
+                return this.getRow(3);
+            case "v11":
+                return this.v11;
+            case "v12":
+                return this.v12;
+            case "v13":
+                return this.v13;
+            case "v21":
+                return this.v21;
+            case "v22":
+                return this.v22;
+            case "v23":
+                return this.v23;
+            case "v31":
+                return this.v31;
+            case "v32":
+                return this.v32;
+            case "v33":
+                return this.v33;
+            default:
+                return null;
+        }
     }
 
     @LuaWhitelist
     public void __newindex(@LuaNotNil String string, Object value) {
-        if (value instanceof FiguraVec3 vec3) {
+        if (value instanceof FiguraVec3) {
+            FiguraVec3 vec3 = (FiguraVec3) value;
             switch (string) {
-                case "1", "c1" -> {
-                    v11 = vec3.x; v21 = vec3.y; v31 = vec3.z;
-                }
-                case "2", "c2" -> {
-                    v12 = vec3.x; v22 = vec3.y; v32 = vec3.z;
-                }
-                case "3", "c3" -> {
-                    v13 = vec3.x; v23 = vec3.y; v33 = vec3.z;
-                }
-                case "r1" -> {
-                    v11 = vec3.x; v12 = vec3.y; v13 = vec3.z;
-                }
-                case "r2" -> {
-                    v21 = vec3.x; v22 = vec3.y; v23 = vec3.z;
-                }
-                case "r3" -> {
-                    v31 = vec3.x; v32 = vec3.y; v33 = vec3.z;
-                }
+                case "1":
+                case "c1":
+                    v11 = vec3.x;
+                    v21 = vec3.y;
+                    v31 = vec3.z;
+                    break;
+                case "2":
+                case "c2":
+                    v12 = vec3.x;
+                    v22 = vec3.y;
+                    v32 = vec3.z;
+                    break;
+                case "3":
+                case "c3":
+                    v13 = vec3.x;
+                    v23 = vec3.y;
+                    v33 = vec3.z;
+                    break;
+                case "r1":
+                    v11 = vec3.x;
+                    v12 = vec3.y;
+                    v13 = vec3.z;
+                    break;
+                case "r2":
+                    v21 = vec3.x;
+                    v22 = vec3.y;
+                    v23 = vec3.z;
+                    break;
+                case "r3":
+                    v31 = vec3.x;
+                    v32 = vec3.y;
+                    v33 = vec3.z;
+                    break;
             }
             return;
         }
-        if (value instanceof Number num) {
+        if (value instanceof Number) {
+            Number num = (Number) value;
             switch (string) {
-                case "v11" -> this.v11 = num.doubleValue();
-                case "v12" -> this.v12 = num.doubleValue();
-                case "v13" -> this.v13 = num.doubleValue();
-                case "v21" -> this.v21 = num.doubleValue();
-                case "v22" -> this.v22 = num.doubleValue();
-                case "v23" -> this.v23 = num.doubleValue();
-                case "v31" -> this.v31 = num.doubleValue();
-                case "v32" -> this.v32 = num.doubleValue();
-                case "v33" -> this.v33 = num.doubleValue();
+                case "v11":
+                    this.v11 = num.doubleValue();
+                    break;
+                case "v12":
+                    this.v12 = num.doubleValue();
+                    break;
+                case "v13":
+                    this.v13 = num.doubleValue();
+                    break;
+                case "v21":
+                    this.v21 = num.doubleValue();
+                    break;
+                case "v22":
+                    this.v22 = num.doubleValue();
+                    break;
+                case "v23":
+                    this.v23 = num.doubleValue();
+                    break;
+                case "v31":
+                    this.v31 = num.doubleValue();
+                    break;
+                case "v32":
+                    this.v32 = num.doubleValue();
+                    break;
+                case "v33":
+                    this.v33 = num.doubleValue();
+                    break;
             }
             return;
         }

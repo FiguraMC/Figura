@@ -11,7 +11,6 @@ import net.minecraft.client.resources.sounds.SoundInstance.Attenuation;
 import net.minecraft.client.sounds.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.ResourceProvider;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.Vec3;
 
@@ -140,8 +139,10 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
     public void figura$addSound(LuaSound sound) {
         figuraHandlers.add(sound);
         for (SoundEventListener listener : this.listeners) {
-            if (listener instanceof SubtitleOverlay overlay)
+            if (listener instanceof SubtitleOverlay) {
+                SubtitleOverlay overlay = (SubtitleOverlay) listener;
                 ((SubtitleOverlayAccessor) overlay).figura$PlaySound(sound);
+            }
         }
     }
 
@@ -196,7 +197,7 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
     public boolean figura$isPlaying(UUID owner) {
         if (!this.loaded)
             return false;
-        for (LuaSound sound : List.copyOf(figuraHandlers)) {
+        for (LuaSound sound : new ArrayList<>(figuraHandlers)) {
             ChannelHandleAccessor accessor = (ChannelHandleAccessor) sound.getHandle();
             if (sound.isPlaying() && accessor != null && accessor.getOwner().equals(owner))
                 return true;

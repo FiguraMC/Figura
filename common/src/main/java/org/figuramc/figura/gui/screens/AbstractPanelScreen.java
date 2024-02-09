@@ -1,5 +1,6 @@
 package org.figuramc.figura.gui.screens;
 
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Widget;
@@ -10,15 +11,15 @@ import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.gui.widgets.*;
 import org.figuramc.figura.lua.api.ClientAPI;
-import org.figuramc.figura.mixin.gui.ScreenAccessor;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.ui.UIHelper;
 
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class AbstractPanelScreen extends Screen {
-
-    public static final List<ResourceLocation> BACKGROUNDS = List.of(
+    private final List<Widget> renderables = Lists.newArrayList();
+    public static final List<ResourceLocation> BACKGROUNDS = Arrays.asList(
             new FiguraIdentifier("textures/gui/background/background_0.png"),
             new FiguraIdentifier("textures/gui/background/background_1.png"),
             new FiguraIdentifier("textures/gui/background/background_2.png")
@@ -41,6 +42,12 @@ public abstract class AbstractPanelScreen extends Screen {
         this.parentScreen = parentScreen;
     }
 
+    @Override
+    public void init(Minecraft minecraft, int width, int height) {
+        this.renderables.clear();
+        super.init(minecraft, width, height);
+    }
+
     public Class<? extends Screen> getSelectedPanel() {
         return this.getClass();
     };
@@ -60,17 +67,19 @@ public abstract class AbstractPanelScreen extends Screen {
     @Override
     public void tick() {
         for (Widget renderable : this.renderables()) {
-            if (renderable instanceof FiguraTickable tickable)
+            if (renderable instanceof FiguraTickable) {
+                FiguraTickable tickable = (FiguraTickable) renderable;
                 tickable.tick();
+            }
         }
 
-        renderables().removeIf(r -> r instanceof FiguraRemovable removable && removable.isRemoved());
+        renderables().removeIf(r -> r instanceof FiguraRemovable && ((FiguraRemovable) r).isRemoved());
 
         super.tick();
     }
 
     public List<Widget> renderables() {
-        return ((ScreenAccessor) this).getRenderables();
+        return renderables;
     }
 
     @Override
@@ -83,6 +92,10 @@ public abstract class AbstractPanelScreen extends Screen {
 
         // render contents
         super.render(stack, mouseX, mouseY, delta);
+
+        for (Widget renderable : renderables) {
+            renderable.render(stack, mouseX, mouseY, delta);
+        }
 
         // render overlays
         this.renderOverlays(stack, mouseX, mouseY, delta);
@@ -129,8 +142,10 @@ public abstract class AbstractPanelScreen extends Screen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         //fix mojang focusing for text fields
         for (GuiEventListener listener : this.children()) {
-            if (listener instanceof TextField field)
+            if (listener instanceof TextField) {
+                TextField field = (TextField) listener;
                 field.getField().setFocus(field.isEnabled() && field.isMouseOver(mouseX, mouseY));
+            }
         }
         return this.contextMenuClick(mouseX, mouseY, button) || super.mouseClicked(mouseX, mouseY, button);
     }
@@ -207,5 +222,21 @@ public abstract class AbstractPanelScreen extends Screen {
         }
 
         return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    protected <T extends GuiEventListener & Widget> T addRenderableWidget(T widget) {
+        this.renderables.add(widget);
+        return addWidget(widget);
+    }
+
+    protected void removeWidget(GuiEventListener child) {
+        if (child instanceof Widget)
+            this.renderables.remove(child);
+        this.children.remove(child);
+    }
+
+    protected <T extends Widget> T addRenderableOnly(T drawable) {
+        this.renderables.add(drawable);
+        return drawable;
     }
 }

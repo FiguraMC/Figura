@@ -11,13 +11,14 @@ import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.MathUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 
 public class PlayerStatusWidget extends StatusWidget {
 
-    private static final List<Function<Avatar, MutableComponent>> HOVER_TEXT = List.of(
+    private static final List<Function<Avatar, MutableComponent>> HOVER_TEXT = Arrays.asList(
             avatar -> new FiguraText("gui.permissions.size")
                     .append("\n• ").append(MathUtils.asFileSize(avatar.fileSize)),
             avatar -> new FiguraText("gui.permissions.complexity")

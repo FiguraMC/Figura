@@ -34,13 +34,18 @@ public class NameplateAPI {
     @LuaWhitelist
     public Object __index(String arg) {
         if (arg == null) return null;
-        return switch (arg.toUpperCase()) {
-            case "CHAT" -> CHAT;
-            case "ENTITY" -> ENTITY;
-            case "LIST" -> LIST;
-            case "ALL" -> ALL;
-            default -> null;
-        };
+        switch (arg.toUpperCase()) {
+            case "CHAT":
+                return CHAT;
+            case "ENTITY":
+                return ENTITY;
+            case "LIST":
+                return LIST;
+            case "ALL":
+                return ALL;
+            default:
+                return null;
+        }
     }
 
     @Override

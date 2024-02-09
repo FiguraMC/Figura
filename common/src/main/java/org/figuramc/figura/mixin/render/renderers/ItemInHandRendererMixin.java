@@ -65,7 +65,7 @@ public abstract class ItemInHandRendererMixin {
 
     @Inject(method = "renderArmWithItem", at = @At("HEAD"), cancellable = true)
     private void renderArmWithItem(AbstractClientPlayer player, float tickDelta, float pitch, InteractionHand hand, float swingProgress, ItemStack item, float equipProgress, PoseStack matrices, MultiBufferSource vertexConsumers, int light, CallbackInfo ci) {
-        if (player.isScoping() || avatar == null || avatar.luaRuntime == null)
+        if (avatar == null || avatar.luaRuntime == null)
             return;
 
         boolean main = hand ==InteractionHand.MAIN_HAND;
@@ -73,7 +73,7 @@ public abstract class ItemInHandRendererMixin {
         Boolean armVisible = arm == HumanoidArm.LEFT ? avatar.luaRuntime.renderer.renderLeftArm : avatar.luaRuntime.renderer.renderRightArm;
 
         boolean willRenderItem = !item.isEmpty();
-        boolean willRenderArm = (!willRenderItem && main) || item.is(Items.FILLED_MAP) || (!willRenderItem && this.mainHandItem.is(Items.FILLED_MAP));
+        boolean willRenderArm = (!willRenderItem && main) || item.getItem() == Items.FILLED_MAP || (!willRenderItem && this.mainHandItem.getItem() == Items.FILLED_MAP);
 
         // hide arm
         if (willRenderArm && !willRenderItem && armVisible != null && !armVisible) {
@@ -94,18 +94,32 @@ public abstract class ItemInHandRendererMixin {
         }
     }
 
-    @Inject(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/ItemRenderer;renderStatic(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/client/renderer/block/model/ItemTransforms$TransformType;ZLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/level/Level;III)V"))
+    @Inject(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/ItemRenderer;renderStatic(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/client/renderer/block/model/ItemTransforms$TransformType;ZLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/level/Level;II)V"))
     private void renderItem(LivingEntity entity, ItemStack stack, ItemTransforms.TransformType itemDisplayContext, boolean leftHanded, PoseStack matrices, MultiBufferSource vertexConsumers, int light, CallbackInfo ci) {
-        if (stack.getItem() instanceof BlockItem bl && bl.getBlock() instanceof AbstractSkullBlock) {
+        if (stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock() instanceof AbstractSkullBlock) {
+            BlockItem bl = (BlockItem) stack.getItem();
             SkullBlockRendererAccessor.setEntity(entity);
-            SkullBlockRendererAccessor.setRenderMode(switch (itemDisplayContext) {
-                case FIRST_PERSON_LEFT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.FIRST_PERSON_LEFT_HAND;
-                case FIRST_PERSON_RIGHT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.FIRST_PERSON_RIGHT_HAND;
-                case THIRD_PERSON_LEFT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_LEFT_HAND;
-                case THIRD_PERSON_RIGHT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_RIGHT_HAND;
-                default -> leftHanded ? SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_LEFT_HAND // should never happen
-                        : SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_RIGHT_HAND; 
-            });
+            switch (itemDisplayContext) {
+                case FIRST_PERSON_LEFT_HAND:
+                    SkullBlockRendererAccessor.setRenderMode(SkullBlockRendererAccessor.SkullRenderMode.FIRST_PERSON_LEFT_HAND);
+                    break;
+                case FIRST_PERSON_RIGHT_HAND:
+                    SkullBlockRendererAccessor.setRenderMode(SkullBlockRendererAccessor.SkullRenderMode.FIRST_PERSON_RIGHT_HAND);
+                    break;
+                case THIRD_PERSON_LEFT_HAND:
+                    SkullBlockRendererAccessor.setRenderMode(SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_LEFT_HAND);
+                    break;
+                case THIRD_PERSON_RIGHT_HAND:
+                    SkullBlockRendererAccessor.setRenderMode(SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_RIGHT_HAND);
+                    break;
+                default:
+                    if (leftHanded) {
+                        SkullBlockRendererAccessor.setRenderMode(SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_LEFT_HAND);
+                    } else {
+                        SkullBlockRendererAccessor.setRenderMode(SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_RIGHT_HAND);
+                    } // should never happen
+                    break;
+            }
         }
     }
 }

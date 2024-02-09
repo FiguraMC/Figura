@@ -40,8 +40,10 @@ public abstract class AbstractList extends AbstractContainerElement {
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         for (GuiEventListener child : children) {
-            if (child instanceof Widget widget && !contents().contains(child))
+            if (child instanceof Widget && !contents().contains(child)) {
+                Widget widget = (Widget) child;
                 widget.render(stack, mouseX, mouseY, delta);
+            }
         }
     }
 

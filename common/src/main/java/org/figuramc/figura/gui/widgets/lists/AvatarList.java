@@ -155,7 +155,7 @@ public class AvatarList extends AbstractList {
 
         // Load avatars //
         HashSet<Path> missingPaths = new HashSet<>(avatars.keySet());
-        for (LocalAvatarFetcher.AvatarPath avatar : List.copyOf(LocalAvatarFetcher.ALL_AVATARS)) {
+        for (LocalAvatarFetcher.AvatarPath avatar : new ArrayList<>(LocalAvatarFetcher.ALL_AVATARS)) {
             Path path = avatar.getTheActualPathForThis();
 
             // filter
@@ -173,7 +173,7 @@ public class AvatarList extends AbstractList {
             // add to the avatar list
             avatars.computeIfAbsent(path, p -> {
                 int width = this.getWidth() - 22;
-                AbstractAvatarWidget entry = avatar instanceof LocalAvatarFetcher.FolderPath folder ? new AvatarFolderWidget(0, width, folder, this) : new AvatarWidget(0, width, avatar, this);
+                AbstractAvatarWidget entry = avatar instanceof LocalAvatarFetcher.FolderPath ? new AvatarFolderWidget(0, width, (LocalAvatarFetcher.FolderPath) avatar, this) : new AvatarWidget(0, width, avatar, this);
 
                 avatarList.add(entry);
                 children.add(entry);
@@ -192,8 +192,11 @@ public class AvatarList extends AbstractList {
         // sort lists
         avatarList.sort(AbstractAvatarWidget::compareTo);
         children.sort((children1, children2) -> {
-            if (children1 instanceof AbstractAvatarWidget avatar1 && children2 instanceof AbstractAvatarWidget avatar2)
+            if (children1 instanceof AbstractAvatarWidget && children2 instanceof AbstractAvatarWidget) {
+                AbstractAvatarWidget avatar2 = (AbstractAvatarWidget) children2;
+                AbstractAvatarWidget avatar1 = (AbstractAvatarWidget) children1;
                 return avatar1.compareTo(avatar2);
+            }
             return 0;
         });
     }

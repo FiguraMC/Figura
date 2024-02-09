@@ -19,6 +19,7 @@ import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.FiguraText;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -71,12 +72,12 @@ public class Configs {
             PREVIEW_NAMEPLATE = new ConfigType.BoolConfig("preview_nameplate", NAMEPLATE, false),
             SOUND_BADGE = new ConfigType.BoolConfig("sound_badge", NAMEPLATE, true);
     private static final String NAMEPLATE_PATH = "config.nameplate_level.";
-    private static final List<Component> NAMEPLATE_ENUM = List.of(
+    private static final List<Component> NAMEPLATE_ENUM = Arrays.asList(
             new FiguraText(NAMEPLATE_PATH + "1"),
             new FiguraText(NAMEPLATE_PATH + "2"),
             new FiguraText(NAMEPLATE_PATH + "3")
     );
-    private static final List<Component> NAMEPLATE_TOOLTIP = List.of(
+    private static final List<Component> NAMEPLATE_TOOLTIP = Arrays.asList(
             new FiguraText(NAMEPLATE_PATH + "1.tooltip"),
             new FiguraText(NAMEPLATE_PATH + "2.tooltip"),
             new FiguraText(NAMEPLATE_PATH + "3.tooltip")

@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
-import net.minecraft.client.renderer.entity.layers.PlayerItemInHandLayer;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -32,34 +31,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * For now, at least. Once spyglass category part exists, it may be different.
  * @param <T>
  * @param <M>
+ *     The spyglass didn't exist in 1.16 ;)
  */
-@Mixin(PlayerItemInHandLayer.class)
 public abstract class PlayerItemInHandLayerMixin <T extends Player, M extends EntityModel<T> & ArmedModel & HeadedModel> extends ItemInHandLayer<T, M> {
 
     public PlayerItemInHandLayerMixin(RenderLayerParent<T, M> renderLayerParent) {
         super(renderLayerParent);
-    }
-
-    @Inject(method = "renderArmWithSpyglass", at = @At("HEAD"), cancellable = true)
-    private void adjustSpyglassVisibility(LivingEntity livingEntity, ItemStack itemStack, HumanoidArm humanoidArm, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
-        if (itemStack.isEmpty())
-            return;
-
-        boolean left = humanoidArm == HumanoidArm.LEFT;
-
-        Avatar avatar = AvatarManager.getAvatar(livingEntity);
-        if (!RenderUtils.renderArmItem(avatar, left, ci))
-            return;
-
-        // pivot part
-        if (avatar.pivotPartRender(left ? ParentType.LeftSpyglassPivot : ParentType.RightSpyglassPivot, stack -> {
-            // spyglass code is weird - might need a fix, however it will break with non-humanoid avatars
-            float s = 10f;
-            stack.scale(s, s, s);
-            stack.translate(0, 0, 7 / 16f);
-            Minecraft.getInstance().getItemInHandRenderer().renderItem(livingEntity, itemStack, ItemTransforms.TransformType.HEAD, false, stack, multiBufferSource, i);
-        })) {
-            ci.cancel();
-        }
     }
 }

@@ -61,11 +61,7 @@ import org.figuramc.figura.model.rendering.texture.FiguraTexture;
 import org.figuramc.figura.permissions.PermissionManager;
 import org.figuramc.figura.permissions.PermissionPack;
 import org.figuramc.figura.permissions.Permissions;
-import org.figuramc.figura.utils.ColorUtils;
-import org.figuramc.figura.utils.EntityUtils;
-import org.figuramc.figura.utils.PathUtils;
-import org.figuramc.figura.utils.RefilledNumber;
-import org.figuramc.figura.utils.Version;
+import org.figuramc.figura.utils.*;
 import org.figuramc.figura.utils.ui.UIHelper;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
@@ -203,7 +199,7 @@ public class Avatar {
                 }
                 fileSize = getFileSize();
                 versionStatus = getVersionStatus();
-                if (entityName.isBlank())
+                if (entityName.trim().isEmpty())
                     entityName = name;
 
                 // animations and models
@@ -647,7 +643,7 @@ public class Avatar {
 
         renderer.setupRenderer(
                 PartFilterScheme.HUD, bufferSource, stack,
-                tickDelta, LightTexture.FULL_BRIGHT, 1f, OverlayTexture.NO_OVERLAY,
+                tickDelta, 15 << 20 | 15 << 4, 1f, OverlayTexture.NO_OVERLAY,
                 false, false
         );
 
@@ -752,7 +748,7 @@ public class Avatar {
         Lighting.setupForFlatItems();
 
         MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
-        int light = LightTexture.FULL_BRIGHT;
+        int light = 15 << 20 | 15 << 4;
 
         renderer.allowPivotParts = false;
 
@@ -1002,7 +998,7 @@ public class Avatar {
 
         ListTag autoScripts;
         if (metadata.contains("autoScripts"))
-            autoScripts = metadata.getList("autoScripts", Tag.TAG_STRING);
+            autoScripts = metadata.getList("autoScripts", NbtType.STRING.getValue());
         else
             autoScripts = null;
 
@@ -1026,11 +1022,11 @@ public class Avatar {
         ArrayList<String> autoAnims = new ArrayList<>();
         CompoundTag metadata = nbt.getCompound("metadata");
         if (metadata.contains("autoAnims")) {
-            for (Tag name : metadata.getList("autoAnims", Tag.TAG_STRING))
+            for (Tag name : metadata.getList("autoAnims", NbtType.STRING.getValue()))
                 autoAnims.add(name.getAsString());
         }
 
-        ListTag root = nbt.getList("animations", Tag.TAG_COMPOUND);
+        ListTag root = nbt.getList("animations", NbtType.COMPOUND.getValue());
         for (int i = 0; i < root.size(); i++) {
             try {
                 CompoundTag animNbt = root.getCompound(i);
@@ -1058,7 +1054,7 @@ public class Avatar {
                 );
 
                 if (animNbt.contains("code")) {
-                    for (Tag code : animNbt.getList("code", Tag.TAG_COMPOUND)) {
+                    for (Tag code : animNbt.getList("code", NbtType.COMPOUND.getValue())) {
                         CompoundTag compound = (CompoundTag) code;
                         animation.newCode(compound.getFloat("time"), compound.getString("src"));
                     }

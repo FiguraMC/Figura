@@ -65,7 +65,7 @@ public class AvatarWidget extends AbstractAvatarWidget {
                 // tooltip
                 if (parsedName != getMessage() || parsedDescription != description) {
                     Component tooltip = instance.getName();
-                    if (!description.getString().isBlank())
+                    if (!description.getString().trim().isEmpty())
                         tooltip = tooltip.copy().append("\n\n").append(description);
                     setTooltip(tooltip);
                 }

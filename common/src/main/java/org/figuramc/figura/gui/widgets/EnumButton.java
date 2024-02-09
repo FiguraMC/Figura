@@ -24,8 +24,8 @@ public class EnumButton extends AbstractContainerElement {
         value = defaultValue;
         ArrayList<Component> tooltips = new ArrayList<>();
         for (int i = 0; i < length; i++) {
-            names.add(new FiguraText("%s.%s".formatted(translationString, i)));
-            tooltips.add(new FiguraText("%s.%s.tooltip".formatted(translationString, i)));
+            names.add(new FiguraText(String.format("%s.%s", translationString, i)));
+            tooltips.add(new FiguraText(String.format("%s.%s.tooltip", translationString, i)));
         }
         children.add(button = new Button(x,y,width,height, names.get(value % length), tooltips.get(value % length),this::onClick));
         contextMenu = new ContextMenu();

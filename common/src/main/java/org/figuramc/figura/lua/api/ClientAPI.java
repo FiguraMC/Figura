@@ -621,7 +621,7 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.list_atlases")
     public static List<String> listAtlases() {
-        return List.of();
+        return Collections.emptyList();
     }
 
     @LuaWhitelist

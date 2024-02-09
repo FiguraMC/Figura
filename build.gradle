@@ -1,7 +1,6 @@
 plugins {
 	id "architectury-plugin" version "3.4-SNAPSHOT"
-	id "dev.architectury.loom" version "1.2-SNAPSHOT" apply false
-	id "io.github.juuxel.loom-vineflower" version "1.+" apply false
+	id "dev.architectury.loom" version "1.4-SNAPSHOT" apply false
 }
 
 architectury {
@@ -10,7 +9,6 @@ architectury {
 
 subprojects {
 	apply plugin: "dev.architectury.loom"
-	apply plugin: "io.github.juuxel.loom-vineflower"
 
 	loom {
 		silentMojangMappingsLicense()
@@ -28,6 +26,10 @@ subprojects {
 				includeGroup("com.eliotlash.mclib")
 			}
 		}
+		maven {
+			name = 'ParchmentMC'
+			url = 'https://maven.parchmentmc.org'
+		}
 	}
 
 	dependencies {
@@ -35,8 +37,6 @@ subprojects {
 		// The following line declares the mojmap mappings, you may use other mappings as well
 
 		// Mods
-		modCompileOnly "maven.modrinth:iris:$iris"
-		modCompileOnly "maven.modrinth:immediatelyfast:$immediately_fast"
 		modCompileOnly "maven.modrinth:iris:$iris"
 	}
 }
@@ -71,8 +71,8 @@ allprojects {
 	}
 
 	java {
-		sourceCompatibility = JavaVersion.VERSION_17
-		targetCompatibility = JavaVersion.VERSION_17
+		sourceCompatibility = JavaVersion.VERSION_1_8
+		targetCompatibility = JavaVersion.VERSION_1_8
 		withSourcesJar()
 	}
 }

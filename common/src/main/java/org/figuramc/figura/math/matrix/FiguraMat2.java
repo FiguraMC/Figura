@@ -58,8 +58,10 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
     }
     @Override
     public boolean equals(Object other) {
-        if (other instanceof FiguraMat2 o)
+        if (other instanceof FiguraMat2) {
+            FiguraMat2 o = (FiguraMat2) other;
             return equals(o);
+        }
         return false;
     }
     @Override
@@ -78,11 +80,14 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
             value = "matrix_n.get_column"
     )
     public FiguraVec2 getColumn(int col) {
-        return switch (col) {
-            case 1 -> FiguraVec2.of(v11, v21);
-            case 2 -> FiguraVec2.of(v12, v22);
-            default -> throw new LuaError("Column must be 1 to " + cols());
-        };
+        switch (col) {
+            case 1:
+                return FiguraVec2.of(v11, v21);
+            case 2:
+                return FiguraVec2.of(v12, v22);
+            default:
+                throw new LuaError("Column must be 1 to " + cols());
+        }
     }
 
     @Override
@@ -96,11 +101,14 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
             value = "matrix_n.get_row"
     )
     public FiguraVec2 getRow(int row) {
-        return switch (row) {
-            case 1 -> FiguraVec2.of(v11, v12);
-            case 2 -> FiguraVec2.of(v21, v22);
-            default -> throw new LuaError("Row must be 1 to " + rows());
-        };
+        switch (row) {
+            case 1:
+                return FiguraVec2.of(v11, v12);
+            case 2:
+                return FiguraVec2.of(v21, v22);
+            default:
+                throw new LuaError("Row must be 1 to " + rows());
+        }
     }
 
     @Override
@@ -406,12 +414,16 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
     }
     @LuaWhitelist
     public Object __mul(@LuaNotNil Object o) {
-        if (o instanceof FiguraMat2 mat)
+        if (o instanceof FiguraMat2) {
+            FiguraMat2 mat = (FiguraMat2) o;
             return mat.times(this);
-        else if (o instanceof FiguraVec2 vec)
+        } else if (o instanceof FiguraVec2) {
+            FiguraVec2 vec = (FiguraVec2) o;
             return this.times(vec);
-        else if (o instanceof Number n)
+        } else if (o instanceof Number) {
+            Number n = (Number) o;
             return this.copy().scale(n.doubleValue(), n.doubleValue());
+        }
 
         throw new LuaError("Invalid types to Matrix2 __mul: " + o.getClass().getSimpleName());
     }
@@ -431,46 +443,71 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
     public Object __index(String string) {
         if (string == null)
             return null;
-        return switch (string) {
-            case "1", "c1" -> this.getColumn(1);
-            case "2", "c2" -> this.getColumn(2);
-
-            case "r1" -> this.getRow(1);
-            case "r2" -> this.getRow(2);
-
-            case "v11" -> this.v11;
-            case "v12" -> this.v12;
-            case "v21" -> this.v21;
-            case "v22" -> this.v22;
-            default -> null;
-        };
+        switch (string) {
+            case "1":
+            case "c1":
+                return this.getColumn(1);
+            case "2":
+            case "c2":
+                return this.getColumn(2);
+            case "r1":
+                return this.getRow(1);
+            case "r2":
+                return this.getRow(2);
+            case "v11":
+                return this.v11;
+            case "v12":
+                return this.v12;
+            case "v21":
+                return this.v21;
+            case "v22":
+                return this.v22;
+            default:
+                return null;
+        }
     }
 
     @LuaWhitelist
     public void __newindex(@LuaNotNil String string, Object value) {
-        if (value instanceof FiguraVec2 vec2) {
+        if (value instanceof FiguraVec2) {
+            FiguraVec2 vec2 = (FiguraVec2) value;
             switch (string) {
-                case "1", "c1" -> {
-                    v11 = vec2.x; v21 = vec2.y;
-                }
-                case "2", "c2" -> {
-                    v12 = vec2.x; v22 = vec2.y;
-                }
-                case "r1" -> {
-                    v11 = vec2.x; v12 = vec2.y;
-                }
-                case "r2" -> {
-                    v21 = vec2.x; v22 = vec2.y;
-                }
+                case "1":
+                case "c1":
+                    v11 = vec2.x;
+                    v21 = vec2.y;
+                    break;
+                case "2":
+                case "c2":
+                    v12 = vec2.x;
+                    v22 = vec2.y;
+                    break;
+                case "r1":
+                    v11 = vec2.x;
+                    v12 = vec2.y;
+                    break;
+                case "r2":
+                    v21 = vec2.x;
+                    v22 = vec2.y;
+                    break;
             }
             return;
         }
-        if (value instanceof Number num) {
+        if (value instanceof Number) {
+            Number num = (Number) value;
             switch (string) {
-                case "v11" -> this.v11 = num.doubleValue();
-                case "v12" -> this.v12 = num.doubleValue();
-                case "v21" -> this.v21 = num.doubleValue();
-                case "v22" -> this.v22 = num.doubleValue();
+                case "v11":
+                    this.v11 = num.doubleValue();
+                    break;
+                case "v12":
+                    this.v12 = num.doubleValue();
+                    break;
+                case "v21":
+                    this.v21 = num.doubleValue();
+                    break;
+                case "v22":
+                    this.v22 = num.doubleValue();
+                    break;
             }
             return;
         }

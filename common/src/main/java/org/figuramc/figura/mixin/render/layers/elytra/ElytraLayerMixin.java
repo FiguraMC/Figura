@@ -84,7 +84,7 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, M extends EntityM
 
 
         ItemStack itemStack = livingEntity.getItemBySlot(EquipmentSlot.CHEST);
-        if (!itemStack.is(Items.ELYTRA) && !PlatformUtils.isModLoaded("origins")) {
+        if (itemStack.getItem() != Items.ELYTRA && !PlatformUtils.isModLoaded("origins")) {
             return;
         }
         if (figura$avatar != null && figura$avatar.luaRuntime != null && figura$avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1 && figura$avatar.luaRuntime.vanilla_model.ELYTRA.checkVisible()) {
@@ -96,7 +96,7 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, M extends EntityM
                 stack.mulPose(Vector3f.YP.rotationDegrees(180f));
                 stack.translate(0.0f, 0.0f, 0.125f);
                 this.elytraModel.setupAnim(livingEntity, limbAngle, limbDistance, tickDelta, light, animationProgress);
-                ResourceLocation resourceLocation = livingEntity instanceof AbstractClientPlayer abstractClientPlayer ? (abstractClientPlayer.isElytraLoaded() && abstractClientPlayer.getElytraTextureLocation() != null ? abstractClientPlayer.getElytraTextureLocation() : (abstractClientPlayer.isCapeLoaded() && abstractClientPlayer.getCloakTextureLocation() != null && abstractClientPlayer.isModelPartShown(PlayerModelPart.CAPE) ? abstractClientPlayer.getCloakTextureLocation() : WINGS_LOCATION)) : WINGS_LOCATION;
+                ResourceLocation resourceLocation = livingEntity instanceof AbstractClientPlayer ? (((AbstractClientPlayer) livingEntity).isElytraLoaded() && ((AbstractClientPlayer) livingEntity).getElytraTextureLocation() != null ? ((AbstractClientPlayer) livingEntity).getElytraTextureLocation() : (((AbstractClientPlayer) livingEntity).isCapeLoaded() && ((AbstractClientPlayer) livingEntity).getCloakTextureLocation() != null && ((AbstractClientPlayer) livingEntity).isModelPartShown(PlayerModelPart.CAPE) ? ((AbstractClientPlayer) livingEntity).getCloakTextureLocation() : WINGS_LOCATION)) : WINGS_LOCATION;
                 VertexConsumer vertexConsumer = ItemRenderer.getArmorFoilBuffer(multiBufferSource, RenderType.armorCutoutNoCull(resourceLocation), false, itemStack.hasFoil());
                 this.elytraModel.renderToBuffer(stack, vertexConsumer, light, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
                 stack.popPose();

@@ -5,7 +5,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -112,16 +111,6 @@ public class TextField extends AbstractContainerElement {
 
     public EditBox getField() {
         return field;
-    }
-
-    @Override
-    public void updateNarration(NarrationElementOutput output) {
-        field.updateNarration(output);
-    }
-
-    @Override
-    public NarrationPriority narrationPriority() {
-        return field.narrationPriority();
     }
 
     @Override

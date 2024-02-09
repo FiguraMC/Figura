@@ -61,41 +61,54 @@ public class FiguraTextureSet {
         if (pair == null || (type = pair.getOverrideType()) == null)
             return null;
 
-        return switch (type) {
-            case SKIN, CAPE, ELYTRA -> {
+        switch (type) {
+            case SKIN:
+            case CAPE:
+            case ELYTRA: {
                 ClientPacketListener connection = Minecraft.getInstance().getConnection();
-                if (connection == null)
-                    yield null;
-
-                PlayerInfo info = connection.getPlayerInfo(owner);
-                if (info == null)
-                    yield null;
-
-                yield switch (type) {
-                    case CAPE -> info.getCapeLocation();
-                    case ELYTRA -> info.getElytraLocation() == null ? ElytraLayerAccessor.getWingsLocation() : info.getElytraLocation();
-                    default -> info.getSkinLocation();
-                };
-            }
-            case RESOURCE -> {
-                try {
-                    yield new ResourceLocation(String.valueOf(pair.getValue()));
-                } catch (Exception ignored) {
-                    yield MissingTextureAtlasSprite.getLocation();
+                if (connection == null) {
+                    return null;
+                } else {
+                    PlayerInfo info = connection.getPlayerInfo(owner);
+                    if (info == null) {
+                        return null;
+                    } else {
+                        switch (type) {
+                            case CAPE:
+                                return info.getCapeLocation();
+                            case ELYTRA:
+                                return info.getElytraLocation() == null ? ElytraLayerAccessor.getWingsLocation() : info.getElytraLocation();
+                            default:
+                                return info.getSkinLocation();
+                        }
+                    }
                 }
             }
-            case PRIMARY -> textures[0] == null ? null : textures[0].getLocation();
-            case SECONDARY -> textures[1] == null ? null : textures[1].getLocation();
-            case SPECULAR -> textures[2] == null ? null : textures[2].getLocation();
-            case NORMAL -> textures[3] == null ? null : textures[3].getLocation();
-            case CUSTOM -> {
+            case RESOURCE: {
                 try {
-                    yield ((FiguraTexture) pair.getValue()).getLocation();
+                    return new ResourceLocation(String.valueOf(pair.getValue()));
                 } catch (Exception ignored) {
-                    yield MissingTextureAtlasSprite.getLocation();
+                    return MissingTextureAtlasSprite.getLocation();
                 }
             }
-        };
+            case PRIMARY:
+                return (textures[0] == null) ? null : textures[0].getLocation();
+            case SECONDARY:
+                return (textures[1] == null) ? null : textures[1].getLocation();
+            case SPECULAR:
+                return (textures[2] == null) ? null : textures[2].getLocation();
+            case NORMAL:
+                return (textures[3] == null) ? null : textures[3].getLocation();
+            case CUSTOM: {
+                try {
+                    return ((FiguraTexture) pair.getValue()).getLocation();
+                } catch (Exception ignored) {
+                    return MissingTextureAtlasSprite.getLocation();
+                }
+            }
+            default:
+                return null;
+        }
     }
 
     public enum OverrideType {

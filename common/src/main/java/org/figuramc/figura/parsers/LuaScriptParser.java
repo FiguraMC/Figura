@@ -1,6 +1,7 @@
 package org.figuramc.figura.parsers;
 
 import net.minecraft.nbt.ByteArrayTag;
+import org.apache.commons.lang3.StringUtils;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.Configs;
 import org.luaj.vm2.ast.Chunk;
@@ -38,13 +39,23 @@ public class LuaScriptParser {
 
     public static ByteArrayTag parseScript(String name, String script) {
         error = true;
-        String minified = switch (Configs.FORMAT_SCRIPT.value) {
-            case 0 -> noMinifier(script);
-            case 1 -> regexMinify(name, script);
-            case 2 -> aggressiveMinify(name, script);
-            case 3 -> ASTMinify(name, script);
-            default -> throw new IllegalStateException("Format_SCRIPT should not be %d, expecting 0 to %d".formatted(Configs.FORMAT_SCRIPT.value, Configs.FORMAT_SCRIPT.enumList.size() - 1));
-        };
+        String minified;
+        switch (Configs.FORMAT_SCRIPT.value) {
+            case 0:
+                minified = noMinifier(script);
+                break;
+            case 1:
+                minified = regexMinify(name, script);
+                break;
+            case 2:
+                minified = aggressiveMinify(name, script);
+                break;
+            case 3:
+                minified = ASTMinify(name, script);
+                break;
+            default:
+                throw new IllegalStateException(String.format("Format_SCRIPT should not be %d, expecting 0 to %d", Configs.FORMAT_SCRIPT.value, Configs.FORMAT_SCRIPT.enumList.size() - 1));
+        }
         ByteArrayTag out;
         if (error) {
             FiguraMod.LOGGER.warn("Failed to minify the script, likely to be syntax error");
@@ -69,56 +80,62 @@ public class LuaScriptParser {
                 throw new RuntimeException("Script minifier stopped due to a possible infinite loop when parsing \"" + name + "\"");
 
             switch (builder.charAt(i)) {
-                case '#' -> {
+                case '#': {
                     if (i > 0)
                         continue;
-
                     Matcher matcher = sheBangs.matcher(builder);
                     if (matcher.find())
                         builder.delete(0, matcher.end());
+                    break;
                 }
-                case '\'', '"' -> {
+                case '\'':
+                case '"': {
                     Matcher matcher = string.matcher(builder);
                     if (!matcher.find(i) || !(matcher.start() == i))
                         return builder.toString();
-
                     i = matcher.end() - 1;
+                    break;
                 }
-                case '[' -> {
+                case '[': {
                     Matcher matcher = multilineString.matcher(builder);
                     if (matcher.find(i) && matcher.start() == i)
                         i = matcher.end() - 1;
+                    break;
                 }
-                case '-' -> {
+                case '-': {
                     if (i == builder.length() - 1)
                         return builder.toString();
-
                     Matcher multiline = multilineComment.matcher(builder);
                     if (multiline.find(i) && multiline.start() == i) {
                         int breaks = builder.substring(i, multiline.end()).split("\n").length - 1;
-                        builder.delete(i, multiline.end()).insert(i, "\n".repeat(breaks));
+                        builder.delete(i, multiline.end()).insert(i, StringUtils.repeat("\n", breaks));
                         i--;
                         continue;
                     }
-
                     Matcher comment = comments.matcher(builder);
                     if (comment.find(i) && comment.start() == i) {
                         builder.delete(comment.start(), comment.end());
                         i--;
                     }
+                    break;
                 }
-                case ' ', '\t', '\n', '\r' -> {
+                case ' ':
+                case '\t':
+                case '\n':
+                case '\r': {
                     Matcher newline = newlines.matcher(builder.substring(i));
                     if (newline.find())
                         if (newline.start() == 0)
                             builder.delete(i, i + newline.end()).insert(i, Optional.ofNullable(newline.group(1)).map(t -> "\n").orElse(" "));
                         else
                             FiguraMod.LOGGER.warn("script TODO appears to have invalid new line configuration");
+                    break;
                 }
-                default -> {
+                default: {
                     Matcher word = words.matcher(builder);
                     if (word.find(i) && word.start() == i)
                         i = word.end() - 1;
+                    break;
                 }
             }
         }
@@ -140,12 +157,16 @@ public class LuaScriptParser {
 
         for (int i = 0; i < builder.length(); i++) {
             switch (builder.charAt(i)) {
-                case '\'', '"', '[' -> {
+                case '\'':
+                case '"':
+                case '[': {
                     Matcher matcher = allStrings.matcher(builder);
                     if (matcher.find(i) && matcher.start() == i)
                         i = matcher.end() - 1;
+                    break;
                 }
-                case ' ', '\n' -> {
+                case ' ':
+                case '\n': {
                     Matcher matcher = whitespacePlus.matcher(builder);
                     int matchStart;
                     if (matcher.find(i) && (matchStart = matcher.start()) == i) {
@@ -154,13 +175,15 @@ public class LuaScriptParser {
                             if (nameOops.matcher(builder.substring(matchStart - 1, matchStart + 1)).matches())
                                 builder.insert(i, " ");
                             else
-                                i --;
+                                i--;
                     }
+                    break;
                 }
-                default -> {
+                default: {
                     Matcher word = words.matcher(builder);
                     if (word.find(i) && word.start() == i)
                         i = word.end() - 1;
+                    break;
                 }
             }
         }

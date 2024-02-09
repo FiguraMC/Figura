@@ -77,7 +77,7 @@ public class Button extends net.minecraft.client.gui.components.Button implement
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        return this.isHoveredOrFocused() && this.isMouseOver(mouseX, mouseY) && super.mouseClicked(mouseX, mouseY, button);
+        return (this.isFocused() || this.isHovered()) && this.isMouseOver(mouseX, mouseY) && super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
@@ -118,7 +118,7 @@ public class Button extends net.minecraft.client.gui.components.Button implement
     protected int getU() {
         if (!this.isActive())
             return 0;
-        else if (this.isHoveredOrFocused())
+        else if ((this.isFocused() || this.isHovered()))
             return 2;
         else
             return 1;
@@ -203,7 +203,6 @@ public class Button extends net.minecraft.client.gui.components.Button implement
         this.height = height;
     }
 
-    @Override
     public boolean isActive() {
         return this.active;
     }

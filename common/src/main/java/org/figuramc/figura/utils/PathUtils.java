@@ -1,6 +1,7 @@
 package org.figuramc.figura.utils;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
@@ -8,9 +9,9 @@ import org.luaj.vm2.LuaValue;
 public class PathUtils {
 
     public static Path getPath (String path) {
-        if (path.isEmpty()) return Path.of("/");
+        if (path.isEmpty()) return Paths.get("/");
         if (!path.startsWith(".")) path = "/" + path;
-        return Path.of(path
+        return Paths.get(path
             .replaceAll("\\\\", "/")
             .replaceAll("[\\.]([^\\./])", "/$1")
             .replaceAll("\\/\\/", "/"));
@@ -32,8 +33,8 @@ public class PathUtils {
             file = stack.get("source").checkjstring();
         } while (file.equals("=[Java]"));
 
-        Path path = Path.of("/" + file);
-        return path.getNameCount() > 1 ? path.resolve("../").normalize() : Path.of("/");
+        Path path = Paths.get("/" + file);
+        return path.getNameCount() > 1 ? path.resolve("../").normalize() : Paths.get("/");
     }
 
     public static String computeSafeString(Path path) {

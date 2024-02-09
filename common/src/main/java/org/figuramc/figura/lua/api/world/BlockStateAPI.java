@@ -12,10 +12,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -23,6 +24,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.figuramc.figura.ducks.BakedQuadAccessor;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.NbtToLua;
 import org.figuramc.figura.lua.ReadOnlyLuaTable;
@@ -71,7 +73,7 @@ public class BlockStateAPI {
     protected static List<List<FiguraVec3>> voxelShapeToTable(VoxelShape shape) {
         List<List<FiguraVec3>> shapes = new ArrayList<>();
         for (AABB aabb : shape.toAabbs())
-            shapes.add(List.of(FiguraVec3.of(aabb.minX, aabb.minY, aabb.minZ), FiguraVec3.of(aabb.maxX, aabb.maxY, aabb.maxZ)));
+            shapes.add(Arrays.asList(FiguraVec3.of(aabb.minX, aabb.minY, aabb.minZ), FiguraVec3.of(aabb.maxX, aabb.maxY, aabb.maxZ)));
         return shapes;
     }
 
@@ -170,7 +172,7 @@ public class BlockStateAPI {
     @LuaWhitelist
     @LuaMethodDoc("blockstate.has_block_entity")
     public boolean hasBlockEntity() {
-        return blockState.hasBlockEntity();
+        return blockState.getBlock() instanceof EntityBlock;
     }
 
     @LuaWhitelist
@@ -225,15 +227,11 @@ public class BlockStateAPI {
     @LuaMethodDoc("blockstate.get_tags")
     public List<String> getTags() {
         List<String> list = new ArrayList<>();
-
-        Registry<Block> registry = WorldAPI.getCurrentWorld().registryAccess().registryOrThrow(Registry.BLOCK_REGISTRY);
-        Optional<ResourceKey<Block>> key = registry.getResourceKey(blockState.getBlock());
-
-        if (key.isEmpty())
+        if (Minecraft.getInstance().getConnection() == null || Minecraft.getInstance().getConnection().getTags().getBlocks() == null)
             return list;
 
-        for (TagKey<Block> blockTagKey : registry.getHolderOrThrow(key.get()).tags().toList())
-            list.add(blockTagKey.location().toString());
+        for (ResourceLocation resourceLocation : Minecraft.getInstance().getConnection().getTags().getBlocks().getMatchingTags(blockState.getBlock()))
+            list.add(resourceLocation.toString());
 
         return list;
     }
@@ -277,8 +275,11 @@ public class BlockStateAPI {
     @LuaMethodDoc("blockstate.get_fluid_tags")
     public List<String> getFluidTags() {
         List<String> list = new ArrayList<>();
-        for (TagKey<Fluid> fluidTagKey : blockState.getFluidState().getTags().toList())
-            list.add(fluidTagKey.location().toString());
+        if (Minecraft.getInstance().getConnection() == null || Minecraft.getInstance().getConnection().getTags().getFluids() == null)
+            return list;
+
+        for (ResourceLocation resourceLocation : Minecraft.getInstance().getConnection().getTags().getFluids().getMatchingTags(blockState.getFluidState().getType()))
+            list.add(resourceLocation.toString());
         return list;
     }
 
@@ -286,15 +287,28 @@ public class BlockStateAPI {
     @LuaMethodDoc("blockstate.get_entity_data")
     public LuaTable getEntityData() {
         BlockEntity entity = WorldAPI.getCurrentWorld().getBlockEntity(getBlockPos());
-        return (LuaTable) NbtToLua.convert(entity != null ? entity.saveWithoutMetadata() : null);
+        if (entity != null) {
+            CompoundTag tag = entity.save(new CompoundTag());
+            tag.remove("id");
+            tag.remove("x");
+            tag.remove("y");
+            tag.remove("z");
+            return (LuaTable) NbtToLua.convert(tag);
+        }
+        return null;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("blockstate.to_state_string")
     public String toStateString() {
         BlockEntity entity = WorldAPI.getCurrentWorld().getBlockEntity(getBlockPos());
-        CompoundTag tag = entity != null ? entity.saveWithoutMetadata() : new CompoundTag();
-
+        CompoundTag tag = entity != null ? entity.save(new CompoundTag()) : new CompoundTag();
+        if (entity != null) {
+            tag.remove("id");
+            tag.remove("x");
+            tag.remove("y");
+            tag.remove("z");
+        }
         return BlockStateParser.serialize(blockState) + tag;
     }
 
@@ -317,9 +331,9 @@ public class BlockStateAPI {
             map.put("NONE", getTexturesForFace(blockState, null, randomSource, bakedModel, seed));
 
             TextureAtlasSprite particle = blockRenderer.getBlockModelShaper().getParticleIcon(blockState);
-            map.put("PARTICLE", Set.of(getTextureName(particle)));
+            map.put("PARTICLE", Collections.singleton(getTextureName(particle)));
         } else if (renderShape == RenderShape.ENTITYBLOCK_ANIMATED) {
-            map.put("PARTICLE", Set.of(getTextureName(Minecraft.getInstance().getItemRenderer().getModel(blockState.getBlock().asItem().getDefaultInstance(), WorldAPI.getCurrentWorld(), null, 42).getParticleIcon())));
+            map.put("PARTICLE", Collections.singleton((getTextureName(Minecraft.getInstance().getItemRenderer().getModel(blockState.getBlock().asItem().getDefaultInstance(), WorldAPI.getCurrentWorld(), null).getParticleIcon()))));
         }
         return map;
     }
@@ -336,7 +350,7 @@ public class BlockStateAPI {
         Set<String> textures = new HashSet<>();
 
         for (BakedQuad quad : quads)
-            textures.add(getTextureName(quad.getSprite()));
+            textures.add(getTextureName(((BakedQuadAccessor)quad).figura$getSprite()));
 
         return textures;
     }
@@ -354,11 +368,14 @@ public class BlockStateAPI {
     @LuaWhitelist
     public Object __index(String arg) {
         if (arg == null) return null;
-        return switch (arg) {
-            case "id" -> id;
-            case "properties" -> properties;
-            default -> null;
-        };
+        switch (arg) {
+            case "id":
+                return id;
+            case "properties":
+                return properties;
+            default:
+                return null;
+        }
     }
 
     @Override

@@ -79,16 +79,21 @@ public class GameScreen extends AbstractPanelScreen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         switch (keyCode) {
-            case GLFW.GLFW_KEY_R -> grid.init();
-            case GLFW.GLFW_KEY_P -> paused = !paused;
-            case GLFW.GLFW_KEY_SPACE -> grid.tick();
-            case GLFW.GLFW_KEY_F1 -> {
+            case GLFW.GLFW_KEY_R:
+                grid.init();
+                break;
+            case GLFW.GLFW_KEY_P:
+                paused = !paused;
+                break;
+            case GLFW.GLFW_KEY_SPACE:
+                grid.tick();
+                break;
+            case GLFW.GLFW_KEY_F1:
                 keys.setVisible(!keys.isVisible());
                 stats.setVisible(!stats.isVisible());
-            }
-            default -> {
+                break;
+            default:
                 return super.keyPressed(keyCode, scanCode, modifiers);
-            }
         }
 
         return true;

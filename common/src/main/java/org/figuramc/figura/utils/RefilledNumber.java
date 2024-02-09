@@ -6,7 +6,7 @@ import net.minecraft.SharedConstants;
  * class that represents a number that can be refilled
  * the "max" value is the limit the number can reach (rounded up)
  * on each tick, the number will be increased by the "add" value, until it reaches the "max" value
- * the rate of tick is based on {@link SharedConstants#TICKS_PER_SECOND}
+ * the rate of tick is based on {@link SharedConstants#TICKS_PER_SECOND} = 20
  * where the number will attempt to reach back to its max value every second
  */
 public class RefilledNumber {
@@ -56,7 +56,7 @@ public class RefilledNumber {
     // updates the max value
     public void set(double max) {
         this.max = max;
-        this.add = max / SharedConstants.TICKS_PER_SECOND;
+        this.add = max / 20;
         this.current = Math.min(this.current, Math.ceil(max));
     }
 }

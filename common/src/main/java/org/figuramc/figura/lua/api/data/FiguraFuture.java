@@ -30,7 +30,7 @@ public class FiguraFuture<T> {
         if (!isDone) {
             hasError = true;
             isDone = true;
-            errorObject = t instanceof LuaError e ? e : new LuaError(t);
+            errorObject = t instanceof LuaError ? (LuaError) t : new LuaError(t);
         }
     }
 
@@ -88,6 +88,6 @@ public class FiguraFuture<T> {
 
     @Override
     public String toString() {
-        return "Future(isDone=%s)".formatted(isDone);
+        return String.format("Future(isDone=%s)", isDone);
     }
 }

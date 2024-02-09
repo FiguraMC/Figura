@@ -8,7 +8,9 @@ import org.figuramc.figura.FiguraMod;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 
+import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class JsonUtils {
     public static boolean validate(JsonObject object, String fieldName, Function<JsonElement, Boolean> validator) {
@@ -51,7 +53,7 @@ public class JsonUtils {
         } else if (value.isJsonObject()) {
             JsonObject obj = value.getAsJsonObject();
             LuaTable table = new LuaTable();
-            for (String key : obj.keySet()) {
+            for (String key : obj.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toList())) {
                 table.set(key, asLuaValue(obj.get(key)));
             }
             return table;

@@ -4,9 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.narration.NarratableEntry;
-import net.minecraft.client.gui.narration.NarratedElementType;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -18,7 +15,7 @@ import org.figuramc.figura.utils.ui.UIHelper;
 
 import java.util.List;
 
-public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
+public class Label implements FiguraWidget, GuiEventListener {
 
     // text
     private final Font font;
@@ -43,7 +40,7 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
 
     public Label(Object text, int x, int y, float scale, int maxWidth, boolean wrap, TextUtils.Alignment alignment, Integer outlineColor) {
         this.font = Minecraft.getInstance().font;
-        this.rawText = text instanceof Component c ? c : new TextComponent(String.valueOf(text));
+        this.rawText = text instanceof Component ? (Component) text : new TextComponent(String.valueOf(text));
         this.x = x;
         this.y = y;
         this.scale = scale;
@@ -171,16 +168,6 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
     @Override
     public void setVisible(boolean visible) {
         this.visible = visible;
-    }
-
-    @Override
-    public NarrationPriority narrationPriority() {
-        return NarrationPriority.HOVERED;
-    }
-
-    @Override
-    public void updateNarration(NarrationElementOutput builder) {
-        builder.add(NarratedElementType.POSITION, rawText);
     }
 
     @Override

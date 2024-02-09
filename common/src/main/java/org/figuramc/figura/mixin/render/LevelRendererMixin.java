@@ -48,7 +48,8 @@ public abstract class LevelRendererMixin {
         if (avatar == null)
             return;
 
-        if (bufferSource instanceof OutlineBufferSource outline && RenderUtils.vanillaModelAndScript(avatar) && avatar.luaRuntime.renderer.outlineColor != null) {
+        if (bufferSource instanceof OutlineBufferSource && RenderUtils.vanillaModelAndScript(avatar) && avatar.luaRuntime.renderer.outlineColor != null) {
+            OutlineBufferSource outline = (OutlineBufferSource) bufferSource;
             int i = ColorUtils.rgbToInt(avatar.luaRuntime.renderer.outlineColor);
             outline.setColor(
                     i >> 16 & 0xFF,
@@ -83,8 +84,9 @@ public abstract class LevelRendererMixin {
         avatar.firstPersonWorldRender(e, bufferSource, stack, camera, tickDelta);
 
         // first person matrices
-        if (!(e instanceof LivingEntity livingEntity) || !Configs.FIRST_PERSON_MATRICES.value)
+        if (!(e instanceof LivingEntity) || !Configs.FIRST_PERSON_MATRICES.value)
             return;
+        LivingEntity livingEntity = (LivingEntity) e;
 
         Avatar.firstPerson = true;
         stack.pushPose();
@@ -99,8 +101,8 @@ public abstract class LevelRendererMixin {
                 Mth.lerp(tickDelta, livingEntity.zOld, livingEntity.getZ()) - cam.z() + offset.z()
         );
 
-        float yaw = Mth.lerp(tickDelta, livingEntity.yRotO, livingEntity.getYRot());
-        entityRenderer.render(livingEntity, yaw, tickDelta, stack, bufferSource, LightTexture.FULL_BRIGHT);
+        float yaw = Mth.lerp(tickDelta, livingEntity.yRotO, livingEntity.yRot);
+        entityRenderer.render(livingEntity, yaw, tickDelta, stack, bufferSource, 15 << 20 | 15 << 4);
 
         stack.popPose();
         Avatar.firstPerson = false;

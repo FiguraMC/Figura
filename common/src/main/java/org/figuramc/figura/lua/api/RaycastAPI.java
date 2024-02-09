@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import net.minecraft.world.entity.decoration.ArmorStand;
 import org.figuramc.figura.avatar.Avatar;
+import org.figuramc.figura.ducks.ArmorStandAccessor;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
 import org.figuramc.figura.lua.api.world.WorldAPI;
@@ -22,11 +24,9 @@ import org.luaj.vm2.LuaValue;
 
 import com.mojang.datafixers.util.Pair;
 
-import kroppeb.stareval.function.Type.Int;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Marker;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
@@ -101,7 +101,9 @@ public class RaycastAPI {
             throw new LuaError("Invalid fluidRaycastType provided");
         }
 
-        BlockHitResult result = WorldAPI.getCurrentWorld().clip(new ClipContext(start.asVec3(), end.asVec3(), blockContext, fluidContext, new Marker(EntityType.MARKER, WorldAPI.getCurrentWorld())));
+        ArmorStand marker = new ArmorStand(EntityType.ARMOR_STAND, WorldAPI.getCurrentWorld());
+        ((ArmorStandAccessor)marker).figura$setMarker(true);
+        BlockHitResult result = WorldAPI.getCurrentWorld().clip(new ClipContext(start.asVec3(), end.asVec3(), blockContext, fluidContext, marker));
         return LuaUtils.parseBlockHitResult(result);
     }
 
@@ -148,8 +150,9 @@ public class RaycastAPI {
                 return false;
             return true;
         };
-
-        EntityHitResult result = ProjectileUtil.getEntityHitResult(new Marker(EntityType.MARKER, WorldAPI.getCurrentWorld()), start.asVec3(), end.asVec3(), new AABB(start.asVec3(), end.asVec3()), entityPredicate, Double.MAX_VALUE);
+        ArmorStand marker = new ArmorStand(EntityType.ARMOR_STAND, WorldAPI.getCurrentWorld());
+        ((ArmorStandAccessor)marker).figura$setMarker(true);
+        EntityHitResult result = ProjectileUtil.getEntityHitResult(marker, start.asVec3(), end.asVec3(), new AABB(start.asVec3(), end.asVec3()), entityPredicate, Double.MAX_VALUE);
 
         if (result != null)
             return new Object[]{EntityAPI.wrap(result.getEntity()), FiguraVec3.fromVec3(result.getLocation())};

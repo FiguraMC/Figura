@@ -164,7 +164,7 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
 
     @Override
     public boolean equals(Object obj) {
-        return obj == this || obj instanceof AbstractAvatarWidget other && other.avatar != null && this.avatar != null && this.avatar.getPath().equals(other.avatar.getPath());
+        return obj == this || obj instanceof AbstractAvatarWidget && ((AbstractAvatarWidget) obj).avatar != null && this.avatar != null && this.avatar.getPath().equals(((AbstractAvatarWidget) obj).avatar.getPath());
     }
 
     public boolean isOf(Path path) {

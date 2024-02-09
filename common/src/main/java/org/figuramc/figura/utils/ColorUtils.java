@@ -2,6 +2,8 @@ package org.figuramc.figura.utils;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
+import org.apache.commons.lang3.StringUtils;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.math.vector.FiguraVec4;
 
@@ -37,7 +39,7 @@ public class ColorUtils {
         Colors(int hex) {
             this.hex = hex;
             this.vec = intToRGB(hex);
-            this.style = Style.EMPTY.withColor(hex);
+            this.style = Style.EMPTY.withColor(TextColor.fromRgb(hex));
         }
 
         public static Colors getColor(String s) {
@@ -136,7 +138,7 @@ public class ColorUtils {
      * @return a vector of 0 to 1
      */
     public static FiguraVec3 hexStringToRGB(String string, FiguraVec3 fallback) {
-        if (string == null || string.isBlank())
+        if (string == null || string.trim().isEmpty())
             return fallback;
 
         // parse hex color
@@ -149,7 +151,7 @@ public class ColorUtils {
             char[] bgChar = hex.toString().toCharArray();
             hex = new StringBuilder("" + bgChar[0] + bgChar[0] + bgChar[1] + bgChar[1] + bgChar[2] + bgChar[2]);
         } else {
-            hex.append("0".repeat(Math.max(6 - hex.length(), 0)));
+            hex.append(StringUtils.repeat("0", Math.max(6 - hex.length(), 0)));
         }
 
         // return
@@ -188,7 +190,7 @@ public class ColorUtils {
      */
     public static String rgbToHex(FiguraVec3 rgb) {
         String color = Integer.toHexString(ColorUtils.rgbToInt(rgb));
-        return "0".repeat(Math.max(6 - color.length(), 0)) + color;
+        return StringUtils.repeat("0", Math.max(6 - color.length(), 0)) + color;
     }
 
     public static int rgbaToIntABGR(FiguraVec4 rgba) {

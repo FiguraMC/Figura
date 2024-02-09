@@ -15,6 +15,7 @@ import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.ui.UIHelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
@@ -23,7 +24,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
 
     public static final ResourceLocation BACKGROUND = new FiguraIdentifier("textures/gui/panels_background.png");
 
-    private static final List<Function<Screen, Pair<Screen, PanelIcon>>> PANELS = new ArrayList<>() {{
+    private static final List<Function<Screen, Pair<Screen, PanelIcon>>> PANELS = new ArrayList<Function<Screen, Pair<Screen, PanelIcon>>>() {{
         add(s -> Pair.of(new ProfileScreen(s), PanelIcon.PROFILE));
         add(s -> Pair.of(new BrowserScreen(s), PanelIcon.BROWSER));
         add(s -> Pair.of(new WardrobeScreen(s), PanelIcon.WARDROBE));
@@ -33,7 +34,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
     }};
 
     // TODO - remove this when we actually implement those panels
-    private static final List<Integer> PANELS_BLACKLIST = List.of(0, 1);
+    private static final List<Integer> PANELS_BLACKLIST = Arrays.asList(0, 1);
 
     private final List<PanelButton> buttons = new ArrayList<>();
 
@@ -167,7 +168,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
 
         @Override
         protected void renderTexture(PoseStack stack, float delta) {
-            UIHelper.renderSliced(stack, this.x, this.y, getWidth(), getHeight(), isSelected() ? 24f : 0f, this.isHoveredOrFocused() ? 24f : 0f, 24, 24, 48, 48, TEXTURE);
+            UIHelper.renderSliced(stack, this.x, this.y, getWidth(), getHeight(), isSelected() ? 24f : 0f, (this.isFocused() || this.isHovered()) ? 24f : 0f, 24, 24, 48, 48, TEXTURE);
 
             UIHelper.setupTexture(texture);
             int size = getTextureSize();

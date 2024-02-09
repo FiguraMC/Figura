@@ -5,10 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastComponent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import org.figuramc.figura.FiguraMod;
@@ -59,9 +56,9 @@ public class FiguraToast implements Toast {
         UIHelper.blit(stack, 0, 0, 0f, frame * height(), width(), height(), width(), height() * type.frames);
 
         Font font = component.getMinecraft().font;
-        if (this.message.getString().isBlank()) {
+        if (this.message.getString().trim().isEmpty()) {
             renderText(this.title, font, stack, 0xFF);
-        } else if (this.title.getString().isBlank()) {
+        } else if (this.title.getString().trim().isEmpty()) {
             renderText(this.message, font, stack, 0xFF);
         } else {
             List<FormattedCharSequence> a = font.split(this.title, width() - type.spacing - 1);
@@ -121,8 +118,8 @@ public class FiguraToast implements Toast {
     }
 
     public static void sendToast(Object title, Object message, ToastType type) {
-        Component text = title instanceof Component t ? t : new TranslatableComponent(title.toString());
-        Component text2 = message instanceof Component m ? m : new TranslatableComponent(message.toString());
+        Component text = title instanceof Component ? (Component) title : new TranslatableComponent(title.toString());
+        Component text2 = message instanceof Component ? (Component) message : new TranslatableComponent(message.toString());
 
         if (type == ToastType.DEFAULT && Configs.EASTER_EGGS.value) {
             Calendar calendar = FiguraMod.CALENDAR;
@@ -159,7 +156,7 @@ public class FiguraToast implements Toast {
             this.frames = frames;
             this.width = width;
             this.spacing = spacing;
-            this.style = Style.EMPTY.withColor(color);
+            this.style = Style.EMPTY.withColor(TextColor.fromRgb(color));
         }
     }
 }

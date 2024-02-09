@@ -24,6 +24,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
+import org.figuramc.figura.ducks.extensions.FontExtension;
+import org.figuramc.figura.utils.VertexFormatMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.figuramc.figura.FiguraMod;
@@ -69,7 +71,7 @@ public class UIHelper extends GuiComponent {
     // -- Functions -- //
 
     public static void useFiguraGuiFramebuffer() {
-        previousFBO = GL30.glGetInteger(GL30.GL_DRAW_FRAMEBUFFER_BINDING);
+       /* previousFBO = GL30.glGetInteger(GL30.GL_DRAW_FRAMEBUFFER_BINDING);
 
         int width = Minecraft.getInstance().getWindow().getWidth();
         int height = Minecraft.getInstance().getWindow().getHeight();
@@ -89,7 +91,7 @@ public class UIHelper extends GuiComponent {
 
         Matrix4f mf = RenderSystem.getProjectionMatrix();
         Minecraft.getInstance().getMainRenderTarget().blitToScreen(width, height, false);
-        RenderSystem.setProjectionMatrix(mf);
+        RenderSystem.setProjectionMatrix(mf);*/
     }
 
     public static void useVanillaFramebuffer() {
@@ -107,21 +109,25 @@ public class UIHelper extends GuiComponent {
         int windowWidth = Minecraft.getInstance().getWindow().getWidth();
         int windowHeight = Minecraft.getInstance().getWindow().getHeight();
 
-        Matrix4f mf = RenderSystem.getProjectionMatrix();
-        FIGURA_FRAMEBUFFER.drawToScreen(windowWidth, windowHeight);
-        RenderSystem.setProjectionMatrix(mf);
+        // I don't feel like porting this rn + we don't switch framebuffers anymore in rewrite
+     //   Matrix4f mf = RenderSystem.getProjectionMatrix();
+      //  FIGURA_FRAMEBUFFER.drawToScreen(windowWidth, windowHeight);
+      //  RenderSystem.setProjectionMatrix(mf);
         RenderSystem.enableBlend();
     }
 
+    private static final Vector3f INVENTORY_DIFFUSE_LIGHT_0 = Util.make(new Vector3f(0.2f, -1.0f, -1.0f), Vector3f::normalize);
+    private static final Vector3f INVENTORY_DIFFUSE_LIGHT_1 = Util.make(new Vector3f(-0.2f, -1.0f, 0.0f), Vector3f::normalize);
     @SuppressWarnings("deprecation")
     public static void drawEntity(float x, float y, float scale, float pitch, float yaw, LivingEntity entity, PoseStack stack, EntityRenderMode renderMode) {
         // backup entity variables
-        float headX = entity.getXRot();
+        float headX = entity.xRot;
         float headY = entity.yHeadRot;
         boolean invisible = entity.isInvisible();
 
         float bodyY = entity.yBodyRot; // not truly a backup
-        if (entity.getVehicle() instanceof LivingEntity l) {
+        if (entity.getVehicle() instanceof LivingEntity) {
+            LivingEntity l = (LivingEntity) entity.getVehicle();
             // drawEntity(x, y, scale, pitch, yaw, l, stack, renderMode);
             bodyY = l.yBodyRot;
         }
@@ -132,7 +138,7 @@ public class UIHelper extends GuiComponent {
         double yPos = 0d;
 
         switch (renderMode) {
-            case PAPERDOLL -> {
+            case PAPERDOLL: {
                 // rotations
                 xRot = pitch;
                 yRot = yaw + bodyY + 180;
@@ -141,27 +147,27 @@ public class UIHelper extends GuiComponent {
                 yPos--;
 
                 if (entity.isFallFlying())
-                    xPos += Mth.triangleWave((float) Math.toRadians(270), Mth.TWO_PI);
+                    xPos += Mth.triangleWave((float) Math.toRadians(270), (float) (Math.PI * 2));
 
                 if (entity.isAutoSpinAttack() || entity.isVisuallySwimming() || entity.isFallFlying()) {
                     yPos++;
-                    entity.setXRot(0f);
+                    entity.xRot = 0f;
                 }
 
-                // lightning
-                Lighting.setupForEntityInInventory();
+                RenderUtils.setLights(RenderUtils.INVENTORY_DIFFUSE_LIGHT_0, RenderUtils.INVENTORY_DIFFUSE_LIGHT_1);
 
                 // invisibility
                 if (Configs.PAPERDOLL_INVISIBLE.value)
                     entity.setInvisible(false);
+                break;
             }
-            case FIGURA_GUI -> {
+            case FIGURA_GUI: {
                 // rotations
                 xRot = pitch;
                 yRot = yaw + bodyY + 180;
 
                 if (!Configs.PREVIEW_HEAD_ROTATION.value) {
-                    entity.setXRot(0f);
+                    entity.xRot = 0f;
                     entity.yHeadRot = bodyY;
                 }
 
@@ -170,21 +176,24 @@ public class UIHelper extends GuiComponent {
 
                 // set up lighting
                 Lighting.setupForFlatItems();
-                RenderSystem.setShaderLights(Util.make(new Vector3f(-0.2f, -1f, -1f), Vector3f::normalize), Util.make(new Vector3f(-0.2f, 0.4f, -0.3f), Vector3f::normalize));
+                RenderUtils.setLights(Util.make(new Vector3f(-0.2f, -1f, -1f), Vector3f::normalize), Util.make(new Vector3f(-0.2f, 0.4f, -0.3f), Vector3f::normalize));
 
                 // invisibility
                 entity.setInvisible(false);
+                break;
             }
-            default -> {
+            default: {
                 // rotations
                 xRot = pitch;
                 yRot = yaw + bodyY + 180;
 
-                entity.setXRot(-xRot);
+                entity.xRot = -xRot;
                 entity.yHeadRot = -yaw + bodyY;
 
                 // lightning
-                Lighting.setupForEntityInInventory();
+
+                RenderUtils.setLights(RenderUtils.INVENTORY_DIFFUSE_LIGHT_0, RenderUtils.INVENTORY_DIFFUSE_LIGHT_1);
+                break;
             }
         }
 
@@ -226,7 +235,7 @@ public class UIHelper extends GuiComponent {
 
         double finalXPos = xPos;
         double finalYPos = yPos;
-        RenderSystem.runAsFancy(() -> dispatcher.render(entity, finalXPos, finalYPos, 0d, 0f, 1f, stack, immediate, LightTexture.FULL_BRIGHT));
+        RenderSystem.runAsFancy(() -> dispatcher.render(entity, finalXPos, finalYPos, 0d, 0f, 1f, stack, immediate, 15 << 20 | 15 << 4));
         immediate.endBatch();
 
         paperdoll = false;
@@ -240,7 +249,7 @@ public class UIHelper extends GuiComponent {
         Lighting.setupFor3DItems();
 
         // restore entity data
-        entity.setXRot(headX);
+        entity.xRot = headX;
         entity.yHeadRot = headY;
         entity.setInvisible(invisible);
     }
@@ -248,9 +257,8 @@ public class UIHelper extends GuiComponent {
     public static void setupTexture(ResourceLocation texture) {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShaderTexture(0, texture);
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        Minecraft.getInstance().getTextureManager().bind(texture);
+        RenderSystem.color4f(1f, 1f, 1f, 1f);
     }
 
     public static void renderTexture(PoseStack stack, int x, int y, int width, int height, ResourceLocation texture) {
@@ -281,7 +289,7 @@ public class UIHelper extends GuiComponent {
 
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuilder();
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        bufferBuilder.begin(VertexFormatMode.QUADS.asGLMode, DefaultVertexFormat.POSITION_TEX);
 
         float u1 = width / textureWidth;
         float v1 = height / textureHeight;
@@ -313,7 +321,7 @@ public class UIHelper extends GuiComponent {
         Matrix4f pose = stack.last().pose();
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder buffer = tessellator.getBuilder();
-        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        buffer.begin(VertexFormatMode.QUADS.asGLMode, DefaultVertexFormat.POSITION_TEX);
 
         float rWidthThird = regionWidth / 3f;
         float rHeightThird = regionHeight / 3f;
@@ -362,7 +370,7 @@ public class UIHelper extends GuiComponent {
     public static void renderSprite(PoseStack stack, int x, int y, int z, int width, int height, TextureAtlasSprite sprite) {
         setupTexture(sprite.atlas().location());
         BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        bufferBuilder.begin(VertexFormatMode.QUADS.asGLMode, DefaultVertexFormat.POSITION_TEX);
         quad(bufferBuilder, stack.last().pose(), x, y, width, height, z, sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1());
         bufferBuilder.end();
         BufferUploader.end(bufferBuilder);
@@ -429,7 +437,8 @@ public class UIHelper extends GuiComponent {
     public static void highlight(PoseStack stack, FiguraWidget widget, Component text) {
         // screen
         int screenW, screenH;
-        if (Minecraft.getInstance().screen instanceof AbstractPanelScreen panel) {
+        if (Minecraft.getInstance().screen instanceof AbstractPanelScreen) {
+            AbstractPanelScreen panel = (AbstractPanelScreen) Minecraft.getInstance().screen;
             screenW = panel.width;
             screenH = panel.height;
         } else {
@@ -497,7 +506,7 @@ public class UIHelper extends GuiComponent {
 
     public static void renderOutlineText(PoseStack stack, Font textRenderer, Component text, int x, int y, int color, int outline) {
         MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-        textRenderer.drawInBatch8xOutline(text.getVisualOrderText(), x, y, color, outline, stack.last().pose(), bufferSource, LightTexture.FULL_BRIGHT);
+        ((FontExtension)textRenderer).figura$drawInBatch8xOutline(text.getVisualOrderText(), x, y, color, outline, stack.last().pose(), bufferSource, 15 << 20 | 15 << 4);
         bufferSource.endBatch();
     }
 
@@ -617,19 +626,25 @@ public class UIHelper extends GuiComponent {
     }
 
     public static void setContext(ContextMenu context) {
-        if (Minecraft.getInstance().screen instanceof AbstractPanelScreen panelScreen)
+        if (Minecraft.getInstance().screen instanceof AbstractPanelScreen) {
+            AbstractPanelScreen panelScreen = (AbstractPanelScreen) Minecraft.getInstance().screen;
             panelScreen.contextMenu = context;
+        }
     }
 
     public static ContextMenu getContext() {
-        if (Minecraft.getInstance().screen instanceof AbstractPanelScreen panelScreen)
+        if (Minecraft.getInstance().screen instanceof AbstractPanelScreen) {
+            AbstractPanelScreen panelScreen = (AbstractPanelScreen) Minecraft.getInstance().screen;
             return panelScreen.contextMenu;
+        }
         return null;
     }
 
     public static void setTooltip(Component text) {
-        if (Minecraft.getInstance().screen instanceof AbstractPanelScreen panelScreen)
+        if (Minecraft.getInstance().screen instanceof AbstractPanelScreen) {
+            AbstractPanelScreen panelScreen = (AbstractPanelScreen) Minecraft.getInstance().screen;
             panelScreen.tooltip = text;
+        }
     }
 
     public static void setTooltip(Style style) {

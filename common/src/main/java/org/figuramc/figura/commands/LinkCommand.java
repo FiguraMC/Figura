@@ -13,7 +13,7 @@ import java.util.List;
 
 class LinkCommand {
 
-    private static final List<FiguraMod.Links> LINKS = new ArrayList<>() {{
+    private static final List<FiguraMod.Links> LINKS = new ArrayList<FiguraMod.Links>() {{
             add(FiguraMod.Links.Wiki);
             add(FiguraMod.Links.Kofi);
             add(FiguraMod.Links.OpenCollective);

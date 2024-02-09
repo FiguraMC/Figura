@@ -130,7 +130,8 @@ public class SpriteTask extends RenderTask {
             return this;
         }
 
-        if (texture instanceof String s) {
+        if (texture instanceof String) {
+            String s = (String) texture;
             try {
                 this.texture = new ResourceLocation(s);
             } catch (Exception e) {
@@ -138,7 +139,8 @@ public class SpriteTask extends RenderTask {
             }
             if (width == null || height == null)
                 throw new LuaError("Texture dimensions cannot be null");
-        } else if (texture instanceof FiguraTexture tex) {
+        } else if (texture instanceof FiguraTexture) {
+            FiguraTexture tex = (FiguraTexture) texture;
             this.texture = tex.getLocation();
             if (width == null || height == null) {
                 width = tex.getWidth();

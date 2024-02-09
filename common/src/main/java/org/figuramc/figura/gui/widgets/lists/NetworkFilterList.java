@@ -41,7 +41,7 @@ public class NetworkFilterList extends AbstractList {
     }
 
     private void onSearch(final String s) {
-        if (s.isBlank() || s.isEmpty()) entries.forEach(e -> e.setVisible(true));
+        if (s.trim().isEmpty() || s.isEmpty()) entries.forEach(e -> e.setVisible(true));
         else entries.forEach(e -> e.setVisible(e.getSourceFilter().getSource().contains(s)));
         repositionContents();
         updateContentsHeightDiff();

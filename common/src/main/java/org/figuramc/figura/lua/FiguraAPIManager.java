@@ -64,7 +64,7 @@ public class FiguraAPIManager {
      * Addon mods simply need to add their classes to the WHITELISTED_CLASSES set,
      * and whichever global vars they want to set into the API_GETTERS map.
      */
-    public static final Set<Class<?>> WHITELISTED_CLASSES = new HashSet<>() {{
+    public static final Set<Class<?>> WHITELISTED_CLASSES = new HashSet<Class<?>>() {{
         add(FiguraVec2.class);
         add(FiguraVec3.class);
         add(FiguraVec4.class);
@@ -173,7 +173,7 @@ public class FiguraAPIManager {
         add(RaycastAPI.class);
     }};
 
-    public static final Map<String, Function<FiguraLuaRuntime, Object>> API_GETTERS = new LinkedHashMap<>() {{
+    public static final Map<String, Function<FiguraLuaRuntime, Object>> API_GETTERS = new LinkedHashMap<String, Function<FiguraLuaRuntime, Object>>() {{
         put("events", r -> r.events = new EventsAPI());
         put("sounds", r -> new SoundAPI(r.owner));
         put("vanilla_model", r -> r.vanilla_model = new VanillaModelAPI(r.owner));

@@ -14,14 +14,14 @@ repositories {
 
 dependencies {
     mappings loom.layered {
-        mappings("org.quiltmc:quilt-mappings:$minecraft_version+build.$mappings:intermediary-v2")
         officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-1.16.5:2022.03.06@zip")
     }
 
     // Libraries
     implementation("com.github.FiguraMC.LuaJ:luaj-core:$luaj-figura")
     implementation("com.github.FiguraMC.LuaJ:luaj-jse:$luaj-figura")
-    implementation("org.java-websocket:Java-WebSocket:$websocket")
+    implementation("com.neovisionaries:nv-websocket-client:$nv_websocket")
 
     // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
     // Do NOT use other classes from fabric loader

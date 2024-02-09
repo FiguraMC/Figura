@@ -93,7 +93,7 @@ public class EmojiContainer {
         boolean atLeastOne = false;
         for (JsonElement element : aliasArray) {
             String alias = element.getAsString();
-            if (alias.isBlank() || alias.indexOf(' ') != -1 || alias.indexOf(DELIMITER) != -1) {
+            if (alias.trim().isEmpty() || alias.indexOf(' ') != -1 || alias.indexOf(DELIMITER) != -1) {
                 FiguraMod.LOGGER.warn("Invalid emoji name \"{}\" in container: {}", alias, containerName);
             } else {
                 consumer.accept(alias);
@@ -136,7 +136,7 @@ public class EmojiContainer {
     }
 
     public Component blacklist(Component text) {
-        if (blacklist.isBlank())
+        if (blacklist.trim().isEmpty())
             return text;
         return TextUtils.replaceInText(text, "[" + blacklist + "]", TextUtils.UNKNOWN, (s, style) -> style.getFont().equals(font), Integer.MAX_VALUE);
     }

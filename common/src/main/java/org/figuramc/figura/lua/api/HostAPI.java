@@ -12,11 +12,12 @@ import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.figuramc.figura.FiguraMod;
@@ -36,6 +37,7 @@ import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.mixin.LivingEntityAccessor;
 import org.figuramc.figura.mixin.gui.ChatComponentAccessor;
 import org.figuramc.figura.mixin.gui.ChatScreenAccessor;
+import org.figuramc.figura.mixin.gui.GuiAccessor;
 import org.figuramc.figura.model.rendering.texture.FiguraTexture;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.LuaUtils;
@@ -108,7 +110,14 @@ public class HostAPI {
     public HostAPI setTitleTimes(Object x, Double y, Double z) {
         if (!isHost()) return this;
         FiguraVec3 times = LuaUtils.parseVec3("setTitleTimes", x, y, z);
-        this.minecraft.gui.setTimes((int) times.x, (int) times.y, (int) times.z);
+        if (times.x >= 0)
+            ((GuiAccessor)this.minecraft.gui).setTitleFadeInTime((int) times.x);
+        if (times.y >= 0)
+            ((GuiAccessor)this.minecraft.gui).setTitleStayTime((int) times.y);
+        if (times.z >= 0)
+            ((GuiAccessor)this.minecraft.gui).setTitleFadeOutTime((int) times.y);
+        if (((GuiAccessor)this.minecraft.gui).getTitleTime() > 0)
+            ((GuiAccessor)this.minecraft.gui).setTitleTime(((GuiAccessor)this.minecraft.gui).getTitleFadeInTime() + ((GuiAccessor)this.minecraft.gui).getTitleStayTime() + ((GuiAccessor)this.minecraft.gui).getTitleFadeOutTime());
         return this;
     }
 
@@ -120,8 +129,11 @@ public class HostAPI {
     @LuaWhitelist
     @LuaMethodDoc("host.clear_title")
     public HostAPI clearTitle() {
-        if (isHost())
-            this.minecraft.gui.clear();
+        if (isHost()) {
+            ((GuiAccessor)this.minecraft.gui).setTitle(null);
+            ((GuiAccessor)this.minecraft.gui).setSubtitle(null);
+            ((GuiAccessor)this.minecraft.gui).setTitleTime(0);
+        }
         return this;
     }
 
@@ -136,7 +148,7 @@ public class HostAPI {
     )
     public HostAPI setTitle(@LuaNotNil String text) {
         if (isHost())
-            this.minecraft.gui.setTitle(TextUtils.tryParseJson(text));
+            ((GuiAccessor)this.minecraft.gui).setTitle(TextUtils.tryParseJson(text));
         return this;
     }
 
@@ -156,7 +168,7 @@ public class HostAPI {
     )
     public HostAPI setSubtitle(@LuaNotNil String text) {
         if (isHost())
-            this.minecraft.gui.setSubtitle(TextUtils.tryParseJson(text));
+            ((GuiAccessor)this.minecraft.gui).setSubtitle(TextUtils.tryParseJson(text));
         return this;
     }
 
@@ -337,8 +349,12 @@ public class HostAPI {
         Entity e = this.owner.luaRuntime.getUser();
         if (e == null || !e.isAlive())
             return ItemStackAPI.verify(ItemStack.EMPTY);
-        SlotAccess slotAccess = e.getSlot(LuaUtils.parseSlot(slot, null));
-        return ItemStackAPI.verify(slotAccess.get());
+        if (e instanceof Container)
+            return ItemStackAPI.verify(((Container) e).getItem(LuaUtils.parseSlot(slot, null)));
+        else if (e instanceof Player)
+            ItemStackAPI.verify(((Player) e).inventory.getItem(LuaUtils.parseSlot(slot, null)));
+
+        return ItemStackAPI.verify(ItemStack.EMPTY);
     }
 
     @LuaWhitelist
@@ -355,7 +371,7 @@ public class HostAPI {
         if (!isHost() || (slot == null && item == null) || this.minecraft.gameMode == null || this.minecraft.player == null || !this.minecraft.gameMode.getPlayerMode().isCreative())
             return this;
 
-        Inventory inventory = this.minecraft.player.getInventory();
+        Inventory inventory = this.minecraft.player.inventory;
 
         int index = LuaUtils.parseSlot(slot, inventory);
         ItemStack stack = LuaUtils.parseItemStack("setSlot", item);
@@ -420,8 +436,10 @@ public class HostAPI {
     @LuaWhitelist
     @LuaMethodDoc("host.get_chat_text")
     public String getChatText() {
-        if (isHost() && this.minecraft.screen instanceof ChatScreen chat)
+        if (isHost() && this.minecraft.screen instanceof ChatScreen) {
+            ChatScreen chat = (ChatScreen) this.minecraft.screen;
             return ((ChatScreenAccessor) chat).getInput().getValue();
+        }
 
         return null;
     }
@@ -436,8 +454,10 @@ public class HostAPI {
             value = "host.set_chat_text"
     )
     public HostAPI setChatText(@LuaNotNil String text) {
-        if (isHost() && Configs.CHAT_MESSAGES.value && this.minecraft.screen instanceof ChatScreen chat)
+        if (isHost() && Configs.CHAT_MESSAGES.value && this.minecraft.screen instanceof ChatScreen) {
+            ChatScreen chat = (ChatScreen) this.minecraft.screen;
             ((ChatScreenAccessor) chat).getInput().setValue(text);
+        }
         return this;
     }
 
@@ -457,8 +477,10 @@ public class HostAPI {
     @LuaWhitelist
     @LuaMethodDoc("host.get_screen_slot_count")
     public Integer getScreenSlotCount() {
-        if (isHost() && this.minecraft.screen instanceof AbstractContainerScreen<?> screen)
+        if (isHost() && this.minecraft.screen instanceof AbstractContainerScreen<?>) {
+            AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) this.minecraft.screen;
             return screen.getMenu().slots.size();
+        }
         return null;
     }
 
@@ -468,10 +490,11 @@ public class HostAPI {
             @LuaMethodOverload(argumentTypes = Integer.class, argumentNames = "slot")
     }, value = "host.get_screen_slot")
     public ItemStackAPI getScreenSlot(@LuaNotNil Object slot) {
-        if (!isHost() || !(this.minecraft.screen instanceof AbstractContainerScreen<?> screen))
+        if (!isHost() || !(this.minecraft.screen instanceof AbstractContainerScreen<?>))
             return null;
+        AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) this.minecraft.screen;
 
-        NonNullList<Slot> slots = screen.getMenu().slots;
+        List<Slot> slots = screen.getMenu().slots;
         int index = LuaUtils.parseSlot(slot, null);
         if (index < 0 || index >= slots.size())
             return null;
@@ -501,7 +524,7 @@ public class HostAPI {
         if (!isHost())
             return null;
 
-        NativeImage img = Screenshot.takeScreenshot(this.minecraft.getMainRenderTarget());
+        NativeImage img = Screenshot.takeScreenshot(this.minecraft.getWindow().getWidth(), this.minecraft.getWindow().getHeight(), this.minecraft.getMainRenderTarget());
         return owner.luaRuntime.texture.register(name, img, true);
     }
 
@@ -580,7 +603,7 @@ public class HostAPI {
     public boolean isFlying() {
         LocalPlayer player = this.minecraft.player;
         if (isHost() && player != null)
-            return player.getAbilities().flying;
+            return player.abilities.flying;
         return false;
     }
 

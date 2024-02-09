@@ -735,25 +735,42 @@ public class RendererAPI {
     @LuaWhitelist
     public Object __index(String arg) {
         if (arg == null) return null;
-        return switch (arg) {
-            case "renderFire" -> renderFire;
-            case "renderVehicle" -> renderVehicle;
-            case "renderCrosshair" -> renderCrosshair;
-            case "forcePaperdoll" -> forcePaperdoll;
-            case "renderHUD" -> renderHUD;
-            default -> null;
-        };
+        switch (arg) {
+            case "renderFire":
+                return renderFire;
+            case "renderVehicle":
+                return renderVehicle;
+            case "renderCrosshair":
+                return renderCrosshair;
+            case "forcePaperdoll":
+                return forcePaperdoll;
+            case "renderHUD":
+                return renderHUD;
+            default:
+                return null;
+        }
     }
 
     @LuaWhitelist
     public void __newindex(@LuaNotNil String key, boolean value) {
         switch (key) {
-            case "renderFire" -> renderFire = value;
-            case "renderVehicle" -> renderVehicle = value;
-            case "renderCrosshair" -> renderCrosshair = value;
-            case "forcePaperdoll" -> forcePaperdoll = value;
-            case "renderHUD" -> renderHUD = value;
-            default -> throw new LuaError("Cannot assign value on key \"" + key + "\"");
+            case "renderFire":
+                renderFire = value;
+                break;
+            case "renderVehicle":
+                renderVehicle = value;
+                break;
+            case "renderCrosshair":
+                renderCrosshair = value;
+                break;
+            case "forcePaperdoll":
+                forcePaperdoll = value;
+                break;
+            case "renderHUD":
+                renderHUD = value;
+                break;
+            default:
+                throw new LuaError("Cannot assign value on key \"" + key + "\"");
         }
     }
 

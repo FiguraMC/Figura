@@ -191,7 +191,7 @@ public class PermissionsList extends AbstractList {
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (!this.isActive() || !this.isHoveredOrFocused() || !this.isMouseOver(mouseX, mouseY))
+            if (!this.isActive() || !(this.isHovered() || this.isFocused()) || !this.isMouseOver(mouseX, mouseY))
                 return false;
 
             if (button == 1) {
@@ -279,7 +279,7 @@ public class PermissionsList extends AbstractList {
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (!this.isActive() || !this.isHoveredOrFocused() || !this.isMouseOver(mouseX, mouseY))
+            if (!this.isActive() || !(this.isHovered() || this.isFocused()) || !this.isMouseOver(mouseX, mouseY))
                 return false;
 
             if (button == 1) {

@@ -570,26 +570,43 @@ public class Action {
     @LuaWhitelist
     public Object __index(String arg) {
         if (arg == null) return null;
-        return switch (arg) {
-            case "leftClick" -> leftClick;
-            case "rightClick" -> rightClick;
-            case "toggle" -> toggle;
-            case "untoggle" -> untoggle;
-            case "scroll" -> scroll;
-            default -> null;
-        };
+        switch (arg) {
+            case "leftClick":
+                return leftClick;
+            case "rightClick":
+                return rightClick;
+            case "toggle":
+                return toggle;
+            case "untoggle":
+                return untoggle;
+            case "scroll":
+                return scroll;
+            default:
+                return null;
+        }
     }
 
     @LuaWhitelist
     public void __newindex(@LuaNotNil String key, Object value) {
-        LuaFunction func = value instanceof LuaFunction f ? f : null;
+        LuaFunction func = value instanceof LuaFunction ? (LuaFunction) value : null;
         switch (key) {
-            case "leftClick" -> leftClick = func;
-            case "rightClick" -> rightClick = func;
-            case "toggle" -> toggle = func;
-            case "untoggle" -> untoggle = func;
-            case "scroll" -> scroll = func;
-            default -> throw new LuaError("Cannot assign value on key \"" + key + "\"");
+            case "leftClick":
+                leftClick = func;
+                break;
+            case "rightClick":
+                rightClick = func;
+                break;
+            case "toggle":
+                toggle = func;
+                break;
+            case "untoggle":
+                untoggle = func;
+                break;
+            case "scroll":
+                scroll = func;
+                break;
+            default:
+                throw new LuaError("Cannot assign value on key \"" + key + "\"");
         }
     }
 

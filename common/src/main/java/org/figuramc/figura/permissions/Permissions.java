@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Style;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.FiguraText;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class Permissions {
@@ -41,7 +42,7 @@ public class Permissions {
             NETWORKING = new Permissions("NETWORKING", 0,0,0,1,1),
             MAX_SOCKETS = new Permissions("MAX_SOCKETS_COUNT", 0, 16, 0, 1, 2, 8, 16);
 
-    public static final List<Permissions> DEFAULT = List.of(
+    public static final List<Permissions> DEFAULT = Arrays.asList(
             INIT_INST,
             WORLD_TICK_INST,
             TICK_INST,
@@ -97,7 +98,7 @@ public class Permissions {
         this.min = sliderMin;
         this.max = sliderMax;
         this.stepSize = stepSize;
-        this.defaults = List.of(blocked, low, def, high, max);
+        this.defaults = Arrays.asList(blocked, low, def, high, max);
     }
 
     // infinity check :p

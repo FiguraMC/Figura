@@ -6,6 +6,7 @@ import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.client.particle.WakeParticle;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.ducks.SingleQuadParticleAccessor;
+import org.figuramc.figura.ducks.extensions.ParticleExtension;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
@@ -123,7 +124,7 @@ public class LuaParticle {
             value = "particle.set_velocity")
     public LuaParticle setVelocity(Object x, Double y, Double z) {
         FiguraVec3 vec = LuaUtils.parseVec3("setVelocity", x, y, z);
-        particle.setParticleSpeed(vec.x, vec.y, vec.z);
+        ((ParticleExtension)particle).figura$setParticleSpeed(vec.x, vec.y, vec.z);
         return this;
     }
 
@@ -238,8 +239,10 @@ public class LuaParticle {
             aliases = {"scale", "setSize", "size"},
             value = "particle.set_scale")
     public LuaParticle setScale(float scale) {
-        if (particle instanceof SingleQuadParticle quadParticle)
+        if (particle instanceof SingleQuadParticle) {
+            SingleQuadParticle quadParticle = (SingleQuadParticle) particle;
             ((SingleQuadParticleAccessor) quadParticle).figura$fixQuadSize();
+        }
         particle.scale(scale);
         return this;
     }

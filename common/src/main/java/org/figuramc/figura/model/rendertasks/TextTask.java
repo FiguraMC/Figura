@@ -12,10 +12,12 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.Badges;
 import org.figuramc.figura.ducks.BakedGlyphAccessor;
+import org.figuramc.figura.ducks.extensions.FontExtension;
 import org.figuramc.figura.font.Emojis;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
@@ -71,7 +73,6 @@ public class TextTask extends RenderTask {
         int bg = backgroundColor != null ? ColorUtils.intRGBAToIntARGB(backgroundColor) : background ? (int) (Minecraft.getInstance().options.getBackgroundOpacity(0.25f) * 0xFF) << 24 : 0;
         int out = outlineColor != null ? outlineColor : 0x202020;
         int op = opacity << 24 | 0xFFFFFF;
-        Font.DisplayMode displayMode = seeThrough ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.POLYGON_OFFSET;
         float vertexOffset = outline ? FiguraMod.VERTEX_OFFSET : 0f;
 
         // background
@@ -83,10 +84,14 @@ public class TextTask extends RenderTask {
             ResourceLocation fontLoc = new ResourceLocation("minecraft:default/0");
             RenderType renderType = seeThrough ? RenderUtils.TextRenderType.TEXT_BACKGROUND_SEE_THROUGH.apply(fontLoc) : RenderUtils.TextRenderType.TEXT_BACKGROUND.apply(fontLoc);
             VertexConsumer vertexConsumer = buffer.getBuffer(renderType);
-            vertexConsumer.vertex(matrix, x1, -1f, vertexOffset).color(bg).uv(((BakedGlyphAccessor)glyph).figura$getU0(),((BakedGlyphAccessor)glyph).figura$getV0()).uv2(l).endVertex();
-            vertexConsumer.vertex(matrix, x1, cacheHeight, vertexOffset).color(bg).uv(((BakedGlyphAccessor)glyph).figura$getU0(),((BakedGlyphAccessor)glyph).figura$getV1()).uv2(l).endVertex();
-            vertexConsumer.vertex(matrix, x2, cacheHeight, vertexOffset).color(bg).uv(((BakedGlyphAccessor)glyph).figura$getU1(),((BakedGlyphAccessor)glyph).figura$getV1()).uv2(l).endVertex();
-            vertexConsumer.vertex(matrix, x2, -1f, vertexOffset).color(bg).uv(((BakedGlyphAccessor)glyph).figura$getU1(),((BakedGlyphAccessor)glyph).figura$getV0()).uv2(l).endVertex();
+            int r = FastColor.ARGB32.red(bg);
+            int g = FastColor.ARGB32.green(bg);
+            int b = FastColor.ARGB32.blue(bg);
+            int a = FastColor.ARGB32.alpha(bg);
+            vertexConsumer.vertex(matrix, x1, -1f, vertexOffset).color(r, g, b, a).uv(((BakedGlyphAccessor)glyph).figura$getU0(),((BakedGlyphAccessor)glyph).figura$getV0()).uv2(l).endVertex();
+            vertexConsumer.vertex(matrix, x1, cacheHeight, vertexOffset).color(r, g, b, a).uv(((BakedGlyphAccessor)glyph).figura$getU0(),((BakedGlyphAccessor)glyph).figura$getV1()).uv2(l).endVertex();
+            vertexConsumer.vertex(matrix, x2, cacheHeight, vertexOffset).color(r, g, b, a).uv(((BakedGlyphAccessor)glyph).figura$getU1(),((BakedGlyphAccessor)glyph).figura$getV1()).uv2(l).endVertex();
+            vertexConsumer.vertex(matrix, x2, -1f, vertexOffset).color(r, g, b, a).uv(((BakedGlyphAccessor)glyph).figura$getU1(),((BakedGlyphAccessor)glyph).figura$getV0()).uv2(l).endVertex();
         }
 
         // text
@@ -95,7 +100,7 @@ public class TextTask extends RenderTask {
             int x = -alignment.apply(font, text);
 
             if (outline) {
-                font.drawInBatch8xOutline(text.getVisualOrderText(), x, j, -1, out, matrix, buffer, l);
+                ((FontExtension)font).figura$drawInBatch8xOutline(text.getVisualOrderText(), x, j, -1, out, matrix, buffer, l);
                 if (seeThrough)
                     font.drawInBatch(text, x, j, op, shadow, matrix, buffer, true, 0, l);
             } else {

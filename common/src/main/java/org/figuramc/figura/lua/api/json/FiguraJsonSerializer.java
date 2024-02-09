@@ -9,12 +9,16 @@ import org.figuramc.figura.utils.LuaUtils;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 
+import java.util.Map;
+
 @LuaWhitelist
 @LuaTypeDoc(name = "JsonSerializer", value = "json_serializer")
 public class FiguraJsonSerializer {
     private final Gson serializer;
+    private final JsonParser parser;
     public FiguraJsonSerializer(Gson serializer) {
         this.serializer = serializer;
+        this.parser = new JsonParser();
     }
 
     @LuaWhitelist
@@ -31,7 +35,7 @@ public class FiguraJsonSerializer {
             JsonElement elem = LuaUtils.asJsonValue(val);
             return serializer.toJson(elem);
         }
-        throw new IllegalArgumentException("Type of provided value (%s) is not serializable".formatted(val.typename()));
+        throw new IllegalArgumentException(String.format("Type of provided value (%s) is not serializable", val.typename()));
     }
 
     @LuaWhitelist
@@ -44,7 +48,7 @@ public class FiguraJsonSerializer {
             )
     )
     public LuaValue deserialize(String s) {
-        JsonElement e = JsonParser.parseString(s);
+        JsonElement e = parser.parse(s);
         return luaValueFromElement(e);
     }
 
@@ -68,7 +72,7 @@ public class FiguraJsonSerializer {
 
     private static LuaTable luaTableFromObject(JsonObject obj) {
         LuaTable tbl = new LuaTable();
-        for (var kv:
+        for (Map.Entry<String, JsonElement> kv:
                 obj.entrySet()) {
             tbl.set(kv.getKey(), luaValueFromElement(kv.getValue()));
         }

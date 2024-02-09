@@ -25,14 +25,12 @@ import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.config.ConfigManager;
 import org.figuramc.figura.config.ConfigType;
 import org.figuramc.figura.lua.api.ConfigAPI;
+import org.figuramc.figura.mixin.NbtIoAccessor;
 import org.figuramc.figura.permissions.PermissionManager;
 import org.figuramc.figura.permissions.PermissionPack;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.resources.FiguraRuntimeResources;
-import org.figuramc.figura.utils.FiguraClientCommandSource;
-import org.figuramc.figura.utils.FiguraText;
-import org.figuramc.figura.utils.IOUtils;
-import org.figuramc.figura.utils.MathUtils;
+import org.figuramc.figura.utils.*;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -261,9 +259,10 @@ class DebugCommand {
         for (LocalAvatarFetcher.AvatarPath path : list) {
             String name = IOUtils.getFileNameOrEmpty(path.getPath());
 
-            if (path instanceof LocalAvatarFetcher.FolderPath folder)
+            if (path instanceof LocalAvatarFetcher.FolderPath) {
+                LocalAvatarFetcher.FolderPath folder = (LocalAvatarFetcher.FolderPath) path;
                 avatar.add(name, getAvatarsPaths(folder.getChildren()));
-            else
+            } else
                 avatar.addProperty(name, path.getName());
         }
 
@@ -278,13 +277,13 @@ class DebugCommand {
 
         // models
         CompoundTag modelsNbt = nbt.getCompound("models");
-        ListTag childrenNbt = modelsNbt.getList("chld", Tag.TAG_COMPOUND);
+        ListTag childrenNbt = modelsNbt.getList("chld", NbtType.COMPOUND.getValue());
         JsonObject models = parseListSize(childrenNbt, tag -> tag.getString("name"));
         sizes.add("models", models);
         sizes.addProperty("models_total", parseSize(getBytesFromNbt(modelsNbt)));
 
         // animations
-        ListTag animationsNbt = nbt.getList("animations", Tag.TAG_COMPOUND);
+        ListTag animationsNbt = nbt.getList("animations", NbtType.COMPOUND.getValue());
         JsonObject animations = parseListSize(animationsNbt, tag -> tag.getString("mdl") + "." + tag.getString("name"));
         sizes.add("animations", animations);
         sizes.addProperty("animations_total", parseSize(getBytesFromNbt(animationsNbt)));
@@ -317,7 +316,7 @@ class DebugCommand {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(baos)));
-            NbtIo.writeUnnamedTag(nbt, dos);
+            NbtIoAccessor.figura$invokeWriteUnnamedTag(nbt, dos);
             dos.close();
 
             int size = baos.size();
@@ -358,14 +357,16 @@ class DebugCommand {
     }
 
     private static JsonElement parseTagRecursive(Tag tag) {
-        if (tag instanceof CompoundTag compoundTag) {
+        if (tag instanceof CompoundTag) {
+            CompoundTag compoundTag = (CompoundTag) tag;
             JsonObject obj = new JsonObject();
             HashMap<String, Integer> sizesMap = new HashMap<>();
             for (String key : compoundTag.getAllKeys()) {
                 JsonElement value = parseTagRecursive(compoundTag.get(key));
-                if (value instanceof JsonPrimitive size && size.isNumber())
+                if (value instanceof JsonPrimitive && ((JsonPrimitive) value).isNumber()) {
+                    JsonPrimitive size = (JsonPrimitive) value;
                     sizesMap.put(key, size.getAsInt());
-                else
+                } else
                     obj.add(key, value);
             }
             insertJsonSortedData(sizesMap, obj);

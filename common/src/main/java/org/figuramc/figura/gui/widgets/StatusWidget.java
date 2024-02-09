@@ -17,13 +17,14 @@ import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.MathUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListener {
 
     public static final String STATUS_INDICATORS = "-*/+";
-    public static final List<String> STATUS_NAMES = List.of("size", "texture", "script", "backend");
-    public static final List<Style> TEXT_COLORS = List.of(
+    public static final List<String> STATUS_NAMES = Arrays.asList("size", "texture", "script", "backend");
+    public static final List<Style> TEXT_COLORS = Arrays.asList(
             Style.EMPTY.withColor(ChatFormatting.WHITE),
             Style.EMPTY.withColor(ChatFormatting.RED),
             Style.EMPTY.withColor(ChatFormatting.YELLOW),
@@ -74,7 +75,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         status += backend << 6;
 
         String dc = NetworkStuff.disconnectedReason;
-        disconnectedReason = backend == 1 && dc != null && !dc.isBlank() ? new TextComponent(dc) : null;
+        disconnectedReason = backend == 1 && dc != null && !dc.trim().isEmpty() ? new TextComponent(dc) : null;
     }
 
     @Override

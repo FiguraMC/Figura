@@ -20,6 +20,7 @@ import org.figuramc.figura.utils.TextUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
 
     private static final MutableComponent UNKNOWN = new TextComponent("?").setStyle(ColorUtils.Colors.AWESOME_BLUE.style);
     private static final MutableComponent ELLIPSIS = TextUtils.ELLIPSIS.copy().setStyle(ColorUtils.Colors.AWESOME_BLUE.style);
-    private static final List<Component> TITLES = List.of(
+    private static final List<Component> TITLES = Arrays.asList(
             new FiguraText("gui.name").withStyle(ChatFormatting.UNDERLINE),
             new FiguraText("gui.authors").withStyle(ChatFormatting.UNDERLINE),
             new FiguraText("gui.size").withStyle(ChatFormatting.UNDERLINE),
@@ -40,7 +41,7 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
     private final int maxSize;
 
     private final Font font;
-    private final List<Component> values = new ArrayList<>() {{
+    private final List<Component> values = new ArrayList<Component>() {{
         for (Component ignored : TITLES)
             this.add(UNKNOWN);
     }};
@@ -66,8 +67,8 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
         // update values
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (avatar != null && avatar.nbt != null) {
-            values.set(0, avatar.name == null || avatar.name.isBlank() ? UNKNOWN : Emojis.applyEmojis(new TextComponent(avatar.name).setStyle(accent))); // name
-            values.set(1, avatar.authors == null || avatar.authors.isBlank() ? UNKNOWN : Emojis.applyEmojis(new TextComponent(avatar.authors).setStyle(accent))); // authors
+            values.set(0, avatar.name == null || avatar.name.trim().isEmpty() ? UNKNOWN : Emojis.applyEmojis(new TextComponent(avatar.name).setStyle(accent))); // name
+            values.set(1, avatar.authors == null || avatar.authors.trim().isEmpty() ? UNKNOWN : Emojis.applyEmojis(new TextComponent(avatar.authors).setStyle(accent))); // authors
             values.set(2, new TextComponent(MathUtils.asFileSize(avatar.fileSize)).setStyle(accent)); // size
             values.set(3, new TextComponent(String.valueOf(avatar.complexity.pre)).setStyle(accent)); // complexity
         } else {

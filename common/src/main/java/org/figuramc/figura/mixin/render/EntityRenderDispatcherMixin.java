@@ -20,6 +20,8 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.List;
+
 @Mixin(EntityRenderDispatcher.class)
 public class EntityRenderDispatcherMixin {
 
@@ -69,11 +71,11 @@ public class EntityRenderDispatcherMixin {
         if (this.camera == null)
             ci.cancel();
 
-        Entity owner = entity.getFirstPassenger();
-        if (owner == null)
+        List<Entity> passengers = entity.getPassengers();
+        if (passengers == null || passengers.isEmpty())
             return;
 
-        Avatar avatar = AvatarManager.getAvatar(owner);
+        Avatar avatar = AvatarManager.getAvatar(passengers.get(0));
         if (RenderUtils.vanillaModelAndScript(avatar) && !avatar.luaRuntime.renderer.renderVehicle)
             ci.cancel();
     }

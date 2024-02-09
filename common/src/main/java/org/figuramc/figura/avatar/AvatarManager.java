@@ -78,7 +78,7 @@ public class AvatarManager {
         Set<Entity> toBeRemoved = new HashSet<>();
 
         for (Entity entity : LOADED_CEM.keySet())
-            if (entity.isRemoved())
+            if (entity.removed)
                 toBeRemoved.add(entity);
 
         for (Entity entity : toBeRemoved)

@@ -24,7 +24,7 @@ public class ChatScreenMixin {
     private String sendMessage(String text) {
         String s = text;
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
-        if (avatar != null && !text.isBlank())
+        if (avatar != null && !text.trim().isEmpty())
             s = avatar.chatSendMessageEvent(text);
 
         if (!text.equals(s))

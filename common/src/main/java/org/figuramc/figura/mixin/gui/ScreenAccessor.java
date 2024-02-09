@@ -10,7 +10,5 @@ import java.util.List;
 
 @Mixin(Screen.class)
 public interface ScreenAccessor {
-    @Intrinsic
-    @Accessor("renderables")
-    List<Widget> getRenderables();
+
 }

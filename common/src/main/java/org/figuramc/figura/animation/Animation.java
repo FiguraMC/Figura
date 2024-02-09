@@ -91,17 +91,19 @@ public class Animation {
 
         // loop checks
         switch (this.loop) {
-            case ONCE -> {
+            case ONCE:
                 if ((!inverted && time >= length) || (inverted && time <= 0))
                     stop();
-            }
-            case LOOP -> {
+                break;
+            case LOOP:
                 if (!inverted && time > length + loopDelay)
                     time -= length + loopDelay - offset;
                 else if (inverted && time < offset - loopDelay)
                     time += length + loopDelay - offset;
-            }
-            case HOLD -> time = inverted ? Math.max(time, offset) : Math.min(time, length);
+                break;
+            case HOLD:
+                time = inverted ? Math.max(time, offset) : Math.min(time, length);
+                break;
         }
 
         this.lastTime = this.frameTime;
@@ -162,14 +164,17 @@ public class Animation {
     @LuaMethodDoc("animation.play")
     public Animation play() {
         switch (playState) {
-            case PAUSED -> controller.resume();
-            case STOPPED -> {
+            case PAUSED:
+                controller.resume();
+                break;
+            case STOPPED:
                 controller.init();
                 time = inverted ? (length + startDelay) : (offset - startDelay);
                 lastTime = time;
                 frameTime = 0f;
-            }
-            default -> {return this;}
+                break;
+            default:
+                return this;
         }
 
         playState = PlayState.PLAYING;
@@ -607,5 +612,36 @@ public class Animation {
         HOLD
     }
 
-    public record AnimationChannel(TransformType type, Keyframe... keyframes) {}
+    public static class AnimationChannel {
+        private final TransformType type;
+        private final Keyframe[] keyframes;
+
+        public AnimationChannel(TransformType type, Keyframe... keyframes) {
+            this.type = type;
+            this.keyframes = keyframes.clone();
+        }
+
+        public TransformType type() {
+            return type;
+        }
+
+        public Keyframe[] keyframes() {
+            return keyframes;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof AnimationChannel)) return false;
+            AnimationChannel that = (AnimationChannel) o;
+            return type == that.type && Arrays.equals(keyframes, that.keyframes);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = Objects.hash(type);
+            result = 31 * result + Arrays.hashCode(keyframes);
+            return result;
+        }
+    }
 }

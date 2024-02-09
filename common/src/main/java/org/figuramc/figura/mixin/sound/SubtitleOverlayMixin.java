@@ -8,6 +8,7 @@ import org.figuramc.figura.lua.api.sound.LuaSound;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ public class SubtitleOverlayMixin implements SubtitleOverlayAccessor {
 
     @Shadow @Final private List<SubtitleOverlay.Subtitle> subtitles;
 
+    @Unique
     @Override
     public void figura$PlaySound(LuaSound sound) {
         Component text = sound.getSubtitleText();
@@ -30,7 +32,7 @@ public class SubtitleOverlayMixin implements SubtitleOverlayAccessor {
                 return;
             }
         }
-
-        this.subtitles.add(new SubtitleOverlay.Subtitle(text, pos));
+        SubtitleOverlay.Subtitle subtitle = ((SubtitleOverlay)(Object)this).new Subtitle(text, pos);
+        this.subtitles.add(subtitle);
     }
 }

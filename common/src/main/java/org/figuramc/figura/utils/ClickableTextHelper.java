@@ -77,7 +77,8 @@ public class ClickableTextHelper {
 
             if (hoverEvent != null) {
                 Object value = hoverEvent.getValue(hoverEvent.getAction());
-                if (value instanceof Component component) {
+                if (value instanceof Component) {
+                    Component component = (Component) value;
                     hoverText.put(rect, component);
                 }
             }
@@ -145,8 +146,46 @@ public class ClickableTextHelper {
         void visit(String text, Style style, int x, int y, int textWidth, int textHeight);
     }
 
-    protected record TextLine(TextNode[] nodes) { }
-    protected record TextNode(String text, Style style) {
+    protected static final class TextLine {
+        private final TextNode[] nodes;
+
+        protected TextLine(TextNode[] nodes) {
+            this.nodes = nodes;
+        }
+
+        public TextNode[] nodes() {
+            return nodes;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) return true;
+            if (obj == null || obj.getClass() != this.getClass()) return false;
+            TextLine that = (TextLine) obj;
+            return Arrays.equals(this.nodes, that.nodes);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash((Object[]) nodes);
+        }
+
+        @Override
+        public String toString() {
+            return "TextLine[" +
+                    "nodes=" + Arrays.toString(nodes) + ']';
+        }
+    }
+
+    protected static final class TextNode {
+        private final String text;
+        private final Style style;
+
+        protected TextNode(String text, Style style) {
+            this.text = text;
+            this.style = style;
+        }
+
         public int getWidth(Font font) {
             return font.width(asText());
         }
@@ -154,5 +193,35 @@ public class ClickableTextHelper {
         public Component asText() {
             return new TextComponent(text).withStyle(style);
         }
+
+        public String text() {
+            return text;
+        }
+
+        public Style style() {
+            return style;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) return true;
+            if (obj == null || obj.getClass() != this.getClass()) return false;
+            TextNode that = (TextNode) obj;
+            return Objects.equals(this.text, that.text) &&
+                    Objects.equals(this.style, that.style);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(text, style);
+        }
+
+        @Override
+        public String toString() {
+            return "TextNode[" +
+                    "text=" + text + ", " +
+                    "style=" + style + ']';
+        }
+
     }
 }

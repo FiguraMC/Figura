@@ -1,10 +1,15 @@
 package org.figuramc.figura.utils.forge;
 
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoader;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.utils.PlatformUtils;
 
+import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class PlatformUtilsImpl {
@@ -30,5 +35,10 @@ public class PlatformUtilsImpl {
 
     public static PlatformUtils.ModLoader getModLoader() {
         return PlatformUtils.ModLoader.FORGE;
+    }
+
+    public static InputStream loadFileFromRoot(String path) throws IOException {
+        Path file = ModList.get().getModFileById(FiguraMod.MOD_ID).getFile().findResource(path);
+        return Files.newInputStream(file);
     }
 }

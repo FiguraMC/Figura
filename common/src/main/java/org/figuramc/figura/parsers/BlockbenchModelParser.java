@@ -3,6 +3,7 @@ package org.figuramc.figura.parsers;
 import com.google.gson.*;
 import net.minecraft.nbt.*;
 import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.lua.api.action_wheel.Action;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.utils.IOUtils;
@@ -354,12 +355,20 @@ public class BlockbenchModelParser {
 
             for (String vertex : face.vertices) {
                 //Face indices
-                Tag bestVal = switch (bestType) {
-                    case 0 -> ByteTag.valueOf(verticesMap.get(vertex).byteValue());
-                    case 1 -> ShortTag.valueOf(verticesMap.get(vertex).shortValue());
-                    case 2 -> IntTag.valueOf(verticesMap.get(vertex));
-                    default -> throw new IllegalStateException("Unexpected value: " + bestType);
-                };
+                Tag bestVal;
+                switch (bestType) {
+                    case 0:
+                        bestVal = ByteTag.valueOf(verticesMap.get(vertex).byteValue());
+                        break;
+                    case 1:
+                        bestVal = ShortTag.valueOf(verticesMap.get(vertex).shortValue());
+                        break;
+                    case 2:
+                        bestVal = IntTag.valueOf(verticesMap.get(vertex));
+                        break;
+                    default:
+                        throw new IllegalStateException("Unexpected value: " + bestType);
+                }
                 facesList.add(bestVal);
 
                 //UVs
@@ -446,7 +455,7 @@ public class BlockbenchModelParser {
             CompoundTag animNbt = new CompoundTag();
 
             //animation metadata
-            animNbt.putString("mdl", folders.isBlank() ? modelName : folders + modelName);
+            animNbt.putString("mdl", folders.trim().isEmpty() ? modelName : folders + modelName);
             animNbt.putString("name", animation.name);
             if (!animation.loop.equals("once"))
                 animNbt.putString("loop", animation.loop);
@@ -524,9 +533,15 @@ public class BlockbenchModelParser {
                             keyframeNbt.put("brt", toNbtList(keyFrame.bezier_right_time));
 
                         switch (keyFrame.channel) {
-                            case "position" -> posData.add(keyframeNbt);
-                            case "rotation" -> rotData.add(keyframeNbt);
-                            case "scale" -> scaleData.add(keyframeNbt);
+                            case "position":
+                                posData.add(keyframeNbt);
+                                break;
+                            case "rotation":
+                                rotData.add(keyframeNbt);
+                                break;
+                            case "scale":
+                                scaleData.add(keyframeNbt);
+                                break;
                         }
                     }
                 }
@@ -579,7 +594,10 @@ public class BlockbenchModelParser {
         Object z = keyFrameData(frameData.z, fallback);
 
         ListTag nbt = new ListTag();
-        if (x instanceof Float xx && y instanceof Float yy && z instanceof Float zz) {
+        if (x instanceof Float && y instanceof Float && z instanceof Float) {
+            Float zz = (Float) z;
+            Float yy = (Float) y;
+            Float xx = (Float) x;
             nbt.add(FloatTag.valueOf(xx));
             nbt.add(FloatTag.valueOf(yy));
             nbt.add(FloatTag.valueOf(zz));
@@ -639,7 +657,7 @@ public class BlockbenchModelParser {
             parseParent(group.name, groupNbt);
 
             //parse children
-            if (!(group.children == null || group.children.isEmpty()))
+            if (!(group.children == null || group.children.size() == 0))
                 groupNbt.put("chld", parseOutliner(group.children, thisVisibility));
 
             //add animations
@@ -675,9 +693,15 @@ public class BlockbenchModelParser {
 
         for (float f : floats) {
             switch (bestType) {
-                case 0 -> list.add(ByteTag.valueOf((byte) f));
-                case 1 -> list.add(ShortTag.valueOf((short) f));
-                case 2 -> list.add(FloatTag.valueOf(f));
+                case 0:
+                    list.add(ByteTag.valueOf((byte) f));
+                    break;
+                case 1:
+                    list.add(ShortTag.valueOf((short) f));
+                    break;
+                case 2:
+                    list.add(FloatTag.valueOf(f));
+                    break;
             }
         }
 
@@ -715,7 +739,7 @@ public class BlockbenchModelParser {
         try {
             return Float.parseFloat(input);
         } catch (Exception ignored) {
-            return input == null || input.isBlank() ? fallback : input;
+            return input == null || input.trim().isEmpty() ? fallback : input;
         }
     }
 
@@ -747,8 +771,80 @@ public class BlockbenchModelParser {
     }
 
     //dummy texture data
-    private record TextureData(int id, float[] fixedSize) {}
+    public class TextureData {
+        private final int id;
+        private final float[] fixedSize;
+
+        public TextureData(int id, float[] fixedSize) {
+            this.id = id;
+            this.fixedSize = fixedSize.clone(); // Clone the array to ensure immutability
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public float[] getFixedSize() {
+            return fixedSize.clone(); // Return a copy of the array to ensure immutability
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof TextureData)) return false;
+            TextureData that = (TextureData) o;
+            return id == that.id && Arrays.equals(fixedSize, that.fixedSize);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = Objects.hash(id);
+            result = 31 * result + Arrays.hashCode(fixedSize);
+            return result;
+        }
+
+        // You can override toString(), equals(), and hashCode() if needed
+
+        // Other methods and members as needed
+    }
 
     //dummy class containing the return object of the parser
-    public record ModelData(CompoundTag textures, List<CompoundTag> animationList, CompoundTag modelNbt) {}
+
+    public class ModelData {
+        private final CompoundTag textures;
+        private final List<CompoundTag> animationList;
+        private final CompoundTag modelNbt;
+
+        public ModelData(CompoundTag textures, List<CompoundTag> animationList, CompoundTag modelNbt) {
+            this.textures = textures;
+            this.animationList = new ArrayList<>(animationList);
+            this.modelNbt = modelNbt;
+        }
+
+        public CompoundTag textures() {
+            return textures;
+        }
+
+        public List<CompoundTag> animationList() {
+            return animationList;
+        }
+
+        public CompoundTag modelNbt() {
+            return modelNbt;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof ModelData)) return false;
+            ModelData modelData = (ModelData) o;
+            return Objects.equals(textures, modelData.textures) && Objects.equals(animationList, modelData.animationList) && Objects.equals(modelNbt, modelData.modelNbt);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(textures, animationList, modelNbt);
+        }
+    }
+
 }

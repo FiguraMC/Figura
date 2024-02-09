@@ -48,7 +48,8 @@ public class LuaUtils {
         ArrayList<Object> ret = new ArrayList<Object>(args.length);
         int i=0;
         for(int size : vectorSizes) {
-            if (args[i] instanceof FiguraVector vec){
+            if (args[i] instanceof FiguraVector){
+                FiguraVector vec = (FiguraVector) args[i];
                 if(vec.size()!=size)
                     throw new LuaError("Illegal argument at position " + (i + 1) + " to " + methodName + "(): Expected Vector" + size + ", recieved Vector" + vec.size());
                 ret.add(vec);
@@ -57,34 +58,45 @@ public class LuaUtils {
             else if (args[i]==null || args[i] instanceof Number) {
                 double[] vec = new double[size];
                 for (int o=0;o<size;o++){
-                    if (args[i+o] instanceof Number n)
+                    if (args[i + o] instanceof Number) {
+                        Number n = (Number) args[i + o];
                         vec[o]=n.doubleValue();
-                    else if(args[i+o] == null)
+                    } else if(args[i + o] == null)
                         vec[o]=defaultValues[o];
                     else
                         throw new LuaError("Illegal argument at position " + (i + o + 1) + " to " + methodName + "():" + 
                             " Expected Number, recieved " + args[i+o].getClass().getSimpleName() + " (" + args[i+o] + ")"
                         );
                 }
-                ret.add(
-                    switch(size){
-                        case 2->FiguraVec2.of(vec[0], vec[1]);
-                        case 3->FiguraVec3.of(vec[0], vec[1], vec[2]);
-                        case 4->FiguraVec4.of(vec[0], vec[1], vec[2], vec[3]);
-                        default->throw new IllegalArgumentException("Illegal vector size: " + size);
-                    }
-                );
+                switch (size) {
+                    case 2:
+                        ret.add(FiguraVec2.of(vec[0], vec[1]));
+                        break;
+                    case 3:
+                        ret.add(FiguraVec3.of(vec[0], vec[1], vec[2]));
+                        break;
+                    case 4:
+                        ret.add(FiguraVec4.of(vec[0], vec[1], vec[2], vec[3]));
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Illegal vector size: " + size);
+                }
                 i += size;
             }
             else if(args[i]==null) {
-                ret.add(
-                    switch(size){
-                        case 2->FiguraVec2.of(defaultValues[0], defaultValues[1]);
-                        case 3->FiguraVec3.of(defaultValues[0], defaultValues[1], defaultValues[2]);
-                        case 4->FiguraVec4.of(defaultValues[0], defaultValues[1], defaultValues[2], defaultValues[3]);
-                        default->throw new IllegalArgumentException("Illegal vector size: " + size);
-                    }
-                );
+                switch (size) {
+                    case 2:
+                        ret.add(FiguraVec2.of(defaultValues[0], defaultValues[1]));
+                        break;
+                    case 3:
+                        ret.add(FiguraVec3.of(defaultValues[0], defaultValues[1], defaultValues[2]));
+                        break;
+                    case 4:
+                        ret.add(FiguraVec4.of(defaultValues[0], defaultValues[1], defaultValues[2], defaultValues[3]));
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Illegal vector size: " + size);
+                }
                 i += 1;
             }
             else
@@ -111,8 +123,10 @@ public class LuaUtils {
     }
 
     public static FiguraVec2 parseVec2(String methodName, Object x, Number y, double defaultX, double defaultY) {
-        if (x instanceof FiguraVec2 vec)
+        if (x instanceof FiguraVec2) {
+            FiguraVec2 vec = (FiguraVec2) x;
             return vec.copy();
+        }
         if (x == null || x instanceof Number) {
             if (x == null) x = defaultX;
             if (y == null) y = defaultY;
@@ -133,8 +147,10 @@ public class LuaUtils {
     }
 
     public static FiguraVec3 parseVec3(String methodName, Object x, Number y, Number z, double defaultX, double defaultY, double defaultZ) {
-        if (x instanceof FiguraVec3 vec)
+        if (x instanceof FiguraVec3) {
+            FiguraVec3 vec = (FiguraVec3) x;
             return vec.copy();
+        }
         if (x == null || x instanceof Number) {
             if (x == null) x = defaultX;
             if (y == null) y = defaultY;
@@ -145,7 +161,7 @@ public class LuaUtils {
     }
 
     public static FiguraVec3 parseOneArgVec(String methodName, Object x, Number y, Number z, double defaultArg) {
-        double d = x instanceof Number n ? n.doubleValue() : defaultArg;
+        double d = x instanceof Number ? ((Number) x).doubleValue() : defaultArg;
         return parseVec3(methodName, x, y, z, d, d, d);
     }
 
@@ -156,9 +172,11 @@ public class LuaUtils {
     public static Pair<FiguraVec3, FiguraVec3> parse2Vec3(String methodName, Object x, Object y, Number z, Object w, Number t, Number h, int xIndex) {
         FiguraVec3 a, b;
 
-        if (x instanceof FiguraVec3 vec1) {
+        if (x instanceof FiguraVec3) {
+            FiguraVec3 vec1 = (FiguraVec3) x;
             a = vec1.copy();
-            if (y instanceof FiguraVec3 vec2) {
+            if (y instanceof FiguraVec3) {
+                FiguraVec3 vec2 = (FiguraVec3) y;
                 b = vec2.copy();
             } else if (y == null || y instanceof Number) {
                 if (w == null || w instanceof Number) {
@@ -171,7 +189,8 @@ public class LuaUtils {
             }
         } else if (x instanceof Number && y == null || y instanceof Number) {
             a = parseVec3(methodName, x, (Number) y, z);
-            if (w instanceof FiguraVec3 vec1) {
+            if (w instanceof FiguraVec3) {
+                FiguraVec3 vec1 = (FiguraVec3) w;
                 b = vec1.copy();
             } else if (w == null || w instanceof Number) {
                 b = parseVec3(methodName, w, t, h);
@@ -200,10 +219,14 @@ public class LuaUtils {
     }
 
     public static FiguraVec4 parseVec4(String methodName, Object x, Number y, Number z, Number w, double defaultX, double defaultY, double defaultZ, double defaultW) {
-        if (x instanceof FiguraVec3 vec)
+        if (x instanceof FiguraVec3) {
+            FiguraVec3 vec = (FiguraVec3) x;
             return FiguraVec4.of(vec.x, vec.y, vec.z, defaultW);
-        if (x instanceof FiguraVec4 vec)
+        }
+        if (x instanceof FiguraVec4) {
+            FiguraVec4 vec = (FiguraVec4) x;
             return vec.copy();
+        }
         if (x == null || x instanceof Number) {
             if (x == null) x = defaultX;
             if (y == null) y = defaultY;
@@ -217,9 +240,11 @@ public class LuaUtils {
     public static ItemStack parseItemStack(String methodName, Object item) {
         if (item == null)
             return ItemStack.EMPTY;
-        else if (item instanceof ItemStackAPI wrapper)
+        else if (item instanceof ItemStackAPI) {
+            ItemStackAPI wrapper = (ItemStackAPI) item;
             return wrapper.itemStack;
-        else if (item instanceof String string) {
+        } else if (item instanceof String) {
+            String string = (String) item;
             try {
                 Level level = WorldAPI.getCurrentWorld();
                 return new ItemArgument().parse(new StringReader(string)).createItemStack(1, false);
@@ -234,9 +259,11 @@ public class LuaUtils {
     public static BlockState parseBlockState(String methodName, Object block) {
         if (block == null)
             return Blocks.AIR.defaultBlockState();
-        else if (block instanceof BlockStateAPI wrapper)
+        else if (block instanceof BlockStateAPI) {
+            BlockStateAPI wrapper = (BlockStateAPI) block;
             return wrapper.blockState;
-        else if (block instanceof String string) {
+        } else if (block instanceof String) {
+            String string = (String) block;
             try {
                 Level level = WorldAPI.getCurrentWorld();
                 return new BlockStateArgument().parse(new StringReader(string)).getState();
@@ -257,7 +284,8 @@ public class LuaUtils {
     }
 
     public static Object[] parseBlockHitResult(HitResult hitResult) {
-        if (hitResult instanceof BlockHitResult blockHit) {
+        if (hitResult instanceof BlockHitResult) {
+            BlockHitResult blockHit = (BlockHitResult) hitResult;
             BlockPos pos = blockHit.getBlockPos();
             return new Object[]{new BlockStateAPI(WorldAPI.getCurrentWorld().getBlockState(pos), pos), FiguraVec3.fromVec3(blockHit.getLocation()), blockHit.getDirection().getName()};
         }
@@ -265,13 +293,15 @@ public class LuaUtils {
     }
 
     public static int parseSlot(Object slot, Inventory inventory) {
-        if (slot instanceof String s) {
+        if (slot instanceof String) {
+            String s = (String) slot;
             try {
                 return SlotArgument.slot().parse(new StringReader(s));
             } catch (Exception e) {
                 throw new LuaError("Unable to get slot \"" + slot + "\"");
             }
-        } else if (slot instanceof Integer i) {
+        } else if (slot instanceof Integer) {
+            int i = (Integer) slot;
             if (i == -1 && inventory != null) {
                 return inventory.getFreeSlot();
             } else {
@@ -285,7 +315,10 @@ public class LuaUtils {
     public static JsonElement asJsonValue(LuaValue value) {
         if (value.isnil()) return JsonNull.INSTANCE;
         if (value.isboolean()) return new JsonPrimitive(value.checkboolean());
-        if (value instanceof LuaString s) return new JsonPrimitive(s.checkjstring());
+        if (value instanceof LuaString) {
+            LuaString s = (LuaString) value;
+            return new JsonPrimitive(s.checkjstring());
+        }
         if (value.isint()) return new JsonPrimitive(value.checkint());
         if (value.isnumber()) return new JsonPrimitive(value.checkdouble());
         if (value.istable()) {
@@ -310,7 +343,8 @@ public class LuaUtils {
                 return object;
             }
         }
-        if (value.isuserdata() && value.checkuserdata() instanceof FiguraJsonSerializer.JsonValue val) {
+        if (value.isuserdata() && value.checkuserdata() instanceof FiguraJsonSerializer.JsonValue) {
+            FiguraJsonSerializer.JsonValue val = (FiguraJsonSerializer.JsonValue) value.checkuserdata();
             return val.getElement();
         }
         // Fallback for things that shouldn't be converted (like functions)

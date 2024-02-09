@@ -73,7 +73,7 @@ import java.util.*;
 public class FiguraDocsManager {
 
     // class name map
-    private static final Map<Class<?>, String> NAME_MAP = new HashMap<>() {{
+    private static final Map<Class<?>, String> NAME_MAP = new HashMap<Class<?>, String>() {{
         // Built in type names, even for things that don't have docs
         put(Double.class, "Number");
         put(double.class, "Number");
@@ -116,40 +116,40 @@ public class FiguraDocsManager {
 
     // -- docs generator data -- // 
 
-    private static final Map<String, Collection<Class<?>>> GLOBAL_CHILDREN = new HashMap<>() {{
-        put("action_wheel", List.of(
+    private static final Map<String, Collection<Class<?>>> GLOBAL_CHILDREN = new HashMap<String, Collection<Class<?>>>() {{
+        put("action_wheel", Arrays.asList(
                 ActionWheelAPI.class,
                 Page.class,
                 Action.class
         ));
 
-        put("animations", List.of(
+        put("animations", Arrays.asList(
                 AnimationAPI.class,
                 Animation.class
         ));
 
-        put("nameplate", List.of(
+        put("nameplate", Arrays.asList(
                 NameplateAPI.class,
                 NameplateCustomization.class,
                 EntityNameplateCustomization.class,
                 NameplateCustomizationGroup.class
         ));
 
-        put("world", List.of(
+        put("world", Arrays.asList(
                 WorldAPI.class,
                 BiomeAPI.class,
                 BlockStateAPI.class,
                 ItemStackAPI.class
         ));
 
-        put("vanilla_model", List.of(
+        put("vanilla_model", Arrays.asList(
                 VanillaModelAPI.class,
                 VanillaPart.class,
                 VanillaModelPart.class,
                 VanillaGroupPart.class
         ));
 
-        put("models", List.of(
+        put("models", Arrays.asList(
                 Vertex.class,
                 FiguraModelPart.class,
                 RenderTask.class,
@@ -159,79 +159,79 @@ public class FiguraDocsManager {
                 SpriteTask.class
         ));
 
-        put("player", List.of(
+        put("player", Arrays.asList(
                 EntityAPI.class,
                 LivingEntityAPI.class,
                 PlayerAPI.class,
                 ViewerAPI.class
         ));
 
-        put("events", List.of(
+        put("events", Arrays.asList(
                 EventsAPI.class,
                 LuaEvent.class
         ));
 
-        put("keybinds", List.of(
+        put("keybinds", Arrays.asList(
                 KeybindAPI.class,
                 FiguraKeybind.class
         ));
 
-        put("vectors", List.of(
+        put("vectors", Arrays.asList(
                 VectorsAPI.class,
                 FiguraVec2.class,
                 FiguraVec3.class,
                 FiguraVec4.class
         ));
 
-        put("matrices", List.of(
+        put("matrices", Arrays.asList(
                 MatricesAPI.class,
                 FiguraMat2.class,
                 FiguraMat3.class,
                 FiguraMat4.class
         ));
 
-        put("client", List.of(
+        put("client", Collections.singletonList(
                 ClientAPI.class
         ));
 
-        put("host", List.of(
+        put("host", Collections.singletonList(
                 HostAPI.class
         ));
 
-        put("avatar", List.of(
+        put("avatar", Collections.singletonList(
                 AvatarAPI.class
         ));
 
-        put("particles", List.of(
+        put("particles", Arrays.asList(
                 ParticleAPI.class,
                 LuaParticle.class
         ));
 
-        put("sounds", List.of(
+        put("sounds", Arrays.asList(
                 SoundAPI.class,
                 LuaSound.class
         ));
 
-        put("renderer", List.of(
+        put("renderer", Collections.singletonList(
                 RendererAPI.class
         ));
 
-        put("pings", List.of(
+        put("pings", Arrays.asList(
                 PingAPI.class,
                 PingFunction.class
         ));
 
-        put("textures", List.of(
+        put("textures", Arrays.asList(
                 TextureAPI.class,
                 FiguraTexture.class,
                 TextureAtlasAPI.class
         ));
 
-        put("config", List.of(
+        put("config", Collections.singletonList(
                 ConfigAPI.class
         ));
 
-        put("data", List.of(
+        put("data", Arrays.asList(
                 DataAPI.class,
                 FiguraInputStream.class,
                 FiguraOutputStream.class,
@@ -239,7 +239,7 @@ public class FiguraDocsManager {
                 FiguraFuture.class
         ));
 
-        put("net", List.of(
+        put("net", Arrays.asList(
                 NetworkingAPI.class,
                 HttpRequestsAPI.class,
                 HttpRequestsAPI.HttpResponse.class,
@@ -248,11 +248,11 @@ public class FiguraDocsManager {
                 FiguraSocket.class
         ));
 
-        put("file", List.of(
+        put("file", Collections.singletonList(
                 FileAPI.class
         ));
 
-        put("json", List.of(
+        put("json", Arrays.asList(
                 JsonAPI.class,
                 FiguraJsonBuilder.class,
                 FiguraJsonSerializer.class,
@@ -260,10 +260,10 @@ public class FiguraDocsManager {
                 FiguraJsonArray.class
         ));
 
-        put("resources", List.of(
+        put("resources", Collections.singletonList(
                 ResourcesAPI.class
         ));
-        put("raycast", List.of(
+        put("raycast", Collections.singletonList(
                 RaycastAPI.class
         ));
     }};
@@ -271,7 +271,7 @@ public class FiguraDocsManager {
 
     private static FiguraDoc.ClassDoc global;
 
-    private static final List<Class<?>> LUA_LIB_OVERRIDES = List.of(
+    private static final List<Class<?>> LUA_LIB_OVERRIDES = Collections.singletonList(
             FiguraMathDocs.class
     );
     private static final List<FiguraDoc> GENERATED_LIB_OVERRIDES = new ArrayList<>();

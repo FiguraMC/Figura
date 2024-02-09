@@ -7,6 +7,7 @@ import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.scores.PlayerTeam;
+import org.figuramc.figura.ducks.FoodDataAccesor;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.NbtToLua;
@@ -66,7 +67,7 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
     @LuaMethodDoc("player.get_exhaustion")
     public float getExhaustion() {
         checkEntity();
-        return entity.getFoodData().getExhaustionLevel();
+        return ((FoodDataAccesor)(entity.getFoodData())).figura$getExhaustionLevel();
     }
 
     @LuaWhitelist
@@ -105,7 +106,7 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
     @LuaMethodDoc("player.has_cape")
     public boolean hasCape() {
         checkEntity();
-        return checkPlayerInfo() && playerInfo.isCapeLoaded();
+        return checkPlayerInfo() && playerInfo.getCapeLocation() != null;
     }
 
     @LuaWhitelist

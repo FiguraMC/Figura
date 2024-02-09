@@ -3,7 +3,6 @@ package org.figuramc.figura.lua.api.world;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaFieldDoc;
@@ -83,12 +82,10 @@ public class BiomeAPI {
         Registry<Biome> registry = WorldAPI.getCurrentWorld().registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
         Optional<ResourceKey<Biome>> key = registry.getResourceKey(biome);
 
-        if (key.isEmpty())
+        if (key.isPresent())
             return list;
 
-        for (TagKey<Biome> biomeTagKey : registry.getHolderOrThrow(key.get()).tags().toList())
-            list.add(biomeTagKey.location().toString());
-
+        list.add(biome.getBiomeCategory().getName());
         return list;
     }
 
@@ -156,7 +153,7 @@ public class BiomeAPI {
     @LuaWhitelist
     @LuaMethodDoc("biome.is_cold")
     public boolean isCold() {
-        return biome.coldEnoughToSnow(getBlockPos());
+        return !(((BiomeAccessor) (Object) biome).getTheTemperature(getBlockPos()) >= 0.15f);
     }
 
     @LuaWhitelist

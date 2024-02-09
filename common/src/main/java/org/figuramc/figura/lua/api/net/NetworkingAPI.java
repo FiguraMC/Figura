@@ -56,7 +56,7 @@ public class NetworkingAPI {
             throw new LuaError(NO_PERMISSION_ERROR_TEXT);
         }
         if (!isLinkAllowed(link)) {
-            throw new LinkNotAllowedException(NETWORKING_DISALLOWED_FOR_LINK_ERROR.formatted(link));
+            throw new LinkNotAllowedException(String.format(NETWORKING_DISALLOWED_FOR_LINK_ERROR, link));
         }
     }
 
@@ -84,11 +84,16 @@ public class NetworkingAPI {
         RestrictionLevel level = RestrictionLevel.getById(Configs.NETWORKING_RESTRICTION.value);
         if (level == null) return false;
         ArrayList<Filter> filters = Configs.NETWORK_FILTER.getFilters();
-        return switch (level) {
-            case WHITELIST -> filters.stream().anyMatch(f -> f.matches(link));
-            case BLACKLIST -> filters.stream().noneMatch(f -> f.matches(link));
-            case NONE -> true;
-        };
+        switch (level) {
+            case WHITELIST:
+                return filters.stream().anyMatch(f -> f.matches(link));
+            case BLACKLIST:
+                return filters.stream().noneMatch(f -> f.matches(link));
+            case NONE:
+                return true;
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 
     void log(LogSource source, Component text) {
@@ -96,18 +101,22 @@ public class NetworkingAPI {
         int log = Configs.LOG_NETWORKING.value;
         if (log == 3) return;
         MutableComponent finalText =
-                new TextComponent("[networking:%s:%s] ".formatted(source.name().toLowerCase(),owner.entityName))
+                new TextComponent(String.format("[networking:%s:%s] ", source.name().toLowerCase(),owner.entityName))
                         .withStyle(ColorUtils.Colors.LUA_PING.style)
                         .append(text.copy().withStyle(ChatFormatting.WHITE));
         String logTextString = finalText.getString();
         switch (log) {
-            case 2 -> FiguraMod.sendChatMessage(finalText);
-            case 1 -> FiguraMod.LOGGER.info(logTextString);
+            case 2:
+                FiguraMod.sendChatMessage(finalText);
+                break;
+            case 1:
+                FiguraMod.LOGGER.info(logTextString);
+                break;
         }
         if (logFileOutputStream == null) prepareLogStream();
         try {
             LocalTime t = LocalTime.now();
-            writeToLogStream("[%02d:%02d:%02d] [INFO] %s\n".formatted(t.getHour(), t.getMinute(),
+            writeToLogStream(String.format("[%02d:%02d:%02d] [INFO] %s\n", t.getHour(), t.getMinute(),
                     t.getSecond(), finalText.getString()));
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -119,18 +128,22 @@ public class NetworkingAPI {
         int log = Configs.LOG_NETWORKING.value;
         if (log == 3) return;
         MutableComponent finalText =
-                new TextComponent("[networking:%s:%s] ".formatted(source.name().toLowerCase(),owner.entityName))
+                new TextComponent(String.format("[networking:%s:%s] ", source.name().toLowerCase(),owner.entityName))
                         .withStyle(ColorUtils.Colors.LUA_ERROR.style)
                         .append(text.copy().withStyle(ChatFormatting.WHITE));
         String logTextString = finalText.getString();
         switch (log) {
-            case 2 -> FiguraMod.sendChatMessage(finalText);
-            case 1 -> FiguraMod.LOGGER.error(logTextString);
+            case 2:
+                FiguraMod.sendChatMessage(finalText);
+                break;
+            case 1:
+                FiguraMod.LOGGER.error(logTextString);
+                break;
         }
         if (logFileOutputStream == null) prepareLogStream();
         try {
             LocalTime t = LocalTime.now();
-            writeToLogStream("[%02d:%02d:%02d] [ERROR] %s\n".formatted(t.getHour(), t.getMinute(),
+            writeToLogStream(String.format("[%02d:%02d:%02d] [ERROR] %s\n", t.getHour(), t.getMinute(),
                     t.getSecond(), finalText.getString()));
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -184,13 +197,20 @@ public class NetworkingAPI {
         }
 
         public boolean matches(String s) {
-            return switch (filterMode) {
-                case EQUALS -> s.trim().equals(filterSource);
-                case CONTAINS -> s.trim().contains(filterSource);
-                case STARTS_WITH -> s.trim().startsWith(filterSource);
-                case ENDS_WITH -> s.trim().endsWith(filterSource);
-                case REGEX -> s.trim().matches(filterSource);
-            };
+            switch (filterMode) {
+                case EQUALS:
+                    return s.trim().equals(filterSource);
+                case CONTAINS:
+                    return s.trim().contains(filterSource);
+                case STARTS_WITH:
+                    return s.trim().startsWith(filterSource);
+                case ENDS_WITH:
+                    return s.trim().endsWith(filterSource);
+                case REGEX:
+                    return s.trim().matches(filterSource);
+                default:
+                    throw new IllegalArgumentException();
+            }
         }
 
         public enum FilterMode {
@@ -247,11 +267,14 @@ public class NetworkingAPI {
     @LuaWhitelist
     public Object __index(LuaValue key) {
         if (!key.isstring()) return null;
-        return switch (key.tojstring()) {
-            case "http" -> http;
-            case "socket" -> socket;
-            default -> null;
-        };
+        switch (key.tojstring()) {
+            case "http":
+                return http;
+            case "socket":
+                return socket;
+            default:
+                return null;
+        }
     }
 
     static class LinkNotAllowedException extends RuntimeException {

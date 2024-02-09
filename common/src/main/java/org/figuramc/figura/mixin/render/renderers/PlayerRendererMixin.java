@@ -8,7 +8,7 @@ import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.network.chat.Component;
@@ -18,6 +18,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Score;
 import net.minecraft.world.scores.Scoreboard;
+import org.figuramc.figura.ducks.extensions.FontExtension;
 import org.figuramc.figura.lua.api.nameplate.EntityNameplateCustomization;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
 import org.figuramc.figura.math.vector.FiguraVec3;
@@ -49,8 +50,8 @@ import java.util.regex.Pattern;
 @Mixin(PlayerRenderer.class)
 public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
 
-    public PlayerRendererMixin(EntityRendererProvider.Context context, PlayerModel<AbstractClientPlayer> entityModel, float shadowRadius) {
-        super(context, entityModel, shadowRadius);
+    public PlayerRendererMixin(EntityRenderDispatcher dispatcher, PlayerModel<AbstractClientPlayer> entityModel, float shadowRadius) {
+        super(dispatcher, entityModel, shadowRadius);
     }
 
     @Unique
@@ -175,7 +176,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
                 font.drawInBatch(text1, x, y, 0x20FFFFFF, false, matrix4f, multiBufferSource, notSneaking, bgColor, light);
                 if (notSneaking) {
                     if (outline)
-                        font.drawInBatch8xOutline(text1.getVisualOrderText(), x, y, -1, outlineColor, matrix4f, multiBufferSource, light);
+                        ((FontExtension)font).figura$drawInBatch8xOutline(text1.getVisualOrderText(), x, y, -1, outlineColor, matrix4f, multiBufferSource, light);
                     else
                         font.drawInBatch(text1, x, y, -1, shadow, textMatrix, multiBufferSource, false, 0, light);
                 }
@@ -200,7 +201,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
             font.drawInBatch(text1, x, y, 0x20FFFFFF, false, matrix4f, multiBufferSource, notSneaking, bgColor, light);
             if (notSneaking) {
                 if (outline)
-                    font.drawInBatch8xOutline(text1.getVisualOrderText(), x, y, -1, outlineColor, matrix4f, multiBufferSource, light);
+                    ((FontExtension)font).figura$drawInBatch8xOutline(text1.getVisualOrderText(), x, y, -1, outlineColor, matrix4f, multiBufferSource, light);
                 else
                     font.drawInBatch(text1, x, y, -1, shadow, textMatrix, multiBufferSource, false, 0, light);
             }
