@@ -1652,6 +1652,8 @@
     "figura.docs.world.get_strong_redstone_power": "Gets the direct redstone power level of the block at the given position",
     "figura.docs.world.get_time": "Gets the current game time of the world\nIf delta is passed in, then it adds delta to the time\nThe default value of delta is zero",
     "figura.docs.world.get_time_of_day": "Gets the current day time of the world\nIf delta is passed in, then it adds delta to the time\nThe default value of delta is zero",
+    "figura.docs.world.get_day_time": "Gets the time of the current day between 0 and 24000\nIf delta is passed in, then it adds delta to the time\nThe default value of delta is zero",
+    "figura.docs.world.get_day": "Gets the current day\nIf delta is passed in, then it adds delta to the time\nThe default value of delta is zero",
     "figura.docs.world.get_moon_phase": "Gets the current moon phase of the world, stored as an integer",
     "figura.docs.world.get_rain_gradient": "Gets the current rain gradient in the world, interpolated from the previous tick to the current one\nThe default value of delta is 1, which is the current tick",
     "figura.docs.world.is_thundering": "Gets whether or not there is currently thunder/lightning happening in the world",
