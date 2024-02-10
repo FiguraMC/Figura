@@ -306,7 +306,7 @@ public class FiguraListDocs {
 
     public static List<String> getEnumValues(String enumName) {
         try {
-            ListDoc enumListDoc = ListDoc.valueOf(enumName.toUpperCase());
+            ListDoc enumListDoc = ListDoc.valueOf(enumName.toUpperCase(Locale.US));
 
             Collection<?> enumValues = enumListDoc.get();
             List<String> enumValueList = new ArrayList<>();

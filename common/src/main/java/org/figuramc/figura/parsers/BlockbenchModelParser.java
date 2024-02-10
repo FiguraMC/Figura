@@ -154,7 +154,7 @@ public class BlockbenchModelParser {
                 name = folders + name;
 
                 //feedback
-                FiguraMod.debug("Loaded {} Texture \"{}\" from {}", textureType.toUpperCase(), name, p);
+                FiguraMod.debug("Loaded {} Texture \"{}\" from {}", textureType.toUpperCase(Locale.US), name, p);
             } catch (Exception e) {
                 if (e instanceof IOException)
                     FiguraMod.LOGGER.error("", e);
@@ -162,7 +162,7 @@ public class BlockbenchModelParser {
                 //otherwise, load from the source stored in the model
                 source = Base64.getDecoder().decode(texture.source.substring("data:image/png;base64,".length()));
                 path = folders + modelName + "." + name;
-                FiguraMod.debug("Loaded {} Texture \"{}\" from {}", textureType.toUpperCase(), name, path);
+                FiguraMod.debug("Loaded {} Texture \"{}\" from {}", textureType.toUpperCase(Locale.US), name, path);
             }
 
             //add source nbt

@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Locale;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -95,7 +96,7 @@ public class NetworkingAPI {
         int log = Configs.LOG_NETWORKING.value;
         if (log == 3) return;
         MutableComponent finalText =
-                Component.literal("[networking:%s:%s] ".formatted(source.name().toLowerCase(),owner.entityName))
+                Component.literal("[networking:%s:%s] ".formatted(source.name().toLowerCase(Locale.US),owner.entityName))
                         .withStyle(ColorUtils.Colors.LUA_PING.style)
                         .append(text.copy().withStyle(ChatFormatting.WHITE));
         String logTextString = finalText.getString();
@@ -118,7 +119,7 @@ public class NetworkingAPI {
         int log = Configs.LOG_NETWORKING.value;
         if (log == 3) return;
         MutableComponent finalText =
-                Component.literal("[networking:%s:%s] ".formatted(source.name().toLowerCase(),owner.entityName))
+                Component.literal("[networking:%s:%s] ".formatted(source.name().toLowerCase(Locale.US),owner.entityName))
                         .withStyle(ColorUtils.Colors.LUA_ERROR.style)
                         .append(text.copy().withStyle(ChatFormatting.WHITE));
         String logTextString = finalText.getString();
