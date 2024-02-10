@@ -2,15 +2,15 @@ package org.figuramc.figura.backend2.trust;
 
 import com.neovisionaries.ws.client.*;
 import net.minecraft.client.multiplayer.resolver.ServerAddress;
-import org.apache.http.ssl.SSLContextBuilder;
-import org.apache.http.ssl.SSLContexts;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.backend2.websocket.FiguraWebSocketAdapter;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.utils.PlatformUtils;
 
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -32,11 +32,12 @@ public class KeyStoreHelper {
         try {
             KeyStore keyStore = getKeyStore();
             WebSocketFactory wsFactory = new WebSocketFactory();
-            SSLContextBuilder contextBuilder = SSLContexts.custom();
-            contextBuilder.setProtocol("TLSv1.2");
-            contextBuilder.loadKeyMaterial(keyStore, password);
-            contextBuilder.loadTrustMaterial(keyStore, null);
-            SSLContext context = contextBuilder.build();
+            SSLContext context = SSLContext.getInstance("TLSv1.2");
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+            kmf.init(keyStore, password);
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+            tmf.init(keyStore);
+            context.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
             wsFactory.setSocketFactory(context.getSocketFactory());
             wsFactory.setSSLSocketFactory(context.getSocketFactory());
             wsFactory.setSSLContext(context);
