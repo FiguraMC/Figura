@@ -1,6 +1,5 @@
 package org.figuramc.figura.model;
 
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import org.figuramc.figura.avatar.Avatar;
@@ -1296,6 +1295,19 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             value = "model_part.new_sprite")
     public SpriteTask newSprite(@LuaNotNil String name) {
         SpriteTask task = new SpriteTask(name, owner, this);
+        this.renderTasks.put(name, task);
+        return task;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "taskName"
+            ),
+            value = "model_part.new_entity")
+    public EntityTask newEntity(@LuaNotNil String name) {
+        EntityTask task = new EntityTask(name, owner, this);
         this.renderTasks.put(name, task);
         return task;
     }

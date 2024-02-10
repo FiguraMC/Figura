@@ -15,4 +15,8 @@ public interface LivingEntityAccessor {
     @Intrinsic
     @Invoker("getCurrentSwingDuration")
     int getSwingDuration();
+
+    @Intrinsic
+    @Invoker("updateWalkAnimation")
+    void invokeUpdateWalkAnimation(float distance);
 }
