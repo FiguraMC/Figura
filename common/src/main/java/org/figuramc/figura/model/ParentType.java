@@ -45,11 +45,12 @@ public enum ParentType {
     // Armor
     HelmetItemPivot(false, true,"HELMET_ITEM_PIVOT"),
     HelmetPivot(false, true, "HELMET_PIVOT", "HelmetPivot"),
-    ChestplatePivot(false, true, "CHESTPLATE_PIVOT", "ChestplatePivot"),
-    ElytraPivot(false, true, "ELYTRA_PIVOT", "ElytraPivot"),
+    ChestplatePivot(false, true, "CHESTPLATE_PIVOT", "ChestplatePivot", "ChestplateBodyPivot", "CHESTPLATE_BODY_PIVOT"),
+    LeftElytraPivot(false, true, "LEFT_ELYTRA_PIVOT", "LeftElytraPivot", "LeftWingPivot", "LEFT_WING_PIVOT"),
+    RightElytraPivot(false, true, "RIGHT_ELYTRA_PIVOT", "RightElytraPivot", "RightWingPivot", "RIGHT_WING_PIVOT"),
     LeftShoulderPivot(false, true, "LEFT_SHOULDER_PIVOT", "LeftShoulderPivot"),
     RightShoulderPivot(false, true, "RIGHT_SHOULDER_PIVOT", "RightShoulderPivot"),
-    LeggingsPivot(false, true, "LEGGINGS_PIVOT", "LeggingsPivot"),
+    LeggingsPivot(false, true, "LEGGINGS_PIVOT", "LeggingsPivot", "BeltPivot", "BELT_PIVOT"),
     LeftBootPivot(false, true, "LEFT_BOOT_PIVOT", "LeftBootPivot"),
     RightBootPivot(false, true, "RIGHT_BOOT_PIVOT", "RightBootPivot");
 

@@ -4,6 +4,8 @@ import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaFieldDoc;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 
+import java.util.Locale;
+
 @LuaWhitelist
 @LuaTypeDoc(
         name = "NameplateAPI",
@@ -34,7 +36,7 @@ public class NameplateAPI {
     @LuaWhitelist
     public Object __index(String arg) {
         if (arg == null) return null;
-        return switch (arg.toUpperCase()) {
+        return switch (arg.toUpperCase(Locale.US)) {
             case "CHAT" -> CHAT;
             case "ENTITY" -> ENTITY;
             case "LIST" -> LIST;

@@ -284,11 +284,11 @@ public class VanillaModelAPI {
         for (FiguraVanillaPart entrypoint : ENTRYPOINTS) {
             // prepare group
             List<VanillaModelPart> parts = new ArrayList<>();
-            String ID = entrypoint.getID().toUpperCase();
+            String ID = entrypoint.getID().toUpperCase(Locale.US);
 
             // Iterate over parts added by the current entrypoint
             for (Pair<String, Function<EntityModel<?>, ModelPart>> part : entrypoint.getParts()) {
-                String name = ID + "_" + part.getFirst().toUpperCase();
+                String name = ID + "_" + part.getFirst().toUpperCase(Locale.US);
                 VanillaModelPart model = new VanillaModelPart(owner, name, ParentType.None, part.getSecond());
                 allParts.put(name, model);
                 parts.add(model);
@@ -315,7 +315,7 @@ public class VanillaModelAPI {
     @LuaWhitelist
     public Object __index(String key) {
         if (key == null) return null;
-        return allParts.getOrDefault(key.toUpperCase(), null);
+        return allParts.getOrDefault(key.toUpperCase(Locale.US), null);
     }
 
     @Override
