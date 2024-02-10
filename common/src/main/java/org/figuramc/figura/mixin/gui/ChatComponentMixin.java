@@ -25,6 +25,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -94,7 +95,7 @@ public class ChatComponentMixin {
         for (Map.Entry<String, UUID> entry : players.entrySet()) {
             String name = entry.getKey();
 
-            if (!msgString.toLowerCase().contains(name.toLowerCase())) // player is not here
+            if (!msgString.toLowerCase(Locale.US).contains(name.toLowerCase(Locale.US))) // player is not here
                 continue;
 
             UUID uuid = entry.getValue();

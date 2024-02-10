@@ -26,6 +26,7 @@ import org.luaj.vm2.LuaError;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -395,7 +396,7 @@ public class SpriteTask extends RenderTask {
     )
     public SpriteTask setRenderType(@LuaNotNil String renderType) {
         try {
-            this.renderType = RenderTypes.valueOf(renderType.toUpperCase());
+            this.renderType = RenderTypes.valueOf(renderType.toUpperCase(Locale.US));
             return this;
         } catch (Exception ignored) {
             throw new LuaError("Illegal RenderType: \"" + renderType + "\".");

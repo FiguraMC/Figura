@@ -91,9 +91,9 @@ public enum RenderTypes {
 
         private static final BiFunction<ResourceLocation, Boolean, RenderType> CUTOUT_EMISSIVE_SOLID = Util.memoize(
                 (texture, affectsOutline) ->
-                        create("figura_cutout_emissive_solid", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, true,
+                        create("figura_cutout_emissive_solid", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 256, true, true,
                                 CompositeState.builder()
-                                        .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_EMISSIVE_SHADER)
+                                        .setShaderState(RenderStateShard.RENDERTYPE_BEACON_BEAM_SHADER)
                                         .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
                                         .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                                         .setCullState(NO_CULL)

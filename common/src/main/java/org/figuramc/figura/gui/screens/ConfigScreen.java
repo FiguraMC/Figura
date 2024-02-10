@@ -19,6 +19,7 @@ import org.figuramc.figura.utils.TextUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class ConfigScreen extends AbstractPanelScreen {
@@ -56,7 +57,7 @@ public class ConfigScreen extends AbstractPanelScreen {
         int width = Math.min(this.width - 8, 420);
         list = new ConfigList((this.width - width) / 2, 52, width, height - 80, this);
 
-        this.addRenderableWidget(new SearchBar(this.width / 2 - 122, 28, 244, 20, query -> list.updateSearch(query.toLowerCase())));
+        this.addRenderableWidget(new SearchBar(this.width / 2 - 122, 28, 244, 20, query -> list.updateSearch(query.toLowerCase(Locale.US))));
         this.addRenderableWidget(list);
 
         // -- bottom buttons -- // 

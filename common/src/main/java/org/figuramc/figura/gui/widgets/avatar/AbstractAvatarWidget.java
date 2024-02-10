@@ -19,6 +19,7 @@ import org.figuramc.figura.utils.ui.UIHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
+import java.util.Locale;
 
 public abstract class AbstractAvatarWidget extends AbstractContainerElement implements Comparable<AbstractAvatarWidget> {
 
@@ -115,7 +116,7 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
 
     public void update(LocalAvatarFetcher.AvatarPath path, String filter) {
         this.avatar = path;
-        this.filter = filter.toLowerCase();
+        this.filter = filter.toLowerCase(Locale.US);
     }
 
     public Component getName() {
@@ -135,7 +136,7 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
     }
 
     public boolean filtered() {
-        return this.getName().getString().toLowerCase().contains(filter.toLowerCase());
+        return this.getName().getString().toLowerCase(Locale.US).contains(filter.toLowerCase(Locale.US));
     }
 
     @Override
@@ -158,7 +159,7 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
             return 1;
 
         // then compare names
-        else return this.getName().getString().toLowerCase().compareTo(other.getName().getString().toLowerCase());
+        else return this.getName().getString().toLowerCase(Locale.US).compareTo(other.getName().getString().toLowerCase(Locale.US));
     }
 
     @Override

@@ -13,6 +13,7 @@ import org.figuramc.figura.gui.widgets.ParentedButton;
 import org.figuramc.figura.gui.widgets.lists.ConfigList;
 import org.figuramc.figura.utils.ui.UIHelper;
 
+import java.util.Locale;
 import java.util.Objects;
 
 public abstract class AbstractConfigElement extends AbstractContainerElement {
@@ -105,6 +106,6 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
     }
 
     public boolean matchesFilter() {
-        return config.name.getString().toLowerCase().contains(filter) || config.tooltip.getString().toLowerCase().contains(filter);
+        return config.name.getString().toLowerCase(Locale.US).contains(filter) || config.tooltip.getString().toLowerCase(Locale.US).contains(filter);
     }
 }
