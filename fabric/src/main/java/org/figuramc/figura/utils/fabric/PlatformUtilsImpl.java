@@ -36,7 +36,7 @@ public class PlatformUtilsImpl {
     }
 
     public static InputStream loadFileFromRoot(String path) throws FileNotFoundException {
-        File file = FabricLoader.getInstance().getModContainer(FiguraMod.MOD_ID).get().getPath(path).toFile();
+        File file = FabricLoader.getInstance().getModContainer(FiguraMod.MOD_ID).get().findPath(path).get().toFile();
         return new FileInputStream(file);
     }
 }

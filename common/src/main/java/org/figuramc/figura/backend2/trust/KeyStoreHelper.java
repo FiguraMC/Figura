@@ -2,15 +2,15 @@ package org.figuramc.figura.backend2.trust;
 
 import com.neovisionaries.ws.client.*;
 import net.minecraft.client.multiplayer.resolver.ServerAddress;
-import org.apache.http.ssl.SSLContextBuilder;
-import org.apache.http.ssl.SSLContexts;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.backend2.websocket.FiguraWebSocketAdapter;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.utils.PlatformUtils;
 
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -30,34 +30,21 @@ public class KeyStoreHelper {
     public static WebSocket websocketWithBackendCertificates(String token) throws WebSocketException {
         FiguraMod.LOGGER.info("Initializing custom websocket");
         try {
-            KeyStore keyStore = getKeyStore();
             WebSocketFactory wsFactory = new WebSocketFactory();
-            SSLContextBuilder contextBuilder = SSLContexts.custom();
-            contextBuilder.setProtocol("TLSv1.2");
-            contextBuilder.loadKeyMaterial(keyStore, password);
-            contextBuilder.loadTrustMaterial(keyStore, null);
-            SSLContext context = contextBuilder.build();
-            wsFactory.setSocketFactory(context.getSocketFactory());
-            wsFactory.setSSLSocketFactory(context.getSocketFactory());
-            wsFactory.setSSLContext(context);
             String serverName = ServerAddress.parseString(Configs.SERVER_IP.value).getHost();
             wsFactory.setServerName(serverName);
             WebSocket socket = wsFactory.createSocket(FiguraWebSocketAdapter.getBackendAddress());
             socket.addListener(new FiguraWebSocketAdapter(token));
-            socket.removeProtocol("TLSv1");
-            socket.removeProtocol("TLSv1.1");
-            socket.clearProtocols();
-            socket.addProtocol("TLSv1.2");
             socket.addExtension(WebSocketExtension.PERMESSAGE_DEFLATE);
             return socket;
-        } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException |
-                 UnrecoverableKeyException | KeyManagementException e) {
+        } catch (IOException e) {
             FiguraMod.LOGGER.error("Failed to load in the backend's certificates during Websocket creation!", e);
             NetworkStuff.disconnect("Failed to load certificates for the backend :c");
         }
         throw new WebSocketException(WebSocketError.SOCKET_CONNECT_ERROR);
     }
 
+    // Not needed on anything newer than Java 8
     // Derived from https://github.com/MinecraftForge/Installer/blob/1.x/src/main/java/net/minecraftforge/installer/FixSSL.java
     private static KeyStore getKeyStore() throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
         final KeyStore jdkKeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
