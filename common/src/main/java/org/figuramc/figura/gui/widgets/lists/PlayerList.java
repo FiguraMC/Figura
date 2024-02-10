@@ -168,7 +168,7 @@ public class PlayerList extends AbstractList {
             Avatar avatar = AvatarManager.getAvatarForPlayer(uuid);
 
             // filter check
-            if ((!name.toLowerCase().contains(filter.toLowerCase()) && !uuid.toString().contains(filter.toLowerCase())) || (showFigura.isToggled() && !FiguraMod.isLocal(uuid) && (avatar == null || avatar.nbt == null)))
+            if ((!name.toLowerCase(Locale.US).contains(filter.toLowerCase(Locale.US)) && !uuid.toString().contains(filter.toLowerCase(Locale.US))) || (showFigura.isToggled() && !FiguraMod.isLocal(uuid) && (avatar == null || avatar.nbt == null)))
                 continue;
 
             // player is not missing

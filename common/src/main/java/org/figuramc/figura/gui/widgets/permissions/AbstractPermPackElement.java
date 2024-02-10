@@ -12,6 +12,8 @@ import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.MathUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
 
+import java.util.Locale;
+
 public class AbstractPermPackElement extends Button implements Comparable<AbstractPermPackElement>, FiguraWidget {
 
     protected final PlayerList parent;
@@ -102,7 +104,7 @@ public class AbstractPermPackElement extends Button implements Comparable<Abstra
                     return  1;
 
                 // and then compare names
-                return player1.getName().toLowerCase().compareTo(player2.getName().toLowerCase());
+                return player1.getName().toLowerCase(Locale.US).compareTo(player2.getName().toLowerCase(Locale.US));
             }
         }
 

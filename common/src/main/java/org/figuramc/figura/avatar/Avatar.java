@@ -1044,7 +1044,7 @@ public class Avatar {
                 Animation.LoopMode loop = Animation.LoopMode.ONCE;
                 if (animNbt.contains("loop")) {
                     try {
-                        loop = Animation.LoopMode.valueOf(animNbt.getString("loop").toUpperCase());
+                        loop = Animation.LoopMode.valueOf(animNbt.getString("loop").toUpperCase(Locale.US));
                     } catch (Exception ignored) {}
                 }
 

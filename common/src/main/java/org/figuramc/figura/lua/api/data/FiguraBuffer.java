@@ -17,6 +17,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Locale;
 import java.util.Stack;
 
 @LuaWhitelist
@@ -233,7 +234,7 @@ public class FiguraBuffer implements AutoCloseable {
     public String readString(Integer length, String encoding) {
         checkIsClosed();
         length = length == null ? available() : Math.max(length, 0);
-        Charset charset = encoding == null ? StandardCharsets.UTF_8 : switch (encoding.toLowerCase()) {
+        Charset charset = encoding == null ? StandardCharsets.UTF_8 : switch (encoding.toLowerCase(Locale.US)) {
             case "utf_16", "utf16" -> StandardCharsets.UTF_16;
             case "utf_16be", "utf16be" -> StandardCharsets.UTF_16BE;
             case "utf_16le", "utf16le" -> StandardCharsets.UTF_16LE;
@@ -523,7 +524,7 @@ public class FiguraBuffer implements AutoCloseable {
     )
     public int writeString(@LuaNotNil String val, String encoding) {
         checkIsClosed();
-        Charset charset = encoding == null ? StandardCharsets.UTF_8 : switch (encoding.toLowerCase()) {
+        Charset charset = encoding == null ? StandardCharsets.UTF_8 : switch (encoding.toLowerCase(Locale.US)) {
             case "utf_16", "utf16" -> StandardCharsets.UTF_16;
             case "utf_16be", "utf16be" -> StandardCharsets.UTF_16BE;
             case "utf_16le", "utf16le" -> StandardCharsets.UTF_16LE;

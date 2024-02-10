@@ -114,9 +114,9 @@ public class EventsAPI {
         events.put("RESOURCE_RELOAD", RESOURCE_RELOAD);
 
         for (FiguraEvent entrypoint : ENTRYPOINTS) {
-            String ID = entrypoint.getID().toUpperCase();
+            String ID = entrypoint.getID().toUpperCase(Locale.US);
             for (Pair<String, LuaEvent> event : entrypoint.getEvents()) {
-                String name = ID + "." + event.getFirst().toUpperCase();
+                String name = ID + "." + event.getFirst().toUpperCase(Locale.US);
                 events.put(name, event.getSecond());
             }
         }
@@ -141,12 +141,12 @@ public class EventsAPI {
     ))
     public LuaEvent __index(String key) {
         if (key == null) return null;
-        return events.get(key.toUpperCase());
+        return events.get(key.toUpperCase(Locale.US));
     }
 
     @LuaWhitelist
     public void __newindex(@LuaNotNil String key, LuaFunction func) {
-        LuaEvent event = __index(key.toUpperCase());
+        LuaEvent event = __index(key.toUpperCase(Locale.US));
         if (event != null)
             event.register(func, null);
         else throw new LuaError("Cannot assign value on key \"" + key + "\"");

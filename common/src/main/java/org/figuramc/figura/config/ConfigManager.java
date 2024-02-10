@@ -9,10 +9,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class ConfigManager {
 
@@ -41,7 +38,7 @@ public final class ConfigManager {
                     update(json, version.getAsInt());
                 } else {
                     for (ConfigType<?> config : REGISTRY) {
-                        JsonElement object = json.get(config.id.toLowerCase());
+                        JsonElement object = json.get(config.id.toLowerCase(Locale.US));
                         if (object == null)
                             continue;
                         if (config instanceof ConfigType.SerializableConfig s) {

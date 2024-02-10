@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 
 @LuaWhitelist
 @LuaTypeDoc(name = "FileAPI", value = "file")
@@ -168,7 +169,7 @@ public class FileAPI {
     public String readString(@LuaNotNil String path, String encoding) {
         try (FiguraInputStream fis = openReadStream(path)) {
             byte[] data = fis.readAllBytes();
-            Charset charset = encoding == null ? StandardCharsets.UTF_8 : switch (encoding.toLowerCase()) {
+            Charset charset = encoding == null ? StandardCharsets.UTF_8 : switch (encoding.toLowerCase(Locale.US)) {
                 case "utf_16", "utf16" -> StandardCharsets.UTF_16;
                 case "utf_16be", "utf16be" -> StandardCharsets.UTF_16BE;
                 case "utf_16le", "utf16le" -> StandardCharsets.UTF_16LE;
@@ -192,7 +193,7 @@ public class FileAPI {
     )
     public void writeString(@LuaNotNil String path, @LuaNotNil String data, String encoding) {
         try (FiguraOutputStream fos = openWriteStream(path)) {
-            Charset charset = encoding == null ? StandardCharsets.UTF_8 : switch (encoding.toLowerCase()) {
+            Charset charset = encoding == null ? StandardCharsets.UTF_8 : switch (encoding.toLowerCase(Locale.US)) {
                 case "utf_16", "utf16" -> StandardCharsets.UTF_16;
                 case "utf_16be", "utf16be" -> StandardCharsets.UTF_16BE;
                 case "utf_16le", "utf16le" -> StandardCharsets.UTF_16LE;

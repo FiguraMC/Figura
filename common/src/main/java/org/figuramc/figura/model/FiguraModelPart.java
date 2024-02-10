@@ -24,10 +24,7 @@ import org.figuramc.figura.utils.LuaUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
 import org.luaj.vm2.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @LuaWhitelist
@@ -675,7 +672,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     )
     public FiguraModelPart setPrimaryRenderType(String type) {
         try {
-            this.customization.setPrimaryRenderType(type == null ? null : RenderTypes.valueOf(type.toUpperCase()));
+            this.customization.setPrimaryRenderType(type == null ? null : RenderTypes.valueOf(type.toUpperCase(Locale.US)));
             return this;
         } catch (Exception ignored) {
             throw new LuaError("Illegal RenderType: \"" + type + "\".");
@@ -693,7 +690,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     )
     public FiguraModelPart setSecondaryRenderType(String type) {
         try {
-            this.customization.setSecondaryRenderType(type == null ? null : RenderTypes.valueOf(type.toUpperCase()));
+            this.customization.setSecondaryRenderType(type == null ? null : RenderTypes.valueOf(type.toUpperCase(Locale.US)));
             return this;
         } catch (Exception ignored) {
             throw new LuaError("Illegal RenderType: \"" + type + "\".");
@@ -799,7 +796,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             if (type == null) {
                 overrideType = FiguraTextureSet.OverrideType.PRIMARY;
             } else {
-                 overrideType = FiguraTextureSet.OverrideType.valueOf(type.toUpperCase());
+                 overrideType = FiguraTextureSet.OverrideType.valueOf(type.toUpperCase(Locale.US));
             }
             checkTexture(overrideType, x);
             this.customization.primaryTexture = type == null ? null : new TextureCustomization(overrideType, x);
@@ -834,7 +831,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             if (type == null) {
                 overrideType = FiguraTextureSet.OverrideType.SECONDARY;
             } else {
-                overrideType = FiguraTextureSet.OverrideType.valueOf(type.toUpperCase());
+                overrideType = FiguraTextureSet.OverrideType.valueOf(type.toUpperCase(Locale.US));
             }
             checkTexture(overrideType, x);
             this.customization.secondaryTexture = type == null ? null : new TextureCustomization(overrideType, x);

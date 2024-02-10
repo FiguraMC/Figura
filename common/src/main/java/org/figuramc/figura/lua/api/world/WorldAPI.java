@@ -385,7 +385,7 @@ public class WorldAPI {
 
         Heightmap.Types heightmapType;
         try {
-            heightmapType = heightmap != null ? Heightmap.Types.valueOf(heightmap.toUpperCase()) : Heightmap.Types.MOTION_BLOCKING;
+            heightmapType = heightmap != null ? Heightmap.Types.valueOf(heightmap.toUpperCase(Locale.US)) : Heightmap.Types.MOTION_BLOCKING;
         } catch (IllegalArgumentException e) {
             throw new LuaError("Invalid heightmap type provided");
         }
