@@ -79,7 +79,7 @@ public class ConfigAPI {
         }
     }
 
-    private void writeWithRetries(Path path, byte[] data, int retries) {
+    private void writeWithRetries(Path path, byte[] data, int retries) throws Exception {
         try (OutputStream fs = Files.newOutputStream(path)) {
 
         } catch (Exception e) {
