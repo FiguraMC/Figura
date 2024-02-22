@@ -79,7 +79,7 @@ public class ConfigAPI {
         }
     }
 
-    private void writeWithRetries(String path, byte[] data, int retries) {
+    private void writeWithRetries(Path path, byte[] data, int retries) {
         try (OutputStream fs = Files.newOutputStream(path)) {
 
         } catch (Exception e) {
@@ -107,7 +107,7 @@ public class ConfigAPI {
             writeWithRetries(path, GSON.toJson(root).getBytes(), 5);
         } catch (Exception e) {
             FiguraMod.LOGGER.error("", e);
-            throw new LuaError("Really failed to save avatar data file: " + e);
+            throw new LuaError("Failed to save avatar data file: " + e);
         }
     }
 
