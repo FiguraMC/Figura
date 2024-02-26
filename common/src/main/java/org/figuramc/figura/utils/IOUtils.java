@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,7 +34,7 @@ public class IOUtils {
 
             if (Files.isDirectory(child))
                 result.addAll(getFilesByExtension(child, extension));
-            else if (child.toString().toLowerCase().endsWith(extension.toLowerCase()))
+            else if (child.toString().toLowerCase(Locale.US).endsWith(extension.toLowerCase(Locale.US)))
                 result.add(child);
         }
         return result;

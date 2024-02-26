@@ -312,16 +312,24 @@ public class FiguraTexture extends SimpleTexture {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
-                    argumentTypes = {Integer.class, Integer.class, Integer.class, Integer.class, FiguraMat4.class},
-                    argumentNames = {"x", "y", "width", "height", "matrix"}
+                    argumentTypes = {Integer.class, Integer.class, Integer.class, Integer.class, FiguraMat4.class, Boolean.class},
+                    argumentNames = {"x", "y", "width", "height", "matrix", "clip"}
             ),
             value = "texture.apply_matrix"
     )
-    public FiguraTexture applyMatrix(int x, int y, int width, int height, @LuaNotNil FiguraMat4 matrix) {
+    public FiguraTexture applyMatrix(int x, int y, int width, int height, @LuaNotNil FiguraMat4 matrix, boolean clip) {
         for (int i = y; i < y + height; i++) {
             for (int j = x; j < x + width; j++) {
                 FiguraVec4 color = getPixel(j, i);
                 color.transform(matrix);
+
+                if (clip) {
+                    color.x = Math.max(0, Math.min(color.x, 1));
+                    color.y = Math.max(0, Math.min(color.y, 1));
+                    color.z = Math.max(0, Math.min(color.z, 1));
+                    color.w = Math.max(0, Math.min(color.w, 1));
+                }
+
                 setPixel(j, i, color, null, null, null);
             }
         }

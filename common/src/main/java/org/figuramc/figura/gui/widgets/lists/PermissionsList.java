@@ -116,7 +116,7 @@ public class PermissionsList extends AbstractList {
             int lineHeight = Minecraft.getInstance().font.lineHeight;
 
             GuiEventListener widget;
-            String text = id + ".permissions.value." + permissions.name.toLowerCase();
+            String text = id + ".permissions.value." + permissions.name.toLowerCase(Locale.US);
             if (!permissions.isToggle) {
                 if (!precise)
                     widget = new PermissionSlider(x + 8, y, width - 30, 11 + lineHeight, container, permissions, this, id, text);

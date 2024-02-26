@@ -109,8 +109,6 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
     @Unique
     private void figura$tryRenderArmorPart(EquipmentSlot slot, FiguraArmorPartRenderer<T, M, A> renderer, PoseStack vanillaPoseStack, T entity, MultiBufferSource vertexConsumers, int light, ParentType... parentTypes) {
         if (slot == null) return; // ?
-        VanillaPart part = RenderUtils.partFromSlot(figura$avatar, slot);
-        if (figura$avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1 && part != null && !part.checkVisible()) return;
 
         ItemStack itemStack = entity.getItemBySlot(slot);
 
@@ -134,12 +132,18 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
             armorModel.rightArm.z = 0.0f;
 
             boolean allFailed = true;
+            VanillaPart mainPart = RenderUtils.partFromSlot(figura$avatar, slot);
+            if (figura$avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1 && mainPart != null && !mainPart.checkVisible()) return;
 
             // Don't render armor if GeckoLib is already doing the rendering
             if (!GeckoLibCompat.armorHasCustomModel(itemStack)) {
                 // Go through each parent type needed to render the current piece of armor
                 for (ParentType parentType : parentTypes) {
-                            // Try to render the pivot part
+                        // Skip the part if it's hidden
+                        VanillaPart part = RenderUtils.pivotToPart(figura$avatar, parentType);
+                        if (figura$avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1 && part != null && !part.checkVisible()) continue;
+
+                        // Try to render the pivot part
                         boolean renderedPivot = figura$avatar.pivotPartRender(parentType, stack -> {
                                 stack.pushPose();
                                 figura$prepareArmorRender(stack);

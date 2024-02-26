@@ -21,7 +21,10 @@
     "MinecraftMixin",
     "ReloadableResourceManagerMixin",
     "SkullBlockEntityAccessor",
+    "SNIHelperMixin",
     "TextDisplayMixin",
+    "compat.GeckolibGeoArmorRendererMixin",
+    "compat.GeckolibGeoRendererMixin",
     "compat.SimpleVCMixin",
     "font.BakedGlyphMixin",
     "font.BitmapGlyphMixin",
@@ -87,12 +90,11 @@
     "render.renderers.SignRendererMixin",
     "render.renderers.SkullBlockRendererMixin",
     "render.renderers.TridentRendererMixin",
+    "render.PoseStackAccessor",
     "sound.ChannelHandleMixin",
     "sound.SoundEngineMixin",
     "sound.SoundManagerAccessor",
-    "sound.SubtitleOverlayMixin",
-    "compat.GeckolibGeoRendererMixin",
-    "compat.GeckolibGeoArmorRendererMixin"
+    "sound.SubtitleOverlayMixin"
   ],
   "server": [
   ],

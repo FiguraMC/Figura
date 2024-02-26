@@ -14,6 +14,7 @@ import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.TextUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
 
+import java.util.Locale;
 import java.util.function.Consumer;
 
 public class TextField extends AbstractContainerElement {
@@ -168,7 +169,7 @@ public class TextField extends AbstractContainerElement {
         private final Component hint;
 
         HintType() {
-            this.hint = FiguraText.of("gui.text_hint." + this.name().toLowerCase());
+            this.hint = FiguraText.of("gui.text_hint." + this.name().toLowerCase(Locale.US));
         }
     }
 }

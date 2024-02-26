@@ -22,10 +22,7 @@ import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
 import org.figuramc.figura.model.rendering.texture.RenderTypes;
 import org.figuramc.figura.utils.MathUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Take the reading code out of FiguraModelPart itself, since that class
@@ -137,7 +134,7 @@ public class FiguraModelPartReader {
                         float time = keyframeNbt.getFloat("time");
                         Interpolation interpolation;
                         try {
-                            interpolation = Interpolation.valueOf(keyframeNbt.getString("int").toUpperCase());
+                            interpolation = Interpolation.valueOf(keyframeNbt.getString("int").toUpperCase(Locale.US));
                         } catch (Exception e) {
                             FiguraMod.LOGGER.error("Invalid interpolation type in the model {}, something is wrong with this model!", keyframeNbt.getString("int"));
                             FiguraMod.LOGGER.error("", e);
