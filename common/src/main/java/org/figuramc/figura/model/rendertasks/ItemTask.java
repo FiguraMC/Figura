@@ -19,6 +19,8 @@ import org.figuramc.figura.model.FiguraModelPart;
 import org.figuramc.figura.utils.LuaUtils;
 import org.luaj.vm2.LuaError;
 
+import java.util.Locale;
+
 @LuaWhitelist
 @LuaTypeDoc(
         name = "ItemTask",
@@ -109,7 +111,7 @@ public class ItemTask extends RenderTask {
     )
     public ItemTask setDisplayMode(@LuaNotNil String mode) {
         try {
-            this.displayMode = ItemDisplayContext.valueOf(mode.toUpperCase());
+            this.displayMode = ItemDisplayContext.valueOf(mode.toUpperCase(Locale.US));
             this.left = this.displayMode == ItemDisplayContext.FIRST_PERSON_LEFT_HAND || this.displayMode == ItemDisplayContext.THIRD_PERSON_LEFT_HAND;
             return this;
         } catch (Exception ignored) {

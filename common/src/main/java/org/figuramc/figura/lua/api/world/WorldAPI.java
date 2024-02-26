@@ -217,6 +217,21 @@ public class WorldAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
+        overloads = {
+            @LuaMethodOverload,
+            @LuaMethodOverload(
+                argumentTypes = Double.class,
+                argumentNames = "delta"
+            )
+        },
+        value = "world.get_time_of_day"
+    )
+    public static double getTimeOfDay(double delta) {
+        return getCurrentWorld().getDayTime() + delta;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
             overloads = {
                     @LuaMethodOverload,
                     @LuaMethodOverload(
@@ -224,10 +239,25 @@ public class WorldAPI {
                             argumentNames = "delta"
                     )
             },
-            value = "world.get_time_of_day"
+            value = "world.get_day_time"
     )
-    public static double getTimeOfDay(double delta) {
-        return getCurrentWorld().getDayTime() + delta;
+    public static double getDayTime(double delta) {
+        return (getCurrentWorld().getDayTime() + delta) % 24000;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
+                            argumentTypes = Double.class,
+                            argumentNames = "delta"
+                    )
+            },
+            value = "world.get_day"
+    )
+    public static double getDay(double delta) {
+        return Math.floor((getCurrentWorld().getDayTime() + delta) / 24000);
     }
 
     @LuaWhitelist
@@ -355,7 +385,7 @@ public class WorldAPI {
 
         Heightmap.Types heightmapType;
         try {
-            heightmapType = heightmap != null ? Heightmap.Types.valueOf(heightmap.toUpperCase()) : Heightmap.Types.MOTION_BLOCKING;
+            heightmapType = heightmap != null ? Heightmap.Types.valueOf(heightmap.toUpperCase(Locale.US)) : Heightmap.Types.MOTION_BLOCKING;
         } catch (IllegalArgumentException e) {
             throw new LuaError("Invalid heightmap type provided");
         }

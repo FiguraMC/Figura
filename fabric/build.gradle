@@ -26,9 +26,9 @@ dependencies {
     }
 
     // Libraries
-    include(implementation("com.github.FiguraMC.LuaJ:luaj-core:$luaj-figura"))
-    include(implementation("com.github.FiguraMC.LuaJ:luaj-jse:$luaj-figura"))
-    include(implementation("org.java-websocket:Java-WebSocket:$websocket"))
+    include(implementation("com.github.FiguraMC.luaJ:luaj-core:$luaj-figura"))
+    include(implementation("com.github.FiguraMC.luaJ:luaj-jse:$luaj-figura"))
+    include(implementation("com.neovisionaries:nv-websocket-client:$nv_websocket"))
 
     if(rootProject.run_on_quilt == "false") {
         modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"

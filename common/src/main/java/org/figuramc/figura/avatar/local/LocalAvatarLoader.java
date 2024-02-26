@@ -264,7 +264,7 @@ public class LocalAvatarLoader {
                         BlockbenchModelParser.parseParent(name, subfolder);
                         children.add(subfolder);
                     }
-                } else if (file.toString().toLowerCase().endsWith(".bbmodel")) {
+                } else if (file.toString().toLowerCase(Locale.US).endsWith(".bbmodel")) {
                     BlockbenchModelParser.ModelData data = parser.parseModel(avatarFolder, file, IOUtils.readFile(file), name.substring(0, name.length() - 8), folders);
                     children.add(data.modelNbt());
                     animations.addAll(data.animationList());
@@ -373,7 +373,7 @@ public class LocalAvatarLoader {
     }
 
     public static String getLoadState() {
-        return loadState.name().toLowerCase();
+        return loadState.name().toLowerCase(Locale.US);
     }
 
     public static String getLoadError() {

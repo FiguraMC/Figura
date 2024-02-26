@@ -8,8 +8,10 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.item.Item;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.ducks.GeckolibGeoArmorAccessor;
+import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.permissions.Permissions;
+import org.figuramc.figura.utils.RenderUtils;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -103,11 +105,16 @@ public interface GeckolibGeoRendererMixin<T extends GeoAnimatable> {
         }
     }
 
-    // Returns the true if the pivot failed to render to match HumanoidArmorLayerMixin
+    // Returns true if the pivot failed to render, false if it was successful to match HumanoidArmorLayerMixin
     @Unique
     default boolean figura$renderPivot(GeoArmorRenderer armorRenderer, Avatar avatar, ParentType parentType, GeoAnimatable geoAnimatable, GeoBone geoBone, RenderType renderType, MultiBufferSource multiBufferSource, VertexConsumer vertexConsumer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         if (geoBone == null)
             return true;
+
+        // Returns successfully but skips rendering if the part is hidden
+        VanillaPart part = RenderUtils.pivotToPart(avatar, parentType);
+        if (avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1 && part != null && !part.checkVisible())
+            return false;
 
         return !avatar.pivotPartRender(parentType, stack -> {
             geoBone.setRotX(0);

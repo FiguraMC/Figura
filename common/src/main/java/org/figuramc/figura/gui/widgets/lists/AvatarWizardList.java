@@ -17,10 +17,7 @@ import org.figuramc.figura.utils.ui.UIHelper;
 import org.figuramc.figura.wizards.AvatarWizard;
 import org.figuramc.figura.wizards.WizardEntry;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AvatarWizardList extends AbstractList {
 
@@ -128,7 +125,7 @@ public class AvatarWizardList extends AbstractList {
                         children.addAll(lastList);
                     }
 
-                    lastName = FiguraText.of("gui.avatar_wizard." + value.name.toLowerCase());
+                    lastName = FiguraText.of("gui.avatar_wizard." + value.name.toLowerCase(Locale.US));
                     lastList = new ArrayList<>();
                 }
                 case TEXT -> lastList.add(new WizardInputBox(x, width, this, value));
@@ -150,7 +147,7 @@ public class AvatarWizardList extends AbstractList {
             super(x, 0, width, 20, HintType.ANY, s -> parent.wizard.changeEntry(entry, s));
             this.parent = parent;
             this.entry = entry;
-            this.name = FiguraText.of("gui.avatar_wizard." + entry.name.toLowerCase());
+            this.name = FiguraText.of("gui.avatar_wizard." + entry.name.toLowerCase(Locale.US));
             this.getField().setValue(String.valueOf(parent.wizard.getEntry(entry, "")));
         }
 
@@ -178,7 +175,7 @@ public class AvatarWizardList extends AbstractList {
         private final WizardEntry entry;
 
         public WizardToggleButton(int x, int width, AvatarWizardList parent, WizardEntry entry) {
-            super(x, 0, width, 20, FiguraText.of("gui.avatar_wizard." + entry.name.toLowerCase()), false);
+            super(x, 0, width, 20, FiguraText.of("gui.avatar_wizard." + entry.name.toLowerCase(Locale.US)), false);
             this.parent = parent;
             this.entry = entry;
             this.setToggled((boolean) parent.wizard.getEntry(entry, false));

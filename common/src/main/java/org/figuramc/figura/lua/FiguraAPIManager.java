@@ -87,6 +87,7 @@ public class FiguraAPIManager {
         add(RenderTask.class);
         add(ItemTask.class);
         add(BlockTask.class);
+        add(EntityTask.class);
         add(TextTask.class);
         add(SpriteTask.class);
 

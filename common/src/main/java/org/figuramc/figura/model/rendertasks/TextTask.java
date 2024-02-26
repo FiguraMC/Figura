@@ -26,6 +26,7 @@ import org.joml.Matrix4f;
 import org.luaj.vm2.LuaError;
 
 import java.util.List;
+import java.util.Locale;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -169,7 +170,7 @@ public class TextTask extends RenderTask {
     )
     public TextTask setAlignment(@LuaNotNil String alignment) {
         try {
-            this.alignment = TextUtils.Alignment.valueOf(alignment.toUpperCase());
+            this.alignment = TextUtils.Alignment.valueOf(alignment.toUpperCase(Locale.US));
         } catch (Exception ignored) {
             throw new LuaError("Invalid alignment type \"" + alignment + "\"");
         }
