@@ -14,10 +14,7 @@ import org.figuramc.figura.utils.NbtType;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -263,8 +260,8 @@ public class LocalAvatarFetcher {
         }
 
         public boolean search(String query) {
-            String q = query.toLowerCase();
-            return this.getName().toLowerCase().contains(q) || IOUtils.getFileNameOrEmpty(path).contains(q);
+            String q = query.toLowerCase(Locale.US);
+            return this.getName().toLowerCase(Locale.US).contains(q) || IOUtils.getFileNameOrEmpty(path).contains(q);
         }
 
         public Path getPath() {

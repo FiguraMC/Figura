@@ -11,7 +11,7 @@ public interface FiguraVanillaPart {
 
     /**
      * @return a string of this mod's ID, case-insensitive
-     * the ID will be used in the parts name, to avoid conflicts with other mods
+     * the ID will be used in the part's name, to avoid conflicts with other mods
      * a group of all the parts will be generated with the ID as name, and added into the "ALL" group
      */
     String getID();

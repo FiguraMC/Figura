@@ -2,6 +2,7 @@ package org.figuramc.figura.lua.api;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -87,7 +88,7 @@ public class RaycastAPI {
 
         ClipContext.Block blockContext;
         try{
-            blockContext = blockCastType != null ? ClipContext.Block.valueOf(blockCastType.toUpperCase()) : ClipContext.Block.COLLIDER;
+            blockContext = blockCastType != null ? ClipContext.Block.valueOf(blockCastType.toUpperCase(Locale.US)) : ClipContext.Block.COLLIDER;
         }
         catch(IllegalArgumentException e){
             throw new LuaError("Invalid blockRaycastType provided");
@@ -95,7 +96,7 @@ public class RaycastAPI {
 
         ClipContext.Fluid fluidContext;
         try{
-            fluidContext = fluidCastType != null ? ClipContext.Fluid.valueOf(fluidCastType.toUpperCase()) : ClipContext.Fluid.NONE;
+            fluidContext = fluidCastType != null ? ClipContext.Fluid.valueOf(fluidCastType.toUpperCase(Locale.US)) : ClipContext.Fluid.NONE;
         }
         catch(IllegalArgumentException e){
             throw new LuaError("Invalid fluidRaycastType provided");

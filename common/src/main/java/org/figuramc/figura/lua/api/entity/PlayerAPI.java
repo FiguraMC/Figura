@@ -22,6 +22,7 @@ import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 @LuaWhitelist
@@ -88,7 +89,7 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
     @LuaMethodDoc("player.get_model_type")
     public String getModelType() {
         checkEntity();
-        return (checkPlayerInfo() ? playerInfo.getModelName() : DefaultPlayerSkin.getSkinModelName(entity.getUUID())).toUpperCase();
+        return (checkPlayerInfo() ? playerInfo.getModelName() : DefaultPlayerSkin.getSkinModelName(entity.getUUID())).toUpperCase(Locale.US);
     }
 
     @LuaWhitelist
@@ -99,7 +100,7 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
             return null;
 
         GameType gamemode = playerInfo.getGameMode();
-        return gamemode == null ? null : gamemode.getName().toUpperCase();
+        return gamemode == null ? null : gamemode.getName().toUpperCase(Locale.US);
     }
 
     @LuaWhitelist
@@ -129,7 +130,7 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
         try {
             if (part.equalsIgnoreCase("left_pants") || part.equalsIgnoreCase("right_pants"))
                 part += "_leg";
-            return entity.isModelPartShown(PlayerModelPart.valueOf(part.toUpperCase()));
+            return entity.isModelPartShown(PlayerModelPart.valueOf(part.toUpperCase(Locale.US)));
         } catch (Exception ignored) {
             throw new LuaError("Invalid player model part: " + part);
         }

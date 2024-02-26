@@ -3,10 +3,9 @@ package org.figuramc.figura.model.rendertasks;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.world.item.ItemStack;
-import org.figuramc.figura.model.FiguraModelPart;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
@@ -15,11 +14,13 @@ import org.figuramc.figura.lua.api.world.WorldAPI;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
+import org.figuramc.figura.model.FiguraModelPart;
 import org.figuramc.figura.model.PartCustomization;
 import org.figuramc.figura.utils.LuaUtils;
 import org.luaj.vm2.LuaError;
 
 import java.util.Random;
+import java.util.Locale;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -63,7 +64,7 @@ public class ItemTask extends RenderTask {
         return super.shouldRender() && item != null && !item.isEmpty();
     }
 
-    // -- lua -- //
+    // -- lua -- // 
 
 
     @LuaWhitelist
@@ -111,7 +112,7 @@ public class ItemTask extends RenderTask {
     )
     public ItemTask setDisplayMode(@LuaNotNil String mode) {
         try {
-            this.displayMode = ItemTransforms.TransformType.valueOf(mode.toUpperCase());
+            this.displayMode = ItemTransforms.TransformType.valueOf(mode.toUpperCase(Locale.US));
             this.left = this.displayMode == ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND || this.displayMode == ItemTransforms.TransformType.THIRD_PERSON_LEFT_HAND;
             return this;
         } catch (Exception ignored) {

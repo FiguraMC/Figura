@@ -3,10 +3,7 @@ package org.figuramc.figura.entries.forge;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.ModFileScanData;
 import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.entries.annotations.FiguraAPIPlugin;
-import org.figuramc.figura.entries.annotations.FiguraPermissionsPlugin;
-import org.figuramc.figura.entries.annotations.FiguraScreenPlugin;
-import org.figuramc.figura.entries.annotations.FiguraVanillaPartPlugin;
+import org.figuramc.figura.entries.annotations.*;
 import org.objectweb.asm.Type;
 
 import java.lang.reflect.Constructor;
@@ -20,6 +17,7 @@ public class EntryPointManagerImpl {
         nameToAnnotationClass.put("figura_permissions", FiguraPermissionsPlugin.class);
         nameToAnnotationClass.put("figura_screen", FiguraScreenPlugin.class);
         nameToAnnotationClass.put("figura_vanilla_part", FiguraVanillaPartPlugin.class);
+        nameToAnnotationClass.put("figura_event", FiguraEventPlugin.class);
     }
 
     public static <T> Set<T> load(String name, Class<T> clazz) {

@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 
 @LuaWhitelist
 @LuaTypeDoc(name = "FileAPI", value = "file")
@@ -174,7 +175,7 @@ public class FileAPI {
             if (encoding == null)
                 charset = StandardCharsets.UTF_8;
             else
-                switch (encoding.toLowerCase()) {
+                switch (encoding.toLowerCase(Locale.US)) {
                     case "utf_16":
                     case "utf16":
                         charset = StandardCharsets.UTF_16;
@@ -219,7 +220,7 @@ public class FileAPI {
             if (encoding == null)
                 charset = StandardCharsets.UTF_8;
             else
-                switch (encoding.toLowerCase()) {
+                switch (encoding.toLowerCase(Locale.US)) {
                     case "utf_16":
                     case "utf16":
                         charset = StandardCharsets.UTF_16;

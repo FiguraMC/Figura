@@ -17,6 +17,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Stack;
 
@@ -238,7 +239,7 @@ public class FiguraBuffer implements AutoCloseable {
         if (encoding == null)
             charset = StandardCharsets.UTF_8;
         else
-            switch (encoding.toLowerCase()) {
+            switch (encoding.toLowerCase(Locale.US)) {
                 case "utf_16":
                 case "utf16":
                     charset = StandardCharsets.UTF_16;
@@ -549,7 +550,7 @@ public class FiguraBuffer implements AutoCloseable {
         if (encoding == null)
             charset = StandardCharsets.UTF_8;
         else
-            switch (encoding.toLowerCase()) {
+            switch (encoding.toLowerCase(Locale.US)) {
                 case "utf_16":
                 case "utf16":
                     charset = StandardCharsets.UTF_16;
@@ -573,7 +574,6 @@ public class FiguraBuffer implements AutoCloseable {
                     charset = StandardCharsets.UTF_8;
                     break;
             }
-
         byte[] strBytes = val.getBytes(charset);
         writeBytes(strBytes);
         return strBytes.length;

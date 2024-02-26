@@ -327,7 +327,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                     FiguraMod.popPushProfiler("renderTasks");
                     int light = peek.light;
                     int overlay = peek.overlay;
-                    allowSkullRendering = false;
+                    interceptRendersIntoFigura = false;
                     for (RenderTask task : part.renderTasks.values()) {
                         if (!task.shouldRender())
                             continue;
@@ -339,7 +339,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                         remainingComplexity[0] -= neededComplexity;
                         FiguraMod.popProfiler();
                     }
-                    allowSkullRendering = true;
+                    interceptRendersIntoFigura = true;
                 }
 
                 // render pivot parts

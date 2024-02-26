@@ -35,8 +35,8 @@ dependencies {
     }
 
     // Libraries
-    shadowCommon(forgeRuntimeLibrary("com.github.FiguraMC.LuaJ:luaj-core:$luaj-figura"))
-    shadowCommon(forgeRuntimeLibrary("com.github.FiguraMC.LuaJ:luaj-jse:$luaj-figura"))
+    shadowCommon(forgeRuntimeLibrary("com.github.FiguraMC.luaJ:luaj-core:$luaj-figura"))
+    shadowCommon(forgeRuntimeLibrary("com.github.FiguraMC.luaJ:luaj-jse:$luaj-figura"))
     shadowCommon(forgeRuntimeLibrary("com.neovisionaries:nv-websocket-client:$nv_websocket"))
 
     forge "net.minecraftforge:forge:${rootProject.forge_version}"

@@ -17,6 +17,7 @@ import org.figuramc.figura.utils.TextUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
 
 import java.util.BitSet;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,7 +42,7 @@ public class Badges {
         Avatar avatar = AvatarManager.getAvatarForPlayer(id);
         if (avatar != null) {
 
-            // -- loading -- //
+            // -- loading -- // 
 
             if (!avatar.loaded)
                 badges.append(new TextComponent(Integer.toHexString(Math.abs(FiguraMod.ticks) % 16)));
@@ -82,7 +83,7 @@ public class Badges {
                     MutableComponent badge = System.PERMISSIONS.badge.copy();
                     MutableComponent desc = System.PERMISSIONS.desc.copy().append("\n");
                     for (Permissions t : avatar.noPermissions)
-                        desc.append("\n• ").append(new FiguraText("badges.no_permissions." + t.name.toLowerCase()));
+                        desc.append("\n• ").append(new FiguraText("badges.no_permissions." + t.name.toLowerCase(Locale.US)));
 
                     badges.append(badge.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc))));
                 }
@@ -98,8 +99,8 @@ public class Badges {
                 if (specialSet.get(i)) {
                     Special special = specialValues[i];
                     Integer color = special.color;
-                    if (avatar.badgeToColor.containsKey(special.name().toLowerCase())) {
-                        color = ColorUtils.rgbToInt(ColorUtils.userInputHex(avatar.badgeToColor.get(special.name().toLowerCase())));
+                    if (avatar.badgeToColor.containsKey(special.name().toLowerCase(Locale.US))) {
+                        color = ColorUtils.rgbToInt(ColorUtils.userInputHex(avatar.badgeToColor.get(special.name().toLowerCase(Locale.US))));
                     }
                     Component badge = color != null ? special.badge.copy().withStyle(Style.EMPTY.withColor(TextColor.fromRgb(color))) : special.badge;
                     badges.append(badge);
@@ -162,7 +163,7 @@ public class Badges {
         public final Component desc;
 
         System(String unicode) {
-            this.desc = new FiguraText("badges.system." + this.name().toLowerCase());
+            this.desc = new FiguraText("badges.system." + this.name().toLowerCase(Locale.US));
             this.badge = new TextComponent(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc)));
         }
     }
@@ -198,7 +199,7 @@ public class Badges {
         public final Component desc;
 
         Pride(String unicode) {
-            this.desc = new FiguraText("badges.pride." + this.name().toLowerCase());
+            this.desc = new FiguraText("badges.pride." + this.name().toLowerCase(Locale.US));
             this.badge = new TextComponent(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc)));
         }
     }
@@ -221,7 +222,7 @@ public class Badges {
         }
 
         Special(String unicode, Integer color) {
-            this.desc = new FiguraText("badges.special." + this.name().toLowerCase());
+            this.desc = new FiguraText("badges.special." + this.name().toLowerCase(Locale.US));
             Style style = Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc));
             if (color != null) style = style.withColor(TextColor.fromRgb(color));
             this.color = color;

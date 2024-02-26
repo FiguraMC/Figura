@@ -8,6 +8,7 @@ import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.math.vector.FiguraVec4;
 
 import java.awt.*;
+import java.util.Locale;
 
 public class ColorUtils {
 
@@ -110,7 +111,7 @@ public class ColorUtils {
             return color.vec;
 
         try {
-            ChatFormatting formatting = ChatFormatting.valueOf(hex.toUpperCase());
+            ChatFormatting formatting = ChatFormatting.valueOf(hex.toUpperCase(Locale.US));
             Integer i = formatting.getColor();
             if (i != null)
                 return intToRGB(i);

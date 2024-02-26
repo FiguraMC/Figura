@@ -10,6 +10,10 @@ import org.figuramc.figura.utils.PlatformUtils;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.nio.file.Path;
 
 public class PlatformUtilsImpl {

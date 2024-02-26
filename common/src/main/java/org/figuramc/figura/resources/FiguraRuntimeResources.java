@@ -20,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class FiguraRuntimeResources {
 
-    public static final String ASSETS_VERSION = FiguraMod.METADATA.getCustomValueAsString("assets_version");
+    private static String ASSETS_VERSION;
     public static final FolderPackResources PACK = new FolderPackResources(getRootDirectory().toFile());
 
     public static Path getRootDirectory() {
@@ -29,6 +29,12 @@ public class FiguraRuntimeResources {
 
     public static Path getAssetsDirectory() {
         return IOUtils.getOrCreateDir(getRootDirectory(), "assets/" + FiguraMod.MOD_ID);
+    }
+
+    public static String getAssetsVersion() {
+        if (ASSETS_VERSION == null)
+             ASSETS_VERSION = FiguraMod.METADATA.getCustomValueAsString("assets_version");
+        return ASSETS_VERSION;
     }
 
     private static CompletableFuture<Void> future;
@@ -53,7 +59,7 @@ public class FiguraRuntimeResources {
             }
 
             // get new hashes
-            try (InputStream stream = NetworkStuff.getResourcesHashes(ASSETS_VERSION)) {
+            try (InputStream stream = NetworkStuff.getResourcesHashes(getAssetsVersion())) {
                 byte[] bytes = org.apache.commons.io.IOUtils.toByteArray(stream);
                 String s = new String(bytes);
                 hashes = parser.parse(s).getAsJsonObject();
@@ -108,7 +114,7 @@ public class FiguraRuntimeResources {
         if (Configs.LOCAL_ASSETS.value) return;
         Path target = getAssetsDirectory().resolve(path);
         IOUtils.createDirIfNeeded(target.getParent());
-        try (InputStream resource = NetworkStuff.getResource(ASSETS_VERSION, path); OutputStream fs = Files.newOutputStream(target)) {
+        try (InputStream resource = NetworkStuff.getResource(getAssetsVersion(), path); OutputStream fs = Files.newOutputStream(target)) {
             fs.write(org.apache.commons.io.IOUtils.toByteArray(resource));
             FiguraMod.debug("Downloaded resource \"" + path + "\"");
         }

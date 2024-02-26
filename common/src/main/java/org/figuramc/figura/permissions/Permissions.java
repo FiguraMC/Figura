@@ -8,6 +8,7 @@ import org.figuramc.figura.utils.FiguraText;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class Permissions {
 
@@ -144,7 +145,7 @@ public class Permissions {
         Category(int index, int color, Style style) {
             this.index = index;
             this.color = color;
-            String name = "permissions.category." + name().toLowerCase();
+            String name = "permissions.category." + name().toLowerCase(Locale.US);
             text = new FiguraText(name).withStyle(style);
             info = new FiguraText(name + ".info");
         }

@@ -63,6 +63,7 @@ import org.figuramc.figura.permissions.PermissionPack;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.*;
 import org.figuramc.figura.utils.ui.UIHelper;
+import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
@@ -315,6 +316,7 @@ public class Avatar {
         }
     }
 
+    @Nullable
     public Varargs run(Object toRun, Instructions limit, Object... args) {
         // stuff that was not run yet
         flushQueuedEvents();
@@ -377,7 +379,7 @@ public class Avatar {
 
     public boolean skullRenderEvent(float delta, BlockStateAPI block, ItemStackAPI item, EntityAPI<?> entity, String mode) {
         Varargs result = null;
-        if (loaded && renderer != null && renderer.allowSkullRendering)
+        if (loaded && renderer != null && renderer.interceptRendersIntoFigura)
             result = run("SKULL_RENDER", render, delta, block, item, entity, mode);
         return isCancelled(result);
     }
@@ -400,8 +402,12 @@ public class Avatar {
     }
 
     public boolean itemRenderEvent(ItemStackAPI item, String mode, FiguraVec3 pos, FiguraVec3 rot, FiguraVec3 scale, boolean leftHanded, PoseStack stack, MultiBufferSource bufferSource, int light, int overlay) {
-        Varargs result = loaded ? run("ITEM_RENDER", render, item, mode, pos, rot, scale, leftHanded) : null;
-        if (result == null)
+        if (!loaded || renderer == null || !renderer.interceptRendersIntoFigura) {
+            return false;
+        }
+        Varargs result = run("ITEM_RENDER", render, item, mode, pos, rot, scale, leftHanded);
+
+        if(result == null)
             return false;
 
         boolean rendered = false;
@@ -658,7 +664,7 @@ public class Avatar {
     }
 
     public boolean skullRender(PoseStack stack, MultiBufferSource bufferSource, int light, Direction direction, float yaw) {
-        if (renderer == null || !loaded || !renderer.allowSkullRendering)
+        if (renderer == null || !loaded || !renderer.interceptRendersIntoFigura)
             return false;
 
         stack.pushPose();
@@ -1039,7 +1045,7 @@ public class Avatar {
                 Animation.LoopMode loop = Animation.LoopMode.ONCE;
                 if (animNbt.contains("loop")) {
                     try {
-                        loop = Animation.LoopMode.valueOf(animNbt.getString("loop").toUpperCase());
+                        loop = Animation.LoopMode.valueOf(animNbt.getString("loop").toUpperCase(Locale.US));
                     } catch (Exception ignored) {}
                 }
 

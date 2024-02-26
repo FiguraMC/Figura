@@ -82,6 +82,38 @@ public class RenderUtils {
         }
     }
 
+    public static VanillaPart pivotToPart(Avatar avatar, ParentType type) {
+        if (!RenderUtils.vanillaModelAndScript(avatar))
+            return null;
+
+        switch (type) {
+            case HelmetPivot:
+                return avatar.luaRuntime.vanilla_model.HELMET;
+            case ChestplatePivot:
+                return avatar.luaRuntime.vanilla_model.CHESTPLATE;
+            case LeftShoulderPivot:
+                return avatar.luaRuntime.vanilla_model.CHESTPLATE_LEFT_ARM;
+            case RightShoulderPivot:
+                return avatar.luaRuntime.vanilla_model.CHESTPLATE_RIGHT_ARM;
+            case LeggingsPivot:
+                return avatar.luaRuntime.vanilla_model.LEGGINGS;
+            case LeftLeggingPivot:
+                return avatar.luaRuntime.vanilla_model.LEGGINGS_LEFT_LEG;
+            case RightLeggingPivot:
+                return avatar.luaRuntime.vanilla_model.LEGGINGS_RIGHT_LEG;
+            case LeftBootPivot:
+                return avatar.luaRuntime.vanilla_model.BOOTS_LEFT_LEG;
+            case RightBootPivot:
+                return avatar.luaRuntime.vanilla_model.BOOTS_RIGHT_LEG;
+            case LeftElytraPivot:
+                return avatar.luaRuntime.vanilla_model.LEFT_ELYTRA;
+            case RightElytraPivot:
+                return avatar.luaRuntime.vanilla_model.RIGHT_ELYTRA;
+            default:
+                return null;
+        }
+    }
+
     public static EquipmentSlot slotFromPart(ParentType type) {
         switch (type) {
             case Head:
@@ -95,7 +127,8 @@ public class RenderUtils {
             case RightShoulderPivot:
             case LeftElytra:
             case RightElytra:
-            case ElytraPivot:
+            case RightElytraPivot:
+            case LeftElytraPivot:
                 return EquipmentSlot.CHEST;
             case LeftArm:
             case LeftItemPivot:

@@ -467,7 +467,7 @@ public class NetworkStuff {
             ws = KeyStoreHelper.websocketWithBackendCertificates(token);
             ws.connect();
         } catch (WebSocketException e) {
-            FiguraMod.LOGGER.error(e);
+            FiguraMod.LOGGER.error(e.getMessage());
         }
     }
 

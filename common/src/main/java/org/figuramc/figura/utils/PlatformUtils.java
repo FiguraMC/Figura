@@ -67,23 +67,7 @@ public class PlatformUtils {
     }
 
     @ExpectPlatform
-    public static InputStream loadFileFromRoot(String file) throws IOException {
+    public static InputStream loadFileFromRoot(String file) throws FileNotFoundException {
         throw new AssertionError();
     }
-
-    public static int getJavaVersion(Consumer<String> callback)
-    {
-        String javaVersion = System.getProperty("java.version");
-        callback.accept("Found java version " + javaVersion);
-        if (javaVersion != null && javaVersion.startsWith("1.8.0_")) {
-            try {
-                return Integer.parseInt(javaVersion.substring("1.8.0_".length()));
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-                callback.accept("Could not parse java version!");
-            }
-        }
-        return 0;
-    }
-
 }

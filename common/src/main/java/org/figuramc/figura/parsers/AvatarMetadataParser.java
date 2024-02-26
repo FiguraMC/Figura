@@ -16,6 +16,7 @@ import org.figuramc.figura.utils.Version;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 // parses a metadata json
@@ -132,14 +133,14 @@ public class AvatarMetadataParser {
         }
         if (customization.primaryRenderType != null) {
             try {
-                modelPart.putString("primary", RenderTypes.valueOf(customization.primaryRenderType.toUpperCase()).name());
+                modelPart.putString("primary", RenderTypes.valueOf(customization.primaryRenderType.toUpperCase(Locale.US)).name());
             } catch (Exception ignored) {
                 throw new IOException("Invalid render type \"" + customization.primaryRenderType + "\"!");
             }
         }
         if (customization.secondaryRenderType != null) {
             try {
-                modelPart.putString("secondary", RenderTypes.valueOf(customization.secondaryRenderType.toUpperCase()).name());
+                modelPart.putString("secondary", RenderTypes.valueOf(customization.secondaryRenderType.toUpperCase(Locale.US)).name());
             } catch (Exception ignored) {
                 throw new IOException("Invalid render type \"" + customization.secondaryRenderType + "\"!");
             }

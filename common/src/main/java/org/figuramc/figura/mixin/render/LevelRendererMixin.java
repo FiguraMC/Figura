@@ -89,6 +89,8 @@ public abstract class LevelRendererMixin {
         LivingEntity livingEntity = (LivingEntity) e;
 
         Avatar.firstPerson = true;
+
+        int size = ((PoseStackAccessor)stack).getPoseStack().size();
         stack.pushPose();
 
         EntityRenderer<? super LivingEntity> entityRenderer = this.entityRenderDispatcher.getRenderer(livingEntity);
@@ -104,7 +106,10 @@ public abstract class LevelRendererMixin {
         float yaw = Mth.lerp(tickDelta, livingEntity.yRotO, livingEntity.yRot);
         entityRenderer.render(livingEntity, yaw, tickDelta, stack, bufferSource, 15 << 20 | 15 << 4);
 
-        stack.popPose();
+        do {
+            stack.popPose();
+        } while(((PoseStackAccessor)stack).getPoseStack().size() > size);
+
         Avatar.firstPerson = false;
     }
 
