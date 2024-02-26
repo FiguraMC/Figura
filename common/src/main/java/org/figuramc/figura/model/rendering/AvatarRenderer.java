@@ -67,7 +67,7 @@ public abstract class AvatarRenderer {
     protected static int shouldRenderPivots;
     public boolean allowMatrixUpdate = false;
     public boolean allowHiddenTransforms = true;
-    public boolean allowSkullRendering = true;
+    public boolean interceptRendersIntoFigura = true;
     public boolean allowPivotParts = true;
     public boolean updateLight = false;
     public boolean doIrisEmissiveFix = false;
