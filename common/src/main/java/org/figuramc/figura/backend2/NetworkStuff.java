@@ -2,6 +2,8 @@ package org.figuramc.figura.backend2;
 
 import com.google.gson.*;
 import com.mojang.datafixers.util.Pair;
+import com.neovisionaries.ws.client.WebSocket;
+import com.neovisionaries.ws.client.WebSocketException;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -14,8 +16,8 @@ import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.Badges;
 import org.figuramc.figura.avatar.UserData;
 import org.figuramc.figura.avatar.local.CacheAvatarLoader;
+import org.figuramc.figura.backend2.trust.KeyStoreHelper;
 import org.figuramc.figura.backend2.websocket.C2SMessageHandler;
-import org.figuramc.figura.backend2.websocket.WebsocketThingy;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.font.Emojis;
 import org.figuramc.figura.gui.FiguraToast;
@@ -33,6 +35,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.ByteBuffer;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -50,7 +54,7 @@ public class NetworkStuff {
     protected static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
     private static final ConcurrentLinkedQueue<Request<HttpAPI>> API_REQUESTS = new ConcurrentLinkedQueue<>();
-    private static final ConcurrentLinkedQueue<Request<WebsocketThingy>> WS_REQUESTS = new ConcurrentLinkedQueue<>();
+    private static final ConcurrentLinkedQueue<Request<WebSocket>> WS_REQUESTS = new ConcurrentLinkedQueue<>();
     private static final List<UUID> SUBSCRIPTIONS = new ArrayList<>();
     private static CompletableFuture<Void> tasks;
 
@@ -58,7 +62,7 @@ public class NetworkStuff {
     private static int authCheck = RECONNECT;
 
     protected static HttpAPI api;
-    protected static WebsocketThingy ws;
+    protected static WebSocket ws;
 
     public static int backendStatus = 1;
     public static String disconnectedReason;
@@ -138,9 +142,9 @@ public class NetworkStuff {
         }
 
         if (!WS_REQUESTS.isEmpty()) {
-            Request<WebsocketThingy> request;
+            Request<WebSocket> request;
             while ((request = WS_REQUESTS.poll()) != null) {
-                Request<WebsocketThingy> finalRequest = request;
+                Request<WebSocket> finalRequest = request;
                 async(() -> finalRequest.consumer.accept(ws));
             }
         }
@@ -439,13 +443,17 @@ public class NetworkStuff {
 
 
     private static void connectWS(String token) {
-        if (ws != null) ws.close();
-        ws = new WebsocketThingy(token);
-        ws.connect();
+        if (ws != null) ws.disconnect();
+        try {
+            ws = KeyStoreHelper.websocketWithBackendCertificates(token);
+            ws.connect();
+        } catch (WebSocketException e) {
+            FiguraMod.LOGGER.error(e.getMessage());
+        }
     }
 
     private static void disconnectWS() {
-        if (ws != null) ws.close();
+        if (ws != null) ws.disconnect();
         ws = null;
     }
 
@@ -459,7 +467,7 @@ public class NetworkStuff {
 
         try {
             ByteBuffer buffer = C2SMessageHandler.ping(id, sync, data);
-            ws.send(buffer);
+            ws.sendBinary(buffer.array());
 
             pingsSent++;
             if (lastPing == 0) lastPing = FiguraMod.ticks;
@@ -475,7 +483,7 @@ public class NetworkStuff {
         WS_REQUESTS.add(new Request<>(Util.NIL_UUID, client -> {
             try {
                 ByteBuffer buffer = C2SMessageHandler.sub(id);
-                client.send(buffer);
+                client.sendBinary(buffer.array());
                 if (debug) FiguraMod.debug("Subbed to " + id);
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("Failed to subscribe to " + id, e);
@@ -490,7 +498,7 @@ public class NetworkStuff {
         WS_REQUESTS.add(new Request<>(Util.NIL_UUID, client -> {
             try {
                 ByteBuffer buffer = C2SMessageHandler.unsub(id);
-                client.send(buffer);
+                client.sendBinary(buffer.array());
                 if (debug) FiguraMod.debug("Unsubbed to " + id);
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("Failed to unsubscribe to " + id, e);

@@ -156,7 +156,8 @@ public class FiguraDocsManager {
                 BlockTask.class,
                 ItemTask.class,
                 TextTask.class,
-                SpriteTask.class
+                SpriteTask.class,
+                EntityTask.class
         ));
 
         put("player", List.of(

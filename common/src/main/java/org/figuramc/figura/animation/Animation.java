@@ -510,7 +510,7 @@ public class Animation {
     )
     public Animation setLoop(@LuaNotNil String loop) {
         try {
-            this.loop = LoopMode.valueOf(loop.toUpperCase());
+            this.loop = LoopMode.valueOf(loop.toUpperCase(Locale.US));
             return this;
         } catch (Exception ignored) {
             throw new LuaError("Illegal LoopMode: \"" + loop + "\".");

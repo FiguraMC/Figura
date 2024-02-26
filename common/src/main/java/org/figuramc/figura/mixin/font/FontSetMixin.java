@@ -36,8 +36,8 @@ public abstract class FontSetMixin {
     @Unique
     int figura$codePoint = -1;
 
-    //m_vanatxia for fabric intermediary, m_232558_ for SRG, lambda$setGlyphProviders$5 unmapped for OF, i had dig at the bytecode for this one
-    @Inject(method = "m_vanatxia", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/font/GlyphInfo;getAdvance(Z)F", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
+    //m_vanatxia for fabric intermediary, m_202357_ for SRG, lambda$setGlyphProviders$5 unmapped for OF, i had dig at the bytecode for this one
+    @Inject(method = {"m_vanatxia", "m_202357_"}, at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/font/GlyphInfo;getAdvance(Z)F", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
     public void thing(List<?> list, Set<?> set, int i, CallbackInfo ci, Iterator<?> var4, GlyphProvider glyphProvider, GlyphInfo glyphInfo) {
         if (figura$isEmojiFont() && glyphInfo instanceof BitmapProvider.Glyph) {
             ((BitmapProviderGlyphAccessor) glyphInfo).figura$setAdvance(8);

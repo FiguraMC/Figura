@@ -19,9 +19,9 @@ dependencies {
     }
 
     // Libraries
-    implementation("com.github.FiguraMC.LuaJ:luaj-core:$luaj-figura")
-    implementation("com.github.FiguraMC.LuaJ:luaj-jse:$luaj-figura")
-    implementation("org.java-websocket:Java-WebSocket:$websocket")
+    implementation("com.github.FiguraMC.luaJ:luaj-core:$luaj-figura")
+    implementation("com.github.FiguraMC.luaJ:luaj-jse:$luaj-figura")
+    implementation("com.neovisionaries:nv-websocket-client:$nv_websocket")
 
     // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
     // Do NOT use other classes from fabric loader

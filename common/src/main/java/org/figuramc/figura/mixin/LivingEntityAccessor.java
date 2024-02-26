@@ -15,4 +15,5 @@ public interface LivingEntityAccessor {
     @Intrinsic
     @Invoker("getCurrentSwingDuration")
     int getSwingDuration();
+
 }

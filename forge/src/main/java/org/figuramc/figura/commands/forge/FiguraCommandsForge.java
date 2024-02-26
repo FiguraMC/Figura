@@ -15,7 +15,7 @@ import org.figuramc.figura.utils.FiguraClientCommandSource;
 public class FiguraCommandsForge {
     @SuppressWarnings({"unchecked", "rawtypes"})
     @SubscribeEvent
-    public static void registerCommands(RegisterCommandsEvent event) {
+    public static void registerCommands(RegisterClientCommandsEvent event) {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
         CommandDispatcher<FiguraClientCommandSource> casted = (CommandDispatcher) dispatcher;
         casted.register(FiguraCommands.getCommandRoot());
