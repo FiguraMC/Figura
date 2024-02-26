@@ -34,8 +34,8 @@ dependencies {
     }
 
     // Libraries
-    include(forgeRuntimeLibrary("com.github.FiguraMC.luaJ:luaj-core:$luaj-figura"))
-    include(forgeRuntimeLibrary("com.github.FiguraMC.luaJ:luaj-jse:$luaj-figura"))
+    include(forgeRuntimeLibrary("com.github.FiguraMC.luaj:luaj-core:$luaj-figura"))
+    include(forgeRuntimeLibrary("com.github.FiguraMC.luaj:luaj-jse:$luaj-figura"))
     include(forgeRuntimeLibrary("com.neovisionaries:nv-websocket-client:$nv_websocket"))
 
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
