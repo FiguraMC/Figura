@@ -133,7 +133,7 @@ public class EntityTask extends RenderTask {
     @Contract("_->this")
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
-                    argumentTypes = String.class,
+                    argumentTypes = Double.class,
                     argumentNames = "distance"
             ),
             value = "entity_task.update_walking_distance"
