@@ -34,6 +34,7 @@ import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.mixin.EntityAccessor;
 import org.figuramc.figura.utils.EntityUtils;
 import org.figuramc.figura.utils.LuaUtils;
+import org.jetbrains.annotations.NotNull;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 
@@ -48,10 +49,11 @@ import java.util.UUID;
 )
 public class EntityAPI<T extends Entity> {
 
+    @NotNull
     protected final UUID entityUUID;
+    @NotNull
     protected T entity; // We just do not care about memory anymore so, just have something not wrapped in a WeakReference
 
-    private boolean thingy = true;
     private String cacheType;
 
     public EntityAPI(T entity) {
@@ -69,28 +71,30 @@ public class EntityAPI<T extends Entity> {
         return new EntityAPI<>(e);
     }
 
-    protected final void checkEntity() {
+    protected final boolean checkEntity() {
+        boolean thingy = true;
         if (entity.isRemoved() || getLevel() != Minecraft.getInstance().level) {
+            @SuppressWarnings("unchecked")
             T newEntityInstance = (T) EntityUtils.getEntityByUUID(entityUUID);
             thingy = newEntityInstance != null;
             if (thingy)
                 entity = newEntityInstance;
         }
+        return thingy;
     }
 
     protected Level getLevel() {
         return ((EntityAccessor) entity).getLevel();
     }
 
-    public T getEntity() {
+    public @NotNull T getEntity() {
         return entity;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("entity.is_loaded")
     public boolean isLoaded() {
-        checkEntity();
-        return thingy;
+        return checkEntity();
     }
 
     @LuaWhitelist
@@ -443,10 +447,7 @@ public class EntityAPI<T extends Entity> {
 
         Vec3 vec3 = entity.getEyePosition(1f);
         HitResult result = entity.pick(distance, 1f, false);
-
-        if (result != null)
-            distance = result.getLocation().distanceToSqr(vec3);
-
+        distance = result.getLocation().distanceToSqr(vec3);
         Vec3 vec32 = entity.getViewVector(1f);
         Vec3 vec33 = vec3.add(vec32.x * distance, vec32.y * distance, vec32.z * distance);
         AABB aABB = entity.getBoundingBox().expandTowards(vec32.scale(distance)).inflate(1d);
@@ -512,6 +513,7 @@ public class EntityAPI<T extends Entity> {
     @Override
     public String toString() {
         checkEntity();
+        //noinspection DataFlowIssue - hasCustomName() implies getCustomName() != null
         return (entity.hasCustomName() ? entity.getCustomName().getString() + " (" + getType() + ")" : getType()) + " (Entity)";
     }
 }
