@@ -19,6 +19,8 @@ public enum ParentType {
     RightLeg(VanillaModelProvider.RIGHT_LEG, FiguraVec3.of(-1.9, 12, 0), "RIGHT_LEG"),
 
     // Back accessories (Wings/Cape)
+    LeftElytraPivot(false, true, "LEFT_ELYTRA_PIVOT", "LeftElytraPivot", "LeftWingPivot", "LEFT_WING_PIVOT"),
+    RightElytraPivot(false, true, "RIGHT_ELYTRA_PIVOT", "RightElytraPivot", "RightWingPivot", "RIGHT_WING_PIVOT"),
     LeftElytra(true, VanillaModelProvider.LEFT_ELYTRON, FiguraVec3.of(5, 0, 0), "LEFT_ELYTRA", "LeftElytron", "LEFT_ELYTRON"),
     RightElytra(true, VanillaModelProvider.RIGHT_ELYTRON, FiguraVec3.of(-5, 0, 0), "RIGHT_ELYTRA", "RightElytron", "RIGHT_ELYTRON"),
 
@@ -46,8 +48,6 @@ public enum ParentType {
     HelmetItemPivot(false, true,"HELMET_ITEM_PIVOT"),
     HelmetPivot(false, true, "HELMET_PIVOT", "HelmetPivot"),
     ChestplatePivot(false, true, "CHESTPLATE_PIVOT", "ChestplatePivot", "ChestplateBodyPivot", "CHESTPLATE_BODY_PIVOT"),
-    LeftElytraPivot(false, true, "LEFT_ELYTRA_PIVOT", "LeftElytraPivot", "LeftWingPivot", "LEFT_WING_PIVOT"),
-    RightElytraPivot(false, true, "RIGHT_ELYTRA_PIVOT", "RightElytraPivot", "RightWingPivot", "RIGHT_WING_PIVOT"),
     LeftShoulderPivot(false, true, "LEFT_SHOULDER_PIVOT", "LeftShoulderPivot"),
     RightShoulderPivot(false, true, "RIGHT_SHOULDER_PIVOT", "RightShoulderPivot"),
     LeggingsPivot(false, true, "LEGGINGS_PIVOT", "LeggingsPivot", "BeltPivot", "BELT_PIVOT"),
