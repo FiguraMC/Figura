@@ -120,40 +120,51 @@ public class SpriteTask extends RenderTask {
                     @LuaMethodOverload(
                             argumentTypes = {FiguraTexture.class, Integer.class, Integer.class},
                             argumentNames = {"texture", "width", "height"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {String.class, FiguraVec2.class},
+                            argumentNames = {"textureLocation", "dimensions"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {FiguraTexture.class, FiguraVec2.class},
+                            argumentNames = {"texture", "dimensions"}
                     )
             },
             aliases = "texture",
             value = "sprite_task.set_texture"
     )
-    public SpriteTask setTexture(Object texture, Integer width, Integer height) {
+    public SpriteTask setTexture(Object texture, Object width, Integer height) {
         if (texture == null) {
             this.texture = null;
             return this;
         }
-
+        FiguraVec2 dimensions = LuaUtils.parseVec2("setTexture", width, height);
+        if (width == null || height == null ){
+            dimensions = null;
+        }
         if (texture instanceof String s) {
             try {
                 this.texture = new ResourceLocation(s);
             } catch (Exception e) {
                 this.texture = MissingTextureAtlasSprite.getLocation();
             }
-            if (width == null || height == null)
+            if (dimensions == null)
                 throw new LuaError("Texture dimensions cannot be null");
         } else if (texture instanceof FiguraTexture tex) {
             this.texture = tex.getLocation();
-            if (width == null || height == null) {
+            if (dimensions == null) {
                 width = tex.getWidth();
                 height = tex.getHeight();
             }
         } else {
             throw new LuaError("Illegal argument to setTexture(): " + texture.getClass().getSimpleName());
         }
-
-        if (width <= 0 || height <= 0)
-            throw new LuaError("Invalid texture size: " + width + "x" + height);
-
-        this.textureW = this.regionW = this.width = width;
-        this.textureH = this.regionH = this.height = height;
+        if (dimensions != null && (dimensions.x <= 0 || dimensions.y <= 0))
+                throw new LuaError("Invalid texture size: " + width + "x" + height);
+        if (dimensions != null) {
+            this.textureW = this.regionW = this.width = (int) Math.round(dimensions.x);
+            this.textureH = this.regionH = this.height = (int) Math.round(dimensions.y);
+        }
         recalculateVertices();
         return this;
     }
