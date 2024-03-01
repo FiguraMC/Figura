@@ -33,7 +33,7 @@ public class NetworkingAPI {
     private static FileOutputStream logFileOutputStream;
     private static final String NETWORKING_DISABLED_ERROR_TEXT = "Networking is disabled in config";
     private static final String NO_PERMISSION_ERROR_TEXT = "This avatar doesn't have networking permissions";
-    private static final String NETWORKING_DISALLOWED_FOR_LINK_ERROR = "Networking is not for link %s";
+    private static final String NETWORKING_DISALLOWED_FOR_LINK_ERROR = "Networking whitelist/blacklist does not allow access to link: %s";
     final Avatar owner;
     @LuaWhitelist
     @LuaFieldDoc("net.http")
