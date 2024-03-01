@@ -146,7 +146,7 @@ public abstract class MinecraftMixin {
         AvatarManager.executeAll("clearBBAnimations", Avatar::clearAnimations);
     }
 
-    @Inject(at = @At("HEAD"), method = "tick")
+    @Inject(at = @At("RETURN"), method = "tick")
     private void startTick(CallbackInfo ci) {
         FiguraMod.pushProfiler(FiguraMod.MOD_ID);
         FiguraMod.tick();
