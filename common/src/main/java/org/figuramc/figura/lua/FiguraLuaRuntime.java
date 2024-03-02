@@ -406,7 +406,6 @@ public class FiguraLuaRuntime {
         owner.luaRuntime = null;
         owner.clearParticles();
         owner.clearSounds();
-        owner.closeSockets();
         owner.closeBuffers();
     }
 

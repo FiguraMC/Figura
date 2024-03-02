@@ -352,7 +352,6 @@ public abstract class ConfigType<T> {
                     filters) {
                 JsonObject o = new JsonObject();
                 o.addProperty("source", filter.getSource());
-                o.addProperty("mode", filter.getMode().getId());
                 array.add(o);
             }
             return array;
@@ -373,9 +372,7 @@ public abstract class ConfigType<T> {
                 JsonPrimitive source = s.getAsJsonPrimitive();
                 JsonPrimitive mode = m.getAsJsonPrimitive();
                 if (!source.isString() || !mode.isNumber()) continue;
-                NetworkingAPI.Filter.FilterMode filterMode = NetworkingAPI.Filter.FilterMode.getById(mode.getAsInt());
-                if (filterMode == null) continue;
-                filters.add(new NetworkingAPI.Filter(source.getAsString(), filterMode));
+                filters.add(new NetworkingAPI.Filter(source.getAsString()));
             }
         }
 
