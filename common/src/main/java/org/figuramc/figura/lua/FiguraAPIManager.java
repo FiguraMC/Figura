@@ -6,10 +6,8 @@ import org.figuramc.figura.lua.api.*;
 import org.figuramc.figura.lua.api.data.*;
 import org.figuramc.figura.lua.api.json.*;
 import org.figuramc.figura.lua.api.entity.*;
-import org.figuramc.figura.lua.api.net.FiguraSocket;
 import org.figuramc.figura.lua.api.net.HttpRequestsAPI;
 import org.figuramc.figura.lua.api.net.NetworkingAPI;
-import org.figuramc.figura.lua.api.net.SocketAPI;
 import org.figuramc.figura.model.rendertasks.*;
 import org.figuramc.figura.lua.api.action_wheel.Action;
 import org.figuramc.figura.lua.api.action_wheel.ActionWheelAPI;
@@ -167,9 +165,6 @@ public class FiguraAPIManager {
         add(HttpRequestsAPI.HttpResponse.class);
 
         add(FiguraFuture.class);
-
-        add(SocketAPI.class);
-        add(FiguraSocket.class);
 
         add(RaycastAPI.class);
     }};

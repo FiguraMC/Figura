@@ -1,6 +1,8 @@
 package org.figuramc.figura.lua.api.net;
 
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import org.figuramc.figura.FiguraMod;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
@@ -35,6 +37,8 @@ import java.util.concurrent.CompletableFuture;
 public class HttpRequestsAPI {
     private final NetworkingAPI parent;
     private final HttpClient httpClient;
+    private static final List<String> disallowedHeaders = Arrays.asList("Host", "X-Forwarded-Host", "X-Host");
+
     HttpRequestsAPI(NetworkingAPI parent) {
         this.parent = parent;
         httpClient = HttpClients.createDefault();
@@ -262,6 +266,12 @@ public class HttpRequestsAPI {
                     .setUri(URI.create(uri));
 
             for (Map.Entry<String, String> entry : headers.entrySet()) {
+                if (disallowedHeaders.stream().anyMatch(s -> s.equalsIgnoreCase(entry.getKey()))) {
+                    if (parent.parent.owner.isHost) {
+                        FiguraMod.sendChatMessage(new TranslatableComponent("figura.network.header_disabled", entry.getKey()));
+                    }
+                    continue;
+                }
                 requestBuilder.addHeader(entry.getKey(), entry.getValue());
             }
 

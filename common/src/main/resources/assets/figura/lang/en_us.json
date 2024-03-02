@@ -1825,5 +1825,6 @@
     "figura.docs.socket.get_host": "Returns host this socket is connected to",
     "figura.docs.socket.is_connected": "Checks if this socket is connected",
     "figura.docs.socket.is_closed": "Checks if this socket is closed",
-    "figura.docs.socket.close": "Closes this socket"
+    "figura.docs.socket.close": "Closes this socket",
+    "figura.network.header_disabled": "The %s header is disabled, skipping!"
 }
