@@ -15,6 +15,7 @@ import org.luaj.vm2.LuaTable;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +27,7 @@ public class FileAPI {
     private final Avatar parent;
     private static final Path rootFolderPath = FiguraMod.getFiguraDirectory().resolve("data").toAbsolutePath()
             .normalize();
+    private static final String WRITE_NOT_ALLOWED = "You are only allowed to write in the data folder! Anything else is read only!";
 
     public FileAPI(Avatar parent) {
         this.parent = parent;
@@ -34,6 +36,7 @@ public class FileAPI {
     private Path securityCheck(String path) {
         if (!parent.isHost) throw new LuaError("You can't use FileAPI outside of host environment");
         Path p = relativizePath(path);
+        if (Files.isSymbolicLink(p)) throw new LuaError("Symbolic links are not allowed in FileAPI %s!".formatted(path));
         if (!isPathAllowed(p)) throw new LuaError("Path %s is not allowed in FileAPI".formatted(path));
         return p;
     }
@@ -58,7 +61,7 @@ public class FileAPI {
     }
 
     public boolean isPathAllowed(Path path) {
-        return path.toAbsolutePath().startsWith(rootFolderPath);
+        return !Files.isSymbolicLink(path) && path.toAbsolutePath().startsWith(rootFolderPath);
     }
 
     @LuaWhitelist
@@ -149,6 +152,9 @@ public class FileAPI {
     public FiguraOutputStream openWriteStream(@LuaNotNil String path) {
         try {
             Path p = securityCheck(path);
+            if (!p.startsWith(rootFolderPath)) {
+                throw new LuaError(WRITE_NOT_ALLOWED);
+            }
             File f = p.toFile();
             FileOutputStream fos = new FileOutputStream(f);
             return new FiguraOutputStream(fos);
@@ -218,6 +224,9 @@ public class FileAPI {
     )
     public boolean mkdir(@LuaNotNil String path) {
         Path p = securityCheck(path);
+        if (!p.startsWith(rootFolderPath)) {
+            throw new LuaError(WRITE_NOT_ALLOWED);
+        }
         File f = p.toFile();
         return f.mkdir();
     }
@@ -233,6 +242,9 @@ public class FileAPI {
     )
     public boolean mkdirs(@LuaNotNil String path) {
         Path p = securityCheck(path);
+        if (!p.startsWith(rootFolderPath)) {
+            throw new LuaError(WRITE_NOT_ALLOWED);
+        }
         File f = p.toFile();
         return f.mkdirs();
     }
@@ -248,6 +260,9 @@ public class FileAPI {
     )
     public boolean delete(@LuaNotNil String path) {
         Path p = securityCheck(path);
+        if (!p.startsWith(rootFolderPath)) {
+            throw new LuaError(WRITE_NOT_ALLOWED);
+        }
         File f = p.toFile();
         return f.delete();
     }
