@@ -331,18 +331,6 @@ public class AvatarAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("avatar.get_sockets_count")
-    public int getSocketsCount() {
-        return avatar.openSockets.size();
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc("avatar.get_max_sockets_count")
-    public int getMaxSocketsCount() {
-        return avatar.permissions.get(Permissions.MAX_SOCKETS);
-    }
-
-    @LuaWhitelist
     @LuaMethodDoc("avatar.get_max_texture_size")
     public int getMaxTextureSize() {
         return avatar.permissions.get(Permissions.TEXTURE_SIZE);
