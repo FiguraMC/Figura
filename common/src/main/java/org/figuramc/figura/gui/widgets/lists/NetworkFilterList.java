@@ -184,22 +184,17 @@ public class NetworkFilterList extends AbstractList {
     public static class NetworkFilterEntry extends AbstractContainerElement {
         private static final ResourceLocation deleteButtonLocation = new ResourceLocation("figura", "textures/gui/delete.png");
         private final NetworkingAPI.Filter sourceFilter;
-        private final EnumButton enumButton;
         private final IconButton deleteButton;
         private final TextField filterTextField;
         private final NetworkFilterList parent;
         public NetworkFilterEntry(NetworkFilterList parent, int x, int y, int width, int height) {
-            this(parent, x, y, width, height, new NetworkingAPI.Filter("https://example.com", NetworkingAPI.Filter.FilterMode.EQUALS));
+            this(parent, x, y, width, height, new NetworkingAPI.Filter("https://example.com"));
         }
 
         public NetworkFilterEntry(NetworkFilterList parent, int x, int y, int width, int height, NetworkingAPI.Filter sourceFilter) {
             super(x, y, width, height);
             this.parent = parent;
             this.sourceFilter = sourceFilter;
-            children.add(enumButton =
-                    new EnumButton(x+width-114, y, 90, 20, "gui.network_filter.list.filter_mode"
-                            ,sourceFilter.getMode().getId(), 5, this::onEnumSelect)
-            );
             children.add(filterTextField = new TextField(x, y, width - 118, 20, TextField.HintType.IP, this::onSourceChange));
             children.add(
                     deleteButton = new IconButton(x + width - 20, y, 20, 20,
@@ -228,17 +223,11 @@ public class NetworkFilterList extends AbstractList {
             sourceFilter.setSource(s);
         }
 
-        private void onEnumSelect(int i) {
-            sourceFilter.setMode(NetworkingAPI.Filter.FilterMode.getById(i));
-        }
-
         private void repositionChildren() {
             int x = getX(), y = getY(), width = getWidth();
             filterTextField.setX(x);
             filterTextField.setY(y);
             filterTextField.setWidth(width - 118);
-            enumButton.setX(x+width-114);
-            enumButton.setY(y);
             deleteButton.setX(x+width-20);
             deleteButton.setY(y);
         }
