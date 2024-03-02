@@ -40,7 +40,6 @@ import org.figuramc.figura.lua.FiguraLuaRuntime;
 import org.figuramc.figura.lua.api.TextureAPI;
 import org.figuramc.figura.lua.api.data.FiguraBuffer;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
-import org.figuramc.figura.lua.api.net.FiguraSocket;
 import org.figuramc.figura.lua.api.particle.ParticleAPI;
 import org.figuramc.figura.lua.api.ping.PingArg;
 import org.figuramc.figura.lua.api.ping.PingFunction;
@@ -109,7 +108,6 @@ public class Avatar {
 
     // Runtime data
     private final Queue<Runnable> events = new ConcurrentLinkedQueue<>();
-    public final ArrayList<FiguraSocket> openSockets = new ArrayList<>();
     public final ArrayList<FiguraBuffer> openBuffers = new ArrayList<>();
     public AvatarRenderer renderer;
     public FiguraLuaRuntime luaRuntime;
@@ -935,7 +933,6 @@ public class Avatar {
 
         clearSounds();
         clearParticles();
-        closeSockets();
         closeBuffers();
 
         events.clear();
@@ -945,18 +942,6 @@ public class Avatar {
         SoundAPI.getSoundEngine().figura$stopSound(owner, null);
         for (SoundBuffer value : customSounds.values())
             value.releaseAlBuffer();
-    }
-
-    public void closeSockets() {
-        for (FiguraSocket socket :
-                openSockets) {
-            if (!socket.isClosed()) {
-                try {
-                    socket.baseClose();
-                } catch (Exception ignored) {}
-            }
-        }
-        openSockets.clear();
     }
 
     public void closeBuffers() {

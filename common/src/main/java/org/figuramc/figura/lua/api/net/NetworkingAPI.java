@@ -18,6 +18,8 @@ import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.permissions.Permissions;
 
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -32,6 +34,7 @@ import java.util.Locale;
 )
 public class NetworkingAPI {
     private static FileOutputStream logFileOutputStream;
+    private static final String NETWORKING_IS_HOST_ONLY = "NetworkingAPI is only allowed in a host environment!";
     private static final String NETWORKING_DISABLED_ERROR_TEXT = "Networking is disabled in config";
     private static final String NO_PERMISSION_ERROR_TEXT = "This avatar doesn't have networking permissions";
     private static final String NETWORKING_DISALLOWED_FOR_LINK_ERROR = "Networking whitelist/blacklist does not allow access to link: %s";
@@ -39,17 +42,15 @@ public class NetworkingAPI {
     @LuaWhitelist
     @LuaFieldDoc("net.http")
     public final HttpRequestsAPI http;
-    @LuaWhitelist
-    @LuaFieldDoc("net.socket")
-    public final SocketAPI socket;
 
     public NetworkingAPI(Avatar owner) {
         this.owner = owner;
         http = new HttpRequestsAPI(this);
-        socket = new SocketAPI(this);
     }
 
     public void securityCheck(String link) throws RuntimeException {
+        if (!owner.isHost)
+            throw new LuaError(NETWORKING_IS_HOST_ONLY);
         if (!Configs.ALLOW_NETWORKING.value)
             throw new LuaError(NETWORKING_DISABLED_ERROR_TEXT);
         if (owner.permissions.get(Permissions.NETWORKING) < 1) {
@@ -69,7 +70,7 @@ public class NetworkingAPI {
             )
     )
     public boolean isNetworkingAllowed() {
-        return Configs.ALLOW_NETWORKING.value && owner.permissions.get(Permissions.NETWORKING) >= 1;
+        return owner.isHost && Configs.ALLOW_NETWORKING.value && owner.permissions.get(Permissions.NETWORKING) >= 1;
     }
 
     @LuaWhitelist
@@ -82,14 +83,26 @@ public class NetworkingAPI {
             )
     )
     public boolean isLinkAllowed(String link) {
+        if (!owner.isHost)
+            throw new LuaError(NETWORKING_IS_HOST_ONLY);
+
         RestrictionLevel level = RestrictionLevel.getById(Configs.NETWORKING_RESTRICTION.value);
         if (level == null) return false;
         ArrayList<Filter> filters = Configs.NETWORK_FILTER.getFilters();
-        return switch (level) {
-            case WHITELIST -> filters.stream().anyMatch(f -> f.matches(link));
-            case BLACKLIST -> filters.stream().noneMatch(f -> f.matches(link));
-            case NONE -> true;
-        };
+        try {
+            URL url = new URL(link);
+            if (url.getPort() != -1 && url.getPort() != 80 && url.getPort() != 443)
+                throw new LuaError("Port %s not allowed, only 80 (HTTP) and 443 (HTTPS) are permitted.".formatted(url.getPort()));
+
+            return switch (level) {
+                case WHITELIST -> filters.stream().anyMatch(f -> f.matches(url.getHost()));
+                case BLACKLIST -> filters.stream().noneMatch(f -> f.matches(url.getHost()));
+                case NONE -> true;
+            };
+        }
+        catch (MalformedURLException e) {
+            throw new LinkNotAllowedException(NETWORKING_DISALLOWED_FOR_LINK_ERROR.formatted(link));
+        }
     }
 
     void log(LogSource source, Component text) {
@@ -161,11 +174,9 @@ public class NetworkingAPI {
     public static class Filter {
 
         private String filterSource;
-        private FilterMode filterMode;
 
-        public Filter(String source, FilterMode mode) {
+        public Filter(String source) {
             setSource(source.trim());
-            setMode(mode);
         }
 
         public String getSource() {
@@ -176,46 +187,8 @@ public class NetworkingAPI {
             this.filterSource = filterSource;
         }
 
-        public FilterMode getMode() {
-            return filterMode;
-        }
-
-        public void setMode(FilterMode filterMode) {
-            this.filterMode = filterMode;
-        }
-
         public boolean matches(String s) {
-            return switch (filterMode) {
-                case EQUALS -> s.trim().equals(filterSource);
-                case CONTAINS -> s.trim().contains(filterSource);
-                case STARTS_WITH -> s.trim().startsWith(filterSource);
-                case ENDS_WITH -> s.trim().endsWith(filterSource);
-                case REGEX -> s.trim().matches(filterSource);
-            };
-        }
-
-        public enum FilterMode {
-            EQUALS(0),
-            CONTAINS(1),
-            STARTS_WITH(2),
-            ENDS_WITH(3),
-            REGEX(4);
-            private final int id;
-            FilterMode(int id) {
-                this.id = id;
-            }
-
-            public int getId() {
-                return id;
-            }
-
-            public static FilterMode getById(int id) {
-                for (FilterMode t :
-                        FilterMode.values()) {
-                    if (t.id == id) return t;
-                }
-                return null;
-            }
+            return s.trim().equalsIgnoreCase(filterSource);
         }
     }
 
@@ -248,11 +221,10 @@ public class NetworkingAPI {
     @LuaWhitelist
     public Object __index(LuaValue key) {
         if (!key.isstring()) return null;
-        return switch (key.tojstring()) {
-            case "http" -> http;
-            case "socket" -> socket;
-            default -> null;
-        };
+        if (key.tojstring().equals("http")) {
+            return http;
+        }
+        return null;
     }
 
     static class LinkNotAllowedException extends RuntimeException {

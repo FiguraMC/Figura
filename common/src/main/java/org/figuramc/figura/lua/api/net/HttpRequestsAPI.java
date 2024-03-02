@@ -1,7 +1,8 @@
 package org.figuramc.figura.lua.api.net;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.lua.api.data.FiguraBuffer;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.luaj.vm2.LuaError;
@@ -19,10 +20,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -32,6 +30,8 @@ import java.util.Objects;
 public class HttpRequestsAPI {
     private final NetworkingAPI parent;
     private final HttpClient httpClient;
+    private static final List<String> disallowedHeaders = Arrays.asList("Host", "X-Forwarded-Host", "X-Host");
+
     HttpRequestsAPI(NetworkingAPI parent) {
         this.parent = parent;
         httpClient = HttpClient.newBuilder().build();
@@ -260,6 +260,12 @@ public class HttpRequestsAPI {
                     HttpRequest.BodyPublishers.ofInputStream(this::inputStreamSupplier) : HttpRequest.BodyPublishers.noBody();
             for (Map.Entry<String, String> entry :
                     getHeaders().entrySet()) {
+                if (disallowedHeaders.stream().anyMatch(s -> s.equalsIgnoreCase(entry.getKey()))) {
+                    if (parent.parent.owner.isHost) {
+                        FiguraMod.sendChatMessage(new TranslatableComponent("figura.network.header_disabled", entry.getKey()));
+                    }
+                    continue;
+                }
                 builder.header(entry.getKey(), entry.getValue());
             }
             builder.method(getMethod(), bp);
