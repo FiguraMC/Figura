@@ -8,6 +8,7 @@ import net.minecraft.client.sounds.ChannelAccess;
 import net.minecraft.client.sounds.SoundBufferLibrary;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
+
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.lua.LuaWhitelist;
@@ -79,7 +80,8 @@ public class LuaSound {
     @LuaWhitelist
     @LuaMethodDoc("sound.play")
     public LuaSound play() {
-        if (this.playing)
+        // Only skip logic when we truely know the sound is currently playing
+        if (this.playing && this.handle != null && !this.handle.isStopped())
             return this;
 
         if (!owner.soundsRemaining.use()) {
@@ -88,6 +90,12 @@ public class LuaSound {
         }
 
         owner.noPermissions.remove(Permissions.SOUNDS);
+
+        // if we still have a handle reference but the handle has been released, remove the reference
+        // This occurs when sounds naturally stops
+        if (this.handle != null && this.handle.isStopped()) {
+            this.handle = null;
+        }
 
         // if handle exists, the sound was previously played. Unpause it
         if (handle != null) {
@@ -185,8 +193,18 @@ public class LuaSound {
     @LuaWhitelist
     @LuaMethodDoc("sound.is_playing")
     public boolean isPlaying() {
-        if (handle != null)
-            handle.execute(channel -> this.playing = channel.playing());
+        if (handle != null) {
+            // If the handle was released via the sound stopping naturlly, force set to false.
+            // When a handle is stopped, it has no channel, so playing will not update.
+            if (handle.isStopped())
+                this.playing = false;
+            // set playing based on whether the sound is paused or not.
+            else
+                handle.execute(channel -> this.playing = channel.playing());
+        }
+        // If there is no handle, forcefully set it to false just incase
+        else
+            this.playing = false;
         return this.playing;
     }
 
