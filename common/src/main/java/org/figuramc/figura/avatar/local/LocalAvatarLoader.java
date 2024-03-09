@@ -131,7 +131,10 @@ public class LocalAvatarLoader {
 
                 // metadata
                 loadState = LoadState.METADATA;
-				CompoundTag metaNBT = AvatarMetadataParser.parse(_meta, IOUtils.getFileNameOrEmpty(finalPath));
+                String _meta = IOUtils.readFile(finalPath.resolve("avatar.json"));
+				var metadata = AvatarMetadataParser.read(_meta);
+
+				CompoundTag metaNBT = AvatarMetadataParser.parse(metadata,_meta, IOUtils.getFileNameOrEmpty(finalPath));
 				nbt.put("metadata", metaNBT);
 				metaNBT.putString("uuid",target.id.toString());
 
