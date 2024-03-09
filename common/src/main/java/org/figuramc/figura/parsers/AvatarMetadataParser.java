@@ -33,6 +33,9 @@ public class AvatarMetadataParser {
     public static CompoundTag parse(String json, String filename) {
         // parse json -> object
         Metadata metadata = read(json);
+        return parse(metadata,json,filename);
+    }
+    public static CompoundTag parse(Metadata metadata, String json, String filename) {
 
         // nbt
         CompoundTag nbt = new CompoundTag();
@@ -101,11 +104,9 @@ public class AvatarMetadataParser {
 
         return nbt;
     }
-
-    public static void injectToModels(String json, CompoundTag models) throws IOException {
+    public static void injectToModels(Metadata metadata, CompoundTag models) throws IOException {
         PARTS_TO_MOVE.clear();
 
-        Metadata metadata = GSON.fromJson(json, Metadata.class);
         if (metadata != null && metadata.customizations != null) {
             for (Map.Entry<String, Customization> entry : metadata.customizations.entrySet())
                 injectCustomization(entry.getKey(), entry.getValue(), models);
@@ -120,7 +121,21 @@ public class AvatarMetadataParser {
             targetPart.put("chld", list);
         }
     }
+    public static void injectToTextures(Metadata metadata, CompoundTag textures) {
+        if (metadata == null || metadata.ignoredTextures == null)
+            return;
 
+        CompoundTag src = textures.getCompound("src");
+
+        for (String texture : metadata.ignoredTextures) {
+            byte[] bytes = src.getByteArray(texture);
+            int[] size = BlockbenchModelParser.getTextureSize(bytes);
+            ListTag list = new ListTag();
+            list.add(IntTag.valueOf(size[0]));
+            list.add(IntTag.valueOf(size[1]));
+            src.put(texture, list);
+        }
+    }
     private static void injectCustomization(String path, Customization customization, CompoundTag models) throws IOException {
         boolean remove = customization.remove != null && customization.remove;
         CompoundTag modelPart = getTag(models, path, remove);
@@ -198,22 +213,7 @@ public class AvatarMetadataParser {
         return current;
     }
 
-    public static void injectToTextures(String json, CompoundTag textures) {
-        Metadata metadata = GSON.fromJson(json, Metadata.class);
-        if (metadata == null || metadata.ignoredTextures == null)
-            return;
 
-        CompoundTag src = textures.getCompound("src");
-
-        for (String texture : metadata.ignoredTextures) {
-            byte[] bytes = src.getByteArray(texture);
-            int[] size = BlockbenchModelParser.getTextureSize(bytes);
-            ListTag list = new ListTag();
-            list.add(IntTag.valueOf(size[0]));
-            list.add(IntTag.valueOf(size[1]));
-            src.put(texture, list);
-        }
-    }
 
     // json object class
     public static class Metadata {

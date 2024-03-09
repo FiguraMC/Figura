@@ -131,10 +131,15 @@ public class LocalAvatarLoader {
 
                 // metadata
                 loadState = LoadState.METADATA;
-                String metadata = IOUtils.readFile(finalPath.resolve("avatar.json"));
-                nbt.put("metadata", AvatarMetadataParser.parse(metadata, IOUtils.getFileNameOrEmpty(finalPath)));
-                AvatarMetadataParser.injectToModels(metadata, models);
-                AvatarMetadataParser.injectToTextures(metadata, textures);
+                String _meta = IOUtils.readFile(finalPath.resolve("avatar.json"));
+				var metadata = AvatarMetadataParser.read(_meta);
+
+				CompoundTag metaNBT = AvatarMetadataParser.parse(metadata,_meta, IOUtils.getFileNameOrEmpty(finalPath));
+				nbt.put("metadata", metaNBT);
+				metaNBT.putString("uuid",target.id.toString());
+
+				AvatarMetadataParser.injectToModels(metadata, models);
+				AvatarMetadataParser.injectToTextures(metadata, textures);
 
                 // return :3
                 if (!models.isEmpty())
