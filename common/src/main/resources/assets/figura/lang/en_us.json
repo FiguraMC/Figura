@@ -1679,6 +1679,7 @@
     "figura.docs.world.get_spawn_point": "Returns a vector with the coordinates of the world spawn",
     "figura.docs.world.raycast_entity": "Raycasts an Entity in the world, returns a map containing the entity and it's position.",
     "figura.docs.world.raycast_block": "Raycasts a Block in the world, returns a map containing the block and it's position.",
+    "figura.docs.world.get_map_data": "Takes a string, e.g., `map_3`, and returns a table of data if the map exists.\nMap data may be unsynced, and will only update when holding the map",
     "figura.docs.data": "A global API that provides functions to work with data related features",
     "figura.docs.data.create_buffer": "Creates an empty buffer",
     "figura.docs.buffer": "A byte buffer object",

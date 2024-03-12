@@ -14,6 +14,9 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.saveddata.maps.MapDecoration;
+import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
+import org.apache.commons.lang3.ArrayUtils;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.lua.LuaNotNil;
@@ -156,6 +159,45 @@ public class WorldAPI {
         return list;
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = String.class,
+                            argumentNames = "id"
+                    ),
+            },
+            value = "world.get_map_data"
+    )
+    public static HashMap<String, Object> getMapData(String id) {
+        MapItemSavedData data = getCurrentWorld().getMapData(id);
+
+        if (data == null)
+            return null;
+
+        HashMap<String, Object> map = new HashMap<>();
+
+        map.put("center_x", data.centerX);
+        map.put("center_z", data.centerZ);
+        map.put("locked", data.locked);
+        map.put("scale", data.scale);
+
+        ArrayList<HashMap<String, Object>> decorations = new ArrayList<>();
+        for (MapDecoration decoration : data.getDecorations()) {
+                HashMap<String, Object> decorationMap = new HashMap<>();
+                decorationMap.put("type", decoration.getType().toString());
+                decorationMap.put("name", decoration.getName() == null ? "" : decoration.getName().getString());
+                decorationMap.put("x", decoration.getX());
+                decorationMap.put("y", decoration.getY());
+                decorationMap.put("rot", decoration.getRot());
+                decorationMap.put("image", decoration.getImage());
+                decorations.add(decorationMap);
+        }
+        map.put("decorations", decorations);
+
+        return map;
+    }
+    
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
