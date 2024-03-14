@@ -7,6 +7,7 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.arguments.blocks.BlockStateArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -16,6 +17,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.saveddata.maps.MapDecoration;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
+import net.minecraft.world.phys.AABB;
 import org.apache.commons.lang3.ArrayUtils;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -35,6 +37,7 @@ import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -472,6 +475,32 @@ public class WorldAPI {
         for (Player player : getCurrentWorld().players())
             playerList.put(player.getName().getString(), PlayerAPI.wrap(player));
         return playerList;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = {FiguraVec3.class, FiguraVec3.class},
+                            argumentNames = {"pos1", "pos2"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"x1", "y1", "z1", "x2", "y2", "z2"}
+                    )
+            },
+            value = "world.get_entities"
+    )
+    public static List<EntityAPI<?>> getEntities(Object x1, Object y1, Double z1, Double x2, Double y2, Double z2) {
+        Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("getEntities", x1, y1, z1, x2, y2, z2, 1);
+        FiguraVec3 pos1 = pair.getFirst();
+        FiguraVec3 pos2 = pair.getSecond();
+
+        AABB aabb = new AABB(pos1.asVec3(), pos2.asVec3());
+        return getCurrentWorld().getEntitiesOfClass(Entity.class, aabb)
+                .stream()
+                .map(EntityAPI::wrap)
+                .collect(Collectors.toList());
     }
 
     @LuaWhitelist

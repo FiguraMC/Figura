@@ -1670,6 +1670,7 @@
     "figura.docs.world.get_height": "Returns the highest point at the given position according to the provided heightmap\nDefaults to MOTION_BLOCKING if no heightmap is provided",
     "figura.docs.world.get_dimension": "Gets the dimension name of this world",
     "figura.docs.world.get_entity": "Returns an EntityAPI object from this UUID's entity, or nil if no entity was found",
+    "figura.docs.world.get_entities": "Returns a list of entities within the bounding box formed by the two given positions",
     "figura.docs.world.get_players": "Returns a table containing instances of Player for all players in the world\nThe players are indexed by their names",
     "figura.docs.world.avatar_vars": "Returns a table containing variables stored from all loaded Avatars \"avatar:store()\" function\nThe table will be indexed by the avatar's owner UUID",
     "figura.docs.world.new_block": "Parses and creates a new BlockState from the given string\nA world position can be optionally given for the blockstate functions that rely on its position",
