@@ -4,11 +4,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityDimensions;
-import net.minecraft.world.entity.HasCustomInventoryScreen;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
@@ -35,10 +33,12 @@ import org.figuramc.figura.mixin.EntityAccessor;
 import org.figuramc.figura.utils.EntityUtils;
 import org.figuramc.figura.utils.LuaUtils;
 import org.jetbrains.annotations.NotNull;
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -457,6 +457,48 @@ public class EntityAPI<T extends Entity> {
             return new Object[]{EntityAPI.wrap(entityHit.getEntity()), FiguraVec3.fromVec3(entityHit.getLocation())};
 
         return null;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = { String.class, Double.class },
+                            argumentNames = { "type", "radius" }
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = { String.class },
+                            argumentNames = { "type" }
+                    ),
+                    @LuaMethodOverload()
+            },
+            value = "entity.get_nearest_entity"
+    )
+    public EntityAPI<?> getNearestEntity(String type, Double radius) {
+        checkEntity();
+        radius = radius != null ? radius : 20;
+
+        EntityType<?> entityType;
+        if (type != null) {
+            ResourceLocation id = ResourceLocation.tryParse(type);
+            if (id == null) {
+                throw new LuaError("Invalid entity type: " + type);
+            }
+            entityType = BuiltInRegistries.ENTITY_TYPE.get(id);
+        } else {
+            entityType = null;
+        }
+
+        FiguraVec3 pos = getPos(1f);
+
+        AABB aabb = new AABB(pos.offseted(-radius).asVec3(), pos.offseted(radius).asVec3());
+
+        return getLevel().getEntities(entity, aabb)
+                .stream()
+                .filter(e -> entityType == null || e.getType() == entityType)
+                .min(Comparator.comparingDouble(e -> e.distanceToSqr(pos.x(), pos.y(), pos.z())))
+                .map(EntityAPI::wrap)
+                .orElse(null);
     }
 
     @LuaWhitelist
