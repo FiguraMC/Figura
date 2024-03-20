@@ -173,8 +173,7 @@ public class FileAPI {
             )
     )
     public String readString(@LuaNotNil String path, String encoding) {
-        try (FiguraInputStream fis = openReadStream(path)) {
-            byte[] data = fis.readAllBytes();
+        try {
             Charset charset = encoding == null ? StandardCharsets.UTF_8 : switch (encoding.toLowerCase(Locale.US)) {
                 case "utf_16", "utf16" -> StandardCharsets.UTF_16;
                 case "utf_16be", "utf16be" -> StandardCharsets.UTF_16BE;
@@ -183,6 +182,9 @@ public class FileAPI {
                 case "iso_8859_1", "iso88591" -> StandardCharsets.ISO_8859_1;
                 default -> StandardCharsets.UTF_8;
             };
+            Path filePath = securityCheck(path);
+            File file = filePath.toFile();
+            byte[] data = com.google.common.io.Files.toByteArray(file);
             return new String(data, charset);
         } catch (IOException e) {
             throw new LuaError(e);
