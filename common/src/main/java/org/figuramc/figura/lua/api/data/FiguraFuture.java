@@ -5,6 +5,7 @@ import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
+import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
@@ -48,22 +49,32 @@ public class FiguraFuture<T> {
     }
 
     public AutoCloseable onFinish(Consumer<T> f) {
-            if (isDone && !hasError) {
-                f.accept(value);
-                return () -> {};
-            } else {
-                onFinish.add(f);
-                return () -> onFinish.remove(f);
-            }
+        if (isDone && !hasError) {
+            f.accept(value);
+            return () -> {};
+        } else {
+            onFinish.add(f);
+            return () -> onFinish.remove(f);
+        }
+    }
+    public AutoCloseable onFinish(Consumer<T> f, Consumer<LuaError> g) {
+        final var t = onFinish(f);
+        final var h = onFinishError(g);
+        return () -> { t.close(); h.close(); };
     }
     @LuaWhitelist
     @LuaMethodDoc("future.on_finish")
-    public LuaCloseable onFinish(LuaFunction f) {
+    public LuaCloseable onFinish(LuaFunction f, @Nullable LuaFunction g) {
         if (avatar == null) {
-            throw new LuaError("Future.onFinish unavailable for legal reasons");
+            throw new LuaError("Future::onFinish unavailable for legal reasons");
         } else {
             final var mgr = avatar.luaRuntime.typeManager;
-            return new LuaCloseable(onFinish(value -> f.invoke(mgr.javaToLua(f))));
+            AutoCloseable ab = onFinish(value -> f.invoke(mgr.javaToLua(f)));
+            AutoCloseable ot = g != null ? onFinishError(g) : null;
+            return new LuaCloseable(() -> {
+                ab.close();
+                if (ot != null) ot.close();
+            });
         }
     }
 
