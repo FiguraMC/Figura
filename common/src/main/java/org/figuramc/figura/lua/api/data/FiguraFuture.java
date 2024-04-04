@@ -174,19 +174,17 @@ public class FiguraFuture<T> {
     }
     @LuaWhitelist
     @LuaMethodDoc("future.and_then")
-    public FiguraFuture<LuaValue> andThen(LuaFunction f) {
-        return andThen(v -> {
-            final var res = f.invoke().arg1();
-            if (res.isuserdata(FiguraFuture.class)) {
-                return (FiguraFuture<LuaValue>) res.checkuserdata(FiguraFuture.class);
-            } else {
-                // do not rely on this behavior
-                // FIXME: will be optimized sometime soon - I wrote this at 1:08 AM
-                final var fut = new FiguraFuture<LuaValue>(avatar);
-                fut.complete(res);
-                return fut;
+    public FiguraFuture<?> andThen(LuaFunction f) {
+        final var fut = new FiguraFuture<>(avatar);
+        onFinish(v -> {
+            final var res = f.invoke(avatar.luaRuntime.typeManager.javaToLua(v)).arg1();
+            if (res.isuserdata() && res.checkuserdata() instanceof FiguraFuture<?> fut2) {
+                fut2.onFinish(fut::complete);
+                fut2.onFinishError(fut::error);
             }
         });
+        onFinishError(fut::error);
+        return fut;
     }
 
     public <R> Function<R, LuaValue> wrapLua(LuaFunction f) {
