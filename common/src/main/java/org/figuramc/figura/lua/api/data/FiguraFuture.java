@@ -57,6 +57,7 @@ public class FiguraFuture<T> {
             }
     }
     @LuaWhitelist
+    @LuaMethodDoc("future.on_finish")
     public LuaCloseable onFinish(LuaFunction f) {
         if (avatar == null) {
             throw new LuaError("Future.onFinish unavailable for legal reasons");
@@ -67,6 +68,7 @@ public class FiguraFuture<T> {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("future.on_finish_error")
     public LuaCloseable onFinishError(LuaFunction f) {
         return new LuaCloseable(onFinishError(err -> f.invoke(err.getMessageObject())));
     }
@@ -155,6 +157,7 @@ public class FiguraFuture<T> {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("future.map")
     public FiguraFuture<LuaValue> map(LuaFunction mapper) {
         return map(wrapLua(mapper));
     }
@@ -170,6 +173,7 @@ public class FiguraFuture<T> {
         return fut;
     }
     @LuaWhitelist
+    @LuaMethodDoc("future.and_then")
     public FiguraFuture<LuaValue> andThen(LuaFunction f) {
         return andThen(v -> {
             final var res = f.invoke().arg1();
@@ -203,6 +207,7 @@ public class FiguraFuture<T> {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("future.handle")
     public FiguraFuture<LuaValue> handle(LuaFunction handler) {
         return map(((Function<T, Varargs>) avatar.luaRuntime.typeManager::javaToLua).andThen(Varargs::arg1)).handle(err -> handler.invoke(err.getMessageObject()).arg1());
     }
