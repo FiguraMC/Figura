@@ -159,6 +159,32 @@ public class FiguraFuture<T> {
         return map(wrapLua(mapper));
     }
 
+    public <R> FiguraFuture<R> andThen(Function<T, FiguraFuture<R>> f) {
+        final var fut = new FiguraFuture<R>(avatar);
+        onFinishError(fut::error);
+        onFinish(v -> {
+            final var r = f.apply(v);
+            r.onFinish(fut::complete);
+            r.onFinishError(fut::error);
+        });
+        return fut;
+    }
+    @LuaWhitelist
+    public FiguraFuture<LuaValue> andThen(LuaFunction f) {
+        return andThen(v -> {
+            final var res = f.invoke().arg1();
+            if (res.isuserdata(FiguraFuture.class)) {
+                return (FiguraFuture<LuaValue>) res.checkuserdata(FiguraFuture.class);
+            } else {
+                // do not rely on this behavior
+                // FIXME: will be optimized sometime soon - I wrote this at 1:08 AM
+                final var fut = new FiguraFuture<LuaValue>(avatar);
+                fut.complete(res);
+                return fut;
+            }
+        });
+    }
+
     public <R> Function<R, LuaValue> wrapLua(LuaFunction f) {
         return a -> f.invoke(avatar.luaRuntime.typeManager.javaToLua(a)).arg1();
     }
