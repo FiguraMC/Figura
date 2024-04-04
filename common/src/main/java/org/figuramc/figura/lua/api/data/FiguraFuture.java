@@ -30,7 +30,7 @@ public class FiguraFuture<T> {
         this.avatar = avatar;
     }
 
-    public void handle(T value, Throwable error) {
+    public void complete(T value, Throwable error) {
         if (error != null) error(error);
         else complete(value);
     }

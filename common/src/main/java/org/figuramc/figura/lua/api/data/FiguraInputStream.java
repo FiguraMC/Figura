@@ -64,7 +64,7 @@ public class FiguraInputStream extends InputStream {
             } catch (IOException e) {
                 throw new LuaError(e);
             }
-        }).whenCompleteAsync(future::handle);
+        }).whenCompleteAsync(future::complete);
         return future;
     }
 
