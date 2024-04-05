@@ -1906,6 +1906,7 @@
     "figura.docs.net.socket": "Instance of SocketAPI",
     "figura.docs.net.is_networking_allowed": "Checks if your avatar can use networking features. Always false if networking is OFF in settings",
     "figura.docs.net.is_link_allowed": "Checks if specified link allowed for usage in networking api",
+    "figura.docs.net.new_future": "Creates a new future controlled by Lua code\nReturns 3 values: the created future, a function to complete the future, and a function to make the future error\nIf an (optional) function is supplied, it will be called with the latter two functions, like JavaScript\nAny error that this function throws will automatically cause the future to fail",
     "figura.docs.http": "A global API that contains HTTP related features",
     "figura.docs.http.request": "Creates request builder for specified URI",
     "figura.docs.http_request_builder": "A builder for HTTP request",
