@@ -69,7 +69,7 @@ public class FiguraFuture<T> {
             throw new LuaError("Future::onFinish unavailable for legal reasons");
         } else {
             final var mgr = avatar.luaRuntime.typeManager;
-            AutoCloseable ab = onFinish(value -> f.invoke(mgr.javaToLua(f)));
+            AutoCloseable ab = onFinish(value -> avatar.submit(() -> f.invoke(mgr.javaToLua(f))));
             AutoCloseable ot = g != null ? onFinishError(g) : null;
             return new LuaCloseable(() -> {
                 ab.close();
@@ -81,7 +81,7 @@ public class FiguraFuture<T> {
     @LuaWhitelist
     @LuaMethodDoc("future.on_finish_error")
     public LuaCloseable onFinishError(LuaFunction f) {
-        return new LuaCloseable(onFinishError(err -> f.invoke(err.getMessageObject())));
+        return new LuaCloseable(onFinishError(err -> avatar.submit(() -> f.invoke(err.getMessageObject()))));
     }
 
     public AutoCloseable onFinishError(Consumer<LuaError> f) {
