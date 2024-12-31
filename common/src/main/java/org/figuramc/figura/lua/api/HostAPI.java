@@ -99,6 +99,14 @@ public class HostAPI {
         return this;
     }
 
+    @LuaMethodDoc("host.get_cursor_item")
+    @LuaWhitelist
+    public ItemStackAPI getCursorItem() {
+        if (!isHost() || this.minecraft.player == null)
+            return ItemStackAPI.verify(ItemStack.EMPTY);
+        return ItemStackAPI.verify(this.minecraft.player.containerMenu.getCarried());
+    }
+
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {

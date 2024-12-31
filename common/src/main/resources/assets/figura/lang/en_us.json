@@ -1111,6 +1111,7 @@
     "figura.docs.host.set_chat_color": "Sets the color of the text that is currently being typed into the chat window",
     "figura.docs.host.get_chat_text": "Gets the text that is currently being typed into the chat window",
     "figura.docs.host.set_chat_text": "Sets the text currently being typed in the chat window to the given string",
+    "figura.docs.host.get_cursor_item": "Gets the item currently held by the cursor, or air if none is held",
     "figura.docs.host.get_screen": "Gets the class name of the screen the player is currently on\nIf the player is not currently in a screen, returns nil",
     "figura.docs.host.get_screen_slot_count": "Gets the number of slots in the screen the player is currently in\nIf the player is not currently in a screen or the screen has no slots, returns nil",
     "figura.docs.host.get_screen_slot": "Gets the item in a screen slot\nThe slot is either their numerical id (0 indexed) or the slot string, as used in the /item command\nIf the player is not currently in a screen, the screen has no slots, or the slot index is greater than the maximum, returns nil",
