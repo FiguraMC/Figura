@@ -12,7 +12,7 @@ class ReloadCommand {
     public static LiteralArgumentBuilder<FiguraClientCommandSource> getCommand() {
         LiteralArgumentBuilder<FiguraClientCommandSource> cmd = LiteralArgumentBuilder.literal("reload");
         cmd.executes(context -> {
-            AvatarManager.clearAllAvatars();
+            AvatarManager.reloadAvatar(FiguraMod.getLocalPlayerUUID());
             FiguraToast.sendToast(FiguraText.of("toast.reload"));
             return 1;
         });
