@@ -12,8 +12,8 @@ class ReloadCommand {
     public static LiteralArgumentBuilder<FiguraClientCommandSource> getCommand() {
         LiteralArgumentBuilder<FiguraClientCommandSource> cmd = LiteralArgumentBuilder.literal("reload");
         cmd.executes(context -> {
-            AvatarManager.reloadAvatar(FiguraMod.getLocalPlayerUUID());
-            FiguraToast.sendToast(FiguraText.of("toast.reload"));
+            AvatarManager.clearAllAvatars();
+            FiguraToast.sendToast(FiguraText.of("toast.reload_all"));
             return 1;
         });
         return cmd;
