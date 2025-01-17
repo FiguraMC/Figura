@@ -14,7 +14,6 @@ class ReloadCommand {
         cmd.executes(context -> {
             AvatarManager.clearAllAvatars();
             FiguraToast.sendToast(FiguraText.of("toast.reload_all"));
-            return 1;
         });
         return cmd;
     }
