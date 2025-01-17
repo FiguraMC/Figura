@@ -24,22 +24,6 @@ public class CacheAvatarLoader {
             if (children == null)
                 return;
 
-            for (Path child : children) {
-                try {
-                    FileTime time = Files.getLastModifiedTime(child);
-                    long diff = System.currentTimeMillis() - time.toMillis();
-                    long elapsed = TimeUnit.MILLISECONDS.toDays(diff);
-                    if (elapsed > 7) {
-                        if (Files.deleteIfExists(child)) {
-                            FiguraMod.debug("Successfully deleted cache avatar \"{}\" with \"{}\" days old", IOUtils.getFileNameOrEmpty(child), elapsed);
-                        } else {
-                            throw new Exception();
-                        }
-                    }
-                } catch (Exception ignored) {
-                    FiguraMod.debug("Failed to delete cache avatar \"{}\"", IOUtils.getFileNameOrEmpty(child));
-                }
-            }
         });
     }
 
