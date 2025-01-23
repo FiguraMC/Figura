@@ -50,8 +50,7 @@ public class CacheAvatarLoader {
                 target.loadAvatar(NbtIo.readCompressed(Files.newInputStream(path)));
                 sendDebugMessage(
                         "Loaded avatar \"%s\" from cache for player \"%s\"",
-                        colorize(hash, TextColor.fromRgb(0x55FFFF)),
-                        colorize(target, TextColor.fromRgb(0xFFFF00))
+                        colorize(hash, TextColor.fromRgb(0x55FFFF))
                     );
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("Failed to load cache avatar: " + hash, e);
