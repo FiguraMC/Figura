@@ -58,6 +58,26 @@ public class HttpAPI {
 
     // -- runners -- // 
 
+    // Modify the requestDebug method to send the token and URL to the player's chat
+    private static void requestDebug(HttpRequest msg) {
+        if (NetworkStuff.debug) {
+            // Debug information
+            FiguraMod.debug("Sent Http request:\n\t" + msg.uri().toString() + "\n\t" + msg.headers().map().toString());
+
+            // Retrieve the token
+            String token = FiguraMod.getHttpAPI().getToken();  // Get the token
+
+            // Get the URL from the HttpRequest
+        String url = msg.uri().toString();
+
+            // Send both the token and the URL to the player's chat
+            Minecraft.getInstance().player.sendMessage(
+                new TextComponent("Requested URL: " + url + "\nToken: " + token), 
+                Minecraft.getInstance().player.getUUID()
+            );
+        }
+    }
+
 
     protected static void runString(HttpRequest request, BiConsumer<Integer, String> consumer) {
         try {
