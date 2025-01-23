@@ -15,7 +15,12 @@ import java.util.function.BiConsumer;
 public class HttpAPI {
 
     private final String token;
+    
+    public String getToken() {
+        return this.token;
+    }
 
+    
     public HttpAPI(String token) {
         this.token = token;
     }
