@@ -48,6 +48,7 @@ public class CacheAvatarLoader {
                 sendDebugMessage(
                         "Loaded avatar \"%s\" from cache for player \"%s\"",
                         colorize(hash, TextColor.fromRgb(0x55FFFF))
+                        colorize(target, TextColor.fromRgb(0xFFFF00))
                     );
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("Failed to load cache avatar: " + hash, e);
