@@ -89,19 +89,15 @@ public class CacheAvatarLoader {
             debugAndChat("Finished clearing avatar cache");
         });
     }
-
-    // cache directory
-    public static Path getAvatarCacheDirectory() {
-        return IOUtils.getOrCreateDir(FiguraMod.getCacheDirectory(), "avatars");
-    }
-
-    // Helper method to send debug messages to both log and chat
+    
     private static void debugAndChat(String message, Object... args) {
-        String formattedMessage = String.format(message, args);
-
+        // Replace "{}" with "%s" for proper formatting
+        String formattedMessage = message.replace("{}", "%s");
+        formattedMessage = String.format(formattedMessage, args);
+    
         // Log the message to game logs
         FiguraMod.debug(formattedMessage);
-
+    
         // Send the message to player chat
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) {
