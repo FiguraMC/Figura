@@ -24,7 +24,7 @@ public class CacheAvatarLoader {
             if (children == null)
                 return;
 
-            sendDebugMessage("Initialized avatar cache with {} entries", children.size());
+            sendDebugMessage("Initialized avatar cache with %d entries", children.size());
         });
     }
 
@@ -45,7 +45,7 @@ public class CacheAvatarLoader {
             Path path = getAvatarCacheDirectory().resolve(hash + ".nbt");
             try {
                 target.loadAvatar(NbtIo.readCompressed(Files.newInputStream(path)));
-                sendDebugMessage("Loaded avatar \"{}\" from cache to \"{}\"", hash, target.id);
+                sendDebugMessage("Loaded avatar \"%s\" from cache to \"%s\"", hash, target.id);
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("Failed to load cache avatar: " + hash, e);
             }
@@ -57,7 +57,7 @@ public class CacheAvatarLoader {
             Path file = getAvatarCacheDirectory().resolve(hash + ".nbt");
             try {
                 NbtIo.writeCompressed(nbt, Files.newOutputStream(file));
-                sendDebugMessage("Saved avatar \"{}\" on cache", hash);
+                sendDebugMessage("Saved avatar \"%s\" on cache", hash);
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("Failed to save avatar on cache: " + hash, e);
             }
