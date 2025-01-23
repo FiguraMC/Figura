@@ -2,6 +2,8 @@ package org.figuramc.figura.avatar.local;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.UserData;
 import org.figuramc.figura.utils.IOUtils;
@@ -44,7 +46,7 @@ public class CacheAvatarLoader {
             Path path = getAvatarCacheDirectory().resolve(hash + ".nbt");
             try {
                 target.loadAvatar(NbtIo.readCompressed(Files.newInputStream(path)));
-                FiguraMod.debug("Loaded avatar \"{}\" from cache to \"{}\"", hash, target.id);
+                debugAndChat("Loaded avatar \"{}\" from cache to \"{}\"", hash, target.id);
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("Failed to load cache avatar: " + hash, e);
             }
@@ -56,7 +58,7 @@ public class CacheAvatarLoader {
             Path file = getAvatarCacheDirectory().resolve(hash + ".nbt");
             try {
                 NbtIo.writeCompressed(nbt, Files.newOutputStream(file));
-                FiguraMod.debug("Saved avatar \"{}\" on cache", hash);
+                debugAndChat("Saved avatar \"{}\" on cache", hash);
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("Failed to save avatar on cache: " + hash, e);
             }
@@ -79,16 +81,30 @@ public class CacheAvatarLoader {
                     if (!Files.deleteIfExists(child))
                         throw new Exception();
                 } catch (Exception ignored) {
-                    FiguraMod.debug("Failed to delete cache avatar \"{}\"", IOUtils.getFileNameOrEmpty(child));
+                    debugAndChat("Failed to delete cache avatar \"{}\"", IOUtils.getFileNameOrEmpty(child));
                 }
             }
 
-            FiguraMod.debug("Finished clearing avatar cache");
+            debugAndChat("Finished clearing avatar cache");
         });
     }
 
     // cache directory
     public static Path getAvatarCacheDirectory() {
         return IOUtils.getOrCreateDir(FiguraMod.getCacheDirectory(), "avatars");
+    }
+
+    // Helper method to send debug messages to both log and chat
+    private static void debugAndChat(String message, Object... args) {
+        String formattedMessage = String.format(message, args);
+
+        // Log the message to game logs
+        FiguraMod.debug(formattedMessage);
+
+        // Send the message to player chat
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player != null) {
+            player.sendSystemMessage(Component.literal(formattedMessage));
+        }
     }
 }
