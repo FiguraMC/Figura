@@ -4,10 +4,6 @@ import net.minecraft.client.multiplayer.resolver.ServerAddress;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.Configs;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.chat.Component;
-
 import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpRequest;
@@ -24,7 +20,9 @@ public class HttpAPI {
         this.token = token;
     }
 
-    // -- builders -- //
+
+    // -- builders -- // 
+
 
     protected static URI getUri(String url) {
         return URI.create(getBackendAddress() + "/" + url);
@@ -52,7 +50,9 @@ public class HttpAPI {
                 .header("token", token);
     }
 
-    // -- runners -- //
+
+    // -- runners -- // 
+
 
     protected static void runString(HttpRequest request, BiConsumer<Integer, String> consumer) {
         try {
@@ -80,22 +80,18 @@ public class HttpAPI {
         }
     }
 
-    // -- feedback -- //
+
+    // -- feedback -- // 
+
 
     private static void requestDebug(HttpRequest msg) {
         if (NetworkStuff.debug)
-            sendUrlToClientChat(msg.uri().toString(), msg.headers().map().toString());
+            FiguraMod.debug( "Sent Http request:\n\t" + msg.uri().toString() + "\n\t" + msg.headers().map().toString());
     }
 
-    private static void sendUrlToClientChat(String url, String token) {
-        LocalPlayer player = Minecraft.getInstance().player;
-        if (player != null) {
-            // Send the URL and token as a chat message to the player
-            player.sendSystemMessage(Component.literal("Requested URL: " + url + "\nToken: " + token));
-        }
-    }
 
-    // -- accessors -- //
+    // -- accessors -- // 
+
 
     // will return 200 OK if token is valid
     public HttpRequest checkAuth() {
