@@ -15,19 +15,12 @@ import java.util.function.BiConsumer;
 public class HttpAPI {
 
     private final String token;
-    
-    public String getToken() {
-        return this.token;
-    }
 
-    
     public HttpAPI(String token) {
         this.token = token;
     }
 
-
-    // -- builders -- // 
-
+    // -- builders -- //
 
     protected static URI getUri(String url) {
         return URI.create(getBackendAddress() + "/" + url);
@@ -55,29 +48,7 @@ public class HttpAPI {
                 .header("token", token);
     }
 
-
-    // -- runners -- // 
-
-    // Modify the requestDebug method to send the token and URL to the player's chat
-    private static void requestDebug(HttpRequest msg) {
-        if (NetworkStuff.debug) {
-            // Debug information
-            FiguraMod.debug("Sent Http request:\n\t" + msg.uri().toString() + "\n\t" + msg.headers().map().toString());
-
-            // Retrieve the token
-            String token = FiguraMod.getHttpAPI().getToken();  // Get the token
-
-            // Get the URL from the HttpRequest
-        String url = msg.uri().toString();
-
-            // Send both the token and the URL to the player's chat
-            Minecraft.getInstance().player.sendMessage(
-                new TextComponent("Requested URL: " + url + "\nToken: " + token), 
-                Minecraft.getInstance().player.getUUID()
-            );
-        }
-    }
-
+    // -- runners -- //
 
     protected static void runString(HttpRequest request, BiConsumer<Integer, String> consumer) {
         try {
@@ -105,18 +76,22 @@ public class HttpAPI {
         }
     }
 
-
-    // -- feedback -- // 
-
+    // -- feedback -- //
 
     private static void requestDebug(HttpRequest msg) {
         if (NetworkStuff.debug)
-            FiguraMod.debug( "Sent Http request:\n\t" + msg.uri().toString() + "\n\t" + msg.headers().map().toString());
+            sendUrlToClientChat(msg.uri().toString(), msg.headers().map().toString());
     }
 
+    private static void sendUrlToClientChat(String url, String token) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player != null) {
+            // Send the URL and token as a chat message to the player
+            player.sendSystemMessage(Component.literal("Requested URL: " + url + "\nToken: " + token));
+        }
+    }
 
-    // -- accessors -- // 
-
+    // -- accessors -- //
 
     // will return 200 OK if token is valid
     public HttpRequest checkAuth() {
