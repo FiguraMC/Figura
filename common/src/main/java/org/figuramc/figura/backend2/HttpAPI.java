@@ -4,6 +4,10 @@ import net.minecraft.client.multiplayer.resolver.ServerAddress;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.Configs;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
+
 import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpRequest;
