@@ -45,7 +45,10 @@ public class CacheAvatarLoader {
             Path path = getAvatarCacheDirectory().resolve(hash + ".nbt");
             try {
                 target.loadAvatar(NbtIo.readCompressed(Files.newInputStream(path)));
-                sendDebugMessage("Loaded avatar \"%s\" from cache to \"%s\"", hash, target.id);
+                sendDebugMessage(
+                        "Loaded avatar \"%s\" from cache for player \"%s\"",
+                        colorize(hash, TextColor.fromRgb(0x55FFFF))
+                    );
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("Failed to load cache avatar: " + hash, e);
             }
@@ -80,7 +83,7 @@ public class CacheAvatarLoader {
                     if (!Files.deleteIfExists(child))
                         throw new Exception();
                 } catch (Exception ignored) {
-                    FiguraMod.debug("Failed to delete cache avatar \"{}\"", IOUtils.getFileNameOrEmpty(child));
+                    FiguraMod.debug("Failed to delete cache avatar \"%s\"", IOUtils.getFileNameOrEmpty(child));
                 }
             }
 
@@ -101,5 +104,8 @@ public class CacheAvatarLoader {
         if (Minecraft.getInstance().player != null) {
             Minecraft.getInstance().player.sendSystemMessage(Component.literal("[DEBUG] " + formattedMessage));
         }
+    }
+        private static Component colorize(String text, TextColor color) {
+        return Component.literal(text).setStyle(Style.EMPTY.withColor(color));
     }
 }
