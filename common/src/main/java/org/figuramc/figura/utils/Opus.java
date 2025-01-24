@@ -16,10 +16,10 @@ public interface Opus extends Library {
 
     PointerByReference opus_decoder_create(int Fs, int channels, IntBuffer error);
 
-    int opus_decode(PointerByReference st, byte data[], int len, ShortBuffer pcm, int frame_size, int decode_fec);
+    int opus_decode(PointerByReference st, byte[] data, int len, ShortBuffer pcm, int frame_size, int decode_fec);
 
     void opus_decoder_destroy(PointerByReference st);
 
-    int opus_packet_get_samples_per_frame(byte data[], int Fs);
+    int opus_packet_get_samples_per_frame(byte[] data, int Fs);
 }
 
