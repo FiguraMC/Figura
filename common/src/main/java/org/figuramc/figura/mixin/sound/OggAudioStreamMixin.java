@@ -69,7 +69,7 @@ public abstract class OggAudioStreamMixin {
 
             if (!OpusUtils.isLoaded()) {
                 FiguraMod.debug("Opus library not loaded, loading now");
-                OpusUtils.loadBundled();
+                OpusUtils.loadNatives();
             } else {
                 FiguraMod.debug("Opus library already loaded");
             }

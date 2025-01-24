@@ -39,7 +39,7 @@ import java.nio.file.StandardCopyOption;
  * @see <a href="https://github.com/adamheinrich/native-utils">https://github.com/adamheinrich/native-utils</a>
  *
  */
-public class NativeUtil {
+public class NativeUtils {
 
     /**
      * The minimum length a prefix for a file has to have according to {@link File#createTempFile(String, String)}}.
@@ -55,7 +55,7 @@ public class NativeUtil {
     /**
      * Private constructor - this class will never be instanced
      */
-    private NativeUtil() {
+    private NativeUtils() {
     }
 
     /**
@@ -95,7 +95,7 @@ public class NativeUtil {
 
         File temp = new File(temporaryDir, filename);
 
-        try (InputStream is = NativeUtil.class.getResourceAsStream(path)) {
+        try (InputStream is = NativeUtils.class.getResourceAsStream(path)) {
             Files.copy(is, temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             temp.delete();
