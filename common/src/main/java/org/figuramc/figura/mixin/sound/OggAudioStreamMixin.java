@@ -166,7 +166,6 @@ public abstract class OggAudioStreamMixin {
     )
     private AudioFormat createOpusAudioFormat(float sampleRate, int sampleSizeInBits, int channels, boolean signed, boolean bigEndian, Operation<AudioFormat> original) {
         if (figura$isOpus) {
-            FiguraMod.debug("Opus file detected, returning custom audio format");
             return original.call((float) figura$sampleRate, sampleSizeInBits, figura$channelCount, signed, bigEndian);
         }
         return original.call(sampleRate, sampleSizeInBits, channels, signed, bigEndian);
@@ -200,7 +199,6 @@ public abstract class OggAudioStreamMixin {
         if (!figura$isOpus) {
             return;
         }
-        FiguraMod.debug("Reading Opus packet");
         OggAudioStream.OutputConcat output = new OggAudioStream.OutputConcat(16384);
 
         if (!figura$preloadOpusBuffer()) {
@@ -210,8 +208,6 @@ public abstract class OggAudioStreamMixin {
             int samples = Opus.OPUS.opus_packet_get_samples_per_frame(packet.dumpToStandardFormat(), figura$sampleRate);
             ShortBuffer decoded = figura$decode(figura$decoder, figura$packetBuffer.stream().map(OpusPacket::dumpToStandardFormat).toList(), samples);
             figura$injectShortBuffer(output, decoded);
-            cir.setReturnValue(output.get());
-            return;
         }
         cir.setReturnValue(output.get());
     }
