@@ -16,7 +16,8 @@ public class OpusUtils {
         put("linux-aarch64", "so");
         put("linux-x86", "so");
         put("linux-x86-64", "so");
-        //put("win32-x86-64", "dll");
+        put("win32-x86", "dll");
+        put("win32-x86-64", "dll");
     }};
 
     private static boolean loaded = false;
