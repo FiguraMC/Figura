@@ -36,6 +36,7 @@ subprojects {
 		modCompileOnly "maven.modrinth:iris:$iris"
 		modCompileOnly "maven.modrinth:immediatelyfast:$immediately_fast"
 		modCompileOnly "maven.modrinth:iris:$iris"
+		implementation("org.chenliang.oggus:oggus:1.2.0")
 	}
 }
 
