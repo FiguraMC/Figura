@@ -3,12 +3,10 @@ package org.figuramc.figura.mixin.sound;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.audio.OggAudioStream;
-import com.sun.jna.ptr.PointerByReference;
 import net.minecraft.util.Mth;
 import org.chenliang.oggus.opus.*;
+import org.concentus.*;
 import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.utils.Opus;
-import org.figuramc.figura.utils.OpusUtils;
 import org.lwjgl.stb.STBVorbisAlloc;
 import org.lwjgl.stb.STBVorbisInfo;
 import org.spongepowered.asm.mixin.*;
@@ -55,38 +53,24 @@ public abstract class OggAudioStreamMixin {
                     shift = At.Shift.BEFORE
             )
     )
-    private void checkForOpusHeader(InputStream inputStream, CallbackInfo ci) throws IOException {
+    private void checkForOpusHeader(InputStream inputStream, CallbackInfo ci) {
         byte[] headerBytes = new byte[8];
         int position = this.buffer.position();
         this.buffer.position(0x1C);
         this.buffer.get(headerBytes, 0, Math.min(headerBytes.length, this.buffer.remaining()));
         this.buffer.position(position);
 
-        if (new String(headerBytes, 0, 8).equals("OpusHead")) {
-            FiguraMod.debug("Opus file detected");
-
-            figura$isOpus = true;
-
-            if (!OpusUtils.isLoaded()) {
-                FiguraMod.debug("Opus library not loaded, loading now");
-                OpusUtils.loadNatives();
-            } else {
-                FiguraMod.debug("Opus library already loaded");
-            }
-        }
+        figura$isOpus = new String(headerBytes, 0, 8).equals("OpusHead");
     }
 
     @Unique
     OggOpusStream figura$opusStream;
 
     @Unique
-    IntBuffer figura$error = IntBuffer.allocate(1);
+    OpusDecoder figura$decoder = null;
 
     @Unique
-    PointerByReference figura$decoder = null;
-
-    @Unique
-    ArrayList<OpusPacket> figura$packetBuffer = new ArrayList<>(128);
+    ArrayList<OpusPacket> figura$packetBuffer = new ArrayList<>(256);
 
     @WrapOperation(
             method = "<init>",
@@ -96,7 +80,7 @@ public abstract class OggAudioStreamMixin {
             ),
             remap = false
     )
-    private long openOpusStream(ByteBuffer datablock, IntBuffer datablock_memory_consumed_in_bytes, IntBuffer error, STBVorbisAlloc alloc_buffer, Operation<Long> original) throws IOException {
+    private long openOpusStream(ByteBuffer datablock, IntBuffer datablock_memory_consumed_in_bytes, IntBuffer error, STBVorbisAlloc alloc_buffer, Operation<Long> original) throws IOException, OpusException {
         if (figura$isOpus) {
             if (datablock.remaining() == datablock.capacity()) { // Increase buffer size if it's too small
                 forwardBuffer();
@@ -109,8 +93,8 @@ public abstract class OggAudioStreamMixin {
 
             figura$configureDecoder(figura$opusStream);
 
-            FiguraMod.debug("Initializing " + Opus.OPUS.opus_get_version_string() + " @ " + figura$sampleRate + "hz (" + figura$channelCount + " channel(s))");
-            figura$decoder = Opus.OPUS.opus_decoder_create(figura$sampleRate, figura$channelCount, figura$error);
+            FiguraMod.debug("Initializing opus @ " + figura$sampleRate + "hz (" + figura$channelCount + " channel(s))");
+            figura$decoder = new OpusDecoder(figura$sampleRate, figura$channelCount);
             return 1;
         } else {
             return original.call(datablock, datablock_memory_consumed_in_bytes, error, alloc_buffer);
@@ -195,7 +179,7 @@ public abstract class OggAudioStreamMixin {
             at = @At("HEAD"),
             cancellable = true
     )
-    private void readAll(CallbackInfoReturnable<ByteBuffer> cir) throws IOException {
+    private void readAll(CallbackInfoReturnable<ByteBuffer> cir) throws IOException, OpusException {
         if (!figura$isOpus) {
             return;
         }
@@ -205,9 +189,9 @@ public abstract class OggAudioStreamMixin {
             FiguraMod.debug("Failed to preload buffer");
         } else if (!figura$packetBuffer.isEmpty()) {
             OpusPacket packet = figura$packetBuffer.get(0);
-            int samples = Opus.OPUS.opus_packet_get_samples_per_frame(packet.dumpToStandardFormat(), figura$sampleRate);
-            ShortBuffer decoded = figura$decode(figura$decoder, figura$packetBuffer.stream().map(OpusPacket::dumpToStandardFormat).toList(), samples);
-            figura$injectShortBuffer(output, decoded);
+            int samples = OpusPacketInfo.getNumSamplesPerFrame(packet.dumpToStandardFormat(), 0, figura$sampleRate);
+            short[] decoded = figura$decode(figura$packetBuffer.stream().map(OpusPacket::dumpToStandardFormat).toList(), samples);
+            figura$injectShortArray(output, decoded);
         }
         cir.setReturnValue(output.get());
     }
@@ -218,7 +202,7 @@ public abstract class OggAudioStreamMixin {
             at = @At("HEAD"),
             cancellable = true
     )
-    private void readPacket(OggAudioStream.OutputConcat output, CallbackInfoReturnable<Boolean> cir) throws IOException {
+    private void readPacket(OggAudioStream.OutputConcat output, CallbackInfoReturnable<Boolean> cir) throws IOException, OpusException {
         if (!figura$isOpus) {
             return;
         }
@@ -227,9 +211,9 @@ public abstract class OggAudioStreamMixin {
             FiguraMod.debug("Failed to preload buffer");
         } else if (!figura$packetBuffer.isEmpty()) {
             OpusPacket packet = figura$packetBuffer.remove(0);
-            int samples = Opus.OPUS.opus_packet_get_samples_per_frame(packet.dumpToStandardFormat(), figura$sampleRate);
-            ShortBuffer decoded = figura$decode(figura$decoder, Collections.singletonList(packet.dumpToStandardFormat()), samples);
-            figura$injectShortBuffer(output, decoded);
+            int samples = OpusPacketInfo.getNumSamplesPerFrame(packet.dumpToStandardFormat(), 0, figura$sampleRate);
+            short[] decoded = figura$decode(Collections.singletonList(packet.dumpToStandardFormat()), samples);
+            figura$injectShortArray(output, decoded);
             cir.setReturnValue(!figura$packetBuffer.isEmpty());
             return;
         }
@@ -239,30 +223,20 @@ public abstract class OggAudioStreamMixin {
     /**
      * Decodes a list of Opus packets into a ShortBuffer.
      *
-     * @param opusDecoder        The Opus decoder reference.
-     * @param packets            The list of Opus packets to decode.
-     * @param samples The maximum number of samples per frame.
+     * @param packets     The list of Opus packets to decode.
+     * @param samples     The maximum number of samples per frame.
      * @return A ShortBuffer containing the decoded audio samples.
      */
     @Unique
-    private ShortBuffer figura$decode(PointerByReference opusDecoder, List<byte[]> packets, int samples) {
-        // ~40% faster than ShortBuffer.allocate(...) on my system
-        ShortBuffer decoded = ByteBuffer.allocateDirect(samples * packets.size() * Short.BYTES)
-                .order(ByteOrder.nativeOrder())
-                .asShortBuffer();
-
+    private short[] figura$decode(List<byte[]> packets, int samples) throws OpusException {
+        short[] decoded = new short[samples * packets.size()];
         for (byte[] dataBuffer : packets) {
-            int initialPosition = decoded.position();
-            int code = Opus.OPUS.opus_decode(opusDecoder, dataBuffer, dataBuffer.length, decoded, samples, 0);
+            int code = figura$decoder.decode(dataBuffer, 0, dataBuffer.length, decoded, 0, samples,false);
 
             if (code < 0) {
-                FiguraMod.debug(Opus.OPUS.opus_strerror(code));
-                decoded.position(initialPosition);
-                continue;
+                FiguraMod.debug(CodecHelpers.opus_strerror(code));
             }
-            decoded.position(decoded.position() + code);
         }
-        decoded.flip();
         return decoded;
     }
 
@@ -275,10 +249,9 @@ public abstract class OggAudioStreamMixin {
      * @param decoded The {@link ShortBuffer} containing the decoded audio samples.
      */
     @Unique
-    public void figura$injectShortBuffer(OggAudioStream.OutputConcat concat, ShortBuffer decoded) {
+    public void figura$injectShortArray(OggAudioStream.OutputConcat concat, short[] decoded) {
         OutputConcatAccessor _concat = (OutputConcatAccessor) concat;
-        while (decoded.hasRemaining()) {
-            int rawValue = decoded.get();
+        for (short rawValue : decoded) {
 
             int clampedValue = Mth.clamp(rawValue, Short.MIN_VALUE, Short.MAX_VALUE);
 
@@ -304,7 +277,6 @@ public abstract class OggAudioStreamMixin {
     private void closeOpusStream(long f, Operation<Void> original) {
         if (figura$isOpus) {
             FiguraMod.debug("Destroying Opus decoder");
-            Opus.OPUS.opus_decoder_destroy(figura$decoder);
         } else {
             original.call(f);
         }
