@@ -93,7 +93,7 @@ public abstract class OggAudioStreamMixin {
 
             figura$configureDecoder(figura$opusStream);
 
-            FiguraMod.debug("Initializing opus @ " + figura$sampleRate + "hz (" + figura$channelCount + " channel(s))");
+            FiguraMod.debug(String.format("Initializing opus @ %d hz (%d channel(s))", figura$sampleRate, figura$channelCount));
             figura$decoder = new OpusDecoder(figura$sampleRate, figura$channelCount);
             return 1;
         } else {
@@ -274,10 +274,8 @@ public abstract class OggAudioStreamMixin {
             ),
             remap = false
     )
-    private void closeOpusStream(long f, Operation<Void> original) {
-        if (figura$isOpus) {
-            FiguraMod.debug("Destroying Opus decoder");
-        } else {
+    private void close(long f, Operation<Void> original) {
+        if (!figura$isOpus) {
             original.call(f);
         }
     }
