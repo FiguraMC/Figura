@@ -1,5 +1,6 @@
 package org.figuramc.figura.mixin.sound;
 
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.audio.OggAudioStream;
@@ -29,9 +30,6 @@ public abstract class OggAudioStreamMixin {
 
     @Shadow
     private ByteBuffer buffer;
-
-    @Shadow
-    private long handle;
 
     @Shadow
     protected abstract void forwardBuffer();
@@ -136,7 +134,7 @@ public abstract class OggAudioStreamMixin {
         if (figura$isOpus) {
             return null; // Avoid calling stb_vorbis_get_info
         } else {
-            return original.call(handle, info);
+            return original.call(f, info);
         }
     }
 
@@ -266,7 +264,7 @@ public abstract class OggAudioStreamMixin {
         }
     }
 
-    @WrapOperation(
+    @WrapWithCondition(
             method = "close",
             at = @At(
                     value = "INVOKE",
@@ -274,10 +272,8 @@ public abstract class OggAudioStreamMixin {
             ),
             remap = false
     )
-    private void close(long f, Operation<Void> original) {
-        if (!figura$isOpus) {
-            original.call(f);
-        }
+    private boolean close(long f) {
+        return !figura$isOpus;
     }
 }
 
