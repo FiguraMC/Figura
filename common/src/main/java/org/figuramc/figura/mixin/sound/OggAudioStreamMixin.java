@@ -122,7 +122,7 @@ public abstract class OggAudioStreamMixin {
         return original.call(instance, i);
     }
 
-    @WrapOperation(
+    @WrapWithCondition(
             method = "<init>",
             at = @At(
                     value = "INVOKE",
@@ -130,12 +130,8 @@ public abstract class OggAudioStreamMixin {
             ),
             remap = false
     )
-    private STBVorbisInfo getOpusInfo(long f, STBVorbisInfo info, Operation<STBVorbisInfo> original) {
-        if (figura$isOpus) {
-            return null; // Avoid calling stb_vorbis_get_info
-        } else {
-            return original.call(f, info);
-        }
+    private boolean getOpusInfo(long f, STBVorbisInfo __result) {
+        return !figura$isOpus;
     }
 
     @WrapOperation(
