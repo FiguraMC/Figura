@@ -914,6 +914,7 @@
     "figura.docs.client.get_gui_scale": "Returns the current value of your Gui Scale setting\nIf you use auto, then it gets the actual current scale",
     "figura.docs.client.get_camera_pos": "Returns the position of the viewer's camera",
     "figura.docs.client.get_camera_rot": "Returns the rotation of the viewer's camera",
+    "figura.docs.client.get_camera_matrix": "Returns the transformation matrix of the viewer's camera",
     "figura.docs.client.get_camera_dir": "Returns a unit vector pointing in the direction that the camera is facing",
     "figura.docs.client.get_text_width": "Returns the width of the given text in pixels\nIn case of multiple lines, return the largest width of all lines",
     "figura.docs.client.get_text_height": "Returns the height of the given text in pixels",
