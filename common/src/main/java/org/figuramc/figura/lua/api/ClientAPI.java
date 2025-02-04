@@ -3,6 +3,7 @@ package org.figuramc.figura.lua.api;
 import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.SharedConstants;
+import net.minecraft.client.Camera;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
@@ -31,12 +32,14 @@ import org.figuramc.figura.lua.docs.FiguraListDocs;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
+import org.figuramc.figura.math.matrix.FiguraMat4;
 import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.mixin.gui.GuiAccessor;
 import org.figuramc.figura.mixin.gui.PlayerTabOverlayAccessor;
 import org.figuramc.figura.mixin.render.ModelManagerAccessor;
 import org.figuramc.figura.utils.*;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
@@ -275,6 +278,24 @@ public class ClientAPI {
         quaternion.getEulerAnglesYXZ(vec);
         double f = 180d / Math.PI;
         return FiguraVec3.fromVec3f(vec).multiply(f, -f, f); // degrees, and negate y
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_camera_matrix")
+    public static FiguraMat4 getCameraMatrix() {
+        Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+        Vec3 cameraPos = camera.getPosition();
+        Matrix4f viewMatrix = new Matrix4f()
+                .rotate(
+                        camera.rotation()
+                )
+                .translate(
+                        (float) -cameraPos.x,
+                        (float) -cameraPos.y,
+                        (float) -cameraPos.z
+                );
+
+        return new FiguraMat4().set(viewMatrix);
     }
 
     @LuaWhitelist
