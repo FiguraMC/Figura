@@ -1,5 +1,4 @@
 package org.figuramc.figura.lua.api.data;
-<<<<<<< HEAD
 
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.LuaWhitelist;
