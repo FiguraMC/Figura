@@ -591,7 +591,7 @@ public class FiguraTexture extends SimpleTexture {
     // credit: Wikipedia contributors, http://members.chello.at/easyfilter/bresenham.html
     private void lineReal(int x0, int y0, int x1, int y1, FiguraVec4 color, BlendMode mode) {
         int colorInt = ColorUtils.rgbaToIntABGR(color);
-        boolean compositionRequired = color.w < 1.0;
+        boolean compositionRequired = color.w < 1.0 || mode != BlendMode.NORMAL;
         int dx = Math.abs(x1 - x0);
         int sx = x0 < x1 ? 1 : -1;
         int dy = -Math.abs(y1 - y0);
