@@ -291,6 +291,7 @@ public class FiguraTexture extends SimpleTexture {
 
         NativeImage internal = new NativeImage(targetWidth, targetHeight, true);
         FiguraTexture result = owner.registerTexture(outputName, internal, false);
+        result.backupImage();
         int srcWidth = getWidth(), srcHeight = getHeight();
         for (int outputX = 0; outputX < targetWidth; outputX++) {
             for (int outputY = 0; outputY < targetHeight; outputY++) {
@@ -320,8 +321,6 @@ public class FiguraTexture extends SimpleTexture {
                 result.setActualPixel(outputX, outputY, ColorUtils.rgbaToIntABGR(FiguraVec4.of(r, g, b, a)), false);
             }
         }
-        result.backupImage();
-        result.update();
         return result;
     }
 
@@ -764,6 +763,7 @@ public class FiguraTexture extends SimpleTexture {
             blendActual = BlendMode.NAMES.get(blend);
             if (blendActual == null) throw new LuaError(String.format("Unknown blending mode '%s'.", blend));
         }
+        backupImage();
         if (antialiasActual) {
             aaLineReal((int) xy0.x, (int) xy0.y, (int) xy1.x, (int) xy1.y, color, blendActual);
         } else {
