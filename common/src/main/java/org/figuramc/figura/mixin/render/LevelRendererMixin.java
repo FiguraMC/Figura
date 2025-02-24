@@ -99,6 +99,6 @@ public abstract class LevelRendererMixin {
         if (avatar == null || avatar.luaRuntime == null || (color = avatar.luaRuntime.renderer.blockOutlineColor) == null)
             return colorInt;
 
-        return ARGB.colorFromFloat((float) color.x, (float) color.y, (float) color.z, (float) color.w);
+        return ARGB.colorFromFloat((float) color.w, (float) color.x, (float) color.y, (float) color.z);
     }
 }
