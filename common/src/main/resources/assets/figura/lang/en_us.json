@@ -1569,6 +1569,7 @@
     "figura.docs.texture.apply_matrix": "Transforms all pixels in the specified area of this texture by the matrix\nThe resulting colour channels will be clamped between 0 and 1",
     "figura.docs.texture._math_op": "Performs the named mathematical operation on each pixel within the area with the same area of another texture of the same dimensions.\nThe resulting values are written to this texture.\nThe order of each operation is (this) <op> (other).",
     "figura.docs.texture.invert": "Inverts a section of a texture by inverting its color channels. Optionally can also invert the alpha channel by passing true as a fifth argument.",
+    "figura.docs.texture.remap_colors": "Remaps the colors in a texture. Both tables need to be the same length. Each color in the 'from' table will be mapped to the corresponding color in the 'to' table.",
     "figura.docs.texture.set_overflow_mode": "Sets the overflow mode that this texture will use to handle out-of-bounds reads and writes.",
     "figura.docs.texture.get_overflow_mode": "Returns the overflow mode that currently active for this texture.",
     "figura.docs.texture_atlas": "A texture atlas object, with helper functions related to a texture atlas",

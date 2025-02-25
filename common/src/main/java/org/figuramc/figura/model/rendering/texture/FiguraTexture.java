@@ -5,6 +5,8 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.resources.ResourceLocation;
@@ -28,15 +30,18 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.*;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.system.MemoryUtil;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.nio.file.Path;
 import java.util.Base64;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.function.BiFunction;
+import java.util.function.IntUnaryOperator;
 
 @SuppressWarnings("resource")
 @LuaWhitelist
@@ -281,8 +286,8 @@ public class FiguraTexture extends SimpleTexture {
     @LuaMethodDoc(
             value = "texture.resize",
             overloads = @LuaMethodOverload(
-                    argumentNames = { "outputName", "width", "height" },
-                    argumentTypes = { String.class, Integer.class, Integer.class }
+                    argumentNames = {"outputName", "width", "height"},
+                    argumentTypes = {String.class, Integer.class, Integer.class}
             )
     )
     public FiguraTexture resize(String outputName, int targetWidth, int targetHeight) {
@@ -580,8 +585,8 @@ public class FiguraTexture extends SimpleTexture {
     @LuaMethodDoc(
             value = "texture.blit",
             overloads = @LuaMethodOverload(
-                    argumentTypes = { LuaTable.class },
-                    argumentNames = { "options" }
+                    argumentTypes = {LuaTable.class},
+                    argumentNames = {"options"}
             )
     )
     public FiguraTexture blit(LuaTable options) {
@@ -1080,6 +1085,84 @@ public class FiguraTexture extends SimpleTexture {
                 setActualPixel(realX, realY, ColorUtils.rgbaToIntABGR(inverted), false);
             }
         }
+        return this;
+    }
+
+    // Color mapping
+    private static IntUnaryOperator getPalleteMapFunction(int[] from, int[] to) {
+        if (from.length != to.length) throw new IllegalArgumentException(String.format(
+                "Pallete mapping between different sizes (%d vs %d)", from.length, to.length));
+        Int2IntMap mapping = new Int2IntOpenHashMap(from.length);
+        for (int i = 0; i < from.length; i++) {
+            int fromVal = from[i];
+            if (fromVal >>> 24 /* alpha */ != 0) {
+                mapping.put(fromVal & 0xffffff /* transparent */, to[i]);
+            }
+        }
+        return (in) -> {
+            int trns = in >>> 24;
+            if (trns == 0) return in;
+            int normalized = in & 0xffffff;
+            int replacement = mapping.getOrDefault(normalized, in | 0xff000000);
+            int newAlpha = replacement >>> 24;
+            return ((trns * (newAlpha / 255)) << 24) | (replacement & 0xffffff);
+        };
+    }
+
+    private static void nativeFastApply(NativeImage img, IntUnaryOperator fn) {
+        if (img.format() != NativeImage.Format.RGBA)
+            throw new IllegalArgumentException("Native image isn't RGBA for function application");
+        img.checkAllocated();
+        int size = img.getWidth() * img.getHeight();
+        IntBuffer liveAccess = MemoryUtil.memIntBuffer(img.pixels, size);
+        for (int i = 0; i < size; i++) {
+            liveAccess.put(i, fn.applyAsInt(liveAccess.get(i)));
+        }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            value = "texture.remap_colors",
+            overloads = @LuaMethodOverload(
+                    argumentNames = { "from", "to" },
+                    argumentTypes = { LuaTable.class, LuaTable.class }
+            )
+    )
+    public FiguraTexture remapColors(LuaTable from, LuaTable to) {
+        // Expect a sequence-like `from`
+        int size = from.length();
+        if (size != to.length()) throw new LuaError("remapColors: from and to tables are different lengths");
+
+        int[] mappedFrom = new int[size];
+        int[] mappedTo = new int[size];
+        for (int i = 0; i < size; i++) {
+            FiguraVec4 fromV;
+            LuaValue fromLua = from.get(i + 1);
+
+            if (fromLua.isuserdata(FiguraVec4.class)) fromV = (FiguraVec4)fromLua.checkuserdata(FiguraVec4.class);
+            else if (fromLua.isuserdata(FiguraVec3.class)) fromV = ((FiguraVec3)fromLua.checkuserdata(FiguraVec3.class)).augmented(1.0);
+            else throw new LuaError(String.format(
+                    "remapColors: 'from' table should only contain Vector3s or Vector4s, instead found a %s at index %d",
+                    fromLua.isuserdata() ? fromLua.checkuserdata().getClass().getSimpleName() : fromLua.typename(),
+                    i + 1
+            ));
+            mappedFrom[i] = ColorUtils.rgbaToIntABGR(fromV);
+
+            FiguraVec4 toV;
+            LuaValue toLua = to.get(i + 1);
+
+            if (toLua.isuserdata(FiguraVec4.class)) toV = (FiguraVec4)toLua.checkuserdata(FiguraVec4.class);
+            else if (toLua.isuserdata(FiguraVec3.class)) toV = ((FiguraVec3)toLua.checkuserdata(FiguraVec3.class)).augmented(1.0);
+            else throw new LuaError(String.format(
+                        "remapColors: 'to' table should only contain Vector3s or Vector4s, instead found a %s at index %d",
+                        toLua.isuserdata() ? toLua.checkuserdata().getClass().getSimpleName() : toLua.typename(),
+                        i + 1
+                ));
+            mappedTo[i] = ColorUtils.rgbaToIntABGR(toV);
+        }
+
+        IntUnaryOperator mapper = getPalleteMapFunction(mappedFrom, mappedTo);
+        nativeFastApply(texture, mapper);
         return this;
     }
 
