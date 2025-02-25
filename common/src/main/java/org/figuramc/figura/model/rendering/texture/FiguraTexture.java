@@ -847,13 +847,7 @@ public class FiguraTexture extends SimpleTexture {
                                      int y,
                                      int width,
                                      int height,
-                                     @LuaNotNil FiguraMat4 matrix,
-                                     @Nullable Object clip) {
-        // remove next major version
-        if (clip != null) {
-            throw new LuaError(
-                    "texture.applyMatrix's 'clip' argument has been removed (clipping is always enabled)");
-        }
+                                     @LuaNotNil FiguraMat4 matrix) {
         backupImage();
         for (int i = y; i < y + height; i++) {
             for (int j = x; j < x + width; j++) {
