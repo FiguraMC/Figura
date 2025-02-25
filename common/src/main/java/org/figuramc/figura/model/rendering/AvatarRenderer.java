@@ -51,7 +51,7 @@ public abstract class AvatarRenderer {
     public int light;
     public int overlay;
     public float alpha;
-    public boolean translucent, glowing;
+    public boolean translucent, glowing, shade;
     public FiguraMat4 posMat = FiguraMat4.of();
     public FiguraMat3 normalMat = FiguraMat3.of();
 
@@ -205,16 +205,16 @@ public abstract class AvatarRenderer {
     }
 
     public void setupRenderer(PartFilterScheme currentFilterScheme, MultiBufferSource bufferSource, PoseStack matrices, float tickDelta, int light, float alpha, int overlay, boolean translucent, boolean glowing) {
-        this.setupRenderer(currentFilterScheme, bufferSource, tickDelta, light, alpha, overlay, translucent, glowing);
+        this.setupRenderer(currentFilterScheme, bufferSource, tickDelta, light, alpha, overlay, translucent, glowing, true);
         this.setMatrices(matrices);
     }
 
-    public void setupRenderer(PartFilterScheme currentFilterScheme, MultiBufferSource bufferSource, PoseStack matrices, float tickDelta, int light, float alpha, int overlay, boolean translucent, boolean glowing, double camX, double camY, double camZ) {
-        this.setupRenderer(currentFilterScheme, bufferSource, tickDelta, light, alpha, overlay, translucent, glowing);
+    public void setupRenderer(PartFilterScheme currentFilterScheme, MultiBufferSource bufferSource, PoseStack matrices, float tickDelta, int light, float alpha, int overlay, boolean translucent, boolean glowing, boolean shade, double camX, double camY, double camZ) {
+        this.setupRenderer(currentFilterScheme, bufferSource, tickDelta, light, alpha, overlay, translucent, glowing, shade);
         this.setMatrices(camX, camY, camZ, matrices);
     }
 
-    private void setupRenderer(PartFilterScheme currentFilterScheme, MultiBufferSource bufferSource, float tickDelta, int light, float alpha, int overlay, boolean translucent, boolean glowing) {
+    private void setupRenderer(PartFilterScheme currentFilterScheme, MultiBufferSource bufferSource, float tickDelta, int light, float alpha, int overlay, boolean translucent, boolean glowing, boolean shade) {
         this.currentFilterScheme = currentFilterScheme;
         this.bufferSource = bufferSource;
         this.tickDelta = tickDelta;
@@ -223,6 +223,7 @@ public abstract class AvatarRenderer {
         this.overlay = overlay;
         this.translucent = translucent;
         this.glowing = glowing;
+        this.shade = shade;
     }
 
     public void setMatrices(PoseStack matrices) {
