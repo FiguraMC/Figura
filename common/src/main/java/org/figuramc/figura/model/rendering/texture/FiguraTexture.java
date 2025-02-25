@@ -813,7 +813,7 @@ public class FiguraTexture extends SimpleTexture {
                 Pair<Integer, Integer> actual = mapCoordinates(j, i);
                 if (actual == null) continue;
                 int actualX = actual.getFirst(), actualY = actual.getSecond();
-                FiguraVec4 color = getPixel(actualX, actualY);
+                FiguraVec4 color = getActualPixel(actualX, actualY);
                 LuaValue result = function.call(
                         owner.luaRuntime.typeManager.javaToLua(color).arg1(),
                         LuaValue.valueOf(j),
@@ -853,8 +853,8 @@ public class FiguraTexture extends SimpleTexture {
             for (int j = x; j < x + width; j++) {
                 Pair<Integer, Integer> actual = mapCoordinates(j, i);
                 if (actual == null) continue;
-                int realX = actual.getFirst(), realY = actual.getSecond();
-                FiguraVec4 color = getPixel(realX, realY);
+                int actualX = actual.getFirst(), actualY = actual.getSecond();
+                FiguraVec4 color = getActualPixel(actualX, actualY);
                 color.transform(matrix);
 
                 color.x = Math.max(0, Math.min(color.x, 1));
@@ -862,7 +862,7 @@ public class FiguraTexture extends SimpleTexture {
                 color.z = Math.max(0, Math.min(color.z, 1));
                 color.w = Math.max(0, Math.min(color.w, 1));
 
-                setActualPixel(realX, realY, ColorUtils.rgbaToIntABGR(color), false);
+                setActualPixel(actualX, actualY, ColorUtils.rgbaToIntABGR(color), false);
             }
         }
         return this;
