@@ -198,6 +198,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         customization.primaryTexture = new TextureCustomization(FiguraTextureSet.OverrideType.PRIMARY, null);
         customization.secondaryTexture = new TextureCustomization(FiguraTextureSet.OverrideType.SECONDARY, null);
 
+        customization.shade = shade;
+
         return customization;
     }
 
@@ -546,6 +548,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         int overlay = customization.overlay;
         int light = vertexData.fullBright ? LightTexture.FULL_BRIGHT : customization.light;
+        boolean shade = customization.shade != null && customization.shade;
 
         VERTEX_BUFFER.getBufferFor(vertexData.renderType, vertexData.primary, vertexConsumer -> {
             for (int i = 0; i < vertCount; i++) {
@@ -554,8 +557,12 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 pos.set(vertex.x, vertex.y, vertex.z, 1);
                 pos.transform(customization.positionMatrix);
                 pos.add(pos.normalized().scale(vertexData.vertexOffset));
-                normal.set(vertex.nx, vertex.ny, vertex.nz);
-                normal.transform(customization.normalMatrix);
+                if (shade) {
+                    normal.set(vertex.nx, vertex.ny, vertex.nz);
+                    normal.transform(customization.normalMatrix);
+                } else {
+                    normal.set(0f, 1f, 0f);
+                }
                 uv.set(vertex.u, vertex.v, 1);
                 uv.divide(uvFixer);
                 uv.transform(customization.uvMatrix);

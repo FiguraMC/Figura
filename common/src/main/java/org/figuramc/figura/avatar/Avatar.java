@@ -544,7 +544,7 @@ public class Avatar {
         renderer.setupRenderer(
                 PartFilterScheme.WORLD, bufferSource, stack,
                 tickDelta, lightFallback, 1f, OverlayTexture.NO_OVERLAY,
-                false, false,
+                false, false, true,
                 camX, camY, camZ
         );
 
