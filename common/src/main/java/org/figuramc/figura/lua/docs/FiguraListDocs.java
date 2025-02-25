@@ -125,8 +125,8 @@ public class FiguraListDocs {
         for (SoundSource value : SoundSource.values())
             add(value.name());
     }};
-    private static final LinkedHashSet<String> WRITE_OVERFLOW_STRETEGIES = new LinkedHashSet<String>() {{
-        for (FiguraTexture.WriteOverflowStrategy strategy : FiguraTexture.WriteOverflowStrategy.values())
+    private static final LinkedHashSet<String> TEXTURE_OVERFLOW_STRATEGIES = new LinkedHashSet<String>() {{
+        for (FiguraTexture.TextureOverflowStrategy strategy : FiguraTexture.TextureOverflowStrategy.values())
             add(strategy.primaryName);
     }};
     private static final LinkedHashSet<String> BLEND_MODES = new LinkedHashSet<String>() {{
@@ -154,7 +154,7 @@ public class FiguraListDocs {
         FLUID_RAYCAST_TYPE(() -> FiguraListDocs.FLUID_RAYCAST_TYPE, "FluidRaycastTypes", "fluid_raycast_types", 1),
         HEIGHTMAP_TYPE(() -> FiguraListDocs.HEIGHTMAP_TYPE, "HeightmapTypes", "heightmap_types", 1),
         REGISTRIES(() -> FiguraListDocs.REGISTRIES, "Registries", "registries", 1),
-        WRITE_OVERFLOW_STRATEGIES(() -> FiguraListDocs.WRITE_OVERFLOW_STRETEGIES, "WriteOverflowStrategies", "write_overflow_strategies", 1),
+        TEXTURE_OVERFLOW_STRATEGIES(() -> FiguraListDocs.TEXTURE_OVERFLOW_STRATEGIES, "TextureOverflowStrategies", "texture_overflow_strategies", 1),
         BLEND_MODES(() -> FiguraListDocs.BLEND_MODES, "BlendModes", "blend_modes", 1),
         FIGURA_CONFIGS(() -> FiguraListDocs.FIGURA_CONFIGS, "FiguraConfigs", "figura_configs", 1),
         SOUND_SOURCES(() -> FiguraListDocs.SOUND_SOURCES, "SoundSources", "sound_sources", 2);

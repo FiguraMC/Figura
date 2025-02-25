@@ -62,7 +62,7 @@ public class FiguraTexture extends SimpleTexture {
     private NativeImage backup;
     private boolean isClosed = false;
 
-    private WriteOverflowStrategy writeOverflowStrategy = WriteOverflowStrategy.ERROR;
+    private TextureOverflowStrategy textureOverflowStrategy = TextureOverflowStrategy.ERROR;
 
     public FiguraTexture(Avatar owner, String name, byte[] data) {
         super(new FiguraIdentifier("avatar_tex/" + owner.owner + "/" + UUID.randomUUID()));
@@ -874,10 +874,10 @@ public class FiguraTexture extends SimpleTexture {
         return this;
     }
 
-    private static final HashMap<String, WriteOverflowStrategy> name2OverflowStrategy = new HashMap<>();
-    private static final HashMap<WriteOverflowStrategy, String> overflowStrategy2Name = new HashMap<>();
+    private static final HashMap<String, TextureOverflowStrategy> name2OverflowStrategy = new HashMap<>();
+    private static final HashMap<TextureOverflowStrategy, String> overflowStrategy2Name = new HashMap<>();
 
-    public enum WriteOverflowStrategy {
+    public enum TextureOverflowStrategy {
         ERROR("error"),
         IGNORE("ignore", "discard"),
         WRAP("wrap"),
@@ -886,7 +886,7 @@ public class FiguraTexture extends SimpleTexture {
 
         public final String primaryName;
 
-        WriteOverflowStrategy(String... names) {
+        TextureOverflowStrategy(String... names) {
             for (String name : names)
                 name2OverflowStrategy.put(name, this);
             if (names.length == 0) throw new IllegalArgumentException("at least one name should be specified");
@@ -898,7 +898,7 @@ public class FiguraTexture extends SimpleTexture {
     private @Nullable Pair<Integer, Integer> mapCoordinates(int x, int y) throws LuaError {
         int width = getWidth(), height = getHeight();
         if (x >= 0 && x < width && y >= 0 && y < height) return Pair.of(x, y);
-        switch (writeOverflowStrategy) {
+        switch (textureOverflowStrategy) {
             case ERROR:
                 throw new LuaError(String.format(
                         "(%d, %d) is out of bounds on %dx%d texture",
@@ -1112,14 +1112,14 @@ public class FiguraTexture extends SimpleTexture {
                     mode
             ));
         }
-        writeOverflowStrategy = name2OverflowStrategy.get(mode);
+        textureOverflowStrategy = name2OverflowStrategy.get(mode);
         return this;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("texture.get_overflow_mode")
     public String getOverflowMode() {
-        return writeOverflowStrategy.primaryName;
+        return textureOverflowStrategy.primaryName;
     }
 
     @LuaWhitelist

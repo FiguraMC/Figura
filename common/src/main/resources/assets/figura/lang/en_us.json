@@ -649,7 +649,7 @@
     "figura.docs.enum.fluid_raycast_types": "List of valid FluidRaycastTypes\nUsed to determine how raycast.block handles fluids",
     "figura.docs.enum.heightmap_types": "List of valid HeightmapTypes\nUsed in world.getHeight to select the type of heightmap",
     "figura.docs.enum.registries": "A list of valid registries.\nUsed in client.getRegistry to select the type of registry",
-    "figura.docs.enum.write_overflow_strategies": "List of valid WriteOverflowStrategies\nUsed with Texture methods to determine what action to take when coordinates are outside the bounds of the texture.",
+    "figura.docs.enum.texture_overflow_strategies": "List of valid TextureOverflowStrategies\nUsed with Texture methods to determine what action to take when coordinates are outside the bounds of the texture.",
     "figura.docs.enum.blend_modes": "List of valid BlendModes\nUsed with Texture methods to determine how to mix two colors and their alpha channels.",
     "figura.docs.enum.figura_configs": "List of Figura configs\nUsed in client.getFiguraConfig",
     "figura.docs.enum.sound_sources": "List of sound sources\nUsed in client.getVolume to select the volume source",
