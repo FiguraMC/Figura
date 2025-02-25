@@ -875,7 +875,6 @@ public class FiguraTexture extends SimpleTexture {
     }
 
     private static final HashMap<String, TextureOverflowStrategy> name2OverflowStrategy = new HashMap<>();
-    private static final HashMap<TextureOverflowStrategy, String> overflowStrategy2Name = new HashMap<>();
 
     public enum TextureOverflowStrategy {
         ERROR("error"),
@@ -890,7 +889,6 @@ public class FiguraTexture extends SimpleTexture {
             for (String name : names)
                 name2OverflowStrategy.put(name, this);
             if (names.length == 0) throw new IllegalArgumentException("at least one name should be specified");
-            overflowStrategy2Name.put(this, names[0]);
             primaryName = names[0];
         }
     }
