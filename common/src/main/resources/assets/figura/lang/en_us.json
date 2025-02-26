@@ -1433,6 +1433,7 @@
     "figura.docs.sprite_task.set_region": "Sets the texture UV region\nUses its dimensions to calculate the max UV",
     "figura.docs.sprite_task.get_uv": "Gets this texture UV offset",
     "figura.docs.sprite_task.set_uv": "Sets this texture UV offset\nThe Region and Dimension are used to calculate the end UV",
+    "figura.docs.sprite_task.set_uv_matrix": "Sets the UV matrix of this sprite\nThis matrix is applied to all UV points during the transform, with the UVs treated as homogeneous vectors\nsetUV() and setUVPixels() are just simpler ways of setting this matrix",
     "figura.docs.sprite_task.get_uv_pixels": "Get this texture UV offset, in pixels, based on the texture's dimension",
     "figura.docs.sprite_task.set_uv_pixels": "Set this texture UV offset, in pixels, based on the texture's dimension",
     "figura.docs.sprite_task.get_color": "Gets the current color multiplier of this sprite\nValues are RGBA from 0 to 1",

@@ -11,6 +11,7 @@ import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
+import org.figuramc.figura.math.matrix.FiguraMat3;
 import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.math.vector.FiguraVec4;
@@ -305,6 +306,38 @@ public class SpriteTask extends RenderTask {
         this.v = (float) vec.y;
         recalculateVertices();
         return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = FiguraMat3.class,
+                    argumentNames = "matrix"
+            ),
+            aliases = "uvMatrix",
+            value = "sprite_task.set_uv_matrix"
+    )
+    public SpriteTask setUVMatrix(@LuaNotNil FiguraMat3 matrix) {
+        double u2 = u + regionW / (float) textureW;
+        double v2 = v + regionH / (float) textureH;
+
+        FiguraVec2 uv1 = matrix.apply(u, v2);
+        FiguraVec2 uv2 = matrix.apply(u2, v2);
+        FiguraVec2 uv3 = matrix.apply(u2, (double) v);
+        FiguraVec2 uv4 = matrix.apply(u, (double) v);
+
+        vertices.clear();
+        vertices.add(new Vertex(0f, height, 0f, (float) uv1.x, (float) uv1.y, 0f, 0f, -1f));
+        vertices.add(new Vertex(width, height, 0f, (float) uv2.x, (float) uv2.y, 0f, 0f, -1f));
+        vertices.add(new Vertex(width, 0f, 0f, (float) uv3.x, (float) uv3.y, 0f, 0f, -1f));
+        vertices.add(new Vertex(0f, 0f, 0f, (float) uv4.x, (float) uv4.y, 0f, 0f, -1f));
+
+        return this;
+    }
+
+    @LuaWhitelist
+    public SpriteTask uvMatrix(@LuaNotNil FiguraMat3 matrix) {
+        return setUVMatrix(matrix);
     }
 
     @LuaWhitelist
