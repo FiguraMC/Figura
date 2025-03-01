@@ -424,7 +424,7 @@ public class FiguraLuaRuntime {
 			String scriptNameNbt = scriptName.replace('/','.');
 			loadedScripts.remove(scriptName);
 			if(contents.isnil()){
-				owner.nbt.getCompound("scripts").remove(scriptName);
+				owner.nbt.getCompound("scripts").remove(scriptNameNbt);
 				scripts.remove(scriptName);
 				return LuaValue.NIL;
 			}

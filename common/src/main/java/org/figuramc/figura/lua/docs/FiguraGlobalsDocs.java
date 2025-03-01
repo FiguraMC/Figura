@@ -110,6 +110,35 @@ public abstract class FiguraGlobalsDocs {
 
     @LuaMethodDoc(
             overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = String.class,
+                            argumentNames = "scriptName"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {String.class, String.class},
+                            argumentNames = {"scriptName", "scriptContents"}
+                    )
+            },
+            value = "globals.add_script"
+    )
+    public static Object addScript() {return null;}
+
+    @LuaMethodDoc(
+            value = "globals.get_scripts"
+    )
+    public static Object getScripts() {return null;}
+
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "scriptName"
+            ),
+            value = "globals.get_script"
+    )
+    public static Object getScript() {return null;}
+
+    @LuaMethodDoc(
+            overloads = {
                     @LuaMethodOverload,
                     @LuaMethodOverload(
                             argumentTypes = String.class,
