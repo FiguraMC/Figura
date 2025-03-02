@@ -13,13 +13,11 @@ import org.lwjgl.stb.STBVorbisInfo;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.sound.sampled.AudioFormat;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,15 +41,14 @@ public abstract class OggAudioStreamMixin {
 
 
     @Inject(
-            method = "<init>",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Ljava/nio/ByteBuffer;position()I",
-                    ordinal = 0,
-                    shift = At.Shift.BEFORE
-            )
+            method = "refillFromStream",
+            at = @At("TAIL")
     )
-    private void checkForOpusHeader(InputStream inputStream, CallbackInfo ci) {
+    private void checkForOpusHeader(CallbackInfoReturnable<Boolean> cir) {
+        if (figura$isOpus) { // Technically not needed, but I don't want to deal with potential side effects of checking here instead of in <init>
+            return;
+        }
+
         byte[] headerBytes = new byte[8];
         int position = this.buffer.position();
         this.buffer.position(0x1C);
@@ -217,15 +214,15 @@ public abstract class OggAudioStreamMixin {
     /**
      * Decodes a list of Opus packets into a ShortBuffer.
      *
-     * @param packets     The list of Opus packets to decode.
-     * @param samples     The maximum number of samples per frame.
+     * @param packets The list of Opus packets to decode.
+     * @param samples The maximum number of samples per frame.
      * @return A ShortBuffer containing the decoded audio samples.
      */
     @Unique
     private short[] figura$decode(List<byte[]> packets, int samples) throws OpusException {
         short[] decoded = new short[samples * packets.size()];
         for (byte[] dataBuffer : packets) {
-            int code = figura$decoder.decode(dataBuffer, 0, dataBuffer.length, decoded, 0, samples,false);
+            int code = figura$decoder.decode(dataBuffer, 0, dataBuffer.length, decoded, 0, samples, false);
 
             if (code < 0) {
                 FiguraMod.debug(CodecHelpers.opus_strerror(code));
