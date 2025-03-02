@@ -4,7 +4,6 @@ import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.audio.OggAudioStream;
-import net.minecraft.util.Mth;
 import org.chenliang.oggus.opus.*;
 import org.concentus.*;
 import org.figuramc.figura.FiguraMod;
@@ -19,9 +18,7 @@ import javax.sound.sampled.AudioFormat;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Mixin(OggAudioStream.class)
 public abstract class OggAudioStreamMixin {
@@ -65,7 +62,10 @@ public abstract class OggAudioStreamMixin {
     OpusDecoder figura$decoder = null;
 
     @Unique
-    ArrayList<OpusPacket> figura$packetBuffer = new ArrayList<>(256);
+    private final Queue<OpusPacket> figura$packetQueue = new LinkedList<>();
+
+    @Unique
+    private boolean figura$endOfStream = false;
 
     @WrapOperation(
             method = "<init>",
@@ -146,23 +146,47 @@ public abstract class OggAudioStreamMixin {
         return original.call(sampleRate, sampleSizeInBits, channels, signed, bigEndian);
     }
 
-    /**
-     * Preloads {@link OggAudioStreamMixin#figura$packetBuffer} with Opus packets.
-     *
-     * @return true if the buffer was successfully preloaded, false otherwise.
-     * @throws IOException if {@link OggOpusStream#readAudioPacket()} fails
-     */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     @Unique
-    private boolean figura$preloadOpusBuffer() throws IOException {
-        if (figura$packetBuffer.isEmpty()) {
-            AudioDataPacket p;
-            while ((p = figura$opusStream.readAudioPacket()) != null) {
-                List<OpusPacket> packets = p.getOpusPackets();
-                figura$packetBuffer.addAll(packets);
-            }
+    private OpusPacket figura$readNextOpusPacket() throws IOException {
+        if (!figura$packetQueue.isEmpty()) {
+            return figura$packetQueue.poll();
         }
-        return true;
+
+        if (figura$endOfStream) {
+            return null;
+        }
+
+        AudioDataPacket audioPacket = figura$opusStream.readAudioPacket();
+        if (audioPacket == null) {
+            figura$endOfStream = true;
+            return null;
+        }
+
+        List<OpusPacket> packets = audioPacket.getOpusPackets();
+        figura$packetQueue.addAll(packets);
+
+        return figura$packetQueue.isEmpty() ? null : figura$packetQueue.poll();
+    }
+
+    /**
+     * Reads a number of Opus packets up to a specified limit
+     *
+     * @param maxPackets Maximum number of packets to read
+     * @return List of read packets
+     * @throws IOException if reading from the stream fails
+     */
+    @Unique
+    private List<OpusPacket> figura$readOpusPackets(int maxPackets) throws IOException {
+        List<OpusPacket> result = new ArrayList<>(maxPackets);
+
+        for (int i = 0; i < maxPackets; i++) {
+            OpusPacket packet = figura$readNextOpusPacket();
+            if (packet == null) {
+                break;
+            }
+            result.add(packet);
+        }
+        return result;
     }
 
     @Inject(
@@ -176,13 +200,15 @@ public abstract class OggAudioStreamMixin {
         }
         OggAudioStream.OutputConcat output = new OggAudioStream.OutputConcat(16384);
 
-        if (!figura$preloadOpusBuffer()) {
-            FiguraMod.debug("Failed to preload buffer");
-        } else if (!figura$packetBuffer.isEmpty()) {
-            OpusPacket packet = figura$packetBuffer.get(0);
-            int samples = OpusPacketInfo.getNumSamplesPerFrame(packet.dumpToStandardFormat(), 0, figura$sampleRate);
-            short[] decoded = figura$decode(figura$packetBuffer.stream().map(OpusPacket::dumpToStandardFormat).toList(), samples);
-            figura$injectShortArray(output, decoded);
+        final int BATCH_SIZE = 256;
+
+        while (true) {
+            short[] decoded = figura$decodeNextBatch(BATCH_SIZE);
+            if (decoded == null || decoded.length == 0) {
+                break;
+            } else {
+                figura$injectShortArray(output, decoded);
+            }
         }
         cir.setReturnValue(output.get());
     }
@@ -198,36 +224,63 @@ public abstract class OggAudioStreamMixin {
             return;
         }
 
-        if (!figura$preloadOpusBuffer()) {
-            FiguraMod.debug("Failed to preload buffer");
-        } else if (!figura$packetBuffer.isEmpty()) {
-            OpusPacket packet = figura$packetBuffer.remove(0);
-            int samples = OpusPacketInfo.getNumSamplesPerFrame(packet.dumpToStandardFormat(), 0, figura$sampleRate);
-            short[] decoded = figura$decode(Collections.singletonList(packet.dumpToStandardFormat()), samples);
-            figura$injectShortArray(output, decoded);
-            cir.setReturnValue(!figura$packetBuffer.isEmpty());
+        short[] decoded = figura$decodeNextBatch(1);
+
+        if (decoded == null || decoded.length == 0) {
+            cir.setReturnValue(false);
             return;
         }
-        cir.setReturnValue(false);
+
+        figura$injectShortArray(output, decoded);
+
+        cir.setReturnValue(!figura$endOfStream || !figura$packetQueue.isEmpty());
     }
 
     /**
-     * Decodes a list of Opus packets into a ShortBuffer.
+     * Decodes a batch of Opus packets into PCM audio
      *
-     * @param packets The list of Opus packets to decode.
-     * @param samples The maximum number of samples per frame.
-     * @return A ShortBuffer containing the decoded audio samples.
+     * @param maxPackets Maximum number of packets to process in this batch
+     * @return Decoded audio samples, or null if no packets were available
+     * @throws IOException if reading from the stream fails
+     * @throws OpusException if decoding fails
      */
     @Unique
-    private short[] figura$decode(List<byte[]> packets, int samples) throws OpusException {
-        short[] decoded = new short[samples * packets.size()];
-        for (byte[] dataBuffer : packets) {
-            int code = figura$decoder.decode(dataBuffer, 0, dataBuffer.length, decoded, 0, samples, false);
+    private short[] figura$decodeNextBatch(int maxPackets) throws IOException, OpusException {
+        List<OpusPacket> packets = figura$readOpusPackets(maxPackets);
+
+        if (packets.isEmpty()) {
+            return null;
+        }
+
+        byte[] firstPacket = packets.get(0).dumpToStandardFormat();
+        int samplesPerFrame = OpusPacketInfo.getNumSamplesPerFrame(firstPacket, 0, figura$sampleRate);
+        int totalSamples = samplesPerFrame * packets.size() * figura$channelCount;
+
+        short[] decoded = new short[totalSamples];
+        int sampleOffset = 0;
+
+        for (OpusPacket packet : packets) {
+            byte[] encodedData = packet.dumpToStandardFormat();
+            int code = figura$decoder.decode(
+                    encodedData, 0, encodedData.length,
+                    decoded, sampleOffset, samplesPerFrame, false
+            );
 
             if (code < 0) {
-                FiguraMod.debug(CodecHelpers.opus_strerror(code));
+                FiguraMod.debug("Opus decoding error: " + CodecHelpers.opus_strerror(code));
+                continue;
             }
+
+            sampleOffset += code * figura$channelCount;
         }
+
+        // I've never seen any actual sample offset, but I guess it's good practice to account for it
+        if (sampleOffset < totalSamples) {
+            short[] trimmed = new short[sampleOffset];
+            System.arraycopy(decoded, 0, trimmed, 0, sampleOffset);
+            return trimmed;
+        }
+
         return decoded;
     }
 
@@ -242,9 +295,7 @@ public abstract class OggAudioStreamMixin {
     @Unique
     public void figura$injectShortArray(OggAudioStream.OutputConcat concat, short[] decoded) {
         OutputConcatAccessor _concat = (OutputConcatAccessor) concat;
-        for (short rawValue : decoded) {
-
-            int clampedValue = Mth.clamp(rawValue, Short.MIN_VALUE, Short.MAX_VALUE);
+        for (short value : decoded) {
 
             if (_concat.getCurrentBuffer().remaining() < 2) {
                 _concat.getCurrentBuffer().flip();
@@ -252,7 +303,7 @@ public abstract class OggAudioStreamMixin {
                 _concat.makeNewBuf();
             }
 
-            _concat.getCurrentBuffer().putShort((short) clampedValue);
+            _concat.getCurrentBuffer().putShort(value);
             _concat.setByteCount(_concat.getByteCount() + 2);
         }
     }
