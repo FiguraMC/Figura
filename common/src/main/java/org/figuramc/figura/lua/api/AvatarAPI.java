@@ -187,6 +187,12 @@ public class AvatarAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("avatar.get_permission_value")
+    public int getPermissionValue() {
+        return avatar.permissions.getCategory().index;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("avatar.get_init_count")
     public int getInitCount() {
         return avatar.init.pre;
