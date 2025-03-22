@@ -32,9 +32,9 @@ public interface GeckolibGeoRendererMixin<T extends GeoAnimatable> {
     @Shadow void updateAnimatedTextureFrame(T animatable);
 
     /**
+     * Upstream Sponge Mixin, that is anything that's not Fabric's fork doesn't support interface injection so we have to overwrite :(
+     * The functionality is the same as geckolib's but calls our pivots first
      * @author UnlikePaladin
-     * @reason Upstream Sponge Mixin, that is anything that's not Fabric's fork doesn't support interface injection so we have to overwrite :(
-     *  The functionality is the same as geckolib's but calls our pivots first
      */
     @Overwrite
     default void actuallyRender(PoseStack poseStack, T animatable, BakedGeoModel model, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {

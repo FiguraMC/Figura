@@ -409,7 +409,7 @@ public class FiguraLuaRuntime {
 		}
 		@Override
 		public String tojstring() {
-			return "function: getscript";
+			return "function: getScript";
 		}
 	};
 
