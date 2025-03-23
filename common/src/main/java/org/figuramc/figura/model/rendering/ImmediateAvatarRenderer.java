@@ -42,7 +42,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         super(avatar);
 
         // Vertex data, read model parts
-        root = FiguraModelPartReader.read(avatar, avatar.nbt.getCompound("models"), textureSets, false);
+        root = FiguraModelPartReader.read(avatar, avatar.nbt.getCompoundOrEmpty("models"), textureSets, false);
 
         sortParts();
     }

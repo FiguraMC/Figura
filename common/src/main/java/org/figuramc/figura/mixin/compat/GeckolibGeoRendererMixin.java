@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
@@ -49,7 +50,7 @@ public interface GeckolibGeoRendererMixin<T extends GeoAnimatable> {
             buffer = bufferSource.getBuffer(renderType);
         }
 
-        RenderSystem.setShaderTexture(0, getTextureLocation(animatable));
+        RenderSystem.setShaderTexture(0, Minecraft.getInstance().getTextureManager().getTexture(getTextureLocation(animatable)).getTexture());
 
         CallbackInfo callbackInfo = new CallbackInfo("figura$renderPivots", true);
         figura$renderPivots(poseStack, animatable, model, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color, callbackInfo);

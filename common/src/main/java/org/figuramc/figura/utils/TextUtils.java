@@ -1,12 +1,18 @@
 package org.figuramc.figura.utils;
 
 import com.google.gson.JsonParser;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.*;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.FormattedCharSequence;
+import org.figuramc.figura.gui.FiguraFunctionClickEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -402,11 +408,10 @@ public class TextUtils {
         }
     }
 
-    public static class FiguraClickEvent extends ClickEvent {
-        public final Runnable onClick;
-        public FiguraClickEvent(Runnable onClick) {
-            super(Action.SUGGEST_COMMAND, "");
-            this.onClick = onClick;
+    public record FiguraClickEvent(Runnable onClick) implements ClickEvent {
+        @Override
+        public @NotNull Action action() {
+            return Action.SUGGEST_COMMAND;
         }
     }
 }

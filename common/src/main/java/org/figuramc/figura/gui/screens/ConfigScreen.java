@@ -106,12 +106,12 @@ public class ConfigScreen extends AbstractPanelScreen {
 
     private static void loadNbt() {
         IOUtils.readCacheFile("settings", nbt -> {
-            ListTag groupList = nbt.getList("settings", Tag.TAG_COMPOUND);
+            ListTag groupList = nbt.getListOrEmpty("settings");
             for (Tag tag : groupList) {
                 CompoundTag compound = (CompoundTag) tag;
 
-                String config = compound.getString("config");
-                boolean expanded = compound.getBoolean("expanded");
+                String config = compound.getString("config").get();
+                boolean expanded = compound.getBoolean("expanded").get();
                 CATEGORY_DATA.put(ConfigManager.CATEGORIES_REGISTRY.get(config), expanded);
             }
         });

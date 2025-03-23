@@ -1,6 +1,14 @@
 package org.figuramc.figura.lua.api;
 
+import com.mojang.blaze3d.buffers.BufferType;
+import com.mojang.blaze3d.buffers.BufferUsage;
+import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.blaze3d.opengl.GlBuffer;
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.systems.CommandEncoder;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.GpuTexture;
+import com.mojang.blaze3d.textures.TextureFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
@@ -152,10 +160,25 @@ public class TextureAPI {
         // is there a way to check if an atlas exists without getAtlas? cause that is the only thing that will cause an error, and try catch blocks can be pricy
         try {
             TextureAtlas atlas = Minecraft.getInstance().getModelManager().getAtlas(resourceLocation);
-            atlas.bind();
+            GpuTexture atlasGpuTexture = atlas.getTexture();
             TextureAtlasAccessor atlasAccessor = (TextureAtlasAccessor) atlas;
             NativeImage nativeImage = new NativeImage(atlasAccessor.getWidth(), atlasAccessor.getHeight(), false);
-            nativeImage.downloadTexture(0, false);
+            int width = atlasAccessor.getWidth();
+            int height = atlasAccessor.getHeight();
+
+            CommandEncoder encoder = RenderSystem.getDevice().createCommandEncoder();
+            GpuBuffer gpuBuffer = RenderSystem.getDevice().createBuffer(() -> "Atlas Read Buffer", BufferType.PIXEL_PACK, BufferUsage.STATIC_READ, width * height * atlasGpuTexture.getFormat().pixelSize());
+            encoder.copyTextureToBuffer(atlasGpuTexture, gpuBuffer, 0, () -> {
+                try (GpuBuffer.ReadView readView = encoder.readBuffer(gpuBuffer)) {
+                    for (int k = 0; k < height; k++) {
+                        for (int l = 0; l < width; l++) {
+                            int m = readView.data().getInt((l + k * width) * atlasGpuTexture.getFormat().pixelSize());
+                            nativeImage.setPixelABGR(l, height - k - 1, m | 0xFF000000);
+                        }
+                    }
+                }
+                gpuBuffer.close();
+            }, 0);
             return register(name, nativeImage, false);
         } catch (Exception ignored) {}
         try {

@@ -2,37 +2,25 @@ package org.figuramc.figura.mixin.render.layers;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HeadedModel;
 import net.minecraft.client.model.SkullModelBase;
-import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.CustomHeadLayer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ResolvableProfile;
-import net.minecraft.world.level.block.AbstractSkullBlock;
 import net.minecraft.world.level.block.SkullBlock;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -51,7 +39,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Map;
 import java.util.function.Function;
 
 @Mixin(CustomHeadLayer.class)
@@ -69,7 +56,7 @@ public abstract class CustomHeadLayerMixin<S extends LivingEntityRenderState, M 
     @Inject(at = @At("HEAD"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;FF)V", cancellable = true)
     private void render(PoseStack matrices, MultiBufferSource multiBufferSource, int light, S livingEntityRenderState, float f, float g, CallbackInfo ci) {
         ItemStackRenderState itemStackState = livingEntityRenderState.headItem;
-        if (((FiguraItemStackRenderStateExtension)itemStackState).figura$getItemStack() == null || ((FiguraItemStackRenderStateExtension)itemStackState).figura$getItemStack().getItem() instanceof ArmorItem armorItem && armorItem.components().has(DataComponents.EQUIPPABLE) && armorItem.components().get(DataComponents.EQUIPPABLE).slot() == EquipmentSlot.HEAD)
+        if (((FiguraItemStackRenderStateExtension)itemStackState).figura$getItemStack() == null || ((FiguraItemStackRenderStateExtension)itemStackState).figura$getItemStack().getItem().components().has(DataComponents.EQUIPPABLE) &&  ((FiguraItemStackRenderStateExtension)itemStackState).figura$getItemStack().getItem().components().get(DataComponents.EQUIPPABLE).slot() == EquipmentSlot.HEAD)
             return;
 
         ItemStack itemStack = ((FiguraItemStackRenderStateExtension)itemStackState).figura$getItemStack();
@@ -112,8 +99,8 @@ public abstract class CustomHeadLayerMixin<S extends LivingEntityRenderState, M 
             float s = 10f;
             stack.translate(0d, 4d, 0d);
             stack.scale(s, s, s);
-            ItemTransform transform = itemStackState.transform();
-            if (!avatar.itemRenderEvent(ItemStackAPI.verify(((FiguraItemStackRenderStateExtension)itemStackState).figura$getItemStack()), ((FiguraItemStackRenderStateExtension)itemStackState).figura$getDisplayContext().name(), FiguraVec3.fromVec3f(transform.translation), FiguraVec3.of(transform.rotation.z, transform.rotation.y, transform.rotation.x), FiguraVec3.fromVec3f(transform.scale), ((FiguraItemStackRenderStateExtension) itemStackState).figura$isLeftHanded(), stack, multiBufferSource, light, OverlayTexture.NO_OVERLAY))
+            ItemTransform transform = ((FiguraItemStackRenderStateExtension) itemStackState).figura$getItemTransform();
+            if (!avatar.itemRenderEvent(ItemStackAPI.verify(((FiguraItemStackRenderStateExtension)itemStackState).figura$getItemStack()), ((FiguraItemStackRenderStateExtension)itemStackState).figura$getDisplayContext().name(), FiguraVec3.fromVec3f(transform.translation()), FiguraVec3.of(transform.rotation().z(), transform.rotation().y(), transform.rotation().x()), FiguraVec3.fromVec3f(transform.scale()), ((FiguraItemStackRenderStateExtension) itemStackState).figura$isLeftHanded(), stack, multiBufferSource, light, OverlayTexture.NO_OVERLAY))
                 itemStackState.render(stack, multiBufferSource, light, OverlayTexture.NO_OVERLAY);
         })) {
             ci.cancel();
@@ -122,8 +109,8 @@ public abstract class CustomHeadLayerMixin<S extends LivingEntityRenderState, M 
 
     @WrapOperation(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;FF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/item/ItemStackRenderState;render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;II)V"))
     private void figuraItemEvent(ItemStackRenderState instance, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay, Operation<Void> original) {
-        ItemTransform transform = instance.transform();
-        if (avatar == null || !avatar.itemRenderEvent(ItemStackAPI.verify(((FiguraItemStackRenderStateExtension)instance).figura$getItemStack()), ((FiguraItemStackRenderStateExtension)instance).figura$getDisplayContext().name(), FiguraVec3.fromVec3f(transform.translation), FiguraVec3.of(transform.rotation.z, transform.rotation.y, transform.rotation.x), FiguraVec3.fromVec3f(transform.scale), ((FiguraItemStackRenderStateExtension) instance).figura$isLeftHanded(), matrices, vertexConsumers, light, overlay))
+        ItemTransform transform =  ((FiguraItemStackRenderStateExtension) instance).figura$getItemTransform();
+        if (avatar == null || !avatar.itemRenderEvent(ItemStackAPI.verify(((FiguraItemStackRenderStateExtension)instance).figura$getItemStack()), ((FiguraItemStackRenderStateExtension)instance).figura$getDisplayContext().name(), FiguraVec3.fromVec3f(transform.translation()), FiguraVec3.of(transform.rotation().z(), transform.rotation().y(), transform.rotation().x()), FiguraVec3.fromVec3f(transform.scale()), ((FiguraItemStackRenderStateExtension) instance).figura$isLeftHanded(), matrices, vertexConsumers, light, overlay))
             original.call(instance, matrices, vertexConsumers, light, overlay);
     }
 

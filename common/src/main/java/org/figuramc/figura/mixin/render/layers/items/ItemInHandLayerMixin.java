@@ -76,8 +76,8 @@ public abstract class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M e
             }
 
             // sorta have to do this manually otherwise itemRenderEvent isn't called
-            ItemTransform transform = itemStackRenderState.transform();
-            if (avatar == null || !avatar.itemRenderEvent(ItemStackAPI.verify(((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getItemStack()), ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getDisplayContext().name(), FiguraVec3.fromVec3f(transform.translation), FiguraVec3.of(transform.rotation.z, transform.rotation.y, transform.rotation.x), FiguraVec3.fromVec3f(transform.scale), ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$isLeftHanded(), stack, multiBufferSource, light, OverlayTexture.NO_OVERLAY))
+            ItemTransform transform = ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getItemTransform();
+            if (avatar == null || !avatar.itemRenderEvent(ItemStackAPI.verify(((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getItemStack()), ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getDisplayContext().name(), FiguraVec3.fromVec3f(transform.translation()), FiguraVec3.of(transform.rotation().z(), transform.rotation().y(), transform.rotation().x()), FiguraVec3.fromVec3f(transform.scale()), ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$isLeftHanded(), stack, multiBufferSource, light, OverlayTexture.NO_OVERLAY))
                 itemStackRenderState.render(stack, multiBufferSource, light, OverlayTexture.NO_OVERLAY);
         })) {
             ci.cancel();
@@ -99,8 +99,8 @@ public abstract class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M e
                         : SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_RIGHT_HAND;
             });
         }
-        ItemTransform transform = instance.transform();
-        if (avatar == null || !avatar.itemRenderEvent(ItemStackAPI.verify(stack), ((FiguraItemStackRenderStateExtension)instance).figura$getDisplayContext().name(), FiguraVec3.fromVec3f(transform.translation), FiguraVec3.of(transform.rotation.z, transform.rotation.y, transform.rotation.x), FiguraVec3.fromVec3f(transform.scale), ((FiguraItemStackRenderStateExtension)instance).figura$isLeftHanded(), matrices, vertexConsumers, light, overlay))
+        ItemTransform transform = ((FiguraItemStackRenderStateExtension)instance).figura$getItemTransform();
+        if (avatar == null || !avatar.itemRenderEvent(ItemStackAPI.verify(stack), ((FiguraItemStackRenderStateExtension)instance).figura$getDisplayContext().name(), FiguraVec3.fromVec3f(transform.translation()), FiguraVec3.of(transform.rotation().z(), transform.rotation().y(), transform.rotation().x()), FiguraVec3.fromVec3f(transform.scale()), ((FiguraItemStackRenderStateExtension)instance).figura$isLeftHanded(), matrices, vertexConsumers, light, overlay))
             original.call(instance, matrices, vertexConsumers, light, overlay);
     }
 }

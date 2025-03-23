@@ -116,7 +116,7 @@ public class AvatarMetadataParser {
             CompoundTag modelPart = getTag(models, entry.getKey(), true);
             CompoundTag targetPart = getTag(models, entry.getValue(), false);
 
-            ListTag list = !targetPart.contains("chld") ? new ListTag() : targetPart.getList("chld", Tag.TAG_COMPOUND);
+            ListTag list = !targetPart.contains("chld") ? new ListTag() : targetPart.getListOrEmpty("chld");
             list.add(modelPart);
             targetPart.put("chld", list);
         }
@@ -125,10 +125,10 @@ public class AvatarMetadataParser {
         if (metadata == null || metadata.ignoredTextures == null)
             return;
 
-        CompoundTag src = textures.getCompound("src");
+        CompoundTag src = textures.getCompoundOrEmpty("src");
 
         for (String texture : metadata.ignoredTextures) {
-            byte[] bytes = src.getByteArray(texture);
+            byte[] bytes = src.getByteArray(texture).orElse(new byte[0]);
             BlockbenchCommonTypes.IntPair size = BlockbenchCommonTypes.getPNGDimensions(bytes);
             ListTag list = new ListTag();
             list.add(IntTag.valueOf(size.x));
@@ -192,12 +192,12 @@ public class AvatarMetadataParser {
             if (!current.contains("chld"))
                 throw new IOException("Invalid part path: \"" + path + "\"");
 
-            ListTag children = current.getList("chld", Tag.TAG_COMPOUND);
+            ListTag children = current.getListOrEmpty("chld");
             int j = 0;
             for (; j < children.size(); j++) {
-                CompoundTag child = children.getCompound(j);
+                CompoundTag child = children.getCompoundOrEmpty(j);
 
-                if (child.getString("name").equals(keys[i])) {
+                if (child.getStringOr("name", "").equals(keys[i])) {
                     current = child;
                     break;
                 }

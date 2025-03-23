@@ -1,5 +1,8 @@
 package org.figuramc.figura.utils;
 
+import com.mojang.blaze3d.opengl.GlStateManager;
+import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.systems.RenderSystem;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -13,6 +16,7 @@ import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.permissions.Permissions;
+import org.lwjgl.opengl.GL30;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 public class RenderUtils {

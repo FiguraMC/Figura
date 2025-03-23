@@ -1,5 +1,6 @@
 package org.figuramc.figura.gui.widgets.permissions;
 
+import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
@@ -164,9 +165,9 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
                     gui.blit(RenderType::guiTextured, this.skin, x + 4, y + 4, 8f, 8f,32, 32, 8, 8, 64, 64);
 
                     // hat
-                    RenderSystem.enableBlend();
+                    GlStateManager._enableBlend();
                     gui.blit(RenderType::guiTextured, this.skin, x + 4, y + 4, 40f, 8f,32, 32, 8, 8, 64, 64);
-                    RenderSystem.disableBlend();
+                    GlStateManager._disableBlend();
                 } else {
                     UIHelper.blit(gui, x + 4, y + 4, 32, 32, UNKNOWN);
                 }
@@ -181,7 +182,7 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
 
             name = TextUtils.replaceInText(name, "\\$\\{name\\}", ogName);
             name = TextUtils.splitText(name, "\n").get(0);
-            name = Component.empty().append(name.copy().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(this.name + "\n" + this.owner)))));
+            name = Component.empty().append(name.copy().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent.ShowText(Component.literal(this.name + "\n" + this.owner)))));
 
             // badges
             name = Badges.appendBadges(name, owner, false);

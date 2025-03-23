@@ -236,7 +236,7 @@ public class LuaUtils {
                 boolean oldLogic = string.contains("{") && string.contains("[") ? string.indexOf("{") < string.indexOf("[") && !string.contains("minecraft:attribute_modifiers"): string.contains("{");
                 if (oldLogic) {
                     String tagStr = string.substring(string.indexOf("{"));
-                    CompoundTag nbtItem = new TagParser(new StringReader(tagStr)).readStruct();
+                    CompoundTag nbtItem = TagParser.parseCompoundFully(tagStr);
                     CompoundTag tag = new CompoundTag();
                     tag.putString("id", ResourceLocation.read(new StringReader(string)).toString());
                     tag.putInt("Count", 1);
@@ -249,10 +249,10 @@ public class LuaUtils {
 
                         ItemStack stack = ItemStack.parse(level.registryAccess(), data.write().cast(NbtOps.INSTANCE)).orElse(ItemArgument.item(CommandBuildContext.simple(level.registryAccess(), level.enabledFeatures())).parse(new StringReader(string)).createItemStack(1, false));
                         LuaTable table = new LuaTable();
-                        for (String key : nbtItem.getAllKeys())
+                        for (String key : nbtItem.keySet())
                             table.set(key, NbtToLua.convert(nbtItem.get(key)));
                         CompoundTag itemTag = NbtToLua.convertToNbt(stack.getComponents());
-                        for (String key : itemTag.getAllKeys())
+                        for (String key : itemTag.keySet())
                             table.set(key, NbtToLua.convert(itemTag.get(key)));
 
                         table = new ReadOnlyLuaTable(table);
@@ -435,18 +435,18 @@ public class LuaUtils {
             TypedDataComponent<?> typedDataComponent = iterator.next();
             Optional<Tag> optional = typedDataComponent.encodeValue(dynamicOps).result();
             ResourceLocation resourceLocation = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(typedDataComponent.type());
-            if (typedDataComponent.type() == DataComponents.ITEM_NAME && optional.isPresent() && optional.get().getAsString().contains("translate"))
+            if (typedDataComponent.type() == DataComponents.ITEM_NAME && optional.isPresent() && optional.get().asString().get().contains("translate"))
                 continue;
 
             if (optional.isPresent() && resourceLocation != null){
                 builder.append(resourceLocation).append("=");
-                String op = optional.get().getAsString();
+                String op = optional.get().asString().get();
                 // minecraft gets super picky if you give it a resource location so this check has to be added, ew
                 ResourceLocation flag = ResourceLocation.tryParse(op);
                 if (optional.get().getType() == StringTag.TYPE && flag != null) {
-                    builder.append("\"").append(optional.get().getAsString()).append("\"");
+                    builder.append("\"").append(optional.get().asString().get()).append("\"");
                 } else {
-                    builder.append(optional.get().getAsString());
+                    builder.append(optional.get().asString().get());
                 }
                 if (iterator.hasNext()) {
                     builder.append(",");

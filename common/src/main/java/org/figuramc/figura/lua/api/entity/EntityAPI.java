@@ -227,7 +227,7 @@ public class EntityAPI<T extends Entity> {
     @LuaMethodDoc("entity.is_wet")
     public boolean isWet() {
         checkEntity();
-        return entity.isInWaterRainOrBubble();
+        return entity.isInWaterOrRain();
     }
 
     @LuaWhitelist
@@ -355,7 +355,8 @@ public class EntityAPI<T extends Entity> {
 
         int i = 0;
         if (entity instanceof LivingEntity) {
-            for (ItemStack item : ((LivingEntity) entity).getAllSlots()) {
+            for (EquipmentSlot slot : EquipmentSlot.values()) {
+                ItemStack item = ((LivingEntity) entity).getItemBySlot(slot);
                 if (i == index)
                     return ItemStackAPI.verify(item);
                 i++;

@@ -6,10 +6,14 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.Deque;
+import java.util.List;
 
 @Mixin(PoseStack.class)
 public interface PoseStackAccessor {
-    @Accessor("poseStack")
+    @Accessor("poses")
     @Final
-    Deque<PoseStack.Pose> getPoseStack();
+    List<PoseStack.Pose> getPoseStack();
+
+    @Accessor("lastIndex")
+    int getLastIndex();
 }

@@ -330,8 +330,8 @@ public class FiguraDocsManager {
             return text;
 
         text.setStyle(
-                Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, doc))
-                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, FiguraText.of("command.docs_type_hover", Component.literal(name).withStyle(ChatFormatting.DARK_PURPLE))))
+                Style.EMPTY.withClickEvent(new ClickEvent.RunCommand(doc))
+                .withHoverEvent(new HoverEvent.ShowText(FiguraText.of("command.docs_type_hover", Component.literal(name).withStyle(ChatFormatting.DARK_PURPLE))))
                 .withUnderlined(true));
         return text;
     }
@@ -389,7 +389,7 @@ public class FiguraDocsManager {
                     FiguraText.of("command.docs_export.success")
                             .append(" ")
                             .append(FiguraText.of("command.click_to_open")
-                                    .setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, targetPath.toString())).withUnderlined(true))
+                                    .setStyle(Style.EMPTY.withClickEvent(new ClickEvent.OpenFile(targetPath.toString())).withUnderlined(true))
                             )
             );
             return 1;

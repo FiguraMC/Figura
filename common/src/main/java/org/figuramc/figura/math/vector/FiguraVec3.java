@@ -9,6 +9,7 @@ import org.figuramc.figura.math.matrix.FiguraMat3;
 import org.figuramc.figura.utils.LuaUtils;
 import org.figuramc.figura.utils.MathUtils;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
@@ -535,7 +536,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     public Vector3f asVec3f() {
         return new Vector3f((float) x, (float) y, (float) z);
     }
-    public static FiguraVec3 fromVec3f(Vector3f vec) {
+    public static FiguraVec3 fromVec3f(Vector3fc vec) {
         return of(vec.x(), vec.y(), vec.z());
     }
 

@@ -1,7 +1,8 @@
 package org.figuramc.figura.mixin.render.renderers;
 
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.figuramc.figura.ducks.FiguraItemStackRenderStateExtension;
@@ -10,10 +11,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
+import java.util.List;
+
 @Mixin(ItemStackRenderState.class)
 public class ItemStackRenderStateMixin implements FiguraItemStackRenderStateExtension {
-    @Shadow
-    boolean isLeftHand;
     @Shadow
     ItemDisplayContext displayContext;
     @Shadow private ItemStackRenderState.LayerRenderState[] layers;
@@ -33,7 +34,7 @@ public class ItemStackRenderStateMixin implements FiguraItemStackRenderStateExte
 
     @Override
     public boolean figura$isLeftHanded() {
-        return isLeftHand;
+        return displayContext.leftHand();
     }
 
     @Override
@@ -42,11 +43,20 @@ public class ItemStackRenderStateMixin implements FiguraItemStackRenderStateExte
     }
 
     @Override
-    public BakedModel figura$getModel() {
+    public ItemTransform figura$getItemTransform() {
         for (ItemStackRenderState.LayerRenderState layerRenderState : layers) {
-            if (((ItemStackRenderState$LayerRenderStateAccessor)layerRenderState).getModel() != null)
-                return ((ItemStackRenderState$LayerRenderStateAccessor)layerRenderState).getModel();
+            if (((ItemStackRenderState$LayerRenderStateAccessor)layerRenderState).figura$getTransform() != null)
+                return ((ItemStackRenderState$LayerRenderStateAccessor)layerRenderState).figura$getTransform();
         }
-        return null;
+        return ItemTransform.NO_TRANSFORM;
+    }
+
+    @Override
+    public List<BakedQuad> figura$getQuads() {
+        for (ItemStackRenderState.LayerRenderState layerRenderState : layers) {
+            if (((ItemStackRenderState$LayerRenderStateAccessor)layerRenderState).figura$getQuads() != null)
+                return ((ItemStackRenderState$LayerRenderStateAccessor)layerRenderState).figura$getQuads();
+        }
+        return List.of();
     }
 }

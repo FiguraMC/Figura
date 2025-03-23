@@ -1,6 +1,7 @@
 package org.figuramc.figura.avatar;
 
 import com.mojang.blaze3d.audio.SoundBuffer;
+import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -200,26 +201,26 @@ public class Avatar {
         tasks.thenRun(() -> {
             try {
                 // metadata
-                CompoundTag metadata = nbt.getCompound("metadata");
-                name = metadata.getString("name");
-                authors = metadata.getString("authors");
-                version = new Version(metadata.getString("ver"));
+                CompoundTag metadata = nbt.getCompoundOrEmpty("metadata");
+                name = metadata.getStringOr("name", "");
+                authors = metadata.getStringOr("authors", "");
+                version = new Version(metadata.getStringOr("ver", ""));
                 if (metadata.contains("id"))
-                    id = metadata.getString("id");
+                    id = metadata.getStringOr("id", "");
                 if (metadata.contains("color"))
-                    color = metadata.getString("color");
+                    color = metadata.getStringOr("color", "");
                 if (metadata.contains("minify"))
-                    minify = metadata.getBoolean("minify");
+                    minify = metadata.getBooleanOr("minify", false);
                 if (nbt.contains("resources")) {
-                    CompoundTag res = nbt.getCompound("resources");
+                    CompoundTag res = nbt.getCompoundOrEmpty("resources");
                     for (String k :
-                            res.getAllKeys()) {
-                        resources.put(k, res.getByteArray(k));
+                            res.keySet()) {
+                        resources.put(k, res.getByteArray(k).orElse(new byte[0]));
                     }
                 }
-                for (String key : metadata.getAllKeys()) {
+                for (String key : metadata.keySet()) {
                     if (key.contains("badge_color_")) {
-                        badgeToColor.put(key.replace("badge_color_", ""), metadata.getString(key));
+                        badgeToColor.put(key.replace("badge_color_", ""), metadata.getStringOr(key, ""));
                     }
                 }
                 fileSize = getFileSize();
@@ -675,7 +676,7 @@ public class Avatar {
         stack.last().normal().scale(1, 1, -1);
 
         Lighting.setupForFlatItems();
-        RenderSystem.disableDepthTest();
+        GlStateManager._disableDepthTest();
 
         renderer.entity = entity;
 
@@ -688,7 +689,7 @@ public class Avatar {
         if (renderer.renderSpecialParts() > 0)
             ((MultiBufferSource.BufferSource) renderer.bufferSource).endBatch();
 
-        RenderSystem.enableDepthTest();
+        GlStateManager._enableDepthTest();
         Lighting.setupFor3DItems();
         stack.popPose();
 
@@ -1043,15 +1044,15 @@ public class Avatar {
             return;
 
         Map<String, String> scripts = new HashMap<>();
-        CompoundTag scriptsNbt = nbt.getCompound("scripts");
-        for (String s : scriptsNbt.getAllKeys())
-            scripts.put(PathUtils.computeSafeString(s), new String(scriptsNbt.getByteArray(s), StandardCharsets.UTF_8));
+        CompoundTag scriptsNbt = nbt.getCompoundOrEmpty("scripts");
+        for (String s : scriptsNbt.keySet())
+            scripts.put(PathUtils.computeSafeString(s), new String(scriptsNbt.getByteArray(s).orElse(new byte[0]), StandardCharsets.UTF_8));
 
-        CompoundTag metadata = nbt.getCompound("metadata");
+        CompoundTag metadata = nbt.getCompoundOrEmpty("metadata");
 
         ListTag autoScripts;
         if (metadata.contains("autoScripts"))
-            autoScripts = metadata.getList("autoScripts", Tag.TAG_STRING);
+            autoScripts = metadata.getListOrEmpty("autoScripts");
         else
             autoScripts = null;
 
@@ -1073,43 +1074,43 @@ public class Avatar {
             return;
 
         ArrayList<String> autoAnims = new ArrayList<>();
-        CompoundTag metadata = nbt.getCompound("metadata");
+        CompoundTag metadata = nbt.getCompoundOrEmpty("metadata");
         if (metadata.contains("autoAnims")) {
-            for (Tag name : metadata.getList("autoAnims", Tag.TAG_STRING))
-                autoAnims.add(name.getAsString());
+            for (Tag name : metadata.getListOrEmpty("autoAnims"))
+                autoAnims.add(name.asString().orElse(""));
         }
 
-        ListTag root = nbt.getList("animations", Tag.TAG_COMPOUND);
+        ListTag root = nbt.getListOrEmpty("animations");
         for (int i = 0; i < root.size(); i++) {
             try {
-                CompoundTag animNbt = root.getCompound(i);
+                CompoundTag animNbt = root.getCompoundOrEmpty(i);
 
                 if (!animNbt.contains("mdl") || !animNbt.contains("name"))
                     continue;
 
-                String mdl = animNbt.getString("mdl");
-                String name = animNbt.getString("name");
+                String mdl = animNbt.getStringOr("mdl", "");
+                String name = animNbt.getStringOr("name", "");
                 Animation.LoopMode loop = Animation.LoopMode.ONCE;
                 if (animNbt.contains("loop")) {
                     try {
-                        loop = Animation.LoopMode.valueOf(animNbt.getString("loop").toUpperCase(Locale.US));
+                        loop = Animation.LoopMode.valueOf(animNbt.getStringOr("loop", "").toUpperCase(Locale.US));
                     } catch (Exception ignored) {}
                 }
 
                 Animation animation = new Animation(this,
                         mdl, name, loop,
-                        animNbt.contains("ovr") && animNbt.getBoolean("ovr"),
-                        animNbt.contains("len") ? animNbt.getFloat("len") : 0f,
-                        animNbt.contains("off") ? animNbt.getFloat("off") : 0f,
-                        animNbt.contains("bld") ? animNbt.getFloat("bld") : 1f,
-                        animNbt.contains("sdel") ? animNbt.getFloat("sdel") : 0f,
-                        animNbt.contains("ldel") ? animNbt.getFloat("ldel") : 0f
+                        animNbt.contains("ovr") && animNbt.getBooleanOr("ovr", false),
+                        animNbt.contains("len") ? animNbt.getFloatOr("len", 0.0f) : 0f,
+                        animNbt.contains("off") ? animNbt.getFloatOr("off", 0.0f) : 0f,
+                        animNbt.contains("bld") ? animNbt.getFloatOr("bld", 0.0f) : 1f,
+                        animNbt.contains("sdel") ? animNbt.getFloatOr("sdel", 0.0f) : 0f,
+                        animNbt.contains("ldel") ? animNbt.getFloatOr("ldel", 0.0f) : 0f
                 );
 
                 if (animNbt.contains("code")) {
-                    for (Tag code : animNbt.getList("code", Tag.TAG_COMPOUND)) {
+                    for (Tag code : animNbt.getListOrEmpty("code")) {
                         CompoundTag compound = (CompoundTag) code;
-                        animation.newCode(compound.getFloat("time"), compound.getString("src"));
+                        animation.newCode(compound.getFloatOr("time", 0.0f), compound.getStringOr("src", ""));
                     }
                 }
 
@@ -1125,10 +1126,10 @@ public class Avatar {
         if (!nbt.contains("sounds"))
             return;
 
-        CompoundTag root = nbt.getCompound("sounds");
-        for (String key : root.getAllKeys()) {
+        CompoundTag root = nbt.getCompoundOrEmpty("sounds");
+        for (String key : root.keySet()) {
             try {
-                loadSound(key, root.getByteArray(key));
+                loadSound(key, root.getByteArray(key).orElse(new byte[0]));
             } catch (Exception e) {
                 FiguraMod.LOGGER.warn("Failed to load custom sound \"" + key + "\"", e);
             }

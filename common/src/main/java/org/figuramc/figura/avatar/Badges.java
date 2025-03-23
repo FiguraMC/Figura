@@ -68,7 +68,7 @@ public class Badges {
                     if (avatar.errorText == null)
                         badges.append(System.ERROR.badge);
                     else
-                        badges.append(System.ERROR.badge.copy().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, System.ERROR.desc.copy().append("\n\n").append(avatar.errorText)))));
+                        badges.append(System.ERROR.badge.copy().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent.ShowText(System.ERROR.desc.copy().append("\n\n").append(avatar.errorText)))));
                 }
 
                 // version
@@ -82,7 +82,7 @@ public class Badges {
                     for (Permissions t : avatar.noPermissions)
                         desc.append("\n• ").append(FiguraText.of("badges.no_permissions." + t.name.toLowerCase(Locale.US)));
 
-                    badges.append(badge.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc))));
+                    badges.append(badge.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent.ShowText(desc))));
                 }
             }
         }
@@ -161,7 +161,7 @@ public class Badges {
 
         System(String unicode) {
             this.desc = FiguraText.of("badges.system." + this.name().toLowerCase(Locale.US));
-            this.badge = Component.literal(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc)));
+            this.badge = Component.literal(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent.ShowText(desc)));
         }
     }
 
@@ -197,7 +197,7 @@ public class Badges {
 
         Pride(String unicode) {
             this.desc = FiguraText.of("badges.pride." + this.name().toLowerCase(Locale.US));
-            this.badge = Component.literal(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc)));
+            this.badge = Component.literal(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent.ShowText(desc)));
         }
     }
 
@@ -220,7 +220,7 @@ public class Badges {
 
         Special(String unicode, Integer color) {
             this.desc = FiguraText.of("badges.special." + this.name().toLowerCase(Locale.US));
-            Style style = Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc));
+            Style style = Style.EMPTY.withHoverEvent(new HoverEvent.ShowText(desc));
             if (color != null) style = style.withColor(color);
             this.color = color;
             this.badge = Component.literal(unicode).withStyle(style);

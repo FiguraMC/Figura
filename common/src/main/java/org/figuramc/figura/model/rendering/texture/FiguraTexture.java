@@ -1,6 +1,5 @@
 package org.figuramc.figura.model.rendering.texture;
 
-import com.mojang.blaze3d.pipeline.RenderCall;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -57,7 +56,7 @@ public class FiguraTexture extends SimpleTexture {
     /**
      * Native image holding the texture data for this texture.
      */
-    private final NativeImage texture;
+    private final NativeImage nativeImageTexture;
     private NativeImage backup;
     private boolean isClosed = false;
 
@@ -76,28 +75,28 @@ public class FiguraTexture extends SimpleTexture {
             image = new NativeImage(1, 1, true);
         }
 
-        this.texture = image;
+        this.nativeImageTexture = image;
         this.name = name;
         this.owner = owner;
     }
 
     public FiguraTexture(Avatar owner, String name, int width, int height) {
         super(new FiguraIdentifier("avatar_tex/" + owner.owner + "/" + UUID.randomUUID()));
-        this.texture = new NativeImage(width, height, true);
+        this.nativeImageTexture = new NativeImage(width, height, true);
         this.name = name;
         this.owner = owner;
     }
 
     public FiguraTexture(Avatar owner, String name, NativeImage image) {
         super(new FiguraIdentifier("avatar_tex/" + owner.owner + "/custom/" + UUID.randomUUID()));
-        this.texture = image;
+        this.nativeImageTexture = image;
         this.name = name;
         this.owner = owner;
     }
 
     @Override
     public @NotNull TextureContents loadContents(ResourceManager resourceManager) throws IOException {
-        return new TextureContents(texture, new TextureMetadataSection(false, false));
+        return new TextureContents(nativeImageTexture, new TextureMetadataSection(false, false));
     }
 
     @Override
@@ -113,11 +112,11 @@ public class FiguraTexture extends SimpleTexture {
         isClosed = true;
 
         // Close native images
-        texture.close();
+        nativeImageTexture.close();
         if (backup != null)
             backup.close();
 
-        this.releaseId();
+        super.close();
         ((TextureManagerAccessor) Minecraft.getInstance().getTextureManager()).getByPath().remove(this.getLocation());
     }
 
@@ -130,22 +129,12 @@ public class FiguraTexture extends SimpleTexture {
         if (dirty && !isClosed) {
             dirty = false;
 
-            RenderCall runnable = () -> {
-                // Upload texture to GPU.
-                TextureUtil.prepareImage(this.getId(), texture.getWidth(), texture.getHeight());
-                texture.upload(0, 0, 0, false);
-            };
-
-            if (RenderSystem.isOnRenderThreadOrInit()) {
-                runnable.execute();
-            } else {
-                RenderSystem.recordRenderCall(runnable);
-            }
+            this.doLoad(nativeImageTexture, false, false);
         }
     }
 
     public void writeTexture(Path dest) throws IOException {
-        texture.writeToFile(dest);
+        nativeImageTexture.writeToFile(dest);
     }
 
     private void backupImage() {
@@ -155,17 +144,17 @@ public class FiguraTexture extends SimpleTexture {
     }
 
     public NativeImage copy() {
-        NativeImage image = new NativeImage(texture.format(), texture.getWidth(), texture.getHeight(), true);
-        image.copyFrom(texture);
+        NativeImage image = new NativeImage(nativeImageTexture.format(), nativeImageTexture.getWidth(), nativeImageTexture.getHeight(), true);
+        image.copyFrom(nativeImageTexture);
         return image;
     }
 
     public int getWidth() {
-        return texture.getWidth();
+        return nativeImageTexture.getWidth();
     }
 
     public int getHeight() {
-        return texture.getHeight();
+        return nativeImageTexture.getHeight();
     }
 
     public ResourceLocation getLocation() {
@@ -207,7 +196,7 @@ public class FiguraTexture extends SimpleTexture {
             value = "texture.get_pixel")
     public FiguraVec4 getPixel(int x, int y) {
         try {
-            return ColorUtils.abgrToRGBA(((NativeImageExtension)(Object)texture).figura$getPixelABGR(x, y));
+            return ColorUtils.abgrToRGBA(((NativeImageExtension)(Object) nativeImageTexture).figura$getPixelABGR(x, y));
         } catch (Exception e) {
             throw new LuaError(e.getMessage());
         }
@@ -234,7 +223,7 @@ public class FiguraTexture extends SimpleTexture {
     public FiguraTexture setPixel(int x, int y, Object r, Double g, Double b, Double a) {
         try {
             backupImage();
-            ((NativeImageExtension)(Object)texture).figura$setPixelABGR(x, y, ColorUtils.rgbaToIntABGR(parseColor("setPixel", r, g, b, a)));
+            ((NativeImageExtension)(Object) nativeImageTexture).figura$setPixelABGR(x, y, ColorUtils.rgbaToIntABGR(parseColor("setPixel", r, g, b, a)));
             return this;
         } catch (Exception e) {
             throw new LuaError(e.getMessage());
@@ -266,7 +255,7 @@ public class FiguraTexture extends SimpleTexture {
     public FiguraTexture fill(int x, int y, int width, int height, Object r, Double g, Double b, Double a) {
         try {
             backupImage();
-            texture.fillRect(x, y, width, height, ColorUtils.rgbaToIntABGR(parseColor("fill", r, g, b, a)));
+            nativeImageTexture.fillRect(x, y, width, height, ColorUtils.rgbaToIntABGR(parseColor("fill", r, g, b, a)));
             return this;
         } catch (Exception e) {
             throw new LuaError(e.getMessage());
@@ -284,7 +273,7 @@ public class FiguraTexture extends SimpleTexture {
     @LuaMethodDoc("texture.restore")
     public FiguraTexture restore() {
         if (modified) {
-            this.texture.copyFrom(backup);
+            this.nativeImageTexture.copyFrom(backup);
             this.modified = false;
         }
         return this;
@@ -294,7 +283,7 @@ public class FiguraTexture extends SimpleTexture {
     @LuaMethodDoc("texture.save")
     public String save() {
         try {
-            return Base64.getEncoder().encodeToString(((NativeImageExtension)(Object)texture).figura$asByteArray());
+            return Base64.getEncoder().encodeToString(((NativeImageExtension)(Object) nativeImageTexture).figura$asByteArray());
         } catch (Exception e) {
             throw new LuaError(e.getMessage());
         }

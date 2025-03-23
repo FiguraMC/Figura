@@ -69,13 +69,13 @@ public class ClickableTextHelper {
             Vector4i rect = new Vector4i(x, y, x + w, y + h);
 
             if (clickEvent != null) {
-                if (clickEvent.getAction() == ClickEvent.Action.OPEN_URL) {
-                    clickUrls.put(rect, clickEvent.getValue());
+                if (clickEvent.action() == ClickEvent.Action.OPEN_URL) {
+                    clickUrls.put(rect, ((ClickEvent.OpenUrl)clickEvent).uri().toString());
                 }
             }
 
-            if (hoverEvent != null) {
-                Object value = hoverEvent.getValue(hoverEvent.getAction());
+            if (hoverEvent instanceof HoverEvent.ShowText) {
+                Object value = ((HoverEvent.ShowText) hoverEvent).value();
                 if (value instanceof Component component) {
                     hoverText.put(rect, component);
                 }

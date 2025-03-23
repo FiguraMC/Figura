@@ -206,13 +206,13 @@ public class ItemStackAPI {
     @LuaWhitelist
     @LuaMethodDoc("itemstack.is_armor")
     public boolean isArmor() {
-        return itemStack.getItem() instanceof ArmorItem;
+        return itemStack.getItem().components().has(DataComponents.EQUIPPABLE);
     }
 
     @LuaWhitelist
     @LuaMethodDoc("itemstack.is_tool")
     public boolean isTool() {
-        return itemStack.getItem() instanceof DiggerItem;
+        return itemStack.getItem().components().has(DataComponents.TOOL);
     }
 
     @LuaWhitelist

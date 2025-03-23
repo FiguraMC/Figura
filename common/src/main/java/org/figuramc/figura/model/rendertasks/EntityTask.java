@@ -107,14 +107,14 @@ public class EntityTask extends RenderTask {
         try {
             CompoundTag finalNbt;
             if(nullOrNbt == null) {
-                finalNbt = (new TagParser(new StringReader(nbtOrId))).readStruct();
+                finalNbt = (TagParser.parseCompoundFully(nbtOrId));
 
-                if (!finalNbt.contains("id", CompoundTag.TAG_STRING)) {
+                if (!finalNbt.contains("id")) {
                     throw new LuaError("Nbt must contain id");
                 }
             }
             else {
-                finalNbt = (new TagParser(new StringReader(nullOrNbt))).readStruct();
+                finalNbt = (TagParser.parseCompoundFully(nullOrNbt));
                 finalNbt.put("id", StringTag.valueOf(nbtOrId));
             }
 

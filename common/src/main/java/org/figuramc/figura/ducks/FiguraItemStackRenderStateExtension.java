@@ -1,14 +1,18 @@
 package org.figuramc.figura.ducks;
 
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public interface FiguraItemStackRenderStateExtension {
     void figura$setItemStack(@Nullable ItemStack itemStack);
     ItemStack figura$getItemStack();
     boolean figura$isLeftHanded();
     ItemDisplayContext figura$getDisplayContext();
-    BakedModel figura$getModel();
+    ItemTransform figura$getItemTransform();
+    List<BakedQuad> figura$getQuads();
 }

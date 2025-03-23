@@ -123,7 +123,7 @@ public class SoundsList extends AbstractList {
             this.owner = owner;
             this.parent = parent;
 
-            int len = owner.nbt.getCompound("sounds").getByteArray(name).length;
+            int len = owner.nbt.getCompoundOrEmpty("sounds").getByteArray(name).orElse(new byte[0]).length;
             this.size = Component.literal("(" + MathUtils.asFileSize(len) + ")").withStyle(ChatFormatting.GRAY);
 
             // play button

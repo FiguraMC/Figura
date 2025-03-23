@@ -76,7 +76,7 @@ class DebugCommand {
                     FiguraText.of("command.debug.success")
                             .append(" ")
                             .append(FiguraText.of("command.click_to_open")
-                                    .setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, targetPath.toString())).withUnderlined(true))
+                                    .setStyle(Style.EMPTY.withClickEvent(new ClickEvent.OpenFile(targetPath.toString())).withUnderlined(true))
                             )
             );
             return 1;
@@ -274,36 +274,36 @@ class DebugCommand {
         JsonObject sizes = new JsonObject();
 
         // metadata
-        sizes.addProperty("metadata", parseSize(getBytesFromNbt(nbt.getCompound("metadata"))));
+        sizes.addProperty("metadata", parseSize(getBytesFromNbt(nbt.getCompoundOrEmpty("metadata"))));
 
         // models
-        CompoundTag modelsNbt = nbt.getCompound("models");
-        ListTag childrenNbt = modelsNbt.getList("chld", Tag.TAG_COMPOUND);
-        JsonObject models = parseListSize(childrenNbt, tag -> tag.getString("name"));
+        CompoundTag modelsNbt = nbt.getCompoundOrEmpty("models");
+        ListTag childrenNbt = modelsNbt.getListOrEmpty("chld");
+        JsonObject models = parseListSize(childrenNbt, tag -> tag.getString("name").get());
         sizes.add("models", models);
         sizes.addProperty("models_total", parseSize(getBytesFromNbt(modelsNbt)));
 
         // animations
-        ListTag animationsNbt = nbt.getList("animations", Tag.TAG_COMPOUND);
+        ListTag animationsNbt = nbt.getListOrEmpty("animations");
         JsonObject animations = parseListSize(animationsNbt, tag -> tag.getString("mdl") + "." + tag.getString("name"));
         sizes.add("animations", animations);
         sizes.addProperty("animations_total", parseSize(getBytesFromNbt(animationsNbt)));
 
         // textures
-        CompoundTag texturesNbt = nbt.getCompound("textures");
-        CompoundTag textureSrc = texturesNbt.getCompound("src");
+        CompoundTag texturesNbt = nbt.getCompoundOrEmpty("textures");
+        CompoundTag textureSrc = texturesNbt.getCompoundOrEmpty("src");
         JsonObject textures = parseCompoundSize(textureSrc);
         sizes.add("textures", textures);
         sizes.addProperty("textures_total", parseSize(getBytesFromNbt(texturesNbt)));
 
         // scripts
-        CompoundTag scriptsNbt = nbt.getCompound("scripts");
+        CompoundTag scriptsNbt = nbt.getCompoundOrEmpty("scripts");
         JsonElement scripts = parseCompoundSize(scriptsNbt);
         sizes.add("scripts", scripts);
         sizes.addProperty("scripts_total", parseSize(getBytesFromNbt(scriptsNbt)));
 
         // sounds
-        CompoundTag soundsNbt = nbt.getCompound("sounds");
+        CompoundTag soundsNbt = nbt.getCompoundOrEmpty("sounds");
         JsonObject sounds = parseCompoundSize(soundsNbt);
         sizes.add("sounds", sounds);
         sizes.addProperty("sounds_total", parseSize(getBytesFromNbt(soundsNbt)));
@@ -350,7 +350,7 @@ class DebugCommand {
         JsonObject target = new JsonObject();
         HashMap<String, Integer> sizesMap = new HashMap<>();
 
-        for (String key : compoundNbt.getAllKeys())
+        for (String key : compoundNbt.keySet())
             sizesMap.put(key, getBytesFromNbt(compoundNbt.get(key)));
         insertJsonSortedData(sizesMap, target);
 
@@ -361,7 +361,7 @@ class DebugCommand {
         if (tag instanceof CompoundTag compoundTag) {
             JsonObject obj = new JsonObject();
             HashMap<String, Integer> sizesMap = new HashMap<>();
-            for (String key : compoundTag.getAllKeys()) {
+            for (String key : compoundTag.keySet()) {
                 JsonElement value = parseTagRecursive(compoundTag.get(key));
                 if (value instanceof JsonPrimitive size && size.isNumber())
                     sizesMap.put(key, size.getAsInt());

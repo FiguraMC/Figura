@@ -82,30 +82,30 @@ public abstract class AvatarRenderer {
 
         // textures
 
-        CompoundTag nbt = avatar.nbt.getCompound("textures");
-        CompoundTag src = nbt.getCompound("src");
+        CompoundTag nbt = avatar.nbt.getCompoundOrEmpty("textures");
+        CompoundTag src = nbt.getCompoundOrEmpty("src");
 
         // src files
-        for (String key : src.getAllKeys()) {
-            byte[] bytes = src.getByteArray(key);
+        for (String key : src.keySet()) {
+            byte[] bytes = src.getByteArray(key).get();
             if (bytes.length > 0) {
                 textures.put(key, new FiguraTexture(avatar, key, bytes));
             } else {
-                ListTag size = src.getList(key, Tag.TAG_INT);
-                textures.put(key, new FiguraTexture(avatar, key, size.getInt(0), size.getInt(1)));
+                ListTag size = src.getListOrEmpty(key);
+                textures.put(key, new FiguraTexture(avatar, key, size.getIntOr(0, 0), size.getIntOr(1, 0)));
             }
         }
 
         // data files
-        ListTag texturesList = nbt.getList("data", Tag.TAG_COMPOUND);
+        ListTag texturesList = nbt.getListOrEmpty("data");
         for (Tag t : texturesList) {
             CompoundTag tag = (CompoundTag) t;
             textureSets.add(new FiguraTextureSet(
                     getTextureName(tag),
-                    textures.get(tag.getString("d")),
-                    textures.get(tag.getString("e")),
-                    textures.get(tag.getString("s")),
-                    textures.get(tag.getString("n"))
+                    textures.get(tag.getStringOr("d", "")),
+                    textures.get(tag.getStringOr("e", "")),
+                    textures.get(tag.getStringOr("s", "")),
+                    textures.get(tag.getStringOr("n", ""))
             ));
         }
 
@@ -113,13 +113,13 @@ public abstract class AvatarRenderer {
     }
 
     private String getTextureName(CompoundTag tag) {
-        String s = tag.getString("d");
+        String s = tag.getStringOr("d", "");
         if (!s.isEmpty()) return s;
-        s = tag.getString("e");
+        s = tag.getStringOr("e", "");
         if (!s.isEmpty()) return s.substring(0, s.length() - 2);
-        s = tag.getString("s");
+        s = tag.getStringOr("s", "");
         if (!s.isEmpty()) return s.substring(0, s.length() - 2);
-        s = tag.getString("n");
+        s = tag.getStringOr("n", "");
         if (!s.isEmpty()) return s.substring(0, s.length() - 2);
         return "";
     }

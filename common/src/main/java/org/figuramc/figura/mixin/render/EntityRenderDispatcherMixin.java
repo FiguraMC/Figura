@@ -1,5 +1,6 @@
 package org.figuramc.figura.mixin.render;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
@@ -60,8 +61,8 @@ public class EntityRenderDispatcherMixin {
         return s != null ? s : sprite;
     }
 
-    @ModifyVariable(method = "renderShadow", at = @At("HEAD"), ordinal = 2, argsOnly = true)
-    private static float modifyShadowSize(float h, PoseStack poseStack, MultiBufferSource multiBufferSource, EntityRenderState entity, float f, float g, LevelReader levelReader) {
+    @ModifyVariable(method = "renderShadow", at = @At("HEAD"), ordinal = 1, argsOnly = true)
+    private static float modifyShadowSize(float h, @Local(argsOnly = true) EntityRenderState entity) {
         Avatar avatar = AvatarManager.getAvatar(entity);
         if (RenderUtils.vanillaModelAndScript(avatar) && avatar.luaRuntime.renderer.shadowRadius != null)
             return avatar.luaRuntime.renderer.shadowRadius;

@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Style;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
+import org.figuramc.figura.gui.FiguraFunctionClickEvent;
 import org.figuramc.figura.utils.TextUtils;
 import org.luaj.vm2.LuaValue;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,9 +29,9 @@ public class ScreenMixin {
             return;
 
         if (event instanceof TextUtils.FiguraClickEvent figuraEvent) {
-            figuraEvent.onClick.run();
+            figuraEvent.onClick().run();
             cir.setReturnValue(true);
-        } else if (event.getAction() == ClickEvent.Action.valueOf("FIGURA_FUNCTION")) {
+        } else if (event instanceof FiguraFunctionClickEvent) {
             cir.setReturnValue(true);
 
             Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
@@ -38,7 +39,7 @@ public class ScreenMixin {
                 return;
             LuaValue value = null;
             try {
-                value = avatar.loadScript("figura_function", event.getValue());
+                value = avatar.loadScript("figura_function", ((FiguraFunctionClickEvent) event).chunk());
             } catch (Exception e) {
                 FiguraMod.sendChatMessage(Component.literal(e.getMessage()).withStyle(Style.EMPTY.withColor(ChatFormatting.RED).withBold(true)));
             }

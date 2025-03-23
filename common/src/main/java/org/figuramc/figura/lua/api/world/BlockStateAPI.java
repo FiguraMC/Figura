@@ -3,12 +3,12 @@ package org.figuramc.figura.lua.api.world;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.BlockModelPart;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -324,7 +324,7 @@ public class BlockStateAPI {
         if (renderShape == RenderShape.MODEL) {
             BlockRenderDispatcher blockRenderer = Minecraft.getInstance().getBlockRenderer();
 
-            BakedModel bakedModel = blockRenderer.getBlockModel(blockState);
+            BlockStateModel bakedModel = blockRenderer.getBlockModel(blockState);
             RandomSource randomSource = RandomSource.create();
             long seed = 42L;
 
@@ -344,13 +344,16 @@ public class BlockStateAPI {
         return blockState.isAir();
     }
 
-    private static Set<String> getTexturesForFace(BlockState blockState, Direction direction, RandomSource randomSource, BakedModel bakedModel, long seed) {
+    private static Set<String> getTexturesForFace(BlockState blockState, Direction direction, RandomSource randomSource, BlockStateModel bakedModel, long seed) {
         randomSource.setSeed(seed);
-        List<BakedQuad> quads = bakedModel.getQuads(blockState, direction, randomSource);
+        List<BlockModelPart> blockModelParts = bakedModel.collectParts(randomSource);
         Set<String> textures = new HashSet<>();
 
-        for (BakedQuad quad : quads)
-            textures.add(getTextureName(quad.getSprite()));
+        for (BlockModelPart part : blockModelParts) {
+            for (BakedQuad quad : part.getQuads(direction)) {
+                textures.add(getTextureName(quad.sprite()));
+            }
+        }
 
         return textures;
     }

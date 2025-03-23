@@ -33,8 +33,8 @@ public abstract class ItemRendererMixin implements FiguraItemRendererExtension {
 
     @Shadow @Final private ItemStackRenderState scratchItemStackRenderState;
 
-    @Inject(at = @At("HEAD"), method = "renderStatic(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;ZLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/level/Level;III)V", cancellable = true)
-    private void renderStatic(LivingEntity livingEntity, ItemStack itemStack, ItemDisplayContext itemDisplayContext, boolean leftHanded, PoseStack stack, MultiBufferSource buffer, Level world, int light, int overlay, int seed, CallbackInfo ci) {
+    @Inject(at = @At("HEAD"), method = "renderStatic(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/level/Level;III)V", cancellable = true)
+    private void renderStatic(LivingEntity livingEntity, ItemStack itemStack, ItemDisplayContext itemDisplayContext, PoseStack stack, MultiBufferSource buffer, Level world, int light, int overlay, int seed, CallbackInfo ci) {
         if (livingEntity == null || itemStack.isEmpty())
             return;
 
@@ -42,18 +42,19 @@ public abstract class ItemRendererMixin implements FiguraItemRendererExtension {
         if (avatar == null)
             return;
 
-        this.resolver.updateForTopItem(this.scratchItemStackRenderState, itemStack, itemDisplayContext, leftHanded, world, livingEntity, seed);
-        ItemTransform transform = this.scratchItemStackRenderState.transform();
+        this.resolver.updateForTopItem(this.scratchItemStackRenderState, itemStack, itemDisplayContext, world, livingEntity, seed);
+        ItemTransform transform = ((FiguraItemStackRenderStateExtension)this.scratchItemStackRenderState).figura$getItemTransform();
+        boolean leftHanded =  ((FiguraItemStackRenderStateExtension)this.scratchItemStackRenderState).figura$isLeftHanded();
 
-        if (avatar.itemRenderEvent(ItemStackAPI.verify(itemStack), itemDisplayContext.name(), FiguraVec3.fromVec3f(transform.translation), FiguraVec3.of(transform.rotation.z, transform.rotation.y, transform.rotation.x), FiguraVec3.fromVec3f(transform.scale), leftHanded, stack, buffer, light, overlay))
+        if (avatar.itemRenderEvent(ItemStackAPI.verify(itemStack), itemDisplayContext.name(), FiguraVec3.fromVec3f(transform.translation()), FiguraVec3.of(transform.rotation().z(), transform.rotation().y(), transform.rotation().x()), FiguraVec3.fromVec3f(transform.scale()), leftHanded, stack, buffer, light, overlay))
             ci.cancel();
     }
 
     @Unique
     public int figura$getModelComplexity(ItemStack stack, RandomSource randomSource) {
-        this.resolver.updateForTopItem(this.scratchItemStackRenderState, stack, ItemDisplayContext.NONE, false, WorldAPI.getCurrentWorld(), null, 1);
-        if (((FiguraItemStackRenderStateExtension)(this.scratchItemStackRenderState)).figura$getModel() != null)
-            return ((FiguraItemStackRenderStateExtension)(this.scratchItemStackRenderState)).figura$getModel().getQuads(null, null, randomSource).size();
+        this.resolver.updateForTopItem(this.scratchItemStackRenderState, stack, ItemDisplayContext.NONE, WorldAPI.getCurrentWorld(), null, 1);
+        if (((FiguraItemStackRenderStateExtension)(this.scratchItemStackRenderState)).figura$getQuads() != null && !((FiguraItemStackRenderStateExtension) (this.scratchItemStackRenderState)).figura$getQuads().isEmpty())
+            return ((FiguraItemStackRenderStateExtension)(this.scratchItemStackRenderState)).figura$getQuads().size();
         return 20;
     }
 }

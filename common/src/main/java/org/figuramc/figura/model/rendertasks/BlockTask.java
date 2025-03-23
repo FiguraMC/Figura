@@ -3,7 +3,7 @@ package org.figuramc.figura.model.rendertasks;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
@@ -73,10 +73,10 @@ public class BlockTask extends RenderTask {
         Minecraft client = Minecraft.getInstance();
         RandomSource random = client.level != null ? client.level.random : RandomSource.create();
 
-        BakedModel blockModel = client.getBlockRenderer().getBlockModel(this.block);
-        cachedComplexity = blockModel.getQuads(this.block, null, random).size();
+        BlockStateModel blockModel = client.getBlockRenderer().getBlockModel(this.block);
+        cachedComplexity = blockModel.collectParts(random).stream().mapToInt(p -> p.getQuads(null).size()).sum();
         for (Direction dir : Direction.values())
-            cachedComplexity += blockModel.getQuads(this.block, dir, random).size();
+            cachedComplexity += blockModel.collectParts(random).stream().mapToInt(p -> p.getQuads(dir).size()).sum();
 
         return this;
     }

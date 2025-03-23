@@ -1,12 +1,17 @@
 package org.figuramc.figura.model.rendering.texture;
 
+import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.shaders.UniformType;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.Util;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.TriState;
+import org.figuramc.figura.utils.FiguraIdentifier;
 
 import java.util.OptionalDouble;
 import java.util.function.BiFunction;
@@ -68,37 +73,28 @@ public enum RenderTypes {
         return id == null || func == null ? null : func.apply(id);
     }
 
-    private static class FiguraRenderType extends RenderType {
+    private abstract static class FiguraRenderType extends RenderType {
 
-        public FiguraRenderType(String name, VertexFormat vertexFormat, VertexFormat.Mode drawMode, int expectedBufferSize, boolean hasCrumbling, boolean translucent, Runnable startAction, Runnable endAction) {
-            super(name, vertexFormat, drawMode, expectedBufferSize, hasCrumbling, translucent, startAction, endAction);
+        public FiguraRenderType(String name, int bufferSize, boolean hasCrumbling, boolean translucent, Runnable startAction, Runnable endAction) {
+            super(name, bufferSize, hasCrumbling, translucent, startAction, endAction);
         }
 
         public static final RenderType SOLID = create(
                 "figura_solid",
-                DefaultVertexFormat.POSITION_COLOR_NORMAL,
-                VertexFormat.Mode.QUADS,
                 256,
+                FiguraRenderPipelines.FIGURA_SOLID,
                 RenderType.CompositeState.builder()
-                        .setShaderState(RENDERTYPE_LINES_SHADER)
                         .setLineState(new LineStateShard(OptionalDouble.empty()))
                         .setLayeringState(VIEW_OFFSET_Z_LAYERING)
-                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                         .setOutputState(ITEM_ENTITY_TARGET)
-                        .setWriteMaskState(COLOR_DEPTH_WRITE)
-                        .setCullState(NO_CULL)
                         .createCompositeState(false)
         );
 
         private static final BiFunction<ResourceLocation, Boolean, RenderType> CUTOUT_EMISSIVE_SOLID = Util.memoize(
                 (texture, affectsOutline) ->
-                        create("figura_cutout_emissive_solid", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 256, true, true,
+                        create("figura_cutout_emissive_solid", 256, true, true, RenderPipelines.BEACON_BEAM_TRANSLUCENT,
                                 CompositeState.builder()
-                                        .setShaderState(RenderStateShard.RENDERTYPE_BEACON_BEAM_SHADER)
                                         .setTextureState(new RenderStateShard.TextureStateShard(texture, TriState.FALSE, false))
-                                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                                        .setCullState(NO_CULL)
-                                        .setWriteMaskState(COLOR_DEPTH_WRITE)
                                         .setOverlayState(OVERLAY)
                                         .createCompositeState(affectsOutline)));
 
@@ -106,13 +102,11 @@ public enum RenderTypes {
         public static final Function<ResourceLocation, RenderType> TEXTURED_PORTAL = Util.memoize(
                 texture -> create(
                         "figura_textured_portal",
-                        DefaultVertexFormat.POSITION,
-                        VertexFormat.Mode.QUADS,
                         256,
                         false,
                         false,
+                        RenderPipelines.END_GATEWAY,
                         CompositeState.builder()
-                                .setShaderState(RENDERTYPE_END_GATEWAY_SHADER)
                                 .setTextureState(
                                         MultiTextureStateShard.builder()
                                                 .add(texture, false, false)
@@ -126,16 +120,12 @@ public enum RenderTypes {
         public static final Function<ResourceLocation, RenderType> BLURRY = Util.memoize(
                 texture -> create(
                         "figura_blurry",
-                        DefaultVertexFormat.NEW_ENTITY,
-                        VertexFormat.Mode.QUADS,
                         256,
                         true,
                         true,
+                        RenderPipelines.ENTITY_TRANSLUCENT,
                         CompositeState.builder()
-                                .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
                                 .setTextureState(new TextureStateShard(texture, TriState.TRUE, false))
-                                .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                                .setCullState(NO_CULL)
                                 .setLightmapState(LIGHTMAP)
                                 .setOverlayState(OVERLAY)
                                 .createCompositeState(true)
@@ -145,21 +135,22 @@ public enum RenderTypes {
         public static final Function<ResourceLocation, RenderType> TEXTURED_GLINT = Util.memoize(
                 texture -> create(
                         "figura_textured_glint_direct",
-                        DefaultVertexFormat.POSITION_TEX,
-                        VertexFormat.Mode.QUADS,
                         256,
                         false,
                         false,
+                        RenderPipelines.GLINT,
                         RenderType.CompositeState.builder()
-                                .setShaderState(RENDERTYPE_ENTITY_GLINT_SHADER)
                                 .setTextureState(new TextureStateShard(texture, TriState.FALSE, false))
-                                .setWriteMaskState(COLOR_WRITE)
-                                .setCullState(NO_CULL)
-                                .setDepthTestState(EQUAL_DEPTH_TEST)
-                                .setTransparencyState(GLINT_TRANSPARENCY)
                                 .setTexturingState(ENTITY_GLINT_TEXTURING)
                                 .createCompositeState(false)
                 )
         );
+    }
+
+    private static class FiguraRenderPipelines extends RenderPipelines {
+        protected static RenderPipeline.Snippet FIGURA_SOLID_SNIPPET = RenderPipeline.builder(MATRICES_COLOR_FOG_SNIPPET).withVertexShader("core/rendertype_lines").withFragmentShader("core/rendertype_lines").withUniform("LineWidth",UniformType.FLOAT).withUniform("ScreenSize",UniformType.VEC2).withColorWrite(true).withDepthWrite(true).withBlend(BlendFunction.TRANSLUCENT).withCull(false).withVertexFormat(DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.QUADS).buildSnippet();
+
+        protected static RenderPipeline FIGURA_SOLID = register(RenderPipeline.builder(FIGURA_SOLID_SNIPPET).withLocation(new FiguraIdentifier("pipeline/solid")).build());
+
     }
 }

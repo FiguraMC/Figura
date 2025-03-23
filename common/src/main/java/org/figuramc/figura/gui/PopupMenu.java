@@ -1,5 +1,6 @@
 package org.figuramc.figura.gui;
 
+import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -90,7 +91,7 @@ public class PopupMenu {
             return;
         }
 
-        RenderSystem.disableDepthTest();
+        GlStateManager._disableDepthTest();
         PoseStack pose = gui.pose();
         pose.pushPose();
 

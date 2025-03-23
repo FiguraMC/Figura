@@ -1,7 +1,6 @@
 package org.figuramc.figura.utils.ui;
 
-import com.mojang.blaze3d.ProjectionType;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
@@ -38,8 +37,6 @@ import org.figuramc.figura.utils.TextUtils;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL30;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -60,7 +57,7 @@ public final class UIHelper {
     public static final Component DOWN_ARROW = Component.literal("V").withStyle(Style.EMPTY.withFont(UI_FONT));
 
     // Used for GUI rendering
-    private static final CustomFramebuffer FIGURA_FRAMEBUFFER = new CustomFramebuffer();
+    //private static final CustomFramebuffer FIGURA_FRAMEBUFFER = new CustomFramebuffer();
     private static int previousFBO = -1;
     public static boolean paperdoll = false;
     public static float fireRot = 0f;
@@ -68,7 +65,7 @@ public final class UIHelper {
 
     // -- Functions -- // 
 
-    public static void useFiguraGuiFramebuffer() {
+/*    public static void useFiguraGuiFramebuffer() {
         previousFBO = GL30.glGetInteger(GL30.GL_DRAW_FRAMEBUFFER_BINDING);
 
         int width = Minecraft.getInstance().getWindow().getWidth();
@@ -111,7 +108,7 @@ public final class UIHelper {
         FIGURA_FRAMEBUFFER.drawToScreen(windowWidth, windowHeight);
         RenderSystem.setProjectionMatrix(mf, ProjectionType.ORTHOGRAPHIC);
         RenderSystem.enableBlend();
-    }
+    }*/
 
     @SuppressWarnings("deprecation")
     public static void drawEntity(float x, float y, float scale, float pitch, float yaw, LivingEntity entity, GuiGraphics gui, Vector3f offset, EntityRenderMode renderMode) {
@@ -248,14 +245,13 @@ public final class UIHelper {
     }
 
     public static void enableBlend() {
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
+        GlStateManager._enableBlend();
+        GlStateManager._blendFuncSeparate(770, 771, 1, 0);
     }
 
     private static void prepareTexture(ResourceLocation texture) {
         enableBlend();
-        RenderSystem.setShaderTexture(0, texture);
-        RenderSystem.setShader(CoreShaders.POSITION_TEX_COLOR);
+        RenderSystem.setShaderTexture(0, Minecraft.getInstance().getTextureManager().getTexture(texture).getTexture());
     }
 
     public static void blit(GuiGraphics gui, int x, int y, int width, int height, ResourceLocation texture) {
@@ -600,7 +596,7 @@ public final class UIHelper {
         if (style == null || style.getHoverEvent() == null)
             return;
 
-        Component text = style.getHoverEvent().getValue(HoverEvent.Action.SHOW_TEXT);
+        Component text = style.getHoverEvent() instanceof HoverEvent.ShowText ? ((HoverEvent.ShowText) style.getHoverEvent()).value() : null;
         if (text != null)
             setTooltip(text);
     }

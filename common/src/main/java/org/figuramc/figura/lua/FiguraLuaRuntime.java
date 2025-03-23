@@ -397,7 +397,7 @@ public class FiguraLuaRuntime {
                     initializeScript(name);
             } else {
                 for (Tag name : autoScripts)
-                    initializeScript(name.getAsString());
+                    initializeScript(name.asString().get());
             }
         } catch (Exception | StackOverflowError e) {
             error(e);

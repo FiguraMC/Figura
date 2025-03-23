@@ -51,13 +51,15 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
 
     @Shadow public abstract Minecraft getMinecraft();
 
-    @Shadow private int confusionAnimationTick;
+
     @Shadow @Final private Camera mainCamera;
     @Shadow @Nullable
     private ResourceLocation postEffectId;
 
     @Shadow @Final private CrossFrameResourcePool resourcePool;
     @Shadow private float fovModifier;
+    @Shadow private float spinningEffectTime;
+    @Shadow private float spinningEffectSpeed;
     @Unique
     private boolean avatarPostShader = false;
     @Unique
@@ -101,17 +103,19 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
 
         instance.set(stack.last().pose());
 
-        float h = this.minecraft.options.screenEffectScale().get().floatValue();
-        float i = Mth.lerp(tickDelta, this.minecraft.player.oSpinningEffectIntensity, this.minecraft.player.spinningEffectIntensity) * h * h;
-        if (i > 0.0F) {
-            int j = this.minecraft.player.hasEffect(MobEffects.CONFUSION) ? 7 : 20;
-            float k = 5.0F / (i * i + 5.0F) - i * 0.04F;
-            k *= k;
+        float screenScaleConfig = this.minecraft.options.screenEffectScale().get().floatValue();
+        float lerpedPortalIntensity = Mth.lerp(tickDelta, this.minecraft.player.oPortalEffectIntensity, this.minecraft.player.portalEffectIntensity);
+        float nauseaBlendFactor = this.minecraft.player.getEffectBlendFactor(MobEffects.NAUSEA, tickDelta);
+        float spinEffectValue = Math.max(lerpedPortalIntensity, nauseaBlendFactor) * screenScaleConfig * screenScaleConfig;
+        if (spinEffectValue > 0.0F) {
+            float scaleFactor = 5.0F / (spinEffectValue * spinEffectValue + 5.0F) - spinEffectValue * 0.04F;
+            scaleFactor *= scaleFactor;
             Vector3f vector3f = new Vector3f(0.0F, Mth.SQRT_OF_TWO / 2.0F, Mth.SQRT_OF_TWO / 2.0F);
-            float l = ((float)this.confusionAnimationTick + tickDelta) * (float)j * (float) (Math.PI / 180.0);
-            instance.rotate(l, vector3f);
-            instance.scale(1.0F / k, 1.0F, 1.0F);
-            instance.rotate(-l, vector3f);
+            float piOver180 = 0.017453292F;
+            float rotationFactor = (this.spinningEffectTime + tickDelta * this.spinningEffectSpeed) * piOver180;
+            instance.rotate(rotationFactor, vector3f);
+            instance.scale(1.0F / scaleFactor, 1.0F, 1.0F);
+            instance.rotate(-rotationFactor, vector3f);
         }
 
        // FiguraMat3 normal = avatar.luaRuntime.renderer.cameraNormal;
@@ -148,7 +152,7 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
             if (this.postEffectId == null || !this.postEffectId.equals(resource)) {
                 PostChain postchain = this.minecraft.getShaderManager().getPostChain(resource, LevelTargetBundle.MAIN_TARGETS);
                 if (postchain != null)
-                    postchain.process(this.minecraft.getMainRenderTarget(), this.resourcePool);
+                    postchain.process(this.minecraft.getMainRenderTarget(), this.resourcePool, null);
             }
         } catch (Exception ignored) {
             this.effectActive = false;

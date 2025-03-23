@@ -15,7 +15,7 @@ public class FileTexture extends DynamicTexture {
     private final ResourceLocation id;
 
     private FileTexture(NativeImage image, ResourceLocation id) {
-        super(image);
+        super(null, image);
         this.id = id;
 
         Minecraft.getInstance().getTextureManager().register(id, this);

@@ -110,14 +110,14 @@ public class LocalAvatarFetcher {
     public static void load() {
         IOUtils.readCacheFile("avatars", nbt -> {
             // loading
-            ListTag list = nbt.getList("properties", Tag.TAG_COMPOUND);
+            ListTag list = nbt.getListOrEmpty("properties");
             for (Tag tag : list) {
                 CompoundTag compound = (CompoundTag) tag;
 
-                String path = compound.getString("path");
+                String path = compound.getStringOr("path", "");
                 Properties properties = new Properties();
-                properties.expanded = compound.getBoolean("expanded");
-                properties.favourite = compound.getBoolean("favourite");
+                properties.expanded = compound.getBooleanOr("expanded", false);
+                properties.favourite = compound.getBooleanOr("favourite", false);
 
                 SAVED_DATA.put(path, properties);
             }

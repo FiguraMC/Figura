@@ -48,7 +48,7 @@ public class ItemTask extends RenderTask {
         int seed = entity != null ? entity.getId() + displayMode.ordinal() : 0;
 
         Minecraft.getInstance().getItemRenderer().renderStatic(
-                entity, item, displayMode, left,
+                entity, item, displayMode,
                 poseStack, buffer, WorldAPI.getCurrentWorld(),
                 newLight, newOverlay, seed
         );

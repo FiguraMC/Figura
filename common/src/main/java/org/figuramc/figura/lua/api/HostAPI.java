@@ -43,6 +43,8 @@ import org.figuramc.figura.utils.TextUtils;
 import org.luaj.vm2.LuaError;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -502,9 +504,10 @@ public class HostAPI {
     public FiguraTexture screenshot(@LuaNotNil String name) {
         if (!isHost())
             return null;
-
-        NativeImage img = Screenshot.takeScreenshot(this.minecraft.getMainRenderTarget());
-        return owner.luaRuntime.texture.register(name, img, true);
+        AtomicReference<NativeImage> img = new AtomicReference<>();
+        Consumer<NativeImage> cons = img::set;
+        Screenshot.takeScreenshot(this.minecraft.getMainRenderTarget(), cons);
+        return owner.luaRuntime.texture.register(name, img.get(), true);
     }
 
     @LuaWhitelist

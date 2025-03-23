@@ -87,7 +87,7 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
     }
 
     // Push position transformations after the nametag has been rotated to face the camera
-    @Inject(at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;mulPose(Lorg/joml/Quaternionf;)V", shift = At.Shift.AFTER), method = "renderNameTag")
+    @Inject(at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;mulPose(Lorg/joml/Quaternionfc;)V", shift = At.Shift.AFTER), method = "renderNameTag")
     private void modifyPos(S entityRenderState, Component text, PoseStack matrices, MultiBufferSource vertexConsumers, int light, CallbackInfo ci) {
         if (figura$enabled && figura$avatar != null) {
             // pos

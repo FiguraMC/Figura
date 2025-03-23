@@ -23,32 +23,32 @@ public class NbtToLua {
 
     private static final HashMap<Class<?>, Function<Tag, LuaValue>> CONVERTERS = new HashMap<>() {{
         // primitive types
-        put(ByteTag.class, tag -> LuaValue.valueOf(((ByteTag) tag).getAsByte()));
-        put(ShortTag.class, tag -> LuaValue.valueOf(((ShortTag) tag).getAsShort()));
-        put(IntTag.class, tag -> LuaValue.valueOf(((IntTag) tag).getAsInt()));
-        put(LongTag.class, tag -> LuaValue.valueOf(((LongTag) tag).getAsLong()));
-        put(FloatTag.class, tag -> LuaValue.valueOf(((FloatTag) tag).getAsFloat()));
-        put(DoubleTag.class, tag -> LuaValue.valueOf(((DoubleTag) tag).getAsDouble()));
+        put(ByteTag.class, tag -> LuaValue.valueOf(((ByteTag) tag).byteValue()));
+        put(ShortTag.class, tag -> LuaValue.valueOf(((ShortTag) tag).shortValue()));
+        put(IntTag.class, tag -> LuaValue.valueOf(((IntTag) tag).intValue()));
+        put(LongTag.class, tag -> LuaValue.valueOf(((LongTag) tag).longValue()));
+        put(FloatTag.class, tag -> LuaValue.valueOf(((FloatTag) tag).floatValue()));
+        put(DoubleTag.class, tag -> LuaValue.valueOf(((DoubleTag) tag).doubleValue()));
 
         // compound special :D
         put(CompoundTag.class, tag -> {
             LuaTable table = new LuaTable();
             CompoundTag compound = (CompoundTag) tag;
 
-            for (String key : compound.getAllKeys())
+            for (String key : compound.keySet())
                 table.set(key, convert(compound.get(key)));
 
             return table;
         });
 
         // collection types
-        put(ByteArrayTag.class, tag -> fromCollection((CollectionTag<?>) tag));
-        put(IntArrayTag.class, tag -> fromCollection((CollectionTag<?>) tag));
-        put(LongArrayTag.class, tag -> fromCollection((CollectionTag<?>) tag));
-        put(ListTag.class, tag -> fromCollection((CollectionTag<?>) tag));
+        put(ByteArrayTag.class, tag -> fromCollection((CollectionTag) tag));
+        put(IntArrayTag.class, tag -> fromCollection((CollectionTag) tag));
+        put(LongArrayTag.class, tag -> fromCollection((CollectionTag) tag));
+        put(ListTag.class, tag -> fromCollection((CollectionTag) tag));
     }};
 
-    private static LuaValue fromCollection(CollectionTag<?> tag) {
+    private static LuaValue fromCollection(CollectionTag tag) {
         LuaTable table = new LuaTable();
 
         int i = 1;
@@ -67,7 +67,7 @@ public class NbtToLua {
         Class<?> clazz = tag.getClass();
         Function<Tag, LuaValue> builder = CONVERTERS.get(clazz);
         if (builder == null)
-            return LuaValue.valueOf(tag.getAsString());
+            return LuaValue.valueOf(tag.asString().get());
 
         return builder.apply(tag);
     }

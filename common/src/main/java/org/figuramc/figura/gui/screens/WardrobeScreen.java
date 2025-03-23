@@ -20,6 +20,7 @@ import org.figuramc.figura.utils.IOUtils;
 import org.figuramc.figura.utils.TextUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
 
+import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -28,9 +29,9 @@ public class WardrobeScreen extends AbstractPanelScreen {
             .append("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n")
                     .withStyle(ChatFormatting.GRAY)
             .append(Component.literal("(This is some text you can hover)\n")
-                    .withStyle(Style.EMPTY.withColor(0xFFF311A0).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("hi chat")))))
+                    .withStyle(Style.EMPTY.withColor(0xFFF311A0).withHoverEvent(new HoverEvent.ShowText(Component.literal("hi chat")))))
             .append(Component.literal("(This is some text you can click on)\n")
-                    .withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/FiguraMC/Figura"))))
+                    .withStyle(Style.EMPTY.withClickEvent(new ClickEvent.OpenUrl(URI.create("https://github.com/FiguraMC/Figura")))))
             .append(Component.literal("(This is only visible in debug mode)")
                     .withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
 
@@ -126,7 +127,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
                             ))
                     .withStyle(Style.EMPTY
                             .applyFormat(ChatFormatting.AQUA)
-                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                            .withHoverEvent(new HoverEvent.ShowText(
                                     FiguraText.of("gui.new_version.tooltip", Component.literal(NetworkStuff.latestVersion.toString()).withStyle(ChatFormatting.GREEN))
                             ))
                             .withClickEvent(new TextUtils.FiguraClickEvent(UIHelper.openURL(
@@ -137,7 +138,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
                             )
                     );
         } else if (versionStatus < 0) {
-            versionText.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+            versionText.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent.ShowText(
                     FiguraText.of("gui.old_version.tooltip", Component.literal(NetworkStuff.latestVersion.toString()).withStyle(ChatFormatting.LIGHT_PURPLE))
             )));
         }

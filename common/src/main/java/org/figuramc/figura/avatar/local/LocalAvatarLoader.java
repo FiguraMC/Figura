@@ -161,9 +161,9 @@ public class LocalAvatarLoader {
                     nbt.put("textures", textures);
                 if (!animations.isEmpty())
                     nbt.put("animations", animations);
-                CompoundTag metadataTag = nbt.getCompound("metadata");
+                CompoundTag metadataTag = nbt.getCompoundOrEmpty("metadata");
                 if (metadataTag.contains("resources_paths")) {
-                    loadResources(nbt, metadataTag.getList("resources_paths", Tag.TAG_STRING), finalPath);
+                    loadResources(nbt, metadataTag.getListOrEmpty("resources_paths"), finalPath);
                     metadataTag.remove("resource_paths");
                 }
 
@@ -180,7 +180,7 @@ public class LocalAvatarLoader {
         ArrayList<PathMatcher> pathMatchers = new ArrayList<>();
         FileSystem fs = FileSystems.getDefault();
         for (int i = 0; i < pathsTag.size(); i++) {
-            pathMatchers.add(fs.getPathMatcher("glob:".concat(pathsTag.getString(i))));
+            pathMatchers.add(fs.getPathMatcher("glob:".concat(pathsTag.getStringOr(i, ""))));
         }
         Map<String, Path> pathMap = new HashMap<>();
         matchPathsRecursive(pathMap, parentPath, parentPath, pathMatchers);
@@ -236,7 +236,7 @@ public class LocalAvatarLoader {
 
     private static void loadScripts(Path path, CompoundTag nbt) throws IOException {
         List<Path> scripts = IOUtils.getFilesByExtension(path, ".lua");
-        if (scripts.size() > 0) {
+        if (!scripts.isEmpty()) {
             CompoundTag scriptsNbt = new CompoundTag();
             String pathRegex = path.toString().isEmpty() ? "\\Q\\E" : Pattern.quote(path + path.getFileSystem().getSeparator());
             for (Path script : scripts) {
@@ -252,7 +252,7 @@ public class LocalAvatarLoader {
 
     private static void loadSounds(Path path, CompoundTag nbt) throws IOException {
         List<Path> sounds = IOUtils.getFilesByExtension(path, ".ogg");
-        if (sounds.size() > 0) {
+        if (!sounds.isEmpty()) {
             CompoundTag soundsNbt = new CompoundTag();
             String pathRegex = Pattern.quote(path.toString().isEmpty() ? path.toString() : path + path.getFileSystem().getSeparator());
             for (Path sound : sounds) {
@@ -304,12 +304,12 @@ public class LocalAvatarLoader {
                         textures.put("src", new CompoundTag());
                     }
 
-                    textures.getList("data", Tag.TAG_COMPOUND).addAll(dataTag.getList("data", Tag.TAG_COMPOUND));
-                    textures.getCompound("src").merge(dataTag.getCompound("src"));
+                    textures.getListOrEmpty("data").addAll(dataTag.getListOrEmpty("data"));
+                    textures.getCompoundOrEmpty("src").merge(dataTag.getCompoundOrEmpty("src"));
                 }
             }
 
-        if (children.size() > 0)
+        if (!children.isEmpty())
             result.put("chld", children);
 
         return result;

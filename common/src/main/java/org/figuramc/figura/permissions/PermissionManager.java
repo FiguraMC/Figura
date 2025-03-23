@@ -48,15 +48,15 @@ public class PermissionManager {
     // read permissions from nbt, adding them into the hash maps
     private static void readNbt(CompoundTag nbt) {
         // get nbt lists
-        ListTag groupList = nbt.getList("groups", Tag.TAG_COMPOUND);
-        ListTag playerList = nbt.getList("players", Tag.TAG_COMPOUND);
+        ListTag groupList = nbt.getListOrEmpty("groups");
+        ListTag playerList = nbt.getListOrEmpty("players");
 
         // groups
         for (Tag nbtElement : groupList) {
             CompoundTag compound = (CompoundTag) nbtElement;
 
             // parse permissions
-            String name = compound.getString("name");
+            String name = compound.getString("name").get();
 
             try {
                 Permissions.Category category = Permissions.Category.valueOf(name);
@@ -72,11 +72,11 @@ public class PermissionManager {
             CompoundTag compound = (CompoundTag) value;
 
             // parse permissions
-            String name = compound.getString("name");
+            String name = compound.getString("name").get();
 
             try {
                 UUID uuid = UUID.fromString(name);
-                String parent = compound.getString("category");
+                String parent = compound.getString("category").get();
                 Permissions.Category category = Permissions.Category.valueOf(parent);
 
                 PermissionPack.CategoryPermissionPack parentPack = CATEGORIES.get(category);

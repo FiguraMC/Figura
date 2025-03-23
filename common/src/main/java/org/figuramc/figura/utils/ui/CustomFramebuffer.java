@@ -1,14 +1,10 @@
 package org.figuramc.figura.utils.ui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
-import net.minecraft.client.Minecraft;
-import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
-
+/*
 public class CustomFramebuffer {
 
     private int fbo = -1;
@@ -22,7 +18,7 @@ public class CustomFramebuffer {
      *
      * @param nWidth  The new width
      * @param nHeight The new height
-     */
+     /
     public void setSize(int nWidth, int nHeight) {
 
         // Minimized window, we don't even need the framebuffer, so...
@@ -107,6 +103,6 @@ public class CustomFramebuffer {
         shader.clear();
         GlStateManager._depthMask(true);
         GlStateManager._colorMask(true, true, true, true);
- */
+
     }
-}
+}*/

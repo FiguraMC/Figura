@@ -132,7 +132,7 @@ public class EmojiContainer {
 
     private Component makeComponent(String unicode, MutableComponent hover) {
         return Component.literal(unicode).withStyle(STYLE.withFont(font).withHoverEvent(
-                new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover
+                new HoverEvent.ShowText(hover
                         .append("\n")
                         .append(FiguraText.of("emoji." + name).withStyle(ChatFormatting.DARK_GRAY)))
         ));

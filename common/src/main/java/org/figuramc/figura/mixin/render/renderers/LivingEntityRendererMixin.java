@@ -176,7 +176,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
     // Add the skull item back in after it being cleared
     @Inject(method = "extractRenderState(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;F)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/item/ItemStackRenderState;clear()V", ordinal = 0, shift = At.Shift.AFTER))
     private void shouldShowName(T entity, S livingEntityRenderState, float f, CallbackInfo ci) {
-       this.itemModelResolver.updateForLiving(livingEntityRenderState.headItem, entity.getItemBySlot(EquipmentSlot.HEAD), ItemDisplayContext.HEAD, false, entity);
+       this.itemModelResolver.updateForLiving(livingEntityRenderState.headItem, entity.getItemBySlot(EquipmentSlot.HEAD), ItemDisplayContext.HEAD, entity);
     }
 
     @Inject(method = "isEntityUpsideDown", at = @At("HEAD"), cancellable = true)
