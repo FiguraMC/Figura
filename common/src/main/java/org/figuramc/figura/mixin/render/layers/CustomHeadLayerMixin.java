@@ -19,6 +19,8 @@ import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.level.block.SkullBlock;
@@ -56,7 +58,8 @@ public abstract class CustomHeadLayerMixin<S extends LivingEntityRenderState, M 
     @Inject(at = @At("HEAD"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;FF)V", cancellable = true)
     private void render(PoseStack matrices, MultiBufferSource multiBufferSource, int light, S livingEntityRenderState, float f, float g, CallbackInfo ci) {
         ItemStackRenderState itemStackState = livingEntityRenderState.headItem;
-        if (((FiguraItemStackRenderStateExtension)itemStackState).figura$getItemStack() == null || ((FiguraItemStackRenderStateExtension)itemStackState).figura$getItemStack().getItem().components().has(DataComponents.EQUIPPABLE) &&  ((FiguraItemStackRenderStateExtension)itemStackState).figura$getItemStack().getItem().components().get(DataComponents.EQUIPPABLE).slot() == EquipmentSlot.HEAD)
+        // check for armor attributes :3
+        if (((FiguraItemStackRenderStateExtension)itemStackState).figura$getItemStack() == null || (((FiguraItemStackRenderStateExtension)itemStackState).figura$getItemStack().getItem() instanceof Item armorItem && armorItem.components().has(DataComponents.EQUIPPABLE) && armorItem.components().get(DataComponents.EQUIPPABLE).slot() == EquipmentSlot.HEAD && armorItem.components().has(DataComponents.ATTRIBUTE_MODIFIERS) && armorItem.components().get(DataComponents.ATTRIBUTE_MODIFIERS).modifiers().stream().anyMatch(attribute -> attribute.attribute() == Attributes.ARMOR)))
             return;
 
         ItemStack itemStack = ((FiguraItemStackRenderStateExtension)itemStackState).figura$getItemStack();

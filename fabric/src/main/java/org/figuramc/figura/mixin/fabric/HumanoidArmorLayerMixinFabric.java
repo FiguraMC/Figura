@@ -25,6 +25,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.DyedItemColor;
@@ -125,7 +126,7 @@ public abstract class HumanoidArmorLayerMixinFabric<S extends HumanoidRenderStat
         ItemStack itemStack = ((LivingEntity)(Minecraft.getInstance().level.getEntity(id))).getItemBySlot(slot);
 
         // Make sure the item in the equipment slot is actually a piece of armor
-        if ((itemStack.getItem() instanceof Item armorItem && armorItem.components().has(DataComponents.EQUIPPABLE) && armorItem.components().get(DataComponents.EQUIPPABLE).slot() == slot)) {
+        if ((itemStack.getItem() instanceof Item armorItem && armorItem.components().has(DataComponents.EQUIPPABLE) && armorItem.components().get(DataComponents.EQUIPPABLE).slot() == slot && armorItem.components().has(DataComponents.ATTRIBUTE_MODIFIERS) && armorItem.components().get(DataComponents.ATTRIBUTE_MODIFIERS).modifiers().stream().anyMatch(attribute -> attribute.attribute() == Attributes.ARMOR))) {
             A armorModel = getArmorModel(state, slot);
 
             // Bones have to be their defaults to prevent issues with clipping
