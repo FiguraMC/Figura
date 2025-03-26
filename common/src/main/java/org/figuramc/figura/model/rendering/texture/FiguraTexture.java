@@ -96,7 +96,7 @@ public class FiguraTexture extends SimpleTexture {
 
     @Override
     public @NotNull TextureContents loadContents(ResourceManager resourceManager) throws IOException {
-        return new TextureContents(nativeImageTexture, new TextureMetadataSection(false, false));
+        return new TextureContents(copy(), new TextureMetadataSection(false, false));
     }
 
     @Override
@@ -112,7 +112,8 @@ public class FiguraTexture extends SimpleTexture {
         isClosed = true;
 
         // Close native images
-        nativeImageTexture.close();
+        if (nativeImageTexture != null)
+            nativeImageTexture.close();
         if (backup != null)
             backup.close();
 
@@ -126,7 +127,7 @@ public class FiguraTexture extends SimpleTexture {
             registered = true;
         }
 
-        if (dirty && !isClosed) {
+        if (dirty && !isClosed && nativeImageTexture != null) {
             dirty = false;
 
             this.doLoad(nativeImageTexture, false, false);
