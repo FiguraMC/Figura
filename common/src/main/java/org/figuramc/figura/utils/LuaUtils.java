@@ -305,13 +305,11 @@ public class LuaUtils {
             dest.set("display", tab);
         }
         if (!source.get("minecraft:dyed_color").equals(LuaValue.NIL)) {
-            if (!source.get("minecraft:dyed_color").get("rgb").equals(LuaValue.NIL)) {
-                LuaTable tab = new LuaTable();
-                if (!dest.get("display").equals(LuaValue.NIL))
-                    tab = (LuaTable) dest.get("display");
-                tab.set("color", source.get("minecraft:dyed_color").get("rgb"));
-                dest.set("display", tab);
-            }
+            LuaTable tab = new LuaTable();
+            if (!dest.get("display").equals(LuaValue.NIL))
+                tab = (LuaTable) dest.get("display");
+            tab.set("color", source.get("minecraft:dyed_color"));
+            dest.set("display", tab);
         }
         if (!source.get("minecraft:map_color").equals(LuaValue.NIL)) {
             LuaTable tab = new LuaTable();
