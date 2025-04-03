@@ -34,6 +34,8 @@ public class EventsAPI {
     @LuaFieldDoc("events.world_tick")
     public final LuaEvent WORLD_TICK = new LuaEvent();
     @LuaWhitelist
+    @LuaFieldDoc("events.pre_render")
+    public final LuaEvent PRE_RENDER = new LuaEvent();
     @LuaFieldDoc("events.render")
     public final LuaEvent RENDER = new LuaEvent();
     @LuaWhitelist
@@ -99,6 +101,7 @@ public class EventsAPI {
         events.put("ENTITY_INIT", ENTITY_INIT);
         events.put("TICK", TICK);
         events.put("WORLD_TICK", WORLD_TICK);
+        events.put("PRE_RENDER", RENDER);
         events.put("RENDER", RENDER);
         events.put("POST_RENDER", POST_RENDER);
         events.put("WORLD_RENDER", WORLD_RENDER);
