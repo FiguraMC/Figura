@@ -63,7 +63,8 @@ public class TextureAPI {
                     argumentTypes = {String.class, Integer.class, Integer.class},
                     argumentNames = {"name", "width", "height"}
             ),
-            value = "textures.new_texture")
+            value = "textures.new_texture"
+    )
     public FiguraTexture newTexture(@LuaNotNil String name, int width, int height) {
         NativeImage image;
         try {
@@ -89,7 +90,8 @@ public class TextureAPI {
                             argumentNames = {"name", "byteArray"}
                     )
             },
-            value = "textures.read")
+            value = "textures.read"
+    )
     public FiguraTexture read(@LuaNotNil String name, @LuaNotNil Object object) {
         NativeImage image;
         byte[] bytes;
@@ -121,7 +123,8 @@ public class TextureAPI {
                     argumentTypes = {String.class, FiguraTexture.class},
                     argumentNames = {"name", "texture"}
             ),
-            value = "textures.copy")
+            value = "textures.copy"
+    )
     public FiguraTexture copy(@LuaNotNil String name, @LuaNotNil FiguraTexture texture) {
         NativeImage image = texture.copy();
         return register(name, image, false);
@@ -133,7 +136,8 @@ public class TextureAPI {
                     argumentTypes = String.class,
                     argumentNames = "name"
             ),
-            value = "textures.get")
+            value = "textures.get"
+    )
     public FiguraTexture get(@LuaNotNil String name) {
         check();
         return owner.renderer.customTextures.get(name);
@@ -162,9 +166,9 @@ public class TextureAPI {
             TextureAtlas atlas = Minecraft.getInstance().getModelManager().getAtlas(resourceLocation);
             GpuTexture atlasGpuTexture = atlas.getTexture();
             TextureAtlasAccessor atlasAccessor = (TextureAtlasAccessor) atlas;
-            NativeImage nativeImage = new NativeImage(atlasAccessor.getWidth(), atlasAccessor.getHeight(), false);
-            int width = atlasAccessor.getWidth();
-            int height = atlasAccessor.getHeight();
+            NativeImage nativeImage = new NativeImage(atlasAccessor.figuraGetWidth(), atlasAccessor.figuraGetHeight(), false);
+            int width = atlasAccessor.figuraGetWidth();
+            int height = atlasAccessor.figuraGetHeight();
 
             CommandEncoder encoder = RenderSystem.getDevice().createCommandEncoder();
             GpuBuffer gpuBuffer = RenderSystem.getDevice().createBuffer(() -> "Atlas Read Buffer", BufferType.PIXEL_PACK, BufferUsage.STATIC_READ, width * height * atlasGpuTexture.getFormat().pixelSize());

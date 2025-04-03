@@ -16,11 +16,13 @@ public interface TextureAtlasAccessor {
     @Accessor("texturesByName")
     Map<ResourceLocation, TextureAtlasSprite> getTexturesByName();
 
+    // Renamed from getWidth() to figuraGetWidth() to avoid conflict with Sodium
     @Intrinsic
     @Invoker("getWidth")
-    int getWidth();
+    int figuraGetWidth();
 
+    // Renamed from getHeight() to figuraGetHeight() to avoid conflict with Sodium
     @Intrinsic
     @Invoker("getHeight")
-    int getHeight();
+    int figuraGetHeight();
 }

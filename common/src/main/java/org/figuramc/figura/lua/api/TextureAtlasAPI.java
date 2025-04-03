@@ -54,13 +54,13 @@ public class TextureAtlasAPI {
     @LuaWhitelist
     @LuaMethodDoc("texture_atlas.get_width")
     public int getWidth() {
-        return ((TextureAtlasAccessor) atlas).getWidth();
+        return ((TextureAtlasAccessor) atlas).figuraGetWidth();
     }
 
     @LuaWhitelist
     @LuaMethodDoc("texture_atlas.get_height")
     public int getHeight() {
-        return ((TextureAtlasAccessor) atlas).getHeight();
+        return ((TextureAtlasAccessor) atlas).figuraGetHeight();
     }
 
     @Override
