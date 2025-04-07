@@ -18,9 +18,9 @@ public interface TextureAtlasAccessor {
 
     @Intrinsic
     @Invoker("getWidth")
-    int getWidth();
+    int figuraGetWidth();
 
     @Intrinsic
     @Invoker("getHeight")
-    int getHeight();
+    int figuraGetHeight();
 }
