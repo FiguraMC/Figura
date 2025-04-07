@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 import java.util.Map;
 
-@Mixin(TextureAtlas.class)
+@Mixin(value = TextureAtlas.class, priority = 900)
 public interface TextureAtlasAccessor {
     @Intrinsic
     @Accessor("texturesByName")
@@ -18,9 +18,9 @@ public interface TextureAtlasAccessor {
 
     @Intrinsic
     @Invoker("getWidth")
-    int getWidth();
+    int figuraGetWidth();
 
     @Intrinsic
     @Invoker("getHeight")
-    int getHeight();
+    int figuraGetHeight();
 }

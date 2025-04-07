@@ -58,9 +58,9 @@ public class TextureCustomization {
             TextureAtlas atlas = Minecraft.getInstance().getModelManager().getAtlas(resourceLocation);
             GpuTexture atlasGpuTexture = atlas.getTexture();
             TextureAtlasAccessor atlasAccessor = (TextureAtlasAccessor) atlas;
-            NativeImage nativeImage = new NativeImage(atlasAccessor.getWidth(), atlasAccessor.getHeight(), false);
-            int width = atlasAccessor.getWidth();
-            int height = atlasAccessor.getHeight();
+            NativeImage nativeImage = new NativeImage(atlasAccessor.figuraGetWidth(), atlasAccessor.figuraGetHeight(), false);
+            int width = atlasAccessor.figuraGetWidth();
+            int height = atlasAccessor.figuraGetHeight();
 
             CommandEncoder encoder = RenderSystem.getDevice().createCommandEncoder();
             GpuBuffer gpuBuffer = RenderSystem.getDevice().createBuffer(() -> "Atlas Read Buffer", BufferType.PIXEL_PACK, BufferUsage.STATIC_READ, width * height * atlasGpuTexture.getFormat().pixelSize());
