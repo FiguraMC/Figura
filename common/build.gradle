@@ -35,6 +35,8 @@ dependencies {
         exclude group: "net.fabricmc"
     }
 
+    modCompileOnly "maven.modrinth:simple-voice-chat:fabric-$svc_version"
+
     implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.3.6"))
 
     // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
