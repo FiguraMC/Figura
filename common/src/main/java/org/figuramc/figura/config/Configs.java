@@ -181,7 +181,9 @@ public class Configs {
     public static final ConfigType.PositiveIntConfig
             TEXT_SCROLL_DELAY = new ConfigType.PositiveIntConfig("text_scroll_delay", UI, 20);
     public static final ConfigType.BoolConfig
-            REDUCED_MOTION = new ConfigType.BoolConfig("reduced_motion", UI, false);
+            REDUCED_MOTION = new ConfigType.BoolConfig("reduced_motion", UI, false),
+            SVC_PORTRAIT = new ConfigType.BoolConfig("svc_portrait", UI, true), 
+            SVC_NAMEPLATE = new ConfigType.BoolConfig("svc_nameplate", UI, true);
 
 
     // -- PAPERDOLL -- // 

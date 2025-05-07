@@ -49,6 +49,9 @@ public class SVCGroupEntryMixin {
     // guiGraphics, int index, int top, int left, int width, int height,
     @WrapWithCondition(method = "render(Lnet/minecraft/client/gui/GuiGraphics;IIIIIIIZF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIIZ)I"))
     private boolean figuraSvcName(GuiGraphics guiGraphics, Font renderer, Component text, int x, int y, int color, boolean shadowed, @Local boolean hovered) {
+        if (!Configs.SVC_NAMEPLATE.value)
+            return true;
+
         Component playerName = Component.literal(state.getName());
 
         int config = Configs.CHAT_NAMEPLATE.value;
