@@ -1,5 +1,8 @@
 package org.figuramc.figura.lua;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -21,6 +24,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -182,8 +186,11 @@ public class FiguraLuaPrinter {
             TextUtils.allowScriptEvents = true;
 
             MutableComponent text = Component.empty();
-            for (int i = 0; i < args.narg(); i++)
-                text.append(TextUtils.tryParseJson(args.arg(i + 1).tojstring()));
+            for (int i = 0; i < args.narg(); i++) {
+                String jsonString = args.arg(i + 1).tojstring();
+                System.out.println(jsonString);
+                text.append(TextUtils.tryParseJson(jsonString));
+            }
 
             TextUtils.allowScriptEvents = false;
 

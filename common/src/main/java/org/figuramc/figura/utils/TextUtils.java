@@ -1,5 +1,7 @@
 package org.figuramc.figura.utils;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -16,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
@@ -84,10 +87,28 @@ public class TextUtils {
 
         try {
             // check if its valid json text
-            JsonParser.parseString(text);
-
+            JsonElement object = JsonParser.parseString(text);
+            
+            // this is to account for click and hover events being reworked in 1.21.5, they say every mod devolves into
+            // some form of via version eventually, the rumors were true...
+            if (object.isJsonObject()) {
+                JsonObject obj = object.getAsJsonObject();
+                if (obj.has("clickEvent")) {
+                    JsonElement clickEvent = obj.get("clickEvent");
+                    JsonObject replacement = convertClickEvent(clickEvent);
+                    obj.remove("clickEvent");
+                    obj.add("click_event", replacement);
+                }
+                if (obj.has("hoverEvent")) {
+                    JsonElement hoverEvent = obj.get("hoverEvent");
+                    JsonObject replacement = convertHoverEvent(hoverEvent);
+                    obj.remove("hoverEvent");
+                    obj.add("hover_event", replacement);
+                }
+            }
+            
             // attempt to parse json
-            finalText = Component.Serializer.fromJsonLenient(text, RegistryAccess.EMPTY);
+            finalText = Component.Serializer.fromJson(object, RegistryAccess.EMPTY);
 
             // if failed, throw a dummy exception
             if (finalText == null)
@@ -99,6 +120,107 @@ public class TextUtils {
 
         // return text
         return finalText;
+    }
+
+    private static @NotNull JsonObject convertHoverEvent(JsonElement hoverEvent) {
+        JsonObject replacement = new JsonObject();
+        if (hoverEvent.isJsonObject()) {
+            JsonObject event = hoverEvent.getAsJsonObject();
+            if (event.has("action")) {
+                JsonElement action = event.get("action");
+                switch (action.getAsString()) {
+                    case "show_text": {
+                        replacement.addProperty("action", "show_text");
+                        if (event.has("value")) {
+                            String value = event.get("value").getAsString();
+                            replacement.addProperty("value", value);
+                        } else if (event.has("contents")) {
+                            String content = event.get("contents").getAsString();
+                            replacement.addProperty("value", content);
+                        }
+                        break;
+                    }
+                    case "show_item": {
+                        replacement.addProperty("action", "show_item");
+                        if (event.has("contents") && event.get("contents").isJsonObject()) {
+                            JsonObject content = event.get("contents").getAsJsonObject();
+                            // inlines contents to match new format
+                            for (Map.Entry<String, JsonElement> entry : content.entrySet()) {
+                                replacement.addProperty(entry.getKey(), entry.getValue().getAsString());
+                            }
+                        } else if (event.has("contents")) {
+                            String id = event.get("contents").getAsString();
+                            replacement.addProperty("id", id);
+                        }
+                        break;
+                    }
+                    case "show_entity": {
+                        replacement.addProperty("action", "show_entity");
+                        if (event.has("contents") && event.get("contents").isJsonObject()) {
+                            JsonObject content = event.get("contents").getAsJsonObject();
+                            // inlines contents to match new format
+                            for (Map.Entry<String, JsonElement> entry : content.entrySet()) {
+                                String key = entry.getKey();
+                                if (key.equals("id"))
+                                    key = "uuid";
+                                else if(key.equals("type"))
+                                    key = "id";
+
+                                replacement.addProperty(key, entry.getValue().getAsString());
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        return replacement;
+    }
+
+    private static @NotNull JsonObject convertClickEvent(JsonElement clickEvent) {
+        JsonObject replacement = new JsonObject();
+        if (clickEvent.isJsonObject()) {
+            JsonObject event = clickEvent.getAsJsonObject();
+            if (event.has("action") && event.has("value")) {
+                JsonElement action = event.get("action");
+                switch (action.getAsString()) {
+                    case "open_url": {
+                        replacement.addProperty("action", "open_url");
+                        String url = event.get("value").getAsString();
+                        if (!url.startsWith("http"))
+                            url = "http://" + url;
+                        replacement.addProperty("url", url);
+                        break;
+                    }
+                    case "run_command": {
+                        replacement.addProperty("action", "run_command");
+                        String command = event.get("value").getAsString();
+                        replacement.addProperty("command", command);
+                        break;
+                    }
+                    case "suggest_command": {
+                        replacement.addProperty("action", "suggest_command");
+                        String command = event.get("value").getAsString();
+                        replacement.addProperty("suggest_command", command);
+                        break;
+                    }
+                    case "change_page": {
+                        replacement.addProperty("action", "change_page");
+                        String page = event.get("value").getAsString();
+                        Integer pageVal = Integer.parseInt(page);
+                        replacement.addProperty("page", pageVal);
+                        break;
+                    }
+                    case "copy_to_clipboard": {
+                        replacement.addProperty("action", "copy_to_clipboard");
+                        String value = event.get("value").getAsString();
+                        replacement.addProperty("value", value);
+                        break;
+                    }
+                }
+            }
+        }
+        return replacement;
     }
 
     public static Component replaceInText(FormattedText text, String regex, Object replacement) {
