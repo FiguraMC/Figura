@@ -1,11 +1,13 @@
 package org.figuramc.figura.mixin.gui;
 
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.client.GuiMessage;
 import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.MessageSignature;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
@@ -63,7 +65,7 @@ public class ChatComponentMixin {
         Avatar localPlayer = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (localPlayer != null) {
             TextUtils.allowScriptEvents = true;
-            String json = Component.Serializer.toJson(message, this.minecraft.player.registryAccess());
+            String json = ComponentSerialization.CODEC.encodeStart(this.minecraft.player.registryAccess().createSerializationContext(JsonOps.INSTANCE), message).getOrThrow().toString();
             TextUtils.allowScriptEvents = false;
 
             Pair<String, Integer> event = localPlayer.chatReceivedMessageEvent(message.getString(), json);
@@ -180,10 +182,10 @@ public class ChatComponentMixin {
         return message;
     }
 
-    @ModifyVariable(at = @At("STORE"), method = "render")
-    private GuiMessage.Line grabColor(GuiMessage.Line line) {
-        currColor = ((GuiMessageAccessor) (Object) line).figura$getColor();
-        return line;
+    @ModifyVariable(at = @At("STORE"), method = "method_71992")
+    private GuiMessageTag grabColor(GuiMessageTag value) {
+        currColor = ((GuiMessageAccessor) (Object) value).figura$getColor();
+        return value;
     }
 
     @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;fill(IIIII)V", ordinal = 0), method = "render", index = 4)

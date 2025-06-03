@@ -19,10 +19,10 @@ public abstract class ClientPacketListenerMixin {
 
     @Shadow public abstract ClientLevel getLevel();
 
-    @Inject(at = @At("HEAD"), method = "sendUnsignedCommand", cancellable = true)
-    private void sendUnsignedCommand(String command, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(at = @At("HEAD"), method = "sendCommand", cancellable = true)
+    private void sendUnsignedCommand(String command, CallbackInfo cir) {
         if (command.startsWith(FiguraMod.MOD_ID))
-            cir.setReturnValue(false);
+            cir.cancel();
     }
 
     @Inject(method = "handleEntityEvent", at = @At(value = "FIELD", target = "Lnet/minecraft/core/particles/ParticleTypes;TOTEM_OF_UNDYING:Lnet/minecraft/core/particles/SimpleParticleType;"), cancellable = true)

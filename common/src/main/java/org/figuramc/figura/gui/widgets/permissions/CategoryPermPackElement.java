@@ -10,6 +10,7 @@ import org.figuramc.figura.gui.widgets.lists.PlayerList;
 import org.figuramc.figura.permissions.PermissionPack;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.ui.UIHelper;
+import org.joml.Matrix3x2fStack;
 
 public class CategoryPermPackElement extends AbstractPermPackElement {
 
@@ -23,13 +24,13 @@ public class CategoryPermPackElement extends AbstractPermPackElement {
 
     @Override
     public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-        PoseStack pose = gui.pose();
+        Matrix3x2fStack pose = gui.pose();
         int width = getWidth();
         int height = getHeight();
 
-        pose.pushPose();
-        pose.translate(getX() + width / 2f, getY() + height / 2f, 100);
-        pose.scale(scale, scale, 1f);
+        pose.pushMatrix();
+        pose.translate(getX() + width / 2f, getY() + height / 2f);
+        pose.scale(scale, scale);
 
         animate(delta, this.isMouseOver(mouseX, mouseY) || this.isFocused());
 
@@ -50,7 +51,7 @@ public class CategoryPermPackElement extends AbstractPermPackElement {
         Font font = Minecraft.getInstance().font;
         UIHelper.renderOutlineText(gui, font, text, x + width / 2 - font.width(text) / 2, y + height / 2 - font.lineHeight / 2, 0xFFFFFF, 0);
 
-        pose.popPose();
+        pose.popMatrix();
     }
 
     @Override

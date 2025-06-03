@@ -1,27 +1,19 @@
 package org.figuramc.figura.model;
 
-import com.mojang.blaze3d.buffers.BufferType;
-import com.mojang.blaze3d.buffers.BufferUsage;
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.CommandEncoder;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.GpuTexture;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
-import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
-import org.figuramc.figura.lua.api.TextureAPI;
 import org.figuramc.figura.mixin.render.MissingTextureAtlasSpriteAccessor;
 import org.figuramc.figura.mixin.render.TextureAtlasAccessor;
-import org.figuramc.figura.model.rendering.ImmediateAvatarRenderer;
 import org.figuramc.figura.model.rendering.texture.FiguraTexture;
 import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
-import org.figuramc.figura.model.rendering.texture.RenderTypes;
-import org.figuramc.figura.utils.LuaUtils;
 import org.luaj.vm2.LuaError;
 
 import java.util.Optional;
@@ -63,9 +55,9 @@ public class TextureCustomization {
             int height = atlasAccessor.getHeight();
 
             CommandEncoder encoder = RenderSystem.getDevice().createCommandEncoder();
-            GpuBuffer gpuBuffer = RenderSystem.getDevice().createBuffer(() -> "Atlas Read Buffer", BufferType.PIXEL_PACK, BufferUsage.STATIC_READ, width * height * atlasGpuTexture.getFormat().pixelSize());
+            GpuBuffer gpuBuffer = RenderSystem.getDevice().createBuffer(() -> "Atlas Read Buffer", 9, width * height * atlasGpuTexture.getFormat().pixelSize());
             encoder.copyTextureToBuffer(atlasGpuTexture, gpuBuffer, 0, () -> {
-                try (GpuBuffer.ReadView readView = encoder.readBuffer(gpuBuffer)) {
+                try (GpuBuffer.MappedView readView = encoder.mapBuffer(gpuBuffer, true, false)) {
                     for (int k = 0; k < height; k++) {
                         for (int l = 0; l < width; l++) {
                             int m = readView.data().getInt((l + k * width) * atlasGpuTexture.getFormat().pixelSize());

@@ -1,6 +1,7 @@
 package org.figuramc.figura.gui.widgets;
 
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -18,7 +19,7 @@ public class IconButton extends Button {
 
         UIHelper.enableBlend();
         int size = getTextureSize();
-        gui.blit(RenderType::guiTextured, texture, getX() + 2, getY() + (getHeight() - size) / 2,  u, v, size, size, regionSize, regionSize, textureWidth, textureHeight);
+        gui.blit(RenderPipelines.GUI_TEXTURED, texture, getX() + 2, getY() + (getHeight() - size) / 2,  u, v, size, size, regionSize, regionSize, textureWidth, textureHeight);
     }
 
     @Override

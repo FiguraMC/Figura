@@ -26,6 +26,7 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.*;
 
@@ -38,17 +39,18 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
     @Shadow private boolean loaded;
     @Shadow @Final private Listener listener;
 
-    @Shadow protected abstract float getVolume(@Nullable SoundSource category);
+
     @Shadow @Final private List<SoundEventListener> listeners;
     @Shadow public abstract void addEventListener(SoundEventListener listener);
 
+    @Shadow @Final private Options options;
     @Unique
     private ChannelAccess figuraChannel;
     @Unique
     private final List<LuaSound> figuraHandlers = Collections.synchronizedList(new ArrayList<>());
 
     @Inject(at = @At("RETURN"), method = "<init>")
-    private void soundEngineInit(SoundManager soundManager, Options options, ResourceProvider resourceProvider, CallbackInfo ci) {
+    private void soundEngineInit(MusicManager musicManager, SoundManager soundManager, Options options, ResourceProvider resourceProvider, CallbackInfo ci) {
         figuraChannel = new ChannelAccess(this.library, this.executor);
     }
 
@@ -57,7 +59,7 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
         figuraChannel.scheduleTick();
     }
 
-    @Inject(at = @At("RETURN"), method = "tickNonPaused")
+    @Inject(at = @At("RETURN"), method = "tickInGameSound")
     private void tickNonPaused(CallbackInfo ci) {
         Iterator<LuaSound> iterator = figuraHandlers.iterator();
         while (iterator.hasNext()) {
@@ -65,7 +67,7 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
             ChannelAccess.ChannelHandle handle = sound.getHandle();
             if (handle == null) {
                 iterator.remove();
-            } else if (getVolume(SoundSource.PLAYERS) <= 0f) {
+            } else if (figura$getVolume(SoundSource.PLAYERS) <= 0f) {
                 handle.execute(Channel::stop);
                 iterator.remove();
             } else if (handle.isStopped()) {
@@ -79,7 +81,7 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
         figura$stopAllSounds();
     }
 
-    @Inject(at = @At("RETURN"), method = "pause")
+    @Inject(at = @At("RETURN"), method = "pauseAllExcept")
     private void pause(CallbackInfo ci) {
         if (this.loaded) figuraChannel.executeOnChannels(stream -> stream.forEach(Channel::pause));
     }
@@ -90,7 +92,7 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
     }
 
     @Inject(at = @At("RETURN"), method = "updateCategoryVolume")
-    private void updateCategoryVolume(SoundSource category, float volume, CallbackInfo ci) {
+    private void updateCategoryVolume(SoundSource category, CallbackInfo ci) {
         if (!this.loaded || category != SoundSource.PLAYERS)
             return;
 
@@ -108,7 +110,7 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
     // If we end up targeting a version of minecraft with no subtitles, use getGain. In vanilla, `listeners` is only used for subtitles and may not be in versions without subtitles.
     //@Inject(at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/audio/Listener;getGain()Z"), method = "play", cancellable = true)
     @Inject(at = @At(value = "INVOKE", target = "Ljava/util/List;isEmpty()Z"), method = "play", cancellable = true)
-    public void play(SoundInstance sound, CallbackInfo c) {
+    public void play(SoundInstance sound, CallbackInfoReturnable<SoundEngine.PlayResult> cir) {
         // "Can hear sound" check stolen from 381 of SoundEngine
         float g = Math.max(sound.getVolume(), 1.0F) * (float)sound.getSound().getAttenuationDistance();
         Vec3 pos = new Vec3(sound.getX(), sound.getY(), sound.getZ());
@@ -126,7 +128,7 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
                 if (avatar.permissions.get(Permissions.CANCEL_SOUNDS) >= 1) {
                     avatar.noPermissions.remove(Permissions.CANCEL_SOUNDS);
                     if (cancel) {
-                        c.cancel(); // calling cancel multiple times is fine, right?
+                        cir.setReturnValue(SoundEngine.PlayResult.STARTED_SILENTLY); // calling cancel multiple times is fine, right?
                     }
                 } else if (cancel) {
                     avatar.noPermissions.add(Permissions.CANCEL_SOUNDS);
@@ -184,8 +186,8 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
     }
 
     @Override @Intrinsic
-    public float figura$getVolume(SoundSource category) {
-        return getVolume(category);
+    public float figura$getVolume(SoundSource soundSource) {
+        return soundSource != null && soundSource != SoundSource.MASTER ? this.options.getSoundSourceVolume(soundSource) : 1.0F;
     }
 
     @Override @Intrinsic

@@ -4,6 +4,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -98,7 +99,7 @@ public class Button extends net.minecraft.client.gui.components.Button implement
         UIHelper.enableBlend();
 
         int size = this.regionSize;
-        gui.blit(RenderType::guiTextured, this.texture, this.getX() + this.getWidth() / 2 - size / 2, this.getY() + this.getHeight() / 2 - size / 2, u, v, size, size, this.textureWidth, this.textureHeight);
+        gui.blit(RenderPipelines.GUI_TEXTURED, this.texture, this.getX() + this.getWidth() / 2 - size / 2, this.getY() + this.getHeight() / 2 - size / 2, u, v, size, size, this.textureWidth, this.textureHeight);
     }
 
     protected void renderText(GuiGraphics gui, float delta) {
@@ -134,7 +135,6 @@ public class Button extends net.minecraft.client.gui.components.Button implement
         this.actualTooltip = Tooltip.create(tooltip);
     }
 
-    @Override
     public Tooltip getTooltip() {
         return actualTooltip;
     }

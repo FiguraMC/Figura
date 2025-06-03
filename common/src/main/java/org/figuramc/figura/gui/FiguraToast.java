@@ -5,6 +5,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastManager;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -48,7 +49,7 @@ public class FiguraToast implements Toast {
 
         UIHelper.enableBlend();
         int frame = Configs.REDUCED_MOTION.value ? 0 : (int) ((FiguraMod.ticks / 5f) % type.frames);
-        gui.blit(RenderType::guiTextured, type.texture, 0, 0, 0f, frame * height(), width(), height(), width(), height() * type.frames);
+        gui.blit(RenderPipelines.GUI_TEXTURED, type.texture, 0, 0, 0f, frame * height(), width(), height(), width(), height() * type.frames);
 
         if (this.message.getString().isBlank()) {
             renderText(this.title, font, gui, 0xFF);

@@ -16,6 +16,7 @@ import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.ui.UIHelper;
 import org.figuramc.figura.wizards.AvatarWizard;
 import org.figuramc.figura.wizards.WizardEntry;
+import org.joml.Matrix3x2fStack;
 
 import java.util.*;
 
@@ -190,11 +191,11 @@ public class AvatarWizardList extends AbstractList {
         @Override
         protected void renderDefaultTexture(GuiGraphics gui, float delta) {
             // button
-            PoseStack pose = gui.pose();
-            pose.pushPose();
-            pose.translate(getWidth() - 30, 0, 0);
+            Matrix3x2fStack pose = gui.pose();
+            pose.pushMatrix();
+            pose.translate(getWidth() - 30, 0);
             super.renderDefaultTexture(gui, delta);
-            pose.popPose();
+            pose.popMatrix();
         }
 
         @Override

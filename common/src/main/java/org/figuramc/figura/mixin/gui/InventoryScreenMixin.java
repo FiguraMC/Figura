@@ -29,7 +29,7 @@ public class InventoryScreenMixin {
         if (Configs.INVENTORY_SCISSOR.value) {
             guiGraphics.enableScissor(x, y, i, j);
         }
-        UIHelper.drawEntity(g, h, size, (float) Math.atan(yaw / 40f) * 20f, (float) -Math.atan(pitch / 40f) * 20f, entity, guiGraphics, modelOffset, EntityRenderMode.MINECRAFT_GUI);
+        UIHelper.drawEntity(g, h, size, (float) Math.atan(yaw / 40f) * 20f, (float) -Math.atan(pitch / 40f) * 20f, entity, guiGraphics, modelOffset, EntityRenderMode.MINECRAFT_GUI, x, y, i, j);
         if (Configs.INVENTORY_SCISSOR.value) {
             guiGraphics.disableScissor();
         }

@@ -3,16 +3,21 @@ package org.figuramc.figura.model.rendering.texture;
 import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.shaders.UniformType;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.TriState;
 import org.figuramc.figura.utils.FiguraIdentifier;
 
+import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -94,7 +99,7 @@ public enum RenderTypes {
                 (texture, affectsOutline) ->
                         create("figura_cutout_emissive_solid", 256, true, true, RenderPipelines.BEACON_BEAM_TRANSLUCENT,
                                 CompositeState.builder()
-                                        .setTextureState(new RenderStateShard.TextureStateShard(texture, TriState.FALSE, false))
+                                        .setTextureState(new RenderStateShard.TextureStateShard(texture, false))
                                         .setOverlayState(OVERLAY)
                                         .createCompositeState(affectsOutline)));
 
@@ -109,8 +114,8 @@ public enum RenderTypes {
                         CompositeState.builder()
                                 .setTextureState(
                                         MultiTextureStateShard.builder()
-                                                .add(texture, false, false)
-                                                .add(texture, false, false)
+                                                .add(texture, false)
+                                                .add(texture, false)
                                                 .build()
                                 )
                                 .createCompositeState(false)
@@ -125,7 +130,7 @@ public enum RenderTypes {
                         true,
                         RenderPipelines.ENTITY_TRANSLUCENT,
                         CompositeState.builder()
-                                .setTextureState(new TextureStateShard(texture, TriState.TRUE, false))
+                                .setTextureState(new BlurryTextureStateShard(texture, TriState.TRUE, false))
                                 .setLightmapState(LIGHTMAP)
                                 .setOverlayState(OVERLAY)
                                 .createCompositeState(true)
@@ -140,7 +145,7 @@ public enum RenderTypes {
                         false,
                         RenderPipelines.GLINT,
                         RenderType.CompositeState.builder()
-                                .setTextureState(new TextureStateShard(texture, TriState.FALSE, false))
+                                .setTextureState(new TextureStateShard(texture, false))
                                 .setTexturingState(ENTITY_GLINT_TEXTURING)
                                 .createCompositeState(false)
                 )
@@ -148,9 +153,30 @@ public enum RenderTypes {
     }
 
     public static class FiguraRenderPipelines extends RenderPipelines {
-        protected static RenderPipeline.Snippet FIGURA_SOLID_SNIPPET = RenderPipeline.builder(MATRICES_COLOR_FOG_SNIPPET).withVertexShader("core/rendertype_lines").withFragmentShader("core/rendertype_lines").withUniform("LineWidth",UniformType.FLOAT).withUniform("ScreenSize",UniformType.VEC2).withColorWrite(true).withDepthWrite(true).withBlend(BlendFunction.TRANSLUCENT).withCull(false).withVertexFormat(DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.QUADS).buildSnippet();
+        protected static RenderPipeline.Snippet FIGURA_SOLID_SNIPPET = RenderPipeline.builder(MATRICES_FOG_SNIPPET, GLOBALS_SNIPPET).withVertexShader("core/rendertype_lines").withFragmentShader("core/rendertype_lines").withColorWrite(true).withDepthWrite(true).withBlend(BlendFunction.TRANSLUCENT).withCull(false).withVertexFormat(DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.QUADS).buildSnippet();
 
         public static RenderPipeline FIGURA_SOLID = register(RenderPipeline.builder(FIGURA_SOLID_SNIPPET).withLocation(new FiguraIdentifier("pipeline/solid")).build());
+    }
 
+    public static class BlurryTextureStateShard extends RenderStateShard.EmptyTextureStateShard {
+        private final Optional<ResourceLocation> texture;
+        private final boolean mipmap;
+
+        public BlurryTextureStateShard(ResourceLocation resourceLocation, TriState blurry, boolean bl) {
+            super(() -> {
+                TextureManager textureManager = Minecraft.getInstance().getTextureManager();
+                AbstractTexture abstractTexture = textureManager.getTexture(resourceLocation);
+                abstractTexture.setUseMipmaps(bl);
+                abstractTexture.setFilter(blurry.toBoolean(true), bl);
+                RenderSystem.setShaderTexture(0, abstractTexture.getTextureView());
+            }, () -> {
+            });
+            this.texture = Optional.of(resourceLocation);
+            this.mipmap = bl;
+        }
+
+        protected Optional<ResourceLocation> cutoutTexture() {
+            return this.texture;
+        }
     }
 }

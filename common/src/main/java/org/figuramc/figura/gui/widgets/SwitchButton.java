@@ -2,6 +2,7 @@ package org.figuramc.figura.gui.widgets;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -73,11 +74,11 @@ public class SwitchButton extends Button {
         int y = getY();
 
         // render switch
-        gui.blit(RenderType::guiTextured, SWITCH_TEXTURE, x + 5, y + 5, 10f, (this.toggled ? 20f : 0f) + (this.isHoveredOrFocused() ? 10f : 0f),20, 10, 20, 10, 30, 40);
+        gui.blit(RenderPipelines.GUI_TEXTURED, SWITCH_TEXTURE, x + 5, y + 5, 10f, (this.toggled ? 20f : 0f) + (this.isHoveredOrFocused() ? 10f : 0f),20, 10, 20, 10, 30, 40);
 
         // render head
         headPos = (float) Mth.lerp(1f - Math.pow(0.2f, delta), headPos, this.toggled ? 20f : 0f);
-        gui.blit(RenderType::guiTextured, SWITCH_TEXTURE, Math.round(x + headPos), y, 0f, this.isHoveredOrFocused() ? 20f : 0f, 10, 20,10, 20, 30, 40);
+        gui.blit(RenderPipelines.GUI_TEXTURED, SWITCH_TEXTURE, Math.round(x + headPos), y, 0f, this.isHoveredOrFocused() ? 20f : 0f, 10, 20,10, 20, 30, 40);
     }
 
     @Override

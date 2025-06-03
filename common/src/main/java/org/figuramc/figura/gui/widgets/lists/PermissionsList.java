@@ -20,6 +20,7 @@ import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.ui.UIHelper;
+import org.joml.Matrix3x2fStack;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -168,14 +169,14 @@ public class PermissionsList extends AbstractList {
 
         @Override
         public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-            PoseStack pose = gui.pose();
+            Matrix3x2fStack pose = gui.pose();
             Font font = Minecraft.getInstance().font;
 
             // button
-            pose.pushPose();
-            pose.translate(0f, font.lineHeight, 0f);
+            pose.pushMatrix();
+            pose.translate(0f, font.lineHeight);
             super.renderWidget(gui, mouseX, mouseY, delta);
-            pose.popPose();
+            pose.popMatrix();
 
             // texts
             MutableComponent name = Component.translatable(this.text);
@@ -258,14 +259,14 @@ public class PermissionsList extends AbstractList {
 
         @Override
         protected void renderDefaultTexture(GuiGraphics gui, float delta) {
-            PoseStack pose = gui.pose();
+            Matrix3x2fStack pose = gui.pose();
             Font font = Minecraft.getInstance().font;
 
             // button
-            pose.pushPose();
-            pose.translate(0f, font.lineHeight, 0f);
+            pose.pushMatrix();
+            pose.translate(0f, font.lineHeight);
             super.renderDefaultTexture(gui, delta);
-            pose.popPose();
+            pose.popMatrix();
         }
 
         @Override

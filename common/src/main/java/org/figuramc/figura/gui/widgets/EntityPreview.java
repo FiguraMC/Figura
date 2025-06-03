@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -14,6 +15,7 @@ import org.figuramc.figura.model.rendering.EntityRenderMode;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.ui.UIHelper;
+import org.joml.Matrix3x2fStack;
 import org.joml.Vector3f;
 
 public class EntityPreview extends AbstractContainerElement {
@@ -94,17 +96,18 @@ public class EntityPreview extends AbstractContainerElement {
         gui.enableScissor(x + 1, y + 1, x + width - 1, y + height - 1);
 
         // render entity
-        PoseStack pose = gui.pose();
+        Matrix3x2fStack pose = gui.pose();
         if (entity != null) {
-            pose.pushPose();
+            pose.pushMatrix();
             scaledValue = Mth.lerp((float) (1f - Math.pow(0.5f, delta)), scaledValue, scaledPrecise);
-            UIHelper.drawEntity(x + modelX, y + modelY, scale + scaledValue, angleX, angleY, entity, gui, new Vector3f(), EntityRenderMode.FIGURA_GUI);
-            pose.popPose();
+            // TODO : Check the coords here
+            UIHelper.drawEntity(x + modelX, y + modelY, scale + scaledValue, angleX, angleY, entity, gui, new Vector3f(), EntityRenderMode.FIGURA_GUI, x, y, x+width, y+height);
+            pose.popMatrix();
         } else {
             // draw
             int s = Math.min(width, height) * 2 / 3;
             UIHelper.enableBlend();
-            gui.blit(RenderType::guiTextured, UNKNOWN, x + (width - s) / 2, y + (height - s) / 2, 0f, 64 * ((int) (FiguraMod.ticks / 3f) % 8), s, s,64, 64, 64, 512);
+            gui.blit(RenderPipelines.GUI_TEXTURED, UNKNOWN, x + (width - s) / 2, y + (height - s) / 2, 0f, 64 * ((int) (FiguraMod.ticks / 3f) % 8), s, s,64, 64, 64, 512);
         }
 
         gui.disableScissor();

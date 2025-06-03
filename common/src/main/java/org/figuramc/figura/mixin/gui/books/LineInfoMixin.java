@@ -1,19 +1,27 @@
 package org.figuramc.figura.mixin.gui.books;
 
-import net.minecraft.client.gui.screens.inventory.BookEditScreen;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.MultiLineEditBox;
+import net.minecraft.network.chat.Component;
 import org.figuramc.figura.font.Emojis;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(BookEditScreen.LineInfo.class)
+@Mixin(MultiLineEditBox.class)
 public class LineInfoMixin {
 
-    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/chat/MutableComponent;setStyle(Lnet/minecraft/network/chat/Style;)Lnet/minecraft/network/chat/MutableComponent;"))
-    public MutableComponent test(MutableComponent instance, Style style) {
-        return Emojis.applyEmojis(instance.setStyle(style));
+    @WrapOperation(method = "renderContents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;IIIZ)V"))
+    public void test(GuiGraphics instance, Font font, String string, int i, int j, int k, boolean bl, Operation<Void> original) {
+        Component literal = Component.literal(string);
+        Component emojied = Emojis.applyEmojis(literal);
+        if (literal != emojied) {
+            instance.drawString(font, emojied, i, j, k, bl); // make it use a component if emojis are present
+        } else {
+            original.call(instance, font, string, i, j, k, bl);
+        }
     }
 
 }

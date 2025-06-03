@@ -4,6 +4,8 @@
   "package": "org.figuramc.figura.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "font.FontAccessor",
+    "gui.GuiRendererAccessor"
   ],
   "client": [
     "AABBInvoker",
@@ -83,6 +85,7 @@
     "render.layers.elytra.ElytraModelAccessor",
     "render.layers.items.ItemInHandLayerMixin",
     "render.layers.items.PlayerItemInHandLayerMixin",
+    "render.renderers.AbstractSignRendererMixin",
     "render.renderers.ArrowRendererMixin",
     "render.renderers.ArrowRenderStateMixin",
     "render.renderers.BlockEntityWithoutLevelRendererMixin",
@@ -92,19 +95,18 @@
     "render.renderers.ItemInHandRendererMixin",
     "render.renderers.ItemModelResolverMixin",
     "render.renderers.ItemRendererMixin",
+    "render.renderers.ItemStackRenderState$LayerRenderStateAccessor",
     "render.renderers.ItemStackRenderStateMixin",
     "render.renderers.LivingEntityRendererMixin",
     "render.renderers.PlayerRendererMixin",
     "render.renderers.ScreenEffectRendererMixin",
-    "render.renderers.AbstractSignRendererMixin",
     "render.renderers.SkullBlockRendererMixin",
     "render.renderers.ThrownTridentRenderStateMixin",
     "render.renderers.TridentRendererMixin",
     "sound.ChannelHandleMixin",
     "sound.SoundEngineMixin",
     "sound.SoundManagerAccessor",
-    "sound.SubtitleOverlayMixin",
-    "render.renderers.ItemStackRenderState$LayerRenderStateAccessor"
+    "sound.SubtitleOverlayMixin"
   ],
   "server": [
   ],

@@ -7,6 +7,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.network.chat.Component;
@@ -31,6 +32,7 @@ import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.TextUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
+import org.joml.Matrix3x2fStack;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -113,17 +115,17 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
         if (dragged) {
             UIHelper.fillRounded(gui, getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0x40FFFFFF);
         } else {
-            PoseStack pose = gui.pose();
+            Matrix3x2fStack pose = gui.pose();
             int width = getWidth();
             int height = getHeight();
 
-            pose.pushPose();
+            pose.pushMatrix();
 
             float tx = getX() + width / 2f;
             float ty = getY() + height / 2f;
 
-            pose.translate(tx, ty, 100);
-            pose.scale(scale, scale, 1f);
+            pose.translate(tx, ty);
+            pose.scale(scale, scale);
 
             animate(delta, (UIHelper.getContext() == this.context && this.context.isVisible()) || this.isMouseOver(mouseX, mouseY) || this.isFocused());
 
@@ -162,11 +164,11 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
                 if (this.skin != null) {
                     // head
                     UIHelper.enableBlend();
-                    gui.blit(RenderType::guiTextured, this.skin, x + 4, y + 4, 8f, 8f,32, 32, 8, 8, 64, 64);
+                    gui.blit(RenderPipelines.GUI_TEXTURED, this.skin, x + 4, y + 4, 8f, 8f,32, 32, 8, 8, 64, 64);
 
                     // hat
                     GlStateManager._enableBlend();
-                    gui.blit(RenderType::guiTextured, this.skin, x + 4, y + 4, 40f, 8f,32, 32, 8, 8, 64, 64);
+                    gui.blit(RenderPipelines.GUI_TEXTURED, this.skin, x + 4, y + 4, 40f, 8f,32, 32, 8, 8, 64, 64);
                     GlStateManager._disableBlend();
                 } else {
                     UIHelper.blit(gui, x + 4, y + 4, 32, 32, UNKNOWN);
@@ -212,7 +214,7 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
             if (disconnected)
                 gui.drawString(font, DC_TEXT, x + width - font.width(DC_TEXT) - 4, textY, 0xFFFFFF);
 
-            pose.popPose();
+            pose.popMatrix();
         }
     }
 

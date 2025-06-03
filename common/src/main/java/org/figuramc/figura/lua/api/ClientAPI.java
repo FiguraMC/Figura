@@ -106,19 +106,19 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.get_version")
     public static String getVersion() {
-        return SharedConstants.getCurrentVersion().getId();
+        return SharedConstants.getCurrentVersion().id();
     }
 
     @LuaWhitelist
     @LuaMethodDoc("client.get_version_name")
     public static String getVersionName() {
-        return SharedConstants.getCurrentVersion().getName();
+        return SharedConstants.getCurrentVersion().name();
     }
 
     @LuaWhitelist
     @LuaMethodDoc("client.is_snapshot")
     public static boolean isSnapshot() {
-        return !SharedConstants.getCurrentVersion().isStable();
+        return !SharedConstants.getCurrentVersion().stable();
     }
 
     @LuaWhitelist

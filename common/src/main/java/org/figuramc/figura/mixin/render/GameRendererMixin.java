@@ -9,6 +9,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
+import net.minecraft.client.gui.render.GuiRenderer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.PostChain;
@@ -60,6 +61,7 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
     @Shadow private float fovModifier;
     @Shadow private float spinningEffectTime;
     @Shadow private float spinningEffectSpeed;
+    @Shadow @Final private GuiRenderer guiRenderer;
     @Unique
     private boolean avatarPostShader = false;
     @Unique
@@ -152,7 +154,7 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
             if (this.postEffectId == null || !this.postEffectId.equals(resource)) {
                 PostChain postchain = this.minecraft.getShaderManager().getPostChain(resource, LevelTargetBundle.MAIN_TARGETS);
                 if (postchain != null)
-                    postchain.process(this.minecraft.getMainRenderTarget(), this.resourcePool, null);
+                    postchain.process(this.minecraft.getMainRenderTarget(), this.resourcePool);
             }
         } catch (Exception ignored) {
             this.effectActive = false;
@@ -230,5 +232,10 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
     private<T> T figura$disableConfusionOnMatrix(OptionInstance<T> instance, Operation<T> original) {
         Avatar avatar = AvatarManager.getAvatar(this.minecraft.getCameraEntity() == null ? this.minecraft.player : this.minecraft.getCameraEntity());
         return (!RenderUtils.vanillaModelAndScript(avatar) || hasShaders) ? original.call(instance) : (T) (Object) 0.0;
+    }
+
+    @Override
+    public GuiRenderer figura$getGuiRenderer() {
+        return guiRenderer;
     }
 }

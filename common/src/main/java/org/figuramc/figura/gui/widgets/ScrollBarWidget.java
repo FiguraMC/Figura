@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -154,13 +155,13 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
         int height = getHeight();
 
         // render bar
-        gui.blit(RenderType::guiTextured, SCROLLBAR_TEXTURE, x, y,10f, isScrolling ? 20f : 0f, width, 1,  10, 1, 20, 40);
-        gui.blit(RenderType::guiTextured, SCROLLBAR_TEXTURE, x, y + 1, 10f, isScrolling ? 21f : 1f, width, height - 2, 10, 18, 20, 40);
-        gui.blit(RenderType::guiTextured, SCROLLBAR_TEXTURE, x, y + height - 1, 10f, isScrolling ? 39f : 19f, width, 1, 10, 1, 20, 40);
+        gui.blit(RenderPipelines.GUI_TEXTURED, SCROLLBAR_TEXTURE, x, y,10f, isScrolling ? 20f : 0f, width, 1,  10, 1, 20, 40);
+        gui.blit(RenderPipelines.GUI_TEXTURED, SCROLLBAR_TEXTURE, x, y + 1, 10f, isScrolling ? 21f : 1f, width, height - 2, 10, 18, 20, 40);
+        gui.blit(RenderPipelines.GUI_TEXTURED, SCROLLBAR_TEXTURE, x, y + height - 1, 10f, isScrolling ? 39f : 19f, width, 1, 10, 1, 20, 40);
 
         // render head
         lerpPos(delta);
-        gui.blit(RenderType::guiTextured, SCROLLBAR_TEXTURE, x, (int) (y + Math.round(Mth.lerp(scrollPos, 0, height - headHeight))), 0f, isHoveredOrFocused() || isScrolling ? headHeight : 0f, headWidth, headHeight, 20, 40);
+        gui.blit(RenderPipelines.GUI_TEXTURED, SCROLLBAR_TEXTURE, x, (int) (y + Math.round(Mth.lerp(scrollPos, 0, height - headHeight))), 0f, isHoveredOrFocused() || isScrolling ? headHeight : 0f, headWidth, headHeight, 20, 40);
     }
 
     @Override

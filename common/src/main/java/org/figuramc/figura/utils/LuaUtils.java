@@ -11,6 +11,7 @@ import net.minecraft.commands.arguments.SlotArgument;
 import net.minecraft.commands.arguments.blocks.BlockStateArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.component.TypedDataComponent;
@@ -28,6 +29,7 @@ import net.minecraft.world.phys.HitResult;
 
 import java.util.*;
 
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.lua.NbtToLua;
 import org.figuramc.figura.lua.ReadOnlyLuaTable;
 import org.figuramc.figura.lua.api.json.FiguraJsonSerializer;
@@ -247,7 +249,7 @@ public class LuaUtils {
                         ItemStackComponentizationFix.ItemStackData data = optionalItemStackData.get();
                         ItemStackComponentizationFix.fixItemStack(data, data.tag);
 
-                        ItemStack stack = ItemStack.parse(level.registryAccess(), data.write().cast(NbtOps.INSTANCE)).orElse(ItemArgument.item(CommandBuildContext.simple(level.registryAccess(), level.enabledFeatures())).parse(new StringReader(string)).createItemStack(1, false));
+                        ItemStack stack = parse(level.registryAccess(), data.write().cast(NbtOps.INSTANCE)).orElse(ItemArgument.item(CommandBuildContext.simple(level.registryAccess(), level.enabledFeatures())).parse(new StringReader(string)).createItemStack(1, false));
                         LuaTable table = new LuaTable();
                         for (String key : nbtItem.keySet())
                             table.set(key, NbtToLua.convert(nbtItem.get(key)));
@@ -266,6 +268,11 @@ public class LuaUtils {
         }
 
         throw new LuaError("Illegal argument to " + methodName + "(): " + item);
+    }
+
+    public static Optional<ItemStack> parse(HolderLookup.Provider provider, Tag tag) {
+        return ItemStack.CODEC.parse(provider.createSerializationContext(NbtOps.INSTANCE), tag)
+                .resultOrPartial(string -> FiguraMod.LOGGER.error("Tried to load invalid item: '{}'", string));
     }
 
     public static void addLegacyNbtNames(LuaTable source, LuaTable dest) {

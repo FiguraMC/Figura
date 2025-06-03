@@ -1,5 +1,6 @@
 package org.figuramc.figura.gui;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.Entity;
@@ -27,8 +28,13 @@ public class FiguraGui {
 
         if (avatar != null) {
             // hud parent type
-            avatar.hudRender(guiGraphics.pose(), Minecraft.getInstance().renderBuffers().bufferSource(), entity, tickDelta);
+            PoseStack stack = new PoseStack();
+            stack.pushPose();
+            stack.setIdentity();
+            stack.last().pose().mul(guiGraphics.pose());
 
+            avatar.hudRender(stack, Minecraft.getInstance().renderBuffers().bufferSource(), entity, tickDelta);
+            stack.popPose();
             // hud hidden by script
             if (avatar.luaRuntime != null && !avatar.luaRuntime.renderer.renderHUD) {
                 // render figura overlays

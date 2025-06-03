@@ -6,12 +6,14 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -22,6 +24,7 @@ import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.NbtToLua;
 import org.figuramc.figura.lua.ReadOnlyLuaTable;
 import org.figuramc.figura.lua.api.world.ItemStackAPI;
+import org.figuramc.figura.lua.api.world.WorldAPI;
 import org.figuramc.figura.lua.docs.LuaMetamethodDoc;
 import org.figuramc.figura.lua.docs.LuaMetamethodDoc.LuaMetamethodOverload;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
@@ -370,9 +373,9 @@ public class EntityAPI<T extends Entity> {
     @LuaMethodDoc("entity.get_nbt")
     public LuaTable getNbt() {
         checkEntity();
-        CompoundTag tag = new CompoundTag();
+        TagValueOutput tag = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, WorldAPI.getCurrentWorld().registryAccess());
         entity.saveWithoutId(tag);
-        return (LuaTable) NbtToLua.convert(tag);
+        return (LuaTable) NbtToLua.convert(tag.buildResult());
     }
 
     @LuaWhitelist

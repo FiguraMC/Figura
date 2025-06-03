@@ -15,6 +15,7 @@ import net.minecraft.util.Mth;
 import org.figuramc.figura.utils.MathUtils;
 import org.figuramc.figura.utils.TextUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
+import org.joml.Matrix3x2fStack;
 
 import java.util.List;
 
@@ -92,10 +93,10 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
     }
 
     private void renderText(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-        PoseStack pose = gui.pose();
-        pose.pushPose();
-        pose.translate(this.x, getY(), 0);
-        pose.scale(scale, scale, scale);
+        Matrix3x2fStack pose = gui.pose();
+        pose.pushMatrix();
+        pose.translate(this.x, getY());
+        pose.scale(scale, scale);
 
         // alpha
         if (alpha != null) {
@@ -138,7 +139,7 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
             y += height;
         }
 
-        pose.popPose();
+        pose.popMatrix();
     }
 
     @Override

@@ -37,6 +37,7 @@ import org.figuramc.figura.animation.AnimationPlayer;
 import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.ducks.FiguraEntityRenderStateExtension;
+import org.figuramc.figura.ducks.GameRendererAccessor;
 import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.lua.FiguraLuaRuntime;
 import org.figuramc.figura.lua.api.TextureAPI;
@@ -55,6 +56,7 @@ import org.figuramc.figura.math.matrix.FiguraMat3;
 import org.figuramc.figura.math.matrix.FiguraMat4;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.mixin.gui.GuiGraphicsAccessor;
+import org.figuramc.figura.mixin.gui.GuiRendererAccessor;
 import org.figuramc.figura.model.FiguraModelPart;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.model.PartCustomization;
@@ -73,7 +75,9 @@ import org.figuramc.figura.utils.RefilledNumber;
 import org.figuramc.figura.utils.Version;
 import org.figuramc.figura.utils.ui.UIHelper;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3x2fStack;
 import org.joml.Quaternionf;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
@@ -675,7 +679,7 @@ public class Avatar {
         stack.last().pose().scale(16, 16, -16);
         stack.last().normal().scale(1, 1, -1);
 
-        Lighting.setupForFlatItems();
+        Minecraft.getInstance().gameRenderer.getLighting().setupFor(Lighting.Entry.ITEMS_FLAT);
         GlStateManager._disableDepthTest();
 
         renderer.entity = entity;
@@ -690,7 +694,7 @@ public class Avatar {
             ((MultiBufferSource.BufferSource) renderer.bufferSource).endBatch();
 
         GlStateManager._enableDepthTest();
-        Lighting.setupFor3DItems();
+        Minecraft.getInstance().gameRenderer.getLighting().setupFor(Lighting.Entry.ITEMS_3D);
         stack.popPose();
 
         FiguraMod.popProfiler(2);
@@ -764,51 +768,58 @@ public class Avatar {
             return false;
 
         // matrices
-        PoseStack pose = gui.pose();
-        pose.pushPose();
-        pose.translate(x, y, 0d);
-        pose.scale(modelScale, modelScale * (upsideDown ? 1 : -1), modelScale);
-        pose.mulPose(Axis.XP.rotationDegrees(180f));
+        Matrix3x2fStack pose = gui.pose();
+        pose.pushMatrix();
+        pose.translate(x, y);
+        pose.scale(modelScale, modelScale * (upsideDown ? 1 : -1));
+        pose.rotate(180f);
 
         // scissors
-        Vector3f pos = pose.last().pose().transformPosition(new Vector3f());
+        Vector2f pos = pose.transformPosition(new Vector2f());
 
         int x1 = (int) pos.x;
         int y1 = (int) pos.y;
         int x2 = (int) pos.x + size;
         int y2 = (int) pos.y + size;
 
-        gui.pose().pushPose();
-        gui.pose().setIdentity();
+        gui.pose().pushMatrix();
+        gui.pose().identity();
         gui.enableScissor(x1, y1, x2, y2);
-        gui.pose().popPose();
+        gui.pose().popMatrix();
 
         UIHelper.paperdoll = true;
         UIHelper.dollScale = 16f;
 
         // setup render
-        pose.translate(4d / 16d, upsideDown ? 0 : (8d / 16d), 0d);
+        pose.translate((float)(4d / 16d), (float) (upsideDown ? 0 : (8d / 16d)));
 
-        Lighting.setupForFlatItems();
+        Minecraft.getInstance().gameRenderer.getLighting().setupFor(Lighting.Entry.ITEMS_FLAT);
 
-        MultiBufferSource.BufferSource buffer = ((GuiGraphicsAccessor)gui).getBufferSource();
+
+        PoseStack stack = new PoseStack();
+        stack.pushPose();
+        stack.last().setIdentity();
+        stack.last().pose().mul(gui.pose());
+
+        MultiBufferSource.BufferSource buffer = ((GuiRendererAccessor)((GameRendererAccessor)Minecraft.getInstance().gameRenderer).figura$getGuiRenderer()).figura$getBufferSource();
         int light = LightTexture.FULL_BRIGHT;
 
         renderer.allowPivotParts = false;
 
         renderer.setupRenderer(
-                PartFilterScheme.PORTRAIT, buffer, pose,
+                PartFilterScheme.PORTRAIT, buffer, stack,
                 1f, light, 1f, OverlayTexture.NO_OVERLAY,
                 false, false
         );
 
         // render
         int comp = renderer.renderSpecialParts();
-        boolean ret = comp > 0 || headRender(pose, buffer, light, false);
+        boolean ret = comp > 0 || headRender(stack, buffer, light, false);
 
         // after render
+        stack.popPose();
         buffer.endBatch();
-        pose.popPose();
+        gui.pose().popMatrix();
 
         gui.disableScissor();
         UIHelper.paperdoll = false;

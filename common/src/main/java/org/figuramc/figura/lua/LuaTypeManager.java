@@ -2,6 +2,7 @@ package org.figuramc.figura.lua;
 
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import org.figuramc.figura.lua.docs.FiguraDocsManager;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.utils.TextUtils;
@@ -367,7 +368,7 @@ public class LuaTypeManager {
             return wrapArray(val);
         else if (val instanceof Component c) {
             TextUtils.allowScriptEvents = true;
-            LuaValue ret = LuaValue.valueOf(Component.Serializer.toJson(c, RegistryAccess.EMPTY));
+            LuaValue ret = LuaValue.valueOf(ComponentSerialization.CODEC.encodeStart(TextUtils.OPS, c).getOrThrow().toString());
             TextUtils.allowScriptEvents = false;
             return ret;
         }

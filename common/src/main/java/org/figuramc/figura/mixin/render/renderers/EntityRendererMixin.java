@@ -124,8 +124,8 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
         }
     }
 
-    @WrapOperation(method = "renderNameTag", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;drawInBatch(Lnet/minecraft/network/chat/Component;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;II)I", ordinal = 0))
-    private int drawWithColor(Font font, Component component, float x, float y, int color, boolean shadow, Matrix4f matrix4f, MultiBufferSource multiBufferSource, Font.DisplayMode displayMode, int backgroundColor, int light, Operation<Integer> original) {
+    @WrapOperation(method = "renderNameTag", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;drawInBatch(Lnet/minecraft/network/chat/Component;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;II)V", ordinal = 0))
+    private void drawWithColor(Font font, Component component, float x, float y, int color, boolean shadow, Matrix4f matrix4f, MultiBufferSource multiBufferSource, Font.DisplayMode displayMode, int backgroundColor, int light, Operation<Integer> original) {
         if (figura$enabled && figura$avatar != null && figura$hasCustomNameplate) {
             light = figura$custom.light != null ? figura$custom.light : light;
             backgroundColor = figura$custom.background != null ? figura$custom.background : backgroundColor;
@@ -144,19 +144,18 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
                     int line = i - figura$textList.size() + 1;
                     x = -font.width(text1) / 2f;
                     y = (deadmau ? -10f : 0f) + (font.lineHeight + 1) * line;
-                    ret = original.call(font, text1, x, y, color, shadow, matrix4f, multiBufferSource, displayMode, backgroundColor, light);
+                    original.call(font, text1, x, y, color, shadow, matrix4f, multiBufferSource, displayMode, backgroundColor, light);
                 }
-                return ret;
             } else {
-                return original.call(font, component, x, y, color, shadow, matrix4f, multiBufferSource, displayMode, backgroundColor, light);
+                original.call(font, component, x, y, color, shadow, matrix4f, multiBufferSource, displayMode, backgroundColor, light);
             }
         } else {
-            return original.call(font, component, x, y, color, shadow, matrix4f, multiBufferSource, displayMode, backgroundColor, light);
+            original.call(font, component, x, y, color, shadow, matrix4f, multiBufferSource, displayMode, backgroundColor, light);
         }
     }
 
-    @WrapOperation(method = "renderNameTag", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;drawInBatch(Lnet/minecraft/network/chat/Component;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;II)I", ordinal = 1))
-    private int drawWithOutline(Font font, Component component, float x, float y, int color, boolean shadow, Matrix4f matrix4f, MultiBufferSource multiBufferSource, Font.DisplayMode displayMode, int backgroundColor, int light, Operation<Integer> original, @Share("textMatrix") LocalRef<Matrix4f> textMatrix) {
+    @WrapOperation(method = "renderNameTag", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;drawInBatch(Lnet/minecraft/network/chat/Component;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;II)V", ordinal = 1))
+    private void drawWithOutline(Font font, Component component, float x, float y, int color, boolean shadow, Matrix4f matrix4f, MultiBufferSource multiBufferSource, Font.DisplayMode displayMode, int backgroundColor, int light, Operation<Integer> original, @Share("textMatrix") LocalRef<Matrix4f> textMatrix) {
         light = figura$enabled && figura$avatar != null && figura$hasCustomNameplate && figura$custom.light != null ? figura$custom.light : light;
         shadow = figura$enabled && figura$avatar != null && figura$hasCustomNameplate ? figura$custom.shadow : shadow;
         boolean deadmau = component.getString().equals("deadmau5");
@@ -179,7 +178,7 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
             } else {
                 font.drawInBatch8xOutline(component.getVisualOrderText(), x, y, color, outlineColor, matrix4f, multiBufferSource, light);
             }
-            return original.call(font, Component.empty(), x, y, color, shadow, textMatrix.get(), multiBufferSource, displayMode, backgroundColor, light);
+            original.call(font, Component.empty(), x, y, color, shadow, textMatrix.get(), multiBufferSource, displayMode, backgroundColor, light);
         } else {
             if (figura$enabled && figura$avatar != null && figura$hasCustomNameplate && figura$isRenderingName()) {
                 int ret = 0;
@@ -193,12 +192,11 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
                     int line = i - figura$textList.size() + 1;
                     x = -font.width(text1) / 2f;
                     y = (deadmau ? -10f : 0f) + (font.lineHeight + 1) * line;
-                    ret = original.call(font, text1, x, y, color, shadow, textMatrix.get(), multiBufferSource, displayMode, backgroundColor, light);
+                    original.call(font, text1, x, y, color, shadow, textMatrix.get(), multiBufferSource, displayMode, backgroundColor, light);
                 }
 
-                return ret;
             } else {
-                return original.call(font, component, x, y, color, shadow, textMatrix.get(), multiBufferSource, displayMode, backgroundColor, light);
+                original.call(font, component, x, y, color, shadow, textMatrix.get(), multiBufferSource, displayMode, backgroundColor, light);
             }
         }
     }

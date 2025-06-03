@@ -9,6 +9,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -27,6 +28,7 @@ import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.MathUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
+import org.joml.Matrix3x2fStack;
 
 import java.util.List;
 import java.util.UUID;
@@ -92,8 +94,8 @@ public class PopupMenu {
         }
 
         GlStateManager._disableDepthTest();
-        PoseStack pose = gui.pose();
-        pose.pushPose();
+        Matrix3x2fStack pose = gui.pose();
+        pose.pushMatrix();
 
         // world to screen space
         FiguraVec3 worldPos = FiguraVec3.fromVec3(entity.getPosition(minecraft.getDeltaTracker().getGameTimeDeltaPartialTick(false)));
@@ -107,21 +109,21 @@ public class PopupMenu {
         double h = window.getGuiScaledHeight();
         double s = Configs.POPUP_SCALE.value * Math.max(Math.min(window.getHeight() * 0.035 / vec.w * (1 / window.getGuiScale()), Configs.POPUP_MAX_SIZE.value), Configs.POPUP_MIN_SIZE.value);
 
-        pose.translate((vec.x + 1) / 2 * w, (vec.y + 1) / 2 * h, -100);
-        pose.scale((float) (s * 0.5), (float) (s * 0.5), 1);
+        pose.translate((float) ((vec.x + 1) / 2 * w), (float) ((vec.y + 1) / 2 * h));
+        pose.scale((float) (s * 0.5), (float) (s * 0.5));
 
         // background
         int width = LENGTH * 18;
 
         UIHelper.enableBlend();
         int frame = Configs.REDUCED_MOTION.value ? 0 : (int) ((FiguraMod.ticks / 5f) % 4);
-        gui.blit(RenderType::guiTexturedOverlay, BACKGROUND, width / -2, -24, 0, frame * 26, width, 26, width, 26, width, 104);
+        gui.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND, width / -2, -24, 0, frame * 26, width, 26, width, 26, width, 104);
 
         // icons
-        pose.translate(0f, 0f, -2f);
+        pose.translate(0f, 0f);
         UIHelper.enableBlend();
         for (int i = 0; i < LENGTH; i++)
-            gui.blit(RenderType::guiTexturedOverlay, ICONS, width / -2 + (18 * i), -24, 18 * i, i == index ? 18 : 0, 18, 18, 18, 18, width, 36);
+            gui.blit(RenderPipelines.GUI_TEXTURED, ICONS, width / -2 + (18 * i), -24, 18 * i, i == index ? 18 : 0, 18, 18, 18, 18, width, 36);
 
         // texts
         Font font = minecraft.font;
@@ -151,8 +153,8 @@ public class PopupMenu {
         // render texts
         UIHelper.renderOutlineText(gui, font, name, -font.width(name) / 2, -36, 0xFFFFFF, 0x202020);
 
-        pose.scale(0.5f, 0.5f, 0.5f);
-        pose.translate(0f, 0f, -1f);
+        pose.scale(0.5f, 0.5f);
+        pose.translate(0f, 0f);
 
         UIHelper.renderOutlineText(gui, font, permissionName, -font.width(permissionName) / 2, -54, 0xFFFFFF, 0x202020);
         gui.drawString(font, title, -width + 4, -12, 0xFFFFFF);
@@ -165,7 +167,7 @@ public class PopupMenu {
             UIHelper.renderOutlineText(gui, font, PERMISSION_WARN, -font.width(PERMISSION_WARN) / 2, (error ? font.lineHeight : 0) + (version ? font.lineHeight : 0), 0xFFFFFF, 0x202020);
 
         // finish rendering
-        pose.popPose();
+        pose.popMatrix();
     }
 
     public static void scroll(double d) {

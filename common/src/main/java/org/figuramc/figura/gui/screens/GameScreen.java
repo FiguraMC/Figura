@@ -10,6 +10,7 @@ import org.figuramc.figura.gui.widgets.Button;
 import org.figuramc.figura.gui.widgets.Label;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.FiguraText;
+import org.joml.Matrix3x2fStack;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -147,9 +148,9 @@ public class GameScreen extends AbstractPanelScreen {
 
         @Override
         public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-            PoseStack pose = gui.pose();
-            pose.pushPose();
-            pose.scale(scale, scale, scale);
+            Matrix3x2fStack pose = gui.pose();
+            pose.pushMatrix();
+            pose.scale(scale, scale);
 
             for (Cell[] cells : grid) {
                 for (Cell cell : cells) {
@@ -157,7 +158,7 @@ public class GameScreen extends AbstractPanelScreen {
                 }
             }
 
-            pose.popPose();
+            pose.popMatrix();
         }
     }
 

@@ -17,6 +17,7 @@ import org.figuramc.figura.lua.api.ClientAPI;
 import org.figuramc.figura.mixin.gui.ScreenAccessor;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.ui.UIHelper;
+import org.joml.Matrix3x2fStack;
 
 import java.util.List;
 
@@ -112,11 +113,11 @@ public abstract class AbstractPanelScreen extends Screen {
         // render context
         if (contextMenu != null && contextMenu.isVisible()) {
             // translate the stack here because of nested contexts
-            PoseStack pose = gui.pose();
-            pose.pushPose();
-            pose.translate(0f, 0f, 500f);
+            Matrix3x2fStack pose = gui.pose();
+            pose.pushMatrix();
+//            pose.translate(0f, 0f, 500f);
             contextMenu.render(gui, mouseX, mouseY, delta);
-            pose.popPose();
+            pose.popMatrix();
         }
 
         // render tooltip
@@ -233,7 +234,7 @@ public abstract class AbstractPanelScreen extends Screen {
 
     // No blur in our screens!
     @Override
-    protected void renderBlurredBackground() {
+    protected void renderBlurredBackground(GuiGraphics guiGraphics) {
 
     }
 }

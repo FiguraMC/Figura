@@ -50,7 +50,7 @@ public interface GeckolibGeoRendererMixin<T extends GeoAnimatable> {
             buffer = bufferSource.getBuffer(renderType);
         }
 
-        RenderSystem.setShaderTexture(0, Minecraft.getInstance().getTextureManager().getTexture(getTextureLocation(animatable)).getTexture());
+        RenderSystem.setShaderTexture(0, Minecraft.getInstance().getTextureManager().getTexture(getTextureLocation(animatable)).getTextureView());
 
         CallbackInfo callbackInfo = new CallbackInfo("figura$renderPivots", true);
         figura$renderPivots(poseStack, animatable, model, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color, callbackInfo);

@@ -91,13 +91,13 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
     }
 
     @Override
-    public boolean shouldRenderOffScreen(SkullBlockEntity blockEntity) {
-    	Avatar localAvatar = avatar; // avatar pointer incase avatar variable is set during render.
-    	return localAvatar == null || localAvatar.permissions == null ? BlockEntityRenderer.super.shouldRenderOffScreen(blockEntity) : localAvatar.permissions.get(Permissions.OFFSCREEN_RENDERING) == 1;
+    public boolean shouldRenderOffScreen() {
+        Avatar localAvatar = avatar; // avatar pointer incase avatar variable is set during render.
+        return localAvatar == null || localAvatar.permissions == null ? BlockEntityRenderer.super.shouldRenderOffScreen() : localAvatar.permissions.get(Permissions.OFFSCREEN_RENDERING) == 1;
     }
 
-    @Inject(at = @At("HEAD"), method = "getRenderType(Lnet/minecraft/world/level/block/SkullBlock$Type;Lnet/minecraft/world/item/component/ResolvableProfile;Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/client/renderer/RenderType;")
-    private static void getRenderType(SkullBlock.Type type, ResolvableProfile profile, ResourceLocation id, CallbackInfoReturnable<RenderType> cir) {
-        avatar = (profile != null && profile != null && profile.gameProfile() != null) ? AvatarManager.getAvatarForPlayer(profile.gameProfile().getId()) : null;
+    @Inject(at = @At("HEAD"), method = "getRenderType")
+    private static void getRenderType(SkullBlock.Type type, ResolvableProfile profile, CallbackInfoReturnable<RenderType> cir) {
+        avatar = (profile != null && profile.gameProfile() != null) ? AvatarManager.getAvatarForPlayer(profile.gameProfile().getId()) : null;
     }
 }

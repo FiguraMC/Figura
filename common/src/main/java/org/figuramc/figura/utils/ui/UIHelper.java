@@ -1,16 +1,32 @@
 package org.figuramc.figura.utils.ui;
 
+import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.blaze3d.buffers.Std140Builder;
+import com.mojang.blaze3d.font.GlyphInfo;
 import com.mojang.blaze3d.opengl.GlStateManager;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.Lighting;
+import com.mojang.blaze3d.systems.GpuDevice;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.font.FontSet;
+import net.minecraft.client.gui.font.glyphs.BakedGlyph;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.gui.render.TextureSetup;
+import net.minecraft.client.gui.render.state.BlitRenderState;
+import net.minecraft.client.gui.render.state.GuiElementRenderState;
+import net.minecraft.client.gui.render.state.GuiTextRenderState;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -19,25 +35,31 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Inventory;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.Badges;
 import org.figuramc.figura.config.Configs;
+import org.figuramc.figura.ducks.GameRendererAccessor;
 import org.figuramc.figura.gui.screens.AbstractPanelScreen;
 import org.figuramc.figura.gui.screens.FiguraConfirmScreen;
 import org.figuramc.figura.gui.widgets.ContextMenu;
 import org.figuramc.figura.gui.widgets.FiguraWidget;
 import org.figuramc.figura.math.vector.FiguraVec4;
+import org.figuramc.figura.mixin.font.FontAccessor;
 import org.figuramc.figura.mixin.gui.GuiGraphicsAccessor;
+import org.figuramc.figura.mixin.gui.GuiRendererAccessor;
 import org.figuramc.figura.model.rendering.EntityRenderMode;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.RenderUtils;
 import org.figuramc.figura.utils.TextUtils;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
+import org.jetbrains.annotations.Nullable;
+import org.joml.*;
+import org.lwjgl.system.MemoryStack;
 
+import java.lang.Math;
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -110,8 +132,24 @@ public final class UIHelper {
         RenderSystem.enableBlend();
     }*/
 
+    private static GpuBuffer buffer = null;
+    private static void setFiguraLighting() {
+        if (buffer != null)
+            return;
+
+        GpuDevice gpuDevice = RenderSystem.getDevice();
+        int paddedSize = Mth.roundToward(Lighting.UBO_SIZE, gpuDevice.getUniformOffsetAlignment());
+        buffer = gpuDevice.createBuffer(() -> "Figura Lighting UBO", 136, paddedSize);
+        Vector3f lighting0 = Util.make(new Vector3f(-0.2f, -1f, 1f), Vector3f::normalize);
+        Vector3f lighting1 = Util.make(new Vector3f(-0.2f, 0.4f, 0.3f), Vector3f::normalize);
+        try (MemoryStack memoryStack = MemoryStack.stackPush()) {
+            ByteBuffer byteBuffer = Std140Builder.onStack(memoryStack, Lighting.UBO_SIZE).putVec3(lighting0).putVec3(lighting1).get();
+            RenderSystem.getDevice().createCommandEncoder().writeToBuffer(buffer.slice(0, paddedSize), byteBuffer);
+        }
+    }
+
     @SuppressWarnings("deprecation")
-    public static void drawEntity(float x, float y, float scale, float pitch, float yaw, LivingEntity entity, GuiGraphics gui, Vector3f offset, EntityRenderMode renderMode) {
+    public static void drawEntity(float x, float y, float scale, float pitch, float yaw, LivingEntity entity, GuiGraphics gui, Vector3f offset, EntityRenderMode renderMode, int x1, int y1, int x2, int y2) {
         // backup entity variables
         float headX = entity.getXRot();
         float headY = entity.yHeadRot;
@@ -146,7 +184,7 @@ public final class UIHelper {
                 }
 
                 // lightning
-                Lighting.setupForEntityInInventory();
+                Minecraft.getInstance().gameRenderer.getLighting().setupFor(Lighting.Entry.ENTITY_IN_UI);
 
                 // invisibility
                 if (Configs.PAPERDOLL_INVISIBLE.value)
@@ -166,12 +204,14 @@ public final class UIHelper {
                 yPos--;
 
                 // set up lighting
-                Lighting.setupForFlatItems();
-                RenderSystem.setShaderLights(Util.make(new Vector3f(-0.2f, -1f, 1f), Vector3f::normalize), Util.make(new Vector3f(-0.2f, 0.4f, 0.3f), Vector3f::normalize));
+                Minecraft.getInstance().gameRenderer.getLighting().setupFor(Lighting.Entry.ITEMS_FLAT);
+                setFiguraLighting();
+                RenderSystem.setShaderLights(buffer.slice());
                 // 1.20.5 invered the z for lights
 
                 // invisibility
                 entity.setInvisible(false);
+                // TODO: Reapply pos
             }
             default -> {
                 // rotations
@@ -182,15 +222,15 @@ public final class UIHelper {
                 entity.yHeadRot = -yaw + bodyY;
 
                 // lightning
-                Lighting.setupForEntityInInventory();
+                Minecraft.getInstance().gameRenderer.getLighting().setupFor(Lighting.Entry.ENTITY_IN_UI);
             }
         }
 
         // apply matrix transformers
-        PoseStack pose = gui.pose();
-        pose.pushPose();
-        pose.translate(x, y, 250d);
-        pose.scale(scale, scale, -scale); // Scale positions and normals, necessary as of 1.20.5
+        Matrix3x2fStack pose = gui.pose();
+        pose.pushMatrix();
+        pose.translate(x, y);
+        pose.scale(scale, scale); // Scale positions and normals, necessary as of 1.20.5
 
         Avatar avatar = AvatarManager.getAvatar(entity);
         if (RenderUtils.vanillaModelAndScript(avatar) && !avatar.luaRuntime.renderer.getRootRotationAllowed()) {
@@ -203,9 +243,7 @@ public final class UIHelper {
         Quaternionf quaternion3 = Axis.XP.rotationDegrees(xRot);
         quaternion3.mul(quaternion2);
         quaternion.mul(quaternion3);
-        pose.mulPose(quaternion);
         quaternion3.conjugate();
-        pose.translate(offset.x, offset.y, offset.z);
 
         // setup entity renderer
         Minecraft minecraft = Minecraft.getInstance();
@@ -222,11 +260,11 @@ public final class UIHelper {
 
         if (avatar != null) avatar.renderMode = renderMode;
 
-        double finalXPos = xPos;
-        double finalYPos = yPos;
-        gui.drawSpecial((multiBufferSource -> {
-            dispatcher.render(entity, finalXPos, finalYPos, 0d, 1f, pose, multiBufferSource, LightTexture.FULL_BRIGHT);
-        }));
+        EntityRenderDispatcher entityRenderDispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
+        EntityRenderer<? super LivingEntity, ?> entityRenderer = entityRenderDispatcher.getRenderer(entity);
+        EntityRenderState entityRenderState = entityRenderer.createRenderState(entity, 1.0F);
+        entityRenderState.hitboxesRenderState = null;
+        gui.submitEntityRenderState(entityRenderState,scale/entity.getScale(), offset, quaternion, quaternion3, x1, y1, x2, y2);
 
         paperdoll = false;
 
@@ -235,8 +273,8 @@ public final class UIHelper {
         dispatcher.setRenderShadow(true);
 
         // pop matrix
-        pose.popPose();
-        Lighting.setupFor3DItems();
+        pose.popMatrix();
+        Minecraft.getInstance().gameRenderer.getLighting().setupFor(Lighting.Entry.ITEMS_3D);
 
         // restore entity data
         entity.setXRot(headX);
@@ -251,11 +289,11 @@ public final class UIHelper {
 
     private static void prepareTexture(ResourceLocation texture) {
         enableBlend();
-        RenderSystem.setShaderTexture(0, Minecraft.getInstance().getTextureManager().getTexture(texture).getTexture());
+        RenderSystem.setShaderTexture(0, Minecraft.getInstance().getTextureManager().getTexture(texture).getTextureView());
     }
 
     public static void blit(GuiGraphics gui, int x, int y, int width, int height, ResourceLocation texture) {
-        gui.blit(RenderType::guiTextured, texture, x, y, 0f, 0f, width, height, 1, 1, 1, 1);
+        gui.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, 0f, 0f, width, height, 1, 1, 1, 1);
     }
 
     public static void renderAnimatedBackground(GuiGraphics gui, ResourceLocation texture, float x, float y, float width, float height, float textureWidth, float textureHeight, double speed, float delta) {
@@ -277,14 +315,10 @@ public final class UIHelper {
     }
 
     public static void renderBackgroundTexture(GuiGraphics gui, ResourceLocation texture, float x, float y, float width, float height, float textureWidth, float textureHeight) {
-
-        VertexConsumer vertexConsumer = ((GuiGraphicsAccessor)gui).getBufferSource().getBuffer(RenderType.guiTextured(texture));
-
         float u1 = width / textureWidth;
         float v1 = height / textureHeight;
-        quad(vertexConsumer, gui.pose().last().pose(), x, y, width, height, -999f, 0f, u1, 0f, v1);
+        quad(gui, gui.pose(), x, y, width, height, -999f, 0f, u1, 0f, v1, texture);
 
-        ((GuiGraphicsAccessor)gui).getBufferSource().endBatch();
     }
 
     public static void fillRounded(GuiGraphics gui, int x, int y, int width, int height, int color) {
@@ -305,35 +339,33 @@ public final class UIHelper {
     }
 
     public static void blitSliced(GuiGraphics gui, int x, int y, int width, int height, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight, ResourceLocation texture) {
-        VertexConsumer vertexConsumer = ((GuiGraphicsAccessor)gui).getBufferSource().getBuffer(RenderType.guiTextured(texture));
 
-        Matrix4f pose = gui.pose().last().pose();
+        Matrix3x2f pose = gui.pose();
 
         float rWidthThird = regionWidth / 3f;
         float rHeightThird = regionHeight / 3f;
 
         // top left
-        quad(vertexConsumer, pose, x, y, rWidthThird, rHeightThird, u, v, rWidthThird, rHeightThird, textureWidth, textureHeight);
+        quad(gui, pose, x, y, rWidthThird, rHeightThird, u, v, rWidthThird, rHeightThird, textureWidth, textureHeight, texture);
         // top middle
-        quad(vertexConsumer, pose, x + rWidthThird, y, width - rWidthThird * 2, rHeightThird, u + rWidthThird, v, rWidthThird, rHeightThird, textureWidth, textureHeight);
+        quad(gui, pose, x + rWidthThird, y, width - rWidthThird * 2, rHeightThird, u + rWidthThird, v, rWidthThird, rHeightThird, textureWidth, textureHeight, texture);
         // top right
-        quad(vertexConsumer, pose, x + width - rWidthThird, y, rWidthThird, rHeightThird, u + rWidthThird * 2, v, rWidthThird, rHeightThird, textureWidth, textureHeight);
+        quad(gui, pose, x + width - rWidthThird, y, rWidthThird, rHeightThird, u + rWidthThird * 2, v, rWidthThird, rHeightThird, textureWidth, textureHeight, texture);
 
         // middle left
-        quad(vertexConsumer, pose, x, y + rHeightThird, rWidthThird, height - rHeightThird * 2, u, v + rHeightThird, rWidthThird, rHeightThird, textureWidth, textureHeight);
+        quad(gui, pose, x, y + rHeightThird, rWidthThird, height - rHeightThird * 2, u, v + rHeightThird, rWidthThird, rHeightThird, textureWidth, textureHeight, texture);
         // middle middle
-        quad(vertexConsumer, pose, x + rWidthThird, y + rHeightThird, width - rWidthThird * 2, height - rHeightThird * 2, u + rWidthThird, v + rHeightThird, rWidthThird, rHeightThird, textureWidth, textureHeight);
+        quad(gui, pose, x + rWidthThird, y + rHeightThird, width - rWidthThird * 2, height - rHeightThird * 2, u + rWidthThird, v + rHeightThird, rWidthThird, rHeightThird, textureWidth, textureHeight, texture);
         // middle right
-        quad(vertexConsumer, pose, x + width - rWidthThird, y + rHeightThird, rWidthThird, height - rHeightThird * 2, u + rWidthThird * 2, v + rHeightThird, rWidthThird, rHeightThird, textureWidth, textureHeight);
+        quad(gui, pose, x + width - rWidthThird, y + rHeightThird, rWidthThird, height - rHeightThird * 2, u + rWidthThird * 2, v + rHeightThird, rWidthThird, rHeightThird, textureWidth, textureHeight, texture);
 
         // bottom left
-        quad(vertexConsumer, pose, x, y + height - rHeightThird, rWidthThird, rHeightThird, u, v + rHeightThird * 2, rWidthThird, rHeightThird, textureWidth, textureHeight);
+        quad(gui, pose, x, y + height - rHeightThird, rWidthThird, rHeightThird, u, v + rHeightThird * 2, rWidthThird, rHeightThird, textureWidth, textureHeight, texture);
         // bottom middle
-        quad(vertexConsumer, pose, x + rWidthThird, y + height - rHeightThird, width - rWidthThird * 2, rHeightThird, u + rWidthThird, v + rHeightThird * 2, rWidthThird, rHeightThird, textureWidth, textureHeight);
+        quad(gui, pose, x + rWidthThird, y + height - rHeightThird, width - rWidthThird * 2, rHeightThird, u + rWidthThird, v + rHeightThird * 2, rWidthThird, rHeightThird, textureWidth, textureHeight, texture);
         // bottom right
-        quad(vertexConsumer, pose, x + width - rWidthThird, y + height - rHeightThird, rWidthThird, rHeightThird, u + rWidthThird * 2, v + rHeightThird * 2, rWidthThird, rHeightThird, textureWidth, textureHeight);
+        quad(gui, pose, x + width - rWidthThird, y + height - rHeightThird, rWidthThird, rHeightThird, u + rWidthThird * 2, v + rHeightThird * 2, rWidthThird, rHeightThird, textureWidth, textureHeight, texture);
 
-        ((GuiGraphicsAccessor)gui).getBufferSource().endBatch();
     }
 
     public static void renderHalfTexture(GuiGraphics gui, int x, int y, int width, int height, int textureWidth, ResourceLocation texture) {
@@ -345,43 +377,44 @@ public final class UIHelper {
 
         // left
         int w = width / 2;
-        gui.blit(RenderType::guiTextured, texture, x, y, u, v, w, height, w, regionHeight, textureWidth, textureHeight);
+        gui.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, u, v, w, height, w, regionHeight, textureWidth, textureHeight);
 
         // right
         x += w;
         if (width % 2 == 1) w++;
-        gui.blit(RenderType::guiTextured, texture, x, y, u + regionWidth - w, v, w, height, w, regionHeight, textureWidth, textureHeight);
+        gui.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, u + regionWidth - w, v, w, height, w, regionHeight, textureWidth, textureHeight);
     }
 
     public static void renderSprite(GuiGraphics gui, int x, int y, int z, int width, int height, TextureAtlasSprite sprite) {
-        VertexConsumer vertexConsumer = ((GuiGraphicsAccessor)gui).getBufferSource().getBuffer(RenderType.guiTextured(sprite.atlasLocation()));
-
-        quad(vertexConsumer, gui.pose().last().pose(), x, y, width, height, z, sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1());
-
-        ((GuiGraphicsAccessor)gui).getBufferSource().endBatch();
+        gui.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, x, y, width, height, z);
     }
 
-    private static void quad(VertexConsumer bufferBuilder, Matrix4f pose, float x, float y, float width, float height, float u, float v, float regionWidth, float regionHeight, int textureWidth, int textureHeight) {
+    private static void quad(GuiGraphics gui, Matrix3x2f pose, float x, float y, float width, float height, float u, float v, float regionWidth, float regionHeight, int textureWidth, int textureHeight, @Nullable ResourceLocation texture) {
         float u0 = u / textureWidth;
         float v0 = v / textureHeight;
         float u1 = (u + regionWidth) / textureWidth;
         float v1 = (v + regionHeight) / textureHeight;
-        quad(bufferBuilder, pose, x, y, width, height, 0f, u0, u1, v0, v1);
+        quad(gui, pose, x, y, width, height, 0f, u0, u1, v0, v1, texture);
     }
 
-    private static void quad(VertexConsumer bufferBuilder, Matrix4f pose, float x, float y, float width, float height, float z, float u0, float u1, float v0, float v1) {
+    private static void quad(GuiGraphics gui, Matrix3x2f pose, float x, float y, float width, float height, float z, float u0, float u1, float v0, float v1, @Nullable ResourceLocation texture) {
         float x1 = x + width;
         float y1 = y + height;
-        bufferBuilder.addVertex(pose, x, y1, z).setUv(u0, v1).setColor(-1);
-        bufferBuilder.addVertex(pose, x1, y1, z).setUv(u1, v1).setColor(-1);
-        bufferBuilder.addVertex(pose, x1, y, z).setUv(u1, v0).setColor(-1);
-        bufferBuilder.addVertex(pose, x, y, z).setUv(u0, v0).setColor(-1);
+
+        TextureSetup setup;
+        if (texture != null) {
+            GpuTextureView gpuTextureView = Minecraft.getInstance().getTextureManager().getTexture(texture).getTextureView();
+            setup = TextureSetup.singleTexture(gpuTextureView);
+        } else {
+            setup = TextureSetup.noTexture();
+        }
+        ((GuiGraphicsAccessor)gui).figura$getRenderState().submitBlitToCurrentLayer(new BlitRenderState(RenderPipelines.GUI_TEXTURED, setup, pose, (int) x, (int) y, (int) x1, (int) y1, u0, u1, v0, v1, -1, ((GuiGraphicsAccessor)gui).figura$getScissorStack().peek()));
     }
 
     public static void renderWithoutScissors(GuiGraphics gui, Consumer<GuiGraphics> toRun) {
         // very jank
         gui.enableScissor(0, 0, 1, 1);
-        RenderSystem.disableScissor();
+        RenderSystem.disableScissorForRenderTypeDraws();
         toRun.accept(gui);
         gui.disableScissor();
     }
@@ -456,9 +489,8 @@ public final class UIHelper {
     }
 
     public static void renderOutlineText(GuiGraphics gui, Font textRenderer, Component text, int x, int y, int color, int outline) {
-        MultiBufferSource.BufferSource bufferSource = ((GuiGraphicsAccessor)gui).getBufferSource();
-        textRenderer.drawInBatch8xOutline(text.getVisualOrderText(), x, y, color, outline, gui.pose().last().pose(), bufferSource, LightTexture.FULL_BRIGHT);
-        bufferSource.endBatch();
+        ((GuiGraphicsAccessor)gui).figura$getRenderState().submitText(new OutlinedGuiTextRenderState(textRenderer, text.getVisualOrderText(), new Matrix3x2f(gui.pose()), x, y, color, outline, ((GuiGraphicsAccessor)gui).figura$getScissorStack().peek()));
+        gui.drawString(textRenderer, text, x, y, color, false);
     }
 
     public static void renderTooltip(GuiGraphics gui, Component tooltip, int mouseX, int mouseY, boolean background) {
@@ -493,8 +525,8 @@ public final class UIHelper {
         }
 
         // render
-        gui.pose().pushPose();
-        gui.pose().translate(0d, 0d, 999d);
+        gui.pose().pushMatrix();
+        //gui.pose().translate(0d, 0d, 999d);
 
         if (background)
             blitSliced(gui, x - 4, y - 4, width + 8, height + 8, TOOLTIP);
@@ -504,7 +536,7 @@ public final class UIHelper {
             gui.drawString(font, charSequence, x, y + font.lineHeight * i, 0xFFFFFF);
         }
 
-        gui.pose().popPose();
+        gui.pose().popMatrix();
     }
 
     public static void renderScrollingText(GuiGraphics gui, Component text, int x, int y, int width, int color) {
@@ -599,5 +631,60 @@ public final class UIHelper {
         Component text = style.getHoverEvent() instanceof HoverEvent.ShowText ? ((HoverEvent.ShowText) style.getHoverEvent()).value() : null;
         if (text != null)
             setTooltip(text);
+    }
+
+    // This is purely the outline to match vanilla, a second regular text state is also required.
+    public static class OutlinedGuiTextRenderState extends GuiTextRenderState {
+        public OutlinedGuiTextRenderState(Font font, FormattedCharSequence formattedCharSequence, Matrix3x2f matrix3x2f, int x, int y, int color, int outlineColor, @Nullable ScreenRectangle screenRectangle) {
+            super(font, formattedCharSequence, matrix3x2f, x, y, color, 0, false, screenRectangle);
+            this.formattedCharSequence = formattedCharSequence;
+            this.outlineColor = outlineColor;
+        }
+
+        private final int outlineColor;
+        private final FormattedCharSequence formattedCharSequence;
+        private Font.PreparedText preparedText;
+        private ScreenRectangle bounds;
+
+        @Override
+        public Font.PreparedText ensurePrepared() {
+            if (this.preparedText == null) {
+                Font.PreparedTextBuilder preparedTextBuilder = font.new PreparedTextBuilder(0, 0, outlineColor, false);
+
+                for (int l = -1; l <= 1; l++) {
+                    for (int m = -1; m <= 1; m++) {
+                        if (l != 0 || m != 0) {
+                            float[] fs = new float[]{x};
+                            int n = l;
+                            int o = m;
+                            formattedCharSequence.accept((lx, style, mx) -> {
+                                boolean bl = style.isBold();
+                                FontSet fontSet = ((FontAccessor) font).figura$getFontSet(style.getFont());
+                                GlyphInfo glyphInfo = fontSet.getGlyphInfo(mx, ((FontAccessor) font).figura$shouldFilterFishyGlyphs());
+                                preparedTextBuilder.x = fs[0] + n * glyphInfo.getShadowOffset();
+                                preparedTextBuilder.y = y + o * glyphInfo.getShadowOffset();
+                                fs[0] += glyphInfo.getAdvance(bl);
+                                return preparedTextBuilder.accept(lx, style.withColor(outlineColor), mx);
+                            });
+                        }
+                    }
+                }
+
+                this.preparedText = preparedTextBuilder;
+                ScreenRectangle screenRectangle = this.preparedText.bounds();
+                if (screenRectangle != null) {
+                    screenRectangle = screenRectangle.transformMaxBounds(this.pose);
+                    this.bounds = this.scissor != null ? this.scissor.intersection(screenRectangle) : screenRectangle;
+                }
+            }
+            return preparedText;
+        }
+
+        @Nullable
+        @Override
+        public ScreenRectangle bounds() {
+            this.ensurePrepared();
+            return bounds;
+        }
     }
 }

@@ -8,6 +8,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -25,6 +26,7 @@ import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.TextUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
+import org.joml.Matrix3x2fStack;
 
 import java.util.List;
 import java.util.function.Function;
@@ -55,12 +57,12 @@ public class ActionWheel {
         y = (int) (window.getGuiScaledHeight() / 2d);
 
         // rendering
-        PoseStack pose = gui.pose();
-        pose.pushPose();
-        pose.translate(x, y, 0d);
+        Matrix3x2fStack pose = gui.pose();
+        pose.pushMatrix();
+        pose.translate(x, y);
 
         scale = Configs.ACTION_WHEEL_SCALE.value;
-        pose.scale(scale, scale, scale);
+        pose.scale(scale, scale);
 
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         Page currentPage;
@@ -87,13 +89,13 @@ public class ActionWheel {
         renderTextures(gui, currentPage);
 
         // reset colours
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        //RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 
         // render items
         FiguraMod.popPushProfiler("items");
         renderItemsAndIcons(gui, currentPage);
 
-        pose.popPose();
+        pose.popMatrix();
 
         // render title
         FiguraMod.popPushProfiler("texts");
@@ -120,7 +122,7 @@ public class ActionWheel {
         data.render(gui, null, false);
         data.render(gui, null, true);
 
-        gui.pose().popPose(); // previous stack
+        gui.pose().popMatrix(); // previous stack
 
         // warning text
         Component component = FiguraText.of("gui.error." + (avatar ? "no_avatar" : "no_wheel_page")).withStyle(ChatFormatting.YELLOW);
@@ -175,9 +177,10 @@ public class ActionWheel {
             // render icon
             UIHelper.enableBlend();
 
-            if (color != null)
-                RenderSystem.setShaderColor((float) color.x, (float) color.y, (float) color.z, 1f);
-            gui.blit(RenderType::guiTextured, ICONS,
+            //TODO: Check what is up with shader color and how to reimplement it
+            //if (color != null)
+                //RenderSystem.setShaderColor((float) color.x, (float) color.y, (float) color.z, 1f);
+            gui.blit(RenderPipelines.GUI_TEXTURED, ICONS,
                     (int) Math.round(x), (int) Math.round(y),
                     action.scroll != null ? 24f : action.toggle != null ? action.isToggled() ? 16f : 8f : 0f, color == null ? 0f : 8f,
                     8, 8,
@@ -204,7 +207,7 @@ public class ActionWheel {
             Action.TextureData texture = action.getTexture(isSelected);
             if (texture != null) {
                 UIHelper.enableBlend();
-                gui.blit(RenderType::guiTextured, texture.texture.getLocation(),
+                gui.blit(RenderPipelines.GUI_TEXTURED, texture.texture.getLocation(),
                         (int) Math.round(xOff - texture.width * texture.scale / 2d),
                         (int) Math.round(yOff - texture.height * texture.scale / 2d),
                         (float) texture.u, (float) texture.v,
@@ -229,7 +232,7 @@ public class ActionWheel {
         Font font = minecraft.font;
         int titlePosition = Configs.ACTION_WHEEL_TITLE.value;
         int indicatorPosition = Configs.ACTION_WHEEL_SLOTS_INDICATOR.value;
-        PoseStack pose = gui.pose();
+        Matrix3x2fStack pose = gui.pose();
 
         Action selectedTitleAction = selected == -1 ? null : page.slots()[selected];
         String selectedTitle = selectedTitleAction == null ? null : selectedTitleAction.getTitle();
@@ -237,8 +240,8 @@ public class ActionWheel {
         // page indicator
         int groupCount = page.getGroupCount();
         if (groupCount > 1 && (selectedTitle == null || indicatorPosition != titlePosition - 2)) {
-            pose.pushPose();
-            pose.translate(0d, 0d, 999d);
+            pose.pushMatrix();
+            //pose.translate(0d, 0d, 999d); there is no z component anymore
             int index = page.getSlotsShift();
             int greatest = page.getGreatestSlot() + 1;
 
@@ -266,15 +269,15 @@ public class ActionWheel {
 
             // draw
             gui.drawString(font, indicator, x - (int) ((font.width(indicator) - extraWidth) / 2f), (int) Position.index(indicatorPosition).apply(font.lineHeight), 0xFFFFFF);
-            pose.popPose();
+            pose.popMatrix();
         }
 
         // all titles
         if (titlePosition >= 5) {
             boolean internal = titlePosition == 5;
             double distance = (internal ? DISTANCE : 66) * scale;
-            pose.pushPose();
-            pose.translate(0f, 0f, 999f);
+            pose.pushMatrix();
+            //pose.translate(0f, 0f, 999f);
             for (int i = 0; i < slots; i++) {
                 Action action = page.slots()[i];
                 if (action == null)
@@ -308,7 +311,7 @@ public class ActionWheel {
 
                 gui.drawString(font, text, textX, textY, 0xFFFFFF);
             }
-            pose.popPose();
+            pose.popMatrix();
             return;
         }
 
@@ -325,8 +328,8 @@ public class ActionWheel {
         if (titlePosition < 2) { // tooltip
             UIHelper.renderTooltip(gui, text, (int) mouseX, (int) mouseY, titlePosition == 0);
         } else { // anchored
-            pose.pushPose();
-            pose.translate(0d, 0d, 999d);
+            pose.pushMatrix();
+          //  pose.translate(0f, 0f);
 
             int y = (int) Position.index(titlePosition - 2).apply(height);
             for (int i = 0; i < list.size(); i++) {
@@ -334,7 +337,7 @@ public class ActionWheel {
                 gui.drawString(font, component, x - (int) (font.width(component) / 2f), y + font.lineHeight * i, 0xFFFFFF);
             }
 
-            pose.popPose();
+            pose.popMatrix();
         }
     }
 
@@ -463,16 +466,16 @@ public class ActionWheel {
         }
 
         public void render(GuiGraphics gui, FiguraVec3 color, boolean left) {
-            PoseStack pose = gui.pose();
-            pose.pushPose();
-            pose.mulPose(Axis.ZP.rotationDegrees(rotation + (left ? 180 : 0)));
+            Matrix3x2fStack pose = gui.pose();
+            pose.pushMatrix();
+            pose.rotate((rotation + (left ? 180 : 0)));
 
             UIHelper.enableBlend();
-            if (color != null)
-                RenderSystem.setShaderColor((float) color.x, (float) color.y, (float) color.z, 1f);
-            gui.blit(RenderType::guiTextured, TEXTURE, 0, y,  u, color == null ? v : v + 128, 64, h,64, rh, 256, 256);
+            //if (color != null)
+                //RenderSystem.setShaderColor((float) color.x, (float) color.y, (float) color.z, 1f);
+            gui.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, y,  u, color == null ? v : v + 128, 64, h,64, rh, 256, 256);
 
-            pose.popPose();
+            pose.popMatrix();
         }
     }
 

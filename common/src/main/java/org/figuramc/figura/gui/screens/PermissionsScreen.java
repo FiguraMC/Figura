@@ -28,6 +28,7 @@ import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.MathUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
+import org.joml.Matrix3x2fStack;
 
 import java.util.UUID;
 
@@ -85,12 +86,12 @@ public class PermissionsScreen extends AbstractPanelScreen {
                 int x = (int) (this.getX() + this.getWidth() / 2f - font.width(text) * 0.75f);
                 int y = this.getY() - 4 - font.lineHeight * 2;
 
-                PoseStack pose = gui.pose();
-                pose.pushPose();
-                pose.translate(x, y, 0f);
-                pose.scale(1.5f, 1.5f, 1f);
+                Matrix3x2fStack pose = gui.pose();
+                pose.pushMatrix();
+                pose.translate(x, y);
+                pose.scale(1.5f, 1.5f);
                 UIHelper.renderOutlineText(gui, font, text, 0, 0, 0xFFFFFF, 0x202020);
-                pose.popPose();
+                pose.popMatrix();
 
                 MutableComponent info = Component.literal("?").withStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
                 int color = 0x404040;
