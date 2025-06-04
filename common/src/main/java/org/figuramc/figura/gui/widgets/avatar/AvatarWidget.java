@@ -55,11 +55,11 @@ public class AvatarWidget extends AbstractAvatarWidget {
 
                 // name
                 Component parsedName = TextUtils.trimToWidthEllipsis(font, getMessage(), width, TextUtils.ELLIPSIS.copy().withStyle(getMessage().getStyle()));
-                gui.drawString(font, parsedName, x + 22, y, -1);
+                gui.drawString(font, parsedName, x + 22, y, UIHelper.adjustColor(-1));
 
                 // description
                 Component parsedDescription = TextUtils.trimToWidthEllipsis(font, description, width, TextUtils.ELLIPSIS.copy().withStyle(description.getStyle()));
-                gui.drawString(font, parsedDescription, x + 22, y + font.lineHeight + 1, ChatFormatting.GRAY.getColor());
+                gui.drawString(font, parsedDescription, x + 22, y + font.lineHeight + 1, UIHelper.adjustColor(ChatFormatting.GRAY.getColor()));
 
                 // tooltip
                 if (parsedName != getMessage() || parsedDescription != description) {

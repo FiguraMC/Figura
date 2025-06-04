@@ -40,7 +40,7 @@ public class SearchBar extends TextField {
     protected void renderHint(GuiGraphics gui) {
         super.renderHint(gui);
         Font font = Minecraft.getInstance().font;
-        gui.drawString(font, SEARCH_ICON, getX() + getWidth() - font.width(SEARCH_ICON) - 4, getY() + (int) ((getHeight() - font.lineHeight + 1) / 2f), 0xFFFFFF);
+        gui.drawString(font, SEARCH_ICON, getX() + getWidth() - font.width(SEARCH_ICON) - 4, getY() + (int) ((getHeight() - font.lineHeight + 1) / 2f), UIHelper.adjustColor(0xFFFFFF));
     }
 
     @Override

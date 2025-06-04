@@ -47,7 +47,7 @@ public class EnumElement extends AbstractConfigElement {
                 int textWidth = font.width(message);
 
                 // draw text
-                int color = getTextColor();
+                int color = UIHelper.adjustColor(getTextColor());
                 UIHelper.renderCenteredScrollingText(gui, message, getX() + 1, getY(), getWidth() - (textWidth <= getWidth() - arrowWidth - 9 ? 0 : arrowWidth + 1) - 2, getHeight(), color);
 
                 // draw arrow

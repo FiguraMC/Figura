@@ -108,7 +108,7 @@ public abstract class AbstractPanelScreen extends Screen {
     public void renderOverlays(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         // fps
         if (Configs.GUI_FPS.value)
-            gui.drawString(Minecraft.getInstance().font, ClientAPI.getFPS() + " fps", 1, 1, 0xFFFFFF);
+            gui.drawString(Minecraft.getInstance().font, ClientAPI.getFPS() + " fps", 1, 1, UIHelper.adjustColor(0xFFFFFF));
 
         // render context
         if (contextMenu != null && contextMenu.isVisible()) {

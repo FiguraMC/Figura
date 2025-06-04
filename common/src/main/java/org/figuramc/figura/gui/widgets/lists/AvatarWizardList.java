@@ -85,7 +85,7 @@ public class AvatarWizardList extends AbstractList {
                 continue;
 
             // category
-            gui.drawCenteredString(font, entry.getKey(), x + width / 2, y + yOffset + 4, 0xFFFFFF);
+            gui.drawCenteredString(font, entry.getKey(), x + width / 2, y + yOffset + 4, UIHelper.adjustColor(0xFFFFFF));
             yOffset = newY;
         }
 
@@ -161,7 +161,7 @@ public class AvatarWizardList extends AbstractList {
             MutableComponent name = this.name.copy();
             if (!this.getField().getValue().isBlank())
                 name.setStyle(FiguraMod.getAccentColor());
-            gui.drawString(font, name, getX() - getWidth() - 8, (int) (getY() + (getHeight() - font.lineHeight) / 2f), 0xFFFFFF);
+            gui.drawString(font, name, getX() - getWidth() - 8, (int) (getY() + (getHeight() - font.lineHeight) / 2f), UIHelper.adjustColor(0xFFFFFF));
         }
 
         @Override
@@ -205,7 +205,7 @@ public class AvatarWizardList extends AbstractList {
             MutableComponent name = getMessage().copy();
             if (this.isToggled())
                 name.withStyle(FiguraMod.getAccentColor());
-            gui.drawString(font, name, getX() - getWidth() - 8, (int) (getY() + (getHeight() - font.lineHeight) / 2f), 0xFFFFFF);
+            gui.drawString(font, name, getX() - getWidth() - 8, (int) (getY() + (getHeight() - font.lineHeight) / 2f), UIHelper.adjustColor(0xFFFFFF));
         }
 
         @Override

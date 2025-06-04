@@ -49,7 +49,7 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
 
         // hovered arrow
         setHovered(isMouseOver(mouseX, mouseY));
-        if (isHovered()) gui.drawString(font, HOVERED_ARROW, (int) (getX() + 8 - font.width(HOVERED_ARROW) / 2f), textY, 0xFFFFFF);
+        if (isHovered()) gui.drawString(font, HOVERED_ARROW, (int) (getX() + 8 - font.width(HOVERED_ARROW) / 2f), textY, UIHelper.adjustColor(0xFFFFFF));
 
         // render name
         renderTitle(gui, font, textY);
@@ -59,7 +59,7 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
     }
 
     public void renderTitle(GuiGraphics gui, Font font, int y) {
-        gui.drawString(font, config.name, getX() + 16, y, (config.disabled ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor());
+        gui.drawString(font, config.name, getX() + 16, y, UIHelper.adjustColor((config.disabled ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor()));
     }
 
     @Override

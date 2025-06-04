@@ -71,7 +71,7 @@ public class PermissionsList extends AbstractList {
         for (Map.Entry<Component, List<GuiEventListener>> entry : permissions.entrySet()) {
             // titles
             if (titles) {
-                gui.drawCenteredString(font, entry.getKey(), x + (width - xOffset) / 2, y + yOffset, 0xFFFFFF);
+                gui.drawCenteredString(font, entry.getKey(), x + (width - xOffset) / 2, y + yOffset, UIHelper.adjustColor(0xFFFFFF));
                 yOffset += titleHeight;
             }
 
@@ -188,7 +188,7 @@ public class PermissionsList extends AbstractList {
             int width = valueX - getX() - 2;
 
             UIHelper.renderScrollingText(gui, name, x, y, width, 0xFFFFFF);
-            gui.drawString(font, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, getY() + 1, 0xFFFFFF);
+            gui.drawString(font, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, getY() + 1, UIHelper.adjustColor(0xFFFFFF));
 
             if (parent.isInsideScissors(mouseX, mouseY) && UIHelper.isMouseOver(x, y, width, font.lineHeight, mouseX, mouseY))
                 UIHelper.setTooltip(Component.translatable(this.text + ".tooltip"));
@@ -280,7 +280,7 @@ public class PermissionsList extends AbstractList {
             int valueY = getY() + font.lineHeight + 11 - font.lineHeight / 2;
 
             UIHelper.renderScrollingText(gui, name, getX() + 1, getY() + 1, getWidth() - 2, 0xFFFFFF);
-            gui.drawString(font, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, valueY, 0xFFFFFF);
+            gui.drawString(font, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, valueY, UIHelper.adjustColor(0xFFFFFF));
         }
 
         @Override
@@ -383,7 +383,7 @@ public class PermissionsList extends AbstractList {
             int width = valueX - getX() - 2;
 
             UIHelper.renderScrollingText(gui, name, x, y, width, 0xFFFFFF);
-            gui.drawString(font, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, getY() + 1 - font.lineHeight, 0xFFFFFF);
+            gui.drawString(font, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, getY() + 1 - font.lineHeight, UIHelper.adjustColor(0xFFFFFF));
 
             if (parent.isInsideScissors(mouseX, mouseY) && UIHelper.isMouseOver(x, y, width, font.lineHeight, mouseX, mouseY))
                 UIHelper.setTooltip(Component.translatable(this.text + ".tooltip"));

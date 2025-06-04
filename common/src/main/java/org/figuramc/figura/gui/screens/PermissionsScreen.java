@@ -104,6 +104,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
                     color = 0xFFFFFF;
                     UIHelper.setTooltip(selectedPack.getCategory().info);
                 }
+                color = UIHelper.adjustColor(color);
 
                 gui.drawString(font, info, x, y, color);
             }

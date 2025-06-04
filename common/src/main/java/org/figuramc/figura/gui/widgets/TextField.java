@@ -67,7 +67,7 @@ public class TextField extends AbstractContainerElement {
         Font font = Minecraft.getInstance().font;
         gui.drawString(
                 font, hint.hint.copy().append(TextUtils.ELLIPSIS).withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC),
-                getX() + 4, getY() + (int) ((getHeight() - font.lineHeight + 1) / 2f), 0xFFFFFF
+                getX() + 4, getY() + (int) ((getHeight() - font.lineHeight + 1) / 2f), UIHelper.adjustColor(0xFFFFFF)
         );
     }
 
@@ -133,7 +133,7 @@ public class TextField extends AbstractContainerElement {
     }
 
     public void setColor(int color) {
-        this.field.setTextColor(enabled ? color : DISABLED_COLOR);
+        this.field.setTextColor(UIHelper.adjustColor(enabled ? color : DISABLED_COLOR));
     }
 
     public void setEnabled(boolean enabled) {

@@ -157,7 +157,7 @@ public class PopupMenu {
         pose.translate(0f, 0f);
 
         UIHelper.renderOutlineText(gui, font, permissionName, -font.width(permissionName) / 2, -54, 0xFFFFFF, 0x202020);
-        gui.drawString(font, title, -width + 4, -12, 0xFFFFFF);
+        gui.drawString(font, title, -width + 4, -12, UIHelper.adjustColor(0xFFFFFF));
 
         if (error)
             UIHelper.renderOutlineText(gui, font, ERROR_WARN, -font.width(ERROR_WARN) / 2, 0, 0xFFFFFF, 0x202020);

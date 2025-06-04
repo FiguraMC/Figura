@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "font.FontAccessor",
+    "gui.GuiMessageTagMixin",
     "gui.GuiRendererAccessor"
   ],
   "client": [

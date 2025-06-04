@@ -77,7 +77,7 @@ public class BackendMotdWidget extends AbstractTextAreaWidget {
         int scroll = (int)scrollAmount();
         textHelper.update(font, maxWidth);
 
-        textHelper.visit((text, style, x, y, textWidth, textHeight) -> graphics.drawString(font, Component.literal(text).setStyle(style), xx + x, yy + y, 0xFFFFFFFF));
+        textHelper.visit((text, style, x, y, textWidth, textHeight) -> graphics.drawString(font, Component.literal(text).setStyle(style), xx + x, yy + y, UIHelper.adjustColor(0xFFFFFFFF)));
 
         //textHelper.renderDebug(graphics, xx, yy, mouseX, mouseY + scroll);
 

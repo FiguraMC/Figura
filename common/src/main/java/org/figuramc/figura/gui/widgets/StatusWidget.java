@@ -100,7 +100,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
             int xx = (int) (x + spacing * i + hSpacing);
 
             Component text = getStatusIcon(i);
-            gui.drawString(font, text, xx - font.width(text) / 2, y + (background ? 3 : 0), 0xFFFFFF);
+            gui.drawString(font, text, xx - font.width(text) / 2, y + (background ? 3 : 0), UIHelper.adjustColor(0xFFFFFF));
 
             if (hovered && mouseX >= xx - hSpacing && mouseX < xx + hSpacing && mouseY >= y && mouseY < y + font.lineHeight + (background ? 3 : 0))
                 UIHelper.setTooltip(getTooltipFor(i));

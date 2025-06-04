@@ -106,7 +106,7 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
 
             Component title = TITLES.get(i);
             if (title != null)
-                gui.drawCenteredString(font, title, x, y, 0xFFFFFF);
+                gui.drawCenteredString(font, title, x, y, UIHelper.adjustColor(0xFFFFFF));
             y += height;
 
             // -- value -- // 
@@ -120,7 +120,7 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
             // default rendering
             if (i != 1) {
                 Component toRender = TextUtils.trimToWidthEllipsis(font, value, width - 10, ELLIPSIS);
-                gui.drawCenteredString(font, toRender, x, y, 0xFFFFFF);
+                gui.drawCenteredString(font, toRender, x, y, UIHelper.adjustColor(0xFFFFFF));
 
                 // tooltip
                 if (value != toRender && UIHelper.isMouseOver(this.x, y - height, width, height * 2 - 4, mouseX, mouseY))
@@ -143,7 +143,7 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
                 if (text != newText && UIHelper.isMouseOver(this.x, y, width, height, mouseX, mouseY))
                     UIHelper.setTooltip(text);
 
-                gui.drawCenteredString(font, newText, x, y, 0xFFFFFF);
+                gui.drawCenteredString(font, newText, x, y, UIHelper.adjustColor(0xFFFFFF));
                 y += height;
             }
         }

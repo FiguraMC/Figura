@@ -158,13 +158,13 @@ public class KeybindList extends AbstractList {
             // hovered arrow
             setHovered(isMouseOver(mouseX, mouseY));
             if (isHovered()) {
-                gui.drawString(font, HOVERED_ARROW, getX() + 4, textY, 0xFFFFFF);
+                gui.drawString(font, HOVERED_ARROW, getX() + 4, textY, UIHelper.adjustColor(0xFFFFFF));
                 if (keybindButton.isHoveredOrFocused())
                     helper.renderTooltip();
             }
 
             // render name
-            gui.drawString(font, this.keybind.getName(), getX() + 16, textY, 0xFFFFFF);
+            gui.drawString(font, this.keybind.getName(), getX() + 16, textY, UIHelper.adjustColor(0xFFFFFF));
 
             // render children
             super.render(gui, mouseX, mouseY, delta);

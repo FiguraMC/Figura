@@ -268,7 +268,7 @@ public class ActionWheel {
             }
 
             // draw
-            gui.drawString(font, indicator, x - (int) ((font.width(indicator) - extraWidth) / 2f), (int) Position.index(indicatorPosition).apply(font.lineHeight), 0xFFFFFF);
+            gui.drawString(font, indicator, x - (int) ((font.width(indicator) - extraWidth) / 2f), (int) Position.index(indicatorPosition).apply(font.lineHeight), UIHelper.adjustColor(0xFFFFFF));
             pose.popMatrix();
         }
 
@@ -309,7 +309,7 @@ public class ActionWheel {
                     textX -= textWidth;
                 }
 
-                gui.drawString(font, text, textX, textY, 0xFFFFFF);
+                gui.drawString(font, text, textX, textY, UIHelper.adjustColor(0xFFFFFF));
             }
             pose.popMatrix();
             return;
@@ -334,7 +334,7 @@ public class ActionWheel {
             int y = (int) Position.index(titlePosition - 2).apply(height);
             for (int i = 0; i < list.size(); i++) {
                 Component component = list.get(i);
-                gui.drawString(font, component, x - (int) (font.width(component) / 2f), y + font.lineHeight * i, 0xFFFFFF);
+                gui.drawString(font, component, x - (int) (font.width(component) / 2f), y + font.lineHeight * i, UIHelper.adjustColor(0xFFFFFF));
             }
 
             pose.popMatrix();

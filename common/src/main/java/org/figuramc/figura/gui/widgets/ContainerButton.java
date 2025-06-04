@@ -22,7 +22,7 @@ public class ContainerButton extends SwitchButton {
     protected void renderText(GuiGraphics gui, float delta) {
         // variables
         Font font = Minecraft.getInstance().font;
-        int color = getTextColor();
+        int color = UIHelper.adjustColor(getTextColor());
         Component arrow = this.toggled ? UIHelper.DOWN_ARROW : UIHelper.UP_ARROW;
         int arrowWidth = font.width(arrow);
         Component message = TextUtils.trimToWidthEllipsis(font, getMessage(), this.getWidth() - arrowWidth - 6, TextUtils.ELLIPSIS.copy().withStyle(getMessage().getStyle()));

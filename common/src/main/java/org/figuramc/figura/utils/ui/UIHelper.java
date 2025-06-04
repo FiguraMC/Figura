@@ -32,6 +32,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -228,6 +229,7 @@ public final class UIHelper {
 
         // apply matrix transformers
         Matrix3x2fStack pose = gui.pose();
+        gui.nextStratum();
         pose.pushMatrix();
         pose.translate(x, y);
         pose.scale(scale, scale); // Scale positions and normals, necessary as of 1.20.5
@@ -489,6 +491,8 @@ public final class UIHelper {
     }
 
     public static void renderOutlineText(GuiGraphics gui, Font textRenderer, Component text, int x, int y, int color, int outline) {
+        color = adjustColor(color);
+        outline = adjustColor(outline);
         ((GuiGraphicsAccessor)gui).figura$getRenderState().submitText(new OutlinedGuiTextRenderState(textRenderer, text.getVisualOrderText(), new Matrix3x2f(gui.pose()), x, y, color, outline, ((GuiGraphicsAccessor)gui).figura$getScissorStack().peek()));
         gui.drawString(textRenderer, text, x, y, color, false);
     }
@@ -528,12 +532,13 @@ public final class UIHelper {
         gui.pose().pushMatrix();
         //gui.pose().translate(0d, 0d, 999d);
 
+        gui.nextStratum();
         if (background)
             blitSliced(gui, x - 4, y - 4, width + 8, height + 8, TOOLTIP);
 
         for (int i = 0; i < text.size(); i++) {
             FormattedCharSequence charSequence = text.get(i);
-            gui.drawString(font, charSequence, x, y + font.lineHeight * i, 0xFFFFFF);
+            gui.drawString(font, charSequence, x, y + font.lineHeight * i, UIHelper.adjustColor(0xFFFFFF));
         }
 
         gui.pose().popMatrix();
@@ -544,6 +549,7 @@ public final class UIHelper {
         int textWidth = font.width(text);
         int textX = x;
 
+        color = adjustColor(color);
         // the text fit :D
         if (textWidth <= width) {
             gui.drawString(font, text, textX, y, color);
@@ -565,6 +571,7 @@ public final class UIHelper {
         int textX = x + width / 2;
         int textY = y + height / 2 - font.lineHeight / 2;
 
+        color = adjustColor(color);
         // the text fit :D
         if (textWidth <= width) {
             gui.drawCenteredString(font, text, textX, textY, color);
@@ -595,6 +602,10 @@ public final class UIHelper {
         return (startingOffset - clamp) * dir - (centered ? 0 : startingOffset);
     }
 
+    public static int adjustColor(int argbColor) {
+        return (argbColor & -67108864) == 0 ? ARGB.opaque(argbColor) : argbColor;
+    }
+
     public static Runnable openURL(String url) {
         Minecraft minecraft = Minecraft.getInstance();
         return () -> minecraft.setScreen(new FiguraConfirmScreen.FiguraConfirmLinkScreen((bl) -> {
@@ -605,7 +616,7 @@ public final class UIHelper {
     public static void renderLoading(GuiGraphics gui, int x, int y) {
         Component text = Component.literal(Integer.toHexString(Math.abs(FiguraMod.ticks) % 16)).withStyle(Style.EMPTY.withFont(Badges.FONT));
         Font font = Minecraft.getInstance().font;
-        gui.drawString(font, text, x - font.width(text) / 2, y - font.lineHeight / 2, -1, false);
+        gui.drawString(font, text, x - font.width(text) / 2, y - font.lineHeight / 2, UIHelper.adjustColor(-1), false);
     }
 
     public static void setContext(ContextMenu context) {

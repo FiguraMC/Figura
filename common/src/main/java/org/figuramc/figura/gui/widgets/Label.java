@@ -133,7 +133,7 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
             if (outlineColor != null) {
                 UIHelper.renderOutlineText(gui, font, text, x, y, 0xFFFFFF, outlineColor);
             } else {
-                gui.drawString(font, text, x, y, 0xFFFFFF + (alphaPrecise << 24));
+                gui.drawString(font, text, x, y, UIHelper.adjustColor(0xFFFFFF + (alphaPrecise << 24)));
             }
 
             y += height;

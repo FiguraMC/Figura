@@ -208,11 +208,11 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
 
             // category
             int textY = y + height - font.lineHeight - 4;
-            gui.drawString(font, pack.getCategoryName().append(pack.hasChanges() ? "*" : ""), x + 40, textY, 0xFFFFFF);
+            gui.drawString(font, pack.getCategoryName().append(pack.hasChanges() ? "*" : ""), x + 40, textY, UIHelper.adjustColor(0xFFFFFF));
 
             // disconnected
             if (disconnected)
-                gui.drawString(font, DC_TEXT, x + width - font.width(DC_TEXT) - 4, textY, 0xFFFFFF);
+                gui.drawString(font, DC_TEXT, x + width - font.width(DC_TEXT) - 4, textY, UIHelper.adjustColor(0xFFFFFF));
 
             pose.popMatrix();
         }

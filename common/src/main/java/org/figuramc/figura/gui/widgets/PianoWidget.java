@@ -118,7 +118,7 @@ public class PianoWidget extends AbstractContainerElement {
             int y = getY() + getHeight() / 2 - font.lineHeight / 2;
             if (!isSharp)
                 y += getHeight() / 4;
-            gui.drawString(font, getMessage(), x, y, (isSharp ? 0xFFFFFF : 0), false);
+            gui.drawString(font, getMessage(), x, y, UIHelper.adjustColor(isSharp ? 0xFFFFFF : 0), false);
         }
 
         @Override

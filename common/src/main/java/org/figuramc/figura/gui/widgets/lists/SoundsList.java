@@ -160,13 +160,13 @@ public class SoundsList extends AbstractList {
 
             // hovered arrow
             setHovered(isMouseOver(mouseX, mouseY));
-            if (isHovered()) gui.drawString(font, HOVERED_ARROW, x + 4, textY, 0xFFFFFF);
+            if (isHovered()) gui.drawString(font, HOVERED_ARROW, x + 4, textY, UIHelper.adjustColor(0xFFFFFF));
 
             // render name
-            gui.drawString(font, this.name, x + 16, textY, 0xFFFFFF);
+            gui.drawString(font, this.name, x + 16, textY, UIHelper.adjustColor(0xFFFFFF));
 
             // render size
-            gui.drawString(font, size, x + width - 96 - font.width(size), textY, 0xFFFFFF);
+            gui.drawString(font, size, x + width - 96 - font.width(size), textY, UIHelper.adjustColor(0xFFFFFF));
 
             // render children
             super.render(gui, mouseX, mouseY, delta);

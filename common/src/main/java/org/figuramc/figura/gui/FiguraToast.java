@@ -61,8 +61,8 @@ public class FiguraToast implements Toast {
 
             if (a.size() == 1 && b.size() == 1) {
                 int y = Math.round(height() / 2f - font.lineHeight - 1);
-                gui.drawString(font, this.title, type.spacing, y, 0xFFFFFF);
-                gui.drawString(font, this.message, type.spacing, y * 2 + 4, 0xFFFFFF);
+                gui.drawString(font, this.title, type.spacing, y, UIHelper.adjustColor(0xFFFFFF));
+                gui.drawString(font, this.message, type.spacing, y * 2 + 4, UIHelper.adjustColor(0xFFFFFF));
             } else if (timeDiff < titleTime) {
                 renderText(this.title, font, gui, Math.round(Math.min(Math.max((titleTime - timeDiff) / 300f, 0), 1) * 255));
             } else {
@@ -95,11 +95,11 @@ public class FiguraToast implements Toast {
     public void renderText(Component text, Font font, GuiGraphics gui, int alpha) {
         List<FormattedCharSequence> list = font.split(text, width() - type.spacing - 1);
         if (list.size() == 1)
-            gui.drawString(font, text, type.spacing, Math.round(height() / 2f - font.lineHeight / 2f), 0xFFFFFF + (alpha << 24));
+            gui.drawString(font, text, type.spacing, Math.round(height() / 2f - font.lineHeight / 2f), UIHelper.adjustColor(0xFFFFFF + (alpha << 24)));
         else {
             int y = Math.round(height() / 2f - font.lineHeight - 1);
             for (int i = 0; i < list.size(); i++)
-                gui.drawString(font, list.get(i), type.spacing, y * (i + 1) + 4 * i, 0xFFFFFF + (alpha << 24));
+                gui.drawString(font, list.get(i), type.spacing, y * (i + 1) + 4 * i, UIHelper.adjustColor(0xFFFFFF + (alpha << 24)));
         }
     }
 

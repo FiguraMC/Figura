@@ -196,7 +196,7 @@ public class ContextMenu extends AbstractContainerElement {
             gui.drawString(
                     font, getMessage(),
                     this.getX() + 3, (int) (this.getY() + this.getHeight() / 2f - font.lineHeight / 2f),
-                    getTextColor()
+                    UIHelper.adjustColor(getTextColor())
             );
         }
 
@@ -255,7 +255,7 @@ public class ContextMenu extends AbstractContainerElement {
             gui.drawString(
                     font, ARROW,
                     this.getX() + this.getWidth() - font.width(ARROW) - 3, (int) (this.getY() + this.getHeight() / 2f - font.lineHeight / 2f),
-                    getTextColor()
+                    UIHelper.adjustColor(getTextColor())
             );
         }
 

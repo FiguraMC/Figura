@@ -27,7 +27,7 @@ public class SuggestionsListMixin implements SuggestionsListAccessor {
         gui = graphics;
     }
 
-    @ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;III)I"), index = 2)
+    @ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;III)V"), index = 2)
     private int voidTextDraw(Font font, String text, int x, int y, int color) {
         if (!figuraList || gui == null)
             return x;

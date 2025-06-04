@@ -77,7 +77,7 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
             int x = this.getX() + this.getWidth() - width;
             int y = this.getY() + 2;
 
-            gui.drawString(font, FAVOURITE, x, y, 0xFFFFFF, false);
+            gui.drawString(font, FAVOURITE, x, y, UIHelper.adjustColor(0xFFFFFF), false);
 
             if (mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + font.lineHeight)
                 UIHelper.setTooltip(FiguraText.of("gui.favorited").append(" ").append(FAVOURITE));
