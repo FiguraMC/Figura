@@ -22,6 +22,7 @@ import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.gui.render.state.BlitRenderState;
 import net.minecraft.client.gui.render.state.GuiElementRenderState;
 import net.minecraft.client.gui.render.state.GuiTextRenderState;
+import net.minecraft.client.gui.render.state.pip.GuiEntityRenderState;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -37,12 +38,14 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.phys.Vec3;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.Badges;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.ducks.GameRendererAccessor;
+import org.figuramc.figura.ducks.GuiEntityRenderStateExtension;
 import org.figuramc.figura.gui.screens.AbstractPanelScreen;
 import org.figuramc.figura.gui.screens.FiguraConfirmScreen;
 import org.figuramc.figura.gui.widgets.ContextMenu;
@@ -205,14 +208,11 @@ public final class UIHelper {
                 yPos--;
 
                 // set up lighting
-                Minecraft.getInstance().gameRenderer.getLighting().setupFor(Lighting.Entry.ITEMS_FLAT);
-                setFiguraLighting();
-                RenderSystem.setShaderLights(buffer.slice());
+                useFiguraLighting();
                 // 1.20.5 invered the z for lights
 
                 // invisibility
                 entity.setInvisible(false);
-                // TODO: Reapply pos
             }
             default -> {
                 // rotations
@@ -266,8 +266,13 @@ public final class UIHelper {
         EntityRenderer<? super LivingEntity, ?> entityRenderer = entityRenderDispatcher.getRenderer(entity);
         EntityRenderState entityRenderState = entityRenderer.createRenderState(entity, 1.0F);
         entityRenderState.hitboxesRenderState = null;
-        gui.submitEntityRenderState(entityRenderState,scale/entity.getScale(), offset, quaternion, quaternion3, x1, y1, x2, y2);
 
+        GuiEntityRenderState state = new GuiEntityRenderState(entityRenderState, offset, quaternion, quaternion3, x1, y1, x2, y2, scale/entity.getScale(), ((GuiGraphicsAccessor)gui).figura$getScissorStack().peek());
+        ((GuiEntityRenderStateExtension)(Object)state).setRenderMode(renderMode);
+        ((GuiEntityRenderStateExtension)(Object)state).setXPos(xPos);
+        ((GuiEntityRenderStateExtension)(Object)state).setYPos(yPos);
+
+        ((GuiGraphicsAccessor)gui).figura$getRenderState().submitPicturesInPictureState(state);
         paperdoll = false;
 
         // restore entity rendering data
@@ -642,6 +647,11 @@ public final class UIHelper {
         Component text = style.getHoverEvent() instanceof HoverEvent.ShowText ? ((HoverEvent.ShowText) style.getHoverEvent()).value() : null;
         if (text != null)
             setTooltip(text);
+    }
+
+    public static void useFiguraLighting() {
+        setFiguraLighting();
+        RenderSystem.setShaderLights(buffer.slice());
     }
 
     // This is purely the outline to match vanilla, a second regular text state is also required.

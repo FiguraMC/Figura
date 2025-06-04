@@ -107,7 +107,7 @@ public class PopupMenu {
         Window window = minecraft.getWindow();
         double w = window.getGuiScaledWidth();
         double h = window.getGuiScaledHeight();
-        double s = Configs.POPUP_SCALE.value * Math.max(Math.min(window.getHeight() * 0.035 / vec.w * (1 / window.getGuiScale()), Configs.POPUP_MAX_SIZE.value), Configs.POPUP_MIN_SIZE.value);
+        double s = Configs.POPUP_SCALE.value * Math.max(Math.min(window.getHeight() * 0.035 / vec.w * (1d / window.getGuiScale()), Configs.POPUP_MAX_SIZE.value), Configs.POPUP_MIN_SIZE.value);
 
         pose.translate((float) ((vec.x + 1) / 2 * w), (float) ((vec.y + 1) / 2 * h));
         pose.scale((float) (s * 0.5), (float) (s * 0.5));

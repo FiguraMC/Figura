@@ -100,7 +100,6 @@ public class EntityPreview extends AbstractContainerElement {
         if (entity != null) {
             pose.pushMatrix();
             scaledValue = Mth.lerp((float) (1f - Math.pow(0.5f, delta)), scaledValue, scaledPrecise);
-            // TODO : Check the coords here
             UIHelper.drawEntity(x + modelX, y + modelY, scale + scaledValue, angleX, angleY, entity, gui, new Vector3f(), EntityRenderMode.FIGURA_GUI, x, y, x+width, y+height);
             pose.popMatrix();
         } else {
@@ -197,8 +196,9 @@ public class EntityPreview extends AbstractContainerElement {
         // left click - rotate
         if (isRotating) {
             // get starter rotation angle then get hot much is moved and divided by a slow factor
-            angleX = (float) (anchorAngleX + (anchorY - mouseY) / (3 / Minecraft.getInstance().getWindow().getGuiScale()));
-            angleY = (float) (anchorAngleY - (anchorX - mouseX) / (3 / Minecraft.getInstance().getWindow().getGuiScale()));
+            // as of 1.21.6 gui scale is an int, this must be a float or else it may be Nan and that is a big nono
+            angleX = (float) (anchorAngleX + (anchorY - mouseY) / (3d / Minecraft.getInstance().getWindow().getGuiScale()));
+            angleY = (float) (anchorAngleY - (anchorX - mouseX) / (3d / Minecraft.getInstance().getWindow().getGuiScale()));
 
             // cap to 360, so we don't get extremely high unnecessary rotation values
             if (angleX >= 360 || angleX <= -360) {

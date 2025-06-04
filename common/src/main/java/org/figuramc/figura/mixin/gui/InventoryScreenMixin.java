@@ -24,7 +24,7 @@ public class InventoryScreenMixin {
         float h = (float)(y + j) / 2.0F;
         float pitch = g - mouseX;
         float yaw = h - mouseY;
-        Vector3f modelOffset = new Vector3f(0.0F, -(entity.getBbHeight() / 2.0F + yOffset), 0);
+        Vector3f modelOffset = new Vector3f(0.0F, (entity.getBbHeight() / 2.0F + yOffset), 0);
 
         if (Configs.INVENTORY_SCISSOR.value) {
             guiGraphics.enableScissor(x, y, i, j);

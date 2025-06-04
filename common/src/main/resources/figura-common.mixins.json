@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "font.FontAccessor",
+    "gui.GuiEntityRenderStateMixin",
     "gui.GuiMessageTagMixin",
     "gui.GuiRendererAccessor"
   ],
@@ -45,6 +46,7 @@
     "gui.ClickEventActionMixin",
     "gui.DebugScreenOverlayMixin",
     "gui.GuiAccessor",
+    "gui.GuiEntityRendererMixin",
     "gui.GuiGraphicsAccessor",
     "gui.GuiMessageLineMixin",
     "gui.GuiMessageMixin",
