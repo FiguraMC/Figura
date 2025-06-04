@@ -263,8 +263,9 @@ public final class UIHelper {
         if (avatar != null) avatar.renderMode = renderMode;
 
         EntityRenderDispatcher entityRenderDispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
-        EntityRenderer<? super LivingEntity, ?> entityRenderer = entityRenderDispatcher.getRenderer(entity);
-        EntityRenderState entityRenderState = entityRenderer.createRenderState(entity, 1.0F);
+        EntityRenderer<? super LivingEntity, LivingEntityRenderState> entityRenderer = (EntityRenderer<? super LivingEntity, LivingEntityRenderState>) entityRenderDispatcher.getRenderer(entity);
+        LivingEntityRenderState entityRenderState = entityRenderer.createRenderState();
+        entityRenderer.extractRenderState(entity, entityRenderState,1.0F);
         entityRenderState.hitboxesRenderState = null;
 
         GuiEntityRenderState state = new GuiEntityRenderState(entityRenderState, offset, quaternion, quaternion3, x1, y1, x2, y2, scale/entity.getScale(), ((GuiGraphicsAccessor)gui).figura$getScissorStack().peek());

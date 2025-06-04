@@ -16,6 +16,7 @@ import org.figuramc.figura.ducks.GuiEntityRenderStateExtension;
 import org.figuramc.figura.ducks.GuiMessageAccessor;
 import org.figuramc.figura.gui.FiguraGuiEntityRenderer;
 import org.figuramc.figura.model.rendering.EntityRenderMode;
+import org.figuramc.figura.utils.ui.UIHelper;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
@@ -41,7 +42,9 @@ public class GuiRendererMixin {
     @WrapMethod(method = "preparePictureInPictureState")
     private <T extends PictureInPictureRenderState> void renderPaperDoll(@NotNull T pictureInPictureRenderState, int i, Operation<Void> original) {
         if (pictureInPictureRenderState instanceof GuiEntityRenderStateExtension extension && extension.getRenderMode() == EntityRenderMode.PAPERDOLL) {
+            UIHelper.paperdoll = true;
             figura$paperDollRenderer.prepare((GuiEntityRenderState) pictureInPictureRenderState, this.renderState, i);
+            UIHelper.paperdoll = false;
         } else {
             original.call(pictureInPictureRenderState, i);
         }
