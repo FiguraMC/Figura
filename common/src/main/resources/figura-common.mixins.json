@@ -7,7 +7,8 @@
     "font.FontAccessor",
     "gui.GuiEntityRenderStateMixin",
     "gui.GuiMessageTagMixin",
-    "gui.GuiRendererAccessor"
+    "gui.GuiRendererAccessor",
+    "gui.GuiRendererMixin"
   ],
   "client": [
     "AABBInvoker",
