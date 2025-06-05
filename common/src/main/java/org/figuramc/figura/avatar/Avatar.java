@@ -804,7 +804,7 @@ public class Avatar {
 
     public boolean renderHeadForPortrait(MultiBufferSource.BufferSource buffer, PoseStack stack, int light, float modelScale, boolean upsideDown) {
         stack.pushPose();
-        stack.scale(2, 2, 2);
+        stack.scale(2, 2, 2); // i have no clue why it's exactly 2x smaller than it should be
         //stack.scale(modelScale, modelScale * (upsideDown ? 1 : -1), modelScale);
         renderer.allowPivotParts = false;
 
