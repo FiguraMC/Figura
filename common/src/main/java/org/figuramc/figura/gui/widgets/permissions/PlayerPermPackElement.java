@@ -1,14 +1,11 @@
 package org.figuramc.figura.gui.widgets.permissions;
 
 import com.mojang.blaze3d.opengl.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -157,7 +154,7 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
 
                 Entity e = EntityUtils.getEntityByUUID(owner);
                 boolean upsideDown = e instanceof LivingEntity entity && LivingEntityRenderer.isEntityUpsideDown(entity);
-                head = avatar.renderPortrait(gui, x + 4, y + 4, Math.round(32f * scale), 64, upsideDown);
+                head = avatar.submitPortraitDraw(gui, this.skin, x + 4, y + 4, Math.round(32f * scale), 64, upsideDown);
             }
 
             if (!head) {

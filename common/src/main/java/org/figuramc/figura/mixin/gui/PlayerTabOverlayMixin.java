@@ -69,7 +69,7 @@ public class PlayerTabOverlayMixin {
     private int doNotDrawFace(GuiGraphics guiGraphics, ResourceLocation id, int x, int y, int size, boolean hasHatLayer, boolean upsideDown, int color) {
         if (uuid != null) {
             Avatar avatar = AvatarManager.getAvatarForPlayer(uuid);
-            if (avatar != null && avatar.renderPortrait(guiGraphics, x, y, size, 16, upsideDown))
+            if (avatar != null && avatar.submitPortraitDraw(guiGraphics, id, x, y, size, 16, upsideDown))
                 return 0;
         }
         return size;

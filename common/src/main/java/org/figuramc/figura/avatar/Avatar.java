@@ -4,7 +4,6 @@ import com.mojang.blaze3d.audio.SoundBuffer;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Axis;
@@ -27,6 +26,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -37,7 +37,8 @@ import org.figuramc.figura.animation.AnimationPlayer;
 import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.ducks.FiguraEntityRenderStateExtension;
-import org.figuramc.figura.ducks.GameRendererAccessor;
+import org.figuramc.figura.ducks.GuiEntityRenderStateExtension;
+import org.figuramc.figura.gui.FiguraPortraitRenderState;
 import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.lua.FiguraLuaRuntime;
 import org.figuramc.figura.lua.api.TextureAPI;
@@ -56,7 +57,6 @@ import org.figuramc.figura.math.matrix.FiguraMat3;
 import org.figuramc.figura.math.matrix.FiguraMat4;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.mixin.gui.GuiGraphicsAccessor;
-import org.figuramc.figura.mixin.gui.GuiRendererAccessor;
 import org.figuramc.figura.model.FiguraModelPart;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.model.PartCustomization;
@@ -78,7 +78,6 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2fStack;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
-import org.joml.Vector3f;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
@@ -763,7 +762,7 @@ public class Avatar {
         return comp > 0 && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.checkVisible();
     }
 
-    public boolean renderPortrait(GuiGraphics gui, int x, int y, int size, float modelScale, boolean upsideDown) {
+    public boolean submitPortraitDraw(GuiGraphics gui, ResourceLocation fallback, int x, int y, int size, float modelScale, boolean upsideDown) {
         if (!Configs.AVATAR_PORTRAIT.value || renderer == null || !loaded)
             return false;
 
@@ -771,8 +770,8 @@ public class Avatar {
         Matrix3x2fStack pose = gui.pose();
         pose.pushMatrix();
         pose.translate(x, y);
-        pose.scale(modelScale, modelScale * (upsideDown ? 1 : -1));
-        pose.rotate(180f);
+        //pose.scale(modelScale, modelScale * (upsideDown ? 1 : -1));
+        pose.rotate(180f * (float) (Math.PI / 180.0));
 
         // scissors
         Vector2f pos = pose.transformPosition(new Vector2f());
@@ -787,24 +786,30 @@ public class Avatar {
         gui.enableScissor(x1, y1, x2, y2);
         gui.pose().popMatrix();
 
-        UIHelper.paperdoll = true;
-        UIHelper.dollScale = 16f;
 
         // setup render
         pose.translate((float)(4d / 16d), (float) (upsideDown ? 0 : (8d / 16d)));
 
-        Minecraft.getInstance().gameRenderer.getLighting().setupFor(Lighting.Entry.ITEMS_FLAT);
 
+        FiguraPortraitRenderState state = new FiguraPortraitRenderState(this, fallback, modelScale, upsideDown, x1, y1, x2, y2, size, ((GuiGraphicsAccessor)gui).figura$getScissorStack().peek());
+        gui.fill(x1, y1, x2, y2, -1);
+        ((GuiGraphicsAccessor)gui).figura$getRenderState().submitPicturesInPictureState(state);
+        gui.pose().popMatrix();
 
-        PoseStack stack = new PoseStack();
+        gui.disableScissor();
+
+        // return
+        return true;
+    }
+
+    public boolean renderHeadForPortrait(MultiBufferSource.BufferSource buffer, PoseStack stack, int light, float modelScale, boolean upsideDown) {
         stack.pushPose();
-        stack.last().setIdentity();
-        stack.last().pose().mul(gui.pose());
-
-        MultiBufferSource.BufferSource buffer = ((GuiRendererAccessor)((GameRendererAccessor)Minecraft.getInstance().gameRenderer).figura$getGuiRenderer()).figura$getBufferSource();
-        int light = LightTexture.FULL_BRIGHT;
-
+        stack.scale(2, 2, 2);
+        //stack.scale(modelScale, modelScale * (upsideDown ? 1 : -1), modelScale);
         renderer.allowPivotParts = false;
+
+        UIHelper.paperdoll = true;
+        UIHelper.dollScale = 16f;
 
         renderer.setupRenderer(
                 PartFilterScheme.PORTRAIT, buffer, stack,
@@ -819,9 +824,6 @@ public class Avatar {
         // after render
         stack.popPose();
         buffer.endBatch();
-        gui.pose().popMatrix();
-
-        gui.disableScissor();
         UIHelper.paperdoll = false;
 
         renderer.allowPivotParts = true;
