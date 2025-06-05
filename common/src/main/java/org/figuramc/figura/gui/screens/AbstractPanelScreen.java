@@ -103,6 +103,7 @@ public abstract class AbstractPanelScreen extends Screen {
             UIHelper.renderAnimatedBackground(gui, background, 0, 0, this.width, this.height, 64, 64, speed, delta);
             speed /= 0.5;
         }
+        gui.nextStratum();
     }
 
     public void renderOverlays(GuiGraphics gui, int mouseX, int mouseY, float delta) {
@@ -116,6 +117,7 @@ public abstract class AbstractPanelScreen extends Screen {
             Matrix3x2fStack pose = gui.pose();
             pose.pushMatrix();
 //            pose.translate(0f, 0f, 500f);
+            gui.nextStratum();
             contextMenu.render(gui, mouseX, mouseY, delta);
             pose.popMatrix();
         }
