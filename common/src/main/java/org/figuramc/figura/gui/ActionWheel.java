@@ -22,6 +22,8 @@ import org.figuramc.figura.font.Emojis;
 import org.figuramc.figura.lua.api.action_wheel.Action;
 import org.figuramc.figura.lua.api.action_wheel.Page;
 import org.figuramc.figura.math.vector.FiguraVec3;
+import org.figuramc.figura.math.vector.FiguraVec4;
+import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.TextUtils;
@@ -88,7 +90,7 @@ public class ActionWheel {
         FiguraMod.popPushProfiler("wheel");
         renderTextures(gui, currentPage);
 
-        // reset colours
+        // reset colours, no longer needed, color is handled through vertex now
         //RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 
         // render items
@@ -177,15 +179,15 @@ public class ActionWheel {
             // render icon
             UIHelper.enableBlend();
 
-            //TODO: Check what is up with shader color and how to reimplement it
-            //if (color != null)
-                //RenderSystem.setShaderColor((float) color.x, (float) color.y, (float) color.z, 1f);
+            // Color is now implemented through vertex colors rather than the color modulator
+            int tintColor = color != null ? ColorUtils.rgbaToIntARGB(FiguraVec4.of(color.x, color.y, color.z, 1.0f)) : -1;
             gui.blit(RenderPipelines.GUI_TEXTURED, ICONS,
                     (int) Math.round(x), (int) Math.round(y),
                     action.scroll != null ? 24f : action.toggle != null ? action.isToggled() ? 16f : 8f : 0f, color == null ? 0f : 8f,
                     8, 8,
                     8, 8,
-                    32, 16
+                    32, 16,
+                    tintColor
             );
         }
     }
@@ -468,12 +470,12 @@ public class ActionWheel {
         public void render(GuiGraphics gui, FiguraVec3 color, boolean left) {
             Matrix3x2fStack pose = gui.pose();
             pose.pushMatrix();
-            pose.rotate((rotation + (left ? 180 : 0)));
+            pose.rotate((rotation + (left ? 180 : 0)) * (float) (Math.PI / 180.0));
 
             UIHelper.enableBlend();
-            //if (color != null)
-                //RenderSystem.setShaderColor((float) color.x, (float) color.y, (float) color.z, 1f);
-            gui.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, y,  u, color == null ? v : v + 128, 64, h,64, rh, 256, 256);
+            // we now use vertex colors
+            int tintColor = color != null ? ColorUtils.rgbaToIntARGB(FiguraVec4.of(color.x, color.y, color.z, 1.0f)) : -1;
+            gui.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, y,  u, color == null ? v : v + 128, 64, h,64, rh, 256, 256, tintColor);
 
             pose.popMatrix();
         }

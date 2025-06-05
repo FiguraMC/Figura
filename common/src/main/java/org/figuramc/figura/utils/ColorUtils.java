@@ -208,6 +208,7 @@ public class ColorUtils {
         return hex;
     }
 
+
     // This actually seems to storing BGAR this whole file is a lie, but i will just play along...
     public static int intRGBAToIntARGB(int hexRGBA) {
         int green = (hexRGBA >> 16) & 0xFF;
