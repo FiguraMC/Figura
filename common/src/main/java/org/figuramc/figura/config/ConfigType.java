@@ -46,6 +46,7 @@ public abstract class ConfigType<T> {
 
         // values
         this.value = this.defaultValue = this.tempValue = value;
+        Configs.REGISTRY.put(id, value);
     }
 
     public abstract T parseValue(String newVal);
@@ -64,6 +65,7 @@ public abstract class ConfigType<T> {
         tempValue = value;
         if (change) {
             try {
+                Configs.REGISTRY.put(id, value);
                 onChange();
             } catch (Exception e) {
                 FiguraMod.LOGGER.warn("Failed to run onChange for config \"" + id + "\"", e);
@@ -81,6 +83,7 @@ public abstract class ConfigType<T> {
 
     public void setDefault() {
         value = defaultValue;
+        Configs.REGISTRY.put(id, defaultValue);
     }
 
     public void resetTemp() {

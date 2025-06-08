@@ -32,6 +32,7 @@ public class Configs {
     // config update hashmap; <version number, <actual config, old config name>>
     public static final HashMap<Integer, HashMap<ConfigType<?>, String>> CONFIG_UPDATES = new HashMap<>();
 
+    public static HashMap<String, Object> REGISTRY = new HashMap<>();
     // code to run when the config is initialized
     public static void init() {
         // test for unused configs

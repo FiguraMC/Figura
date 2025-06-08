@@ -17,12 +17,15 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Score;
 import net.minecraft.world.scores.Scoreboard;
+
 import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
@@ -747,6 +750,90 @@ public class ClientAPI {
         } catch (Exception e) {
             throw new LuaError("Enum " + enumName + " does not exist");
         }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(argumentTypes = String.class, argumentNames = "key"),
+            },
+            value = "client.get_figura_config"
+    )
+    public static Object getFiguraConfig(String key) {
+        if (key == null)
+            return Configs.REGISTRY;
+        try {
+            return Configs.REGISTRY.get(key.toLowerCase());
+        } catch (Exception e) {
+            throw new LuaError("Config " + key + " does not exist");
+        }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(argumentTypes = String.class, argumentNames = "source"),
+            },
+            value = "client.get_volume"
+    )
+    public static float getVolume(String source) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (source == null)
+            return minecraft.options.getSoundSourceVolume(SoundSource.MASTER);
+        try {
+            return minecraft.options.getSoundSourceVolume(SoundSource.valueOf(source.toUpperCase()));
+        } catch (Exception e) {
+            throw new LuaError("Sound source " + source + " does not exist");
+        }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_mouse_sensitivity")
+    public static double getMouseSensitivity() {
+        // https://www.spigotmc.org/threads/determining-a-players-sensitivity.468373/#post-3976392
+        return Math.pow(Minecraft.getInstance().options.sensitivity().get() * 0.6 + 0.2, 3) * 8;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_mouse_inverted")
+    public static Boolean getMouseInverted() {
+        return Minecraft.getInstance().options.invertYMouse().get();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_scroll_sensitivity")
+    public static double getScrollSensitivity() {
+        return Minecraft.getInstance().options.mouseWheelSensitivity().get();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_discrete_scrolling")
+    public static Boolean getDiscreteScrolling() {
+        return Minecraft.getInstance().options.discreteMouseScroll().get();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("host.get_chat_width")
+    public static Double getChatWidth() {
+        // 0 -> 40
+        // 1 -> 320
+        return Math.floor(40 + 280 * Minecraft.getInstance().options.chatWidth().get());
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("host.get_focused_chat_height")
+    public static Double getFocusedChatHeight() {
+        // 0 -> 20
+        // 1 -> 180
+        return Math.floor(20 + 160 * Minecraft.getInstance().options.chatHeightFocused().get());
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("host.get_unfocused_chat_height")
+    public static Double getUnfocusedChatHeight() {
+        // 0 -> 20
+        // 1 -> 180
+        return Math.floor(20 + 160 * Minecraft.getInstance().options.chatHeightUnfocused().get());
     }
 
     @Override
