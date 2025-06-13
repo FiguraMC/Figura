@@ -195,7 +195,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         // multiplied by the inverse of the position matrix as we don't want to move parts twice
         FiguraMat4 prevPartToView = currentTransforms.positionMatrix.inverted();
 
-        double s = 1 / 16d;
+        double s = 1 / 4d;
         if (UIHelper.paperdoll) {
             s *= -UIHelper.dollScale;
         } else {
