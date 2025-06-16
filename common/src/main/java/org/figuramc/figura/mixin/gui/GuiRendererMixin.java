@@ -39,14 +39,13 @@ public class GuiRendererMixin {
         figura$paperDollRenderer = new FiguraGuiEntityRenderer(bufferSource, Minecraft.getInstance().getEntityRenderDispatcher());
     }
 
-    @WrapMethod(method = "preparePictureInPictureState")
-    private <T extends PictureInPictureRenderState> void renderPaperDoll(@NotNull T pictureInPictureRenderState, int i, Operation<Void> original) {
+    @Inject(method = "preparePictureInPictureState", at = @At("HEAD"), cancellable = true)
+    private <T extends PictureInPictureRenderState> void renderPaperDoll(T pictureInPictureRenderState, int i, CallbackInfo ci) {
         if (pictureInPictureRenderState instanceof GuiEntityRenderStateExtension extension && extension.getRenderMode() == EntityRenderMode.PAPERDOLL) {
             UIHelper.paperdoll = true;
             figura$paperDollRenderer.prepare((GuiEntityRenderState) pictureInPictureRenderState, this.renderState, i);
             UIHelper.paperdoll = false;
-        } else {
-            original.call(pictureInPictureRenderState, i);
+            ci.cancel();
         }
     }
 
