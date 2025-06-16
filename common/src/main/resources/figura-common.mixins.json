@@ -108,7 +108,6 @@
     "sound.SubtitleOverlayMixin",
     "font.FontAccessor",
     "gui.GuiEntityRenderStateMixin",
-    "gui.GuiMessageTagMixin",
     "gui.GuiRendererAccessor",
     "gui.GuiRendererMixin"
   ],

@@ -20,10 +20,7 @@ import org.figuramc.figura.lua.api.nameplate.NameplateCustomization;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.EntityUtils;
 import org.figuramc.figura.utils.TextUtils;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -40,6 +37,7 @@ import java.util.regex.Pattern;
 
 // 400 Priority is used as messages must be modified before ChatPatches tries to.
 @Mixin(value = ChatComponent.class, priority = 400)
+@Debug(export = true, print = true)
 public class ChatComponentMixin {
 
     @Shadow @Final private Minecraft minecraft;
@@ -182,8 +180,8 @@ public class ChatComponentMixin {
         return message;
     }
 
-    @ModifyVariable(at = @At("STORE"), method = "method_71992")
-    private GuiMessageTag grabColor(GuiMessageTag value) {
+    @ModifyVariable(at = @At("HEAD"), method = "method_71992", argsOnly = true)
+    private GuiMessage.Line grabColor(GuiMessage.Line value) {
         currColor = ((GuiMessageAccessor) (Object) value).figura$getColor();
         return value;
     }
