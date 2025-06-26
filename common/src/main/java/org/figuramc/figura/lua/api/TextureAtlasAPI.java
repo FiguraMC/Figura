@@ -32,7 +32,7 @@ public class TextureAtlasAPI {
     @LuaMethodDoc("texture_atlas.list_sprites")
     public List<String> listSprites() {
         List<String> list = new ArrayList<>();
-        for (ResourceLocation res : ((TextureAtlasAccessor) atlas).getTexturesByName().keySet())
+        for (ResourceLocation res : ((TextureAtlasAccessor) atlas).figura$getTexturesByName().keySet())
             list.add(res.toString());
         return list;
     }
@@ -54,13 +54,13 @@ public class TextureAtlasAPI {
     @LuaWhitelist
     @LuaMethodDoc("texture_atlas.get_width")
     public int getWidth() {
-        return ((TextureAtlasAccessor) atlas).getWidth();
+        return ((TextureAtlasAccessor) atlas).figura$getWidth();
     }
 
     @LuaWhitelist
     @LuaMethodDoc("texture_atlas.get_height")
     public int getHeight() {
-        return ((TextureAtlasAccessor) atlas).getHeight();
+        return ((TextureAtlasAccessor) atlas).figura$getHeight();
     }
 
     @Override

@@ -14,13 +14,13 @@ import java.util.Map;
 public interface TextureAtlasAccessor {
     @Intrinsic
     @Accessor("texturesByName")
-    Map<ResourceLocation, TextureAtlasSprite> getTexturesByName();
+    Map<ResourceLocation, TextureAtlasSprite> figura$getTexturesByName();
 
     @Intrinsic
     @Invoker("getWidth")
-    int getWidth();
+    int figura$getWidth();
 
     @Intrinsic
     @Invoker("getHeight")
-    int getHeight();
+    int figura$getHeight();
 }
