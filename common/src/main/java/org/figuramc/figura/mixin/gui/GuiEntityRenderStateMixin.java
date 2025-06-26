@@ -12,10 +12,10 @@ import org.spongepowered.asm.mixin.Unique;
 public abstract class GuiEntityRenderStateMixin implements GuiEntityRenderStateExtension {
 
     @Unique
-    double figura$xPos, figura$yPos;
+    double figura$xPos = 0, figura$yPos = 0;
 
     @Unique
-    EntityRenderMode figura$renderMode;
+    EntityRenderMode figura$renderMode = EntityRenderMode.MINECRAFT_GUI;
 
     @Override
     public double getXPos() {

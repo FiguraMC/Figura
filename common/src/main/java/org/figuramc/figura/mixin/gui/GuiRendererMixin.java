@@ -41,7 +41,7 @@ public class GuiRendererMixin {
 
     @Inject(method = "preparePictureInPictureState", at = @At("HEAD"), cancellable = true)
     private <T extends PictureInPictureRenderState> void renderPaperDoll(T pictureInPictureRenderState, int i, CallbackInfo ci) {
-        if (pictureInPictureRenderState instanceof GuiEntityRenderStateExtension extension && extension.getRenderMode() == EntityRenderMode.PAPERDOLL) {
+        if (pictureInPictureRenderState instanceof GuiEntityRenderStateExtension extension && (extension.getRenderMode() != null && extension.getRenderMode() == EntityRenderMode.PAPERDOLL)) {
             UIHelper.paperdoll = true;
             figura$paperDollRenderer.prepare((GuiEntityRenderState) pictureInPictureRenderState, this.renderState, i);
             UIHelper.paperdoll = false;
