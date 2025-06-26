@@ -141,7 +141,7 @@ public interface GeckolibGeoRendererMixin<R extends GeoRenderState> {
             stack.pushPose();
             BakedGeoModel model = armorRenderer.getGeoModel().getBakedModel(armorRenderer.getGeoModel().getModelResource(renderState));
             T casted = (T) renderState;
-            armorRenderer.scaleModelForRender(casted, ((GeckolibGeoArmorAccessor) armorRenderer).figura$getScaleWidth(), ((GeckolibGeoArmorAccessor) armorRenderer).figura$getScaleHeight(), stack, model, isReRender);
+            ((GeoArmorRenderer<?, T>) armorRenderer).scaleModelForRender(casted, ((GeckolibGeoArmorAccessor) armorRenderer).figura$getScaleWidth(), ((GeckolibGeoArmorAccessor) armorRenderer).figura$getScaleHeight(), stack, model, isReRender);
 
             stack.translate(0, 24 / 16f, 0);
             stack.scale(-1, -1, 1);
