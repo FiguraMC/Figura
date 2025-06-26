@@ -1,5 +1,7 @@
 package org.figuramc.figura.compat;
 
+import net.raphimc.immediatelyfast.ImmediatelyFast;
+import net.raphimc.immediatelyfast.feature.core.ImmediatelyFastConfig;
 import org.figuramc.figura.utils.PlatformUtils;
 
 import java.lang.reflect.Field;
@@ -9,7 +11,7 @@ public class ImmediatelyFastCompat {
         if (PlatformUtils.isModLoaded("immediatelyfast")) {
             String modVersion = PlatformUtils.getModVersion("immediatelyfast");
             if (PlatformUtils.compareVersionTo(modVersion, "1.2.0") >= 0) {
-                return net.raphimc.immediatelyfastapi.ImmediatelyFastApi.getApiImpl().getRuntimeConfig().getBoolean("font_atlas_resizing", false) ? 2048.0f : 256.0f;
+                return net.raphimc.immediatelyfast.ImmediatelyFast.config.getBoolean("font_atlas_resizing", false) ? 2048.0f : 256.0f;
             }
             else if (PlatformUtils.compareVersionTo(modVersion, "1.1.17") >= 0){
                 try {
