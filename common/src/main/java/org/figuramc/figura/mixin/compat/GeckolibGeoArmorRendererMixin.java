@@ -2,8 +2,11 @@ package org.figuramc.figura.mixin.compat;
 
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -16,16 +19,21 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import software.bernie.geckolib.animatable.GeoItem;
+import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoArmorRenderer;
+import software.bernie.geckolib.renderer.base.GeoRenderState;
 
 @Pseudo
 @Mixin(value = GeoArmorRenderer.class, remap = false)
-public abstract class GeckolibGeoArmorRendererMixin implements GeckolibGeoArmorAccessor {
+public abstract class GeckolibGeoArmorRendererMixin<T extends Item & GeoItem> implements GeckolibGeoArmorAccessor {
     @Unique
     private Avatar figura$avatar;
 
-    @Inject(method = "prepForRender", at = @At(value = "HEAD"))
-    private void figura$prepAvatar(Entity entity, ItemStack stack, EquipmentSlot slot, HumanoidModel<?> baseModel, MultiBufferSource bufferSource, float partialTick, float netHeadYaw, float headPitch, CallbackInfo ci){
+    @Inject(method = "captureDefaultRenderState(Lnet/minecraft/world/item/Item;Lsoftware/bernie/geckolib/renderer/GeoArmorRenderer$RenderData;Lnet/minecraft/client/renderer/entity/state/HumanoidRenderState;F)Lnet/minecraft/client/renderer/entity/state/HumanoidRenderState;", at = @At(value = "HEAD"))
+    private <R extends HumanoidRenderState & GeoRenderState> void figura$prepAvatar(T animatable, GeoArmorRenderer.RenderData renderData, R renderState, float partialTick, CallbackInfoReturnable<R> cir){
+        Entity entity = renderData.entity();
         if (entity != null)
             figura$avatar = AvatarManager.getAvatar(entity);
         else {
@@ -54,4 +62,36 @@ public abstract class GeckolibGeoArmorRendererMixin implements GeckolibGeoArmorA
     @Override
     @Accessor("scaleHeight")
     public abstract float figura$getScaleHeight();
+
+    @Override
+    @Accessor("headBone")
+    public abstract GeoBone figura$getHeadBone();
+
+    @Override
+    @Accessor("leftLegBone")
+    public abstract GeoBone figura$getLeftLegBone();
+
+    @Override
+    @Accessor("rightLegBone")
+    public abstract GeoBone figura$getRightLegBone();
+
+    @Override
+    @Accessor("leftArmBone")
+    public abstract GeoBone figura$getLeftArmBone();
+
+    @Override
+    @Accessor("rightArmBone")
+    public abstract GeoBone figura$getRightArmBone();
+
+    @Override
+    @Accessor("bodyBone")
+    public abstract GeoBone figura$getBodyBone();
+
+    @Override
+    @Accessor("leftBootBone")
+    public abstract GeoBone figura$getLeftBootBone();
+
+    @Override
+    @Accessor("rightBootBone")
+    public abstract GeoBone figura$getRightBootBone();
 }
