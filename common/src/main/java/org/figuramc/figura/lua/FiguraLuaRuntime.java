@@ -389,8 +389,8 @@ public class FiguraLuaRuntime {
 		@Override
 		public LuaValue call(LuaValue arg) {
 			Path path = PathUtils.getPath(arg.checkstring(1));
-			Path dir = PathUtils.getWorkingDirectory(getInfoFunction);
-			return LuaValue.valueOf(scripts.get(PathUtils.computeSafeString(PathUtils.isAbsolute(path) ? path : dir.resolve(path))));
+			String ret = scripts.get(PathUtils.computeSafeString(PathUtils.isAbsolute(path) ? path : PathUtils.getWorkingDirectory(getInfoFunction).resolve(path)));
+			return ret == null ? null : LuaValue.valueOf(ret);
 		}
 		@Override
 		public String tojstring() {

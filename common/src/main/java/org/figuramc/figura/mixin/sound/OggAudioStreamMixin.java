@@ -47,6 +47,8 @@ public abstract class OggAudioStreamMixin {
         }
 
         byte[] headerBytes = new byte[8];
+        int max = this.buffer.limit();
+        if (0x1C > max) return;
         int position = this.buffer.position();
         this.buffer.position(0x1C);
         this.buffer.get(headerBytes, 0, Math.min(headerBytes.length, this.buffer.remaining()));
