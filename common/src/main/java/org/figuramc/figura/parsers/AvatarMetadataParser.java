@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 // parses a metadata json
 // and return a nbt compound of it
@@ -25,7 +27,31 @@ public class AvatarMetadataParser {
     private static final Gson GSON = new GsonBuilder().create();
     private static final Map<String, String> PARTS_TO_MOVE = new HashMap<>();
 
+    // Remove comments from jsonc string
+    public static String removeComments(String json) {
+        // If you break this I will steal your kneecaps
+        
+        // https://stackoverflow.com/questions/28411032/java-regex-remove-comments
+        String regex = "((['\\\"])(?:(?!\\2|\\\\).|\\\\.)*\\2)|\\/\\/[^\\n]*|\\/\\*(?:[^*]|\\*(?!\\/))*\\*\\/";
+        
+        // regex101's codegen <3
+        Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
+        Matcher matcher = pattern.matcher(json);
+
+        StringBuffer sb = new StringBuffer();
+
+        while (matcher.find()) {
+            String match = matcher.group();
+            Boolean matchedString = match.startsWith("\"") || match.startsWith("'");
+            matcher.appendReplacement(sb, matchedString ? Matcher.quoteReplacement(match) : "");
+        }
+        matcher.appendTail(sb);
+
+        return sb.toString();
+    }
+
     public static Metadata read(String json) {
+        json = removeComments(json);
         Metadata metadata = GSON.fromJson(json, Metadata.class);
         return metadata == null ? new Metadata() : metadata;
     }
