@@ -18,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 /**
- * Navigates through the file system, finding all folders containing avatar.json
+ * Navigates through the file system, finding all folders containing avatar.json or avatar.jsonc
  */
 public class LocalAvatarFetcher {
 
@@ -165,7 +165,14 @@ public class LocalAvatarFetcher {
         if (!Files.exists(path))
             return false;
 
-        Path metadata = path.resolve("avatar.json");
+        Path avatarJsonc = path.resolve("avatar.jsonc");
+        Path avatarJson = path.resolve("avatar.json");
+        Path metadata = null;
+        if (Files.exists(avatarJsonc)) {
+            metadata = avatarJsonc;
+        } else {
+            metadata = avatarJson;
+        }
         return Files.exists(metadata) && !Files.isDirectory(metadata);
     }
 
@@ -235,7 +242,14 @@ public class LocalAvatarFetcher {
             if (!(this instanceof FolderPath)) {
                 // metadata
                 try {
-                    String str = IOUtils.readFile(path.resolve("avatar.json"));
+                    Path avatarJsonc = path.resolve("avatar.jsonc");
+                    Path avatarJson = path.resolve("avatar.json");
+                    String str = null;
+                    if (Files.exists(avatarJsonc)) {
+                        str = IOUtils.readFile(avatarJsonc);
+                    } else {
+                        str = IOUtils.readFile(avatarJson);
+                    }
                     AvatarMetadataParser.Metadata metadata = AvatarMetadataParser.read(str);
 
                     name = Configs.WARDROBE_FILE_NAMES.value || metadata.name == null || metadata.name.isBlank() ? filename : metadata.name;
