@@ -1,16 +1,22 @@
 package org.figuramc.figura.gui;
 
+import com.mojang.blaze3d.ProjectionType;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.Lighting;
+import com.mojang.blaze3d.systems.GpuDevice;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.FilterMode;
+import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.GpuTextureView;
+import com.mojang.blaze3d.textures.TextureFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import net.minecraft.client.gui.render.state.BlitRenderState;
 import net.minecraft.client.gui.render.state.GuiRenderState;
+import net.minecraft.client.renderer.CachedOrthoProjectionMatrixBuffer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -19,13 +25,20 @@ import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.gui.widgets.permissions.PlayerPermPackElement;
 import org.figuramc.figura.utils.ui.UIHelper;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 public class FiguraPortraitRenderer extends PictureInPictureRenderer<FiguraPortraitRenderState> {
 
+    private final CachedOrthoProjectionMatrixBuffer avatarProjectionMatrixBuffer = new CachedOrthoProjectionMatrixBuffer(
+            "Portrait-PIP - " + this.getClass().getSimpleName(), -1000.0F, 1000.0F, true
+    );
+    Map<Avatar, TextureEntry> avatarToTexture = new HashMap<>();
     private boolean renderSkin;
     public FiguraPortraitRenderer(MultiBufferSource.BufferSource bufferSource) {
         super(bufferSource);
     }
-
 
     @Override
     public Class<FiguraPortraitRenderState> getRenderStateClass() {
@@ -44,11 +57,82 @@ public class FiguraPortraitRenderer extends PictureInPictureRenderer<FiguraPortr
         }
     }
 
+    @Override
+    public void prepare(FiguraPortraitRenderState pictureInPictureRenderState, GuiRenderState guiRenderState, int i) {
+        int j = (pictureInPictureRenderState.x1() - pictureInPictureRenderState.x0()) * i;
+        int k = (pictureInPictureRenderState.y1() - pictureInPictureRenderState.y0()) * i;
+        if (pictureInPictureRenderState.avatar() != null) {
+            prepareTexturesAndProjectionForAvatar(pictureInPictureRenderState.avatar(), j, k);
+            TextureEntry textureEntry = avatarToTexture.get(pictureInPictureRenderState.avatar());
+            RenderSystem.outputColorTextureOverride = textureEntry.textureView;
+            RenderSystem.outputDepthTextureOverride = textureEntry.depthTextureView;
+            PoseStack poseStack = new PoseStack();
+            poseStack.translate(j / 2.0F, this.getTranslateY(k, i), 0.0F);
+            float f = i * pictureInPictureRenderState.scale();
+            poseStack.scale(f, f, -f);
+            this.renderToTexture(pictureInPictureRenderState, poseStack);
+            this.bufferSource.endBatch();
+            RenderSystem.outputColorTextureOverride = null;
+            RenderSystem.outputDepthTextureOverride = null;
+            this.blitTexture(pictureInPictureRenderState, guiRenderState);
+        }
+        else
+            super.prepare(pictureInPictureRenderState, guiRenderState, i);
+    }
+
+    private void prepareTexturesAndProjectionForAvatar(Avatar avatar, int i, int j) {
+        if (avatar == null)
+            return;
+
+        TextureEntry entry = avatarToTexture.computeIfAbsent(avatar, k -> new TextureEntry());
+
+        boolean bl = entry.texture == null || entry.texture.getWidth(0) != i || entry.texture.getHeight(0) != j;
+        if (entry.texture != null && bl) {
+            entry.texture.close();
+            entry.texture = null;
+            entry.textureView.close();
+            entry.textureView = null;
+            entry.depthTexture.close();
+            entry.depthTexture = null;
+            entry.depthTextureView.close();
+        }
+
+        GpuDevice gpuDevice = RenderSystem.getDevice();
+        if (entry.texture == null) {
+            entry.texture = gpuDevice.createTexture(() -> "UI " + this.getTextureLabel() + " texture " + avatar.name, 12, TextureFormat.RGBA8, i, j, 1, 1);
+            entry.texture.setTextureFilter(FilterMode.NEAREST, false);
+            entry.textureView = gpuDevice.createTextureView(entry.texture);
+            entry.depthTexture = gpuDevice.createTexture(() -> "UI " + this.getTextureLabel() + " depth texture " + avatar.name, 8, TextureFormat.DEPTH32, i, j, 1, 1);
+            entry.depthTextureView = gpuDevice.createTextureView(entry.depthTexture);
+        }
+
+        gpuDevice.createCommandEncoder().clearColorAndDepthTextures(entry.texture, 0, entry.depthTexture, 1.0);
+        RenderSystem.setProjectionMatrix(this.avatarProjectionMatrixBuffer.getBuffer(i, j), ProjectionType.ORTHOGRAPHIC);
+    }
 
     @Override
     protected void blitTexture(FiguraPortraitRenderState pictureInPictureRenderState, GuiRenderState guiRenderState) {
         if (!renderSkin){
-            super.blitTexture(pictureInPictureRenderState, guiRenderState);
+            TextureEntry entry = avatarToTexture.get(pictureInPictureRenderState.avatar());
+
+            guiRenderState.submitBlitToCurrentLayer(
+                    new BlitRenderState(
+                            RenderPipelines.GUI_TEXTURED_PREMULTIPLIED_ALPHA,
+                            TextureSetup.singleTexture(entry.textureView),
+                            pictureInPictureRenderState.pose(),
+                            pictureInPictureRenderState.x0(),
+                            pictureInPictureRenderState.y0(),
+                            pictureInPictureRenderState.x1(),
+                            pictureInPictureRenderState.y1(),
+                            0.0F,
+                            1.0F,
+                            1.0F,
+                            0.0F,
+                            -1,
+                            pictureInPictureRenderState.scissorArea(),
+                            null
+                    )
+            );
             return;
         }
 
@@ -56,46 +140,119 @@ public class FiguraPortraitRenderer extends PictureInPictureRenderer<FiguraPortr
             ResourceLocation texture = pictureInPictureRenderState.fallbackSkin();
             // render skin
             UIHelper.enableBlend();
-            blit(pictureInPictureRenderState, guiRenderState, RenderPipelines.GUI_TEXTURED_PREMULTIPLIED_ALPHA, texture,  pictureInPictureRenderState.x0() + 4,  pictureInPictureRenderState.y0() + 4, 8f, 8f,32, 32, 8, 8, 64, 64);
+            GpuTextureView gpuTextureView = Minecraft.getInstance().getTextureManager().getTexture(texture).getTextureView();
+            guiRenderState.submitBlitToCurrentLayer(
+                    new BlitRenderState(
+                            RenderPipelines.GUI_TEXTURED_PREMULTIPLIED_ALPHA,
+                            TextureSetup.singleTexture(gpuTextureView),
+                            pictureInPictureRenderState.pose(),
+                            pictureInPictureRenderState.x0(),
+                            pictureInPictureRenderState.y0(),
+                            pictureInPictureRenderState.x1(),
+                            pictureInPictureRenderState.y1(),
+                            8/64F,
+                            16/64.0F,
+                            8/64F,
+                            16/64.0F,
+                            -1,
+                            pictureInPictureRenderState.scissorArea(),
+                            null
+                    )
+            );
 
             // hat
             GlStateManager._enableBlend();
-            blit(pictureInPictureRenderState, guiRenderState, RenderPipelines.GUI_TEXTURED_PREMULTIPLIED_ALPHA, texture, pictureInPictureRenderState.x0() + 4, pictureInPictureRenderState.y0() + 4, 40f, 8f,32, 32, 8, 8, 64, 64);
+            guiRenderState.submitBlitToCurrentLayer(
+                    new BlitRenderState(
+                            RenderPipelines.GUI_TEXTURED_PREMULTIPLIED_ALPHA,
+                            TextureSetup.singleTexture(gpuTextureView),
+                            pictureInPictureRenderState.pose(),
+                            pictureInPictureRenderState.x0(),
+                            pictureInPictureRenderState.y0(),
+                            pictureInPictureRenderState.x1(),
+                            pictureInPictureRenderState.y1(),
+                            40/64F,
+                            48/64.0F,
+                            8/64F,
+                            16/64.0F,
+                            -1,
+                            pictureInPictureRenderState.scissorArea(),
+                            null
+                    )
+            );
             GlStateManager._disableBlend();
         } else {
-            blit(pictureInPictureRenderState, guiRenderState, pictureInPictureRenderState.x0() + 4, pictureInPictureRenderState.x1() + 4, 32, 32, PlayerPermPackElement.UNKNOWN);
+            GpuTextureView gpuTextureView = Minecraft.getInstance().getTextureManager().getTexture(PlayerPermPackElement.UNKNOWN).getTextureView();
+            guiRenderState.submitBlitToCurrentLayer(
+                    new BlitRenderState(
+                            RenderPipelines.GUI_TEXTURED_PREMULTIPLIED_ALPHA,
+                            TextureSetup.singleTexture(gpuTextureView),
+                            pictureInPictureRenderState.pose(),
+                            pictureInPictureRenderState.x0(),
+                            pictureInPictureRenderState.y0(),
+                            pictureInPictureRenderState.x1(),
+                            pictureInPictureRenderState.y1(),
+                            0,
+                            1,
+                            0,
+                            1,
+                            -1,
+                            pictureInPictureRenderState.scissorArea(),
+                            null
+                    )
+            );
         }
-    }
-
-    public void blit(
-            FiguraPortraitRenderState renderState, GuiRenderState guiRenderState, RenderPipeline renderPipeline, ResourceLocation resourceLocation, int i, int j, int k, int l, float f, float g, float h, float m, int n
-    ) {
-        GpuTextureView gpuTextureView = Minecraft.getInstance().getTextureManager().getTexture(resourceLocation).getTextureView();
-        guiRenderState
-                .submitGuiElement(
-                        new BlitRenderState(
-                                renderPipeline, TextureSetup.singleTexture(gpuTextureView), renderState.pose(), i, j, k, l, f, g, h, m, n, renderState.scissorArea()
-                        )
-                );
-
-    }
-
-    public void blit(FiguraPortraitRenderState renderState, GuiRenderState guiRenderState, RenderPipeline renderPipeline, ResourceLocation resourceLocation, int i, int j, float f, float g, int k, int l, int m, int n, int o, int p) {
-        this.blit(renderState, guiRenderState, renderPipeline, resourceLocation, i, j, f, g, k, l, m, n, o, p, -1);
-    }
-
-    public void blit(
-            FiguraPortraitRenderState renderState, GuiRenderState guiRenderState, RenderPipeline renderPipeline, ResourceLocation resourceLocation, int i, int j, float f, float g, int k, int l, int m, int n, int o, int p, int q
-    ) {
-        this.blit(renderState, guiRenderState, renderPipeline, resourceLocation, i, i + k, j, j + l, (f + 0.0F) / o, (f + m) / o, (g + 0.0F) / p, (g + n) / p, q);
-    }
-
-    public void blit(FiguraPortraitRenderState renderState, GuiRenderState guiRenderState, int x, int y, int width, int height, ResourceLocation texture) {
-        blit(renderState, guiRenderState, RenderPipelines.GUI_TEXTURED_PREMULTIPLIED_ALPHA, texture, x, y, 0f, 0f, width, height, 1, 1, 1, 1);
     }
 
     @Override
     protected String getTextureLabel() {
         return "figura-portrait";
     }
+
+    @Override
+    public void close() {
+        super.close();
+        for (Map.Entry<Avatar, TextureEntry> entry : avatarToTexture.entrySet()) {
+            entry.getValue().texture.close();
+            entry.getValue().textureView.close();
+            entry.getValue().depthTexture.close();
+            entry.getValue().depthTextureView.close();
+        }
+        avatarProjectionMatrixBuffer.close();
+    }
+
+    private static final class TextureEntry {
+        private GpuTexture texture;
+        private GpuTextureView textureView;
+        private GpuTexture depthTexture;
+        private GpuTextureView depthTextureView;
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) return true;
+            if (obj == null || obj.getClass() != this.getClass()) return false;
+            var that = (TextureEntry) obj;
+            return Objects.equals(this.texture, that.texture) &&
+                    Objects.equals(this.textureView, that.textureView) &&
+                    Objects.equals(this.depthTexture, that.depthTexture) &&
+                    Objects.equals(this.depthTextureView, that.depthTextureView);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(texture, textureView, depthTexture, depthTextureView);
+        }
+
+        @Override
+        public String toString() {
+            return "TextureEntry[" +
+                    "texture=" + texture + ", " +
+                    "textureView=" + textureView + ", " +
+                    "depthTexture=" + depthTexture + ", " +
+                    "depthTextureView=" + depthTextureView + ']';
+        }
+
+
+    }
+
 }
