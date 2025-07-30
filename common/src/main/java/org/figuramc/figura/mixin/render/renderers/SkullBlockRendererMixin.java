@@ -20,6 +20,7 @@ import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.ducks.SkullBlockRendererAccessor;
+import org.figuramc.figura.ducks.SkullBlockRendererHelper;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
 import org.figuramc.figura.lua.api.world.BlockStateAPI;
 import org.figuramc.figura.lua.api.world.ItemStackAPI;
@@ -42,6 +43,9 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
     @Inject(at = @At("HEAD"), method = "renderSkull", cancellable = true)
     private static void renderSkull(Direction direction, float yaw, float animationProgress, PoseStack stack, MultiBufferSource bufferSource, int light, SkullModelBase model, RenderType renderLayer, CallbackInfo ci) {
         // parse block and items first, so we can yeet them in case of a missed event
+        if (avatar == null)
+            avatar = SkullBlockRendererHelper.getAvatar();
+
         SkullBlockEntity localBlock = block;
         block = null;
 
@@ -93,6 +97,9 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
     @Override
     public boolean shouldRenderOffScreen() {
         Avatar localAvatar = avatar; // avatar pointer incase avatar variable is set during render.
+        if (localAvatar == null)
+            localAvatar = SkullBlockRendererHelper.getAvatar();
+
         return localAvatar == null || localAvatar.permissions == null ? BlockEntityRenderer.super.shouldRenderOffScreen() : localAvatar.permissions.get(Permissions.OFFSCREEN_RENDERING) == 1;
     }
 
