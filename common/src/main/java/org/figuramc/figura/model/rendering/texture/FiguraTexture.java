@@ -110,6 +110,10 @@ public class FiguraTexture extends SimpleTexture {
         uploadIfDirty();
     }
 
+    public void closeFromRenderThread() {
+        Minecraft.getInstance().execute(this::close);
+    }
+
     @Override
     public void close() {
         // Make sure it doesn't close twice (minecraft tries to close the texture when reloading textures
