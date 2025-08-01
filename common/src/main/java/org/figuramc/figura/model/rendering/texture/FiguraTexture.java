@@ -2,7 +2,9 @@ package org.figuramc.figura.model.rendering.texture;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
+import com.mojang.blaze3d.systems.GpuDevice;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.TextureFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.texture.TextureContents;
@@ -35,6 +37,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Path;
 import java.util.Base64;
+import java.util.Objects;
 import java.util.UUID;
 
 @LuaWhitelist
@@ -142,6 +145,16 @@ public class FiguraTexture extends SimpleTexture {
 
             this.doLoad(nativeImageTexture, false, false);
         }
+    }
+
+    @Override
+    public void doLoad(NativeImage nativeImage, boolean bl, boolean bl2) {
+        GpuDevice gpuDevice = RenderSystem.getDevice();
+        this.texture = gpuDevice.createTexture(this.resourceId()::toString, 5, TextureFormat.RGBA8, nativeImage.getWidth(), nativeImage.getHeight(), 1, 1);
+        this.textureView = gpuDevice.createTextureView(this.texture);
+        this.setFilter(bl, false);
+        this.setClamp(bl2);
+        gpuDevice.createCommandEncoder().writeToTexture(this.texture, nativeImage);
     }
 
     public void writeTexture(Path dest) throws IOException {
