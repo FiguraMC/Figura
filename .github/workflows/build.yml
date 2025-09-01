@@ -39,3 +39,10 @@ jobs:
         with:
           name: Forge-Artifacts
           path: forge/build/libs/
+
+      - name: Upload Neoforge artifacts to GitHub
+        if: ${{ hashFiles('neoforge/build/libs/**') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Neoforge-Artifacts
+          path: neoforge/build/libs
