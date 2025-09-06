@@ -4,10 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.utils.FiguraIdentifier;
@@ -126,7 +123,14 @@ public class EmojiContainer {
             return null;
         }
         EmojiMetadata metadata = lookup.getMetadata(unicode.codePointAt(0));
-        return makeComponent(metadata, unicode, hover, style);
+        return makeComponent(metadata, unicode, hover, style).withStyle(
+                Style.EMPTY.withClickEvent(
+                        new ClickEvent(
+                                ClickEvent.Action.COPY_TO_CLIPBOARD,
+                                ":"+key+":"
+                        )
+                )
+        );
     }
 
     public MutableComponent getShortcutComponent(String shortcut, Style style) {
