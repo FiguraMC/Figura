@@ -1,34 +1,32 @@
-package org.figuramc.figura.mixin.gui;
+package org.figuramc.figura.mixin.neoforge;
 
-import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import net.minecraft.client.GuiMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.render.GuiRenderer;
-import net.minecraft.client.gui.render.pip.GuiEntityRenderer;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import net.minecraft.client.gui.render.state.GuiRenderState;
 import net.minecraft.client.gui.render.state.pip.GuiEntityRenderState;
 import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import org.figuramc.figura.ducks.GuiEntityRenderStateExtension;
-import org.figuramc.figura.ducks.GuiMessageAccessor;
 import org.figuramc.figura.gui.FiguraGuiEntityRenderer;
 import org.figuramc.figura.model.rendering.EntityRenderMode;
 import org.figuramc.figura.utils.ui.UIHelper;
-import org.jetbrains.annotations.NotNull;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 
 @Mixin(GuiRenderer.class)
 public class GuiRendererMixin {
 
-    @Shadow @Final
+    @Shadow
+    @Final
     GuiRenderState renderState;
 
     @Unique
@@ -40,12 +38,14 @@ public class GuiRendererMixin {
     }
 
     @Inject(method = "preparePictureInPictureState", at = @At("HEAD"), cancellable = true)
-    private <T extends PictureInPictureRenderState> void renderPaperDoll(T pictureInPictureRenderState, int i, CallbackInfo ci) {
+    private <T extends PictureInPictureRenderState> void renderPaperDoll(PictureInPictureRenderState pictureInPictureRenderState, int i, boolean firstPass, CallbackInfoReturnable<Boolean> cir) {
         if (pictureInPictureRenderState instanceof GuiEntityRenderStateExtension extension && (extension.getRenderMode() != null && extension.getRenderMode() == EntityRenderMode.PAPERDOLL)) {
-            UIHelper.paperdoll = true;
-            figura$paperDollRenderer.prepare((GuiEntityRenderState) pictureInPictureRenderState, this.renderState, i);
-            UIHelper.paperdoll = false;
-            ci.cancel();
+            if (pictureInPictureRenderState instanceof GuiEntityRenderState guiEntityRenderState) {
+                UIHelper.paperdoll = true;
+                figura$paperDollRenderer.prepare(guiEntityRenderState, this.renderState, i);
+                UIHelper.paperdoll = false;
+                cir.setReturnValue(true);
+            }
         }
     }
 
