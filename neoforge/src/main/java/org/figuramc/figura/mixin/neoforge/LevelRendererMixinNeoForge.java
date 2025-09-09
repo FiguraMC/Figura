@@ -67,7 +67,7 @@ public class LevelRendererMixinNeoForge {
 
         Avatar.firstPerson = true;
 
-        int size = ((PoseStackAccessor)stack).getPoseStack().size();
+        int lastIndex = ((PoseStackAccessor) stack).getLastIndex();
         stack.pushPose();
 
         Vec3 offset = entityRenderer.getRenderOffset(state);
@@ -84,11 +84,10 @@ public class LevelRendererMixinNeoForge {
 
         do {
             stack.popPose();
-        } while(((PoseStackAccessor)stack).getPoseStack().size() > size);
+        } while (((PoseStackAccessor) stack).getLastIndex() > lastIndex);
 
         Avatar.firstPerson = false;
     }
-
 
     @Inject(method = {"lambda$addMainPass$3"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderBuffers;bufferSource()Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;"))
     public void applyFiguraNormals(GpuBufferSlice gpuBufferSlice, DeltaTracker arg, Camera camera, ProfilerFiller profilerFiller, Matrix4f matrix4f, Frustum arg4, ResourceHandle resourcehandle2, ResourceHandle resourcehandle3, boolean bl, ResourceHandle resourcehandle1, ResourceHandle resourcehandle, CallbackInfo ci, @Local PoseStack poseStack) {
