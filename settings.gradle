@@ -11,6 +11,6 @@ include("common")
 include("common:mojmap")
 //include("forge")
 include("fabric")
-//include("neoforge")
+include("neoforge")
 
 rootProject.name = "Figura"
