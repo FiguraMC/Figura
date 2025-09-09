@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -51,6 +52,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Mixin(value = HumanoidArmorLayer.class, priority = 900)
 public abstract class HumanoidArmorLayerMixinNeoForge<S extends HumanoidRenderState, M extends HumanoidModel<S>, A extends HumanoidModel<S>> extends RenderLayer<S, M> implements HumanoidArmorLayerAccessor<S, M, A> {
@@ -129,8 +131,10 @@ public abstract class HumanoidArmorLayerMixinNeoForge<S extends HumanoidRenderSt
 
         // Make sure the item in the equipment slot is actually a piece of armor
         if ((itemStack.has(DataComponents.EQUIPPABLE) && itemStack.get(DataComponents.EQUIPPABLE).slot() == slot)) {
-            A armorModel = getArmorModel(state, slot);
+            A armorModelRaw = getArmorModel(state, slot);
+            EquipmentClientInfo.LayerType layerType = this.usesInnerModel(slot) ? EquipmentClientInfo.LayerType.HUMANOID_LEGGINGS : EquipmentClientInfo.LayerType.HUMANOID;
 
+            A armorModel = figura$getArmorModelHook(itemStack, layerType, armorModelRaw);
             // Bones have to be their defaults to prevent issues with clipping
             armorModel.body.xRot = 0.0f;
             armorModel.rightLeg.z = 0.0f;
@@ -316,5 +320,12 @@ public abstract class HumanoidArmorLayerMixinNeoForge<S extends HumanoidRenderSt
         if (hasGlint) {
             modelPart.render(poseStack, vertexConsumers.getBuffer(RenderType.armorEntityGlint()), light, OverlayTexture.NO_OVERLAY, -1);
         }
+    }
+
+    @Unique
+    protected A figura$getArmorModelHook(ItemStack itemStack, EquipmentClientInfo.LayerType slot, Model model) {
+        Model model2 = IClientItemExtensions.of(itemStack.getItem()).getGenericArmorModel(itemStack, slot, model);
+        Function<String, ModelPart> function = model2.root().createPartLookup();
+        return (A) model2;
     }
 }
