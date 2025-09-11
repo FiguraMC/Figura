@@ -379,7 +379,7 @@ public class LocalAvatarFetcher {
                         children.add(folder);
                         found = true;
                     }
-                } else if (IOUtils.getFileNameOrEmpty(path).endsWith(".zip")) {
+                } else if (IOUtils.getFileNameOrEmpty(path).endsWith(".zip") || IOUtils.getFileNameOrEmpty(path).endsWith(".jar")) {
                     try {
                         FileSystem opened = FileSystems.newFileSystem(path);
                         if ("jar".equalsIgnoreCase(opened.provider().getScheme())) {
