@@ -47,6 +47,9 @@ public class RendererAPI {
     @LuaWhitelist
     @LuaFieldDoc("renderer.render_hud")
     public boolean renderHUD = true;
+    @LuaWhitelist
+    @LuaFieldDoc("renderer.render_first_person")
+    public boolean renderFirstPerson = false;
 
     public FiguraVec3 cameraPos;
     public FiguraVec3 cameraPivot, cameraOffsetPivot;
@@ -160,6 +163,26 @@ public class RendererAPI {
             value = "renderer.set_render_hud")
     public RendererAPI setRenderHUD(boolean renderHUD) {
         this.renderHUD = renderHUD;
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("renderer.should_render_first_person")
+    public boolean shouldRenderFirstPerson() {
+        return renderFirstPerson;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = Boolean.class,
+                    argumentNames = "bool"
+            ),
+            aliases = "renderFirstPerson",
+            value = "renderer.set_render_first_person"
+    )
+    public RendererAPI setRenderFirstPerson(Boolean bool) {
+        this.renderFirstPerson = bool;
         return this;
     }
 
@@ -760,6 +783,7 @@ public class RendererAPI {
             case "renderCrosshair" -> renderCrosshair;
             case "forcePaperdoll" -> forcePaperdoll;
             case "renderHUD" -> renderHUD;
+            case "renderFirstPerson" -> renderFirstPerson;
             default -> null;
         };
     }
@@ -772,6 +796,7 @@ public class RendererAPI {
             case "renderCrosshair" -> renderCrosshair = value;
             case "forcePaperdoll" -> forcePaperdoll = value;
             case "renderHUD" -> renderHUD = value;
+            case "renderFirstPerson" -> renderFirstPerson = value;
             default -> throw new LuaError("Cannot assign value on key \"" + key + "\"");
         }
     }
