@@ -49,7 +49,7 @@ public class RendererAPI {
     public boolean renderHUD = true;
     @LuaWhitelist
     @LuaFieldDoc("renderer.render_first_person")
-    public boolean renderFirstPerson = false;
+    public boolean renderFirstPerson;
 
     public FiguraVec3 cameraPos;
     public FiguraVec3 cameraPivot, cameraOffsetPivot;
@@ -181,7 +181,7 @@ public class RendererAPI {
             aliases = "renderFirstPerson",
             value = "renderer.set_render_first_person"
     )
-    public RendererAPI setRenderFirstPerson(Boolean bool) {
+    public RendererAPI setRenderFirstPerson(boolean bool) {
         this.renderFirstPerson = bool;
         return this;
     }
