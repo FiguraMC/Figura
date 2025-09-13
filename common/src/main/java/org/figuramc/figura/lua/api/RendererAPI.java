@@ -178,7 +178,6 @@ public class RendererAPI {
                     argumentTypes = Boolean.class,
                     argumentNames = "bool"
             ),
-            aliases = "renderFirstPerson",
             value = "renderer.set_render_first_person"
     )
     public RendererAPI setRenderFirstPerson(boolean bool) {
