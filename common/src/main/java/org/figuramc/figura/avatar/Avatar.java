@@ -443,8 +443,12 @@ public class Avatar {
         if (loaded) run("RESOURCE_RELOAD", tick);
     }
 
-    public void damageEvent(String sourceType, EntityAPI<?> sourceCause, EntityAPI<?> sourceDirect, FiguraVec3 sourcePosition) {
-        if (loaded) run("DAMAGE", tick, sourceType, sourceCause, sourceDirect, sourcePosition);
+    public boolean damageEvent(String sourceType, EntityAPI<?> sourceCause, EntityAPI<?> sourceDirect, FiguraVec3 sourcePosition) {
+        return isCancelled(loaded ? run("DAMAGE", tick, sourceType, sourceCause, sourceDirect, sourcePosition) : null);
+    }
+
+    public boolean totemEvent() {
+        return isCancelled(loaded ? run("TOTEM",tick) : null);
     }
 
     // -- host only events -- // 
@@ -492,10 +496,6 @@ public class Avatar {
 
     public void charTypedEvent(String chars, int modifiers, int codePoint) {
         if (loaded) run("CHAR_TYPED", tick, chars, modifiers, codePoint);
-    }
-
-    public boolean totemEvent() {
-        return isCancelled(loaded ? run("TOTEM",tick) : null);
     }
 
     // -- rendering events -- // 

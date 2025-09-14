@@ -39,7 +39,8 @@ public class Permissions {
             CUSTOM_SKULL = new Permissions("CUSTOM_SKULL", 0, 0, 1, 1, 1),
             BUFFER_SIZE = new Permissions("BUFFER_SIZE", 0, 3072000, 0, 128000, 1024000, 2048000, Integer.MAX_VALUE),
             BUFFERS_COUNT = new Permissions("BUFFERS_COUNT", 0, 32, 0, 2, 4, 16, 32),
-            NETWORKING = new Permissions("NETWORKING", 0,0,0,1,1);
+            NETWORKING = new Permissions("NETWORKING", 0,0,0,1,1),
+            CANCEL_DAMAGE = new Permissions("CANCEL_DAMAGE", 0, 0, 1, 1, 1);
 
     public static final List<Permissions> DEFAULT = List.of(
             INIT_INST,
@@ -59,6 +60,7 @@ public class Permissions {
             OFFSCREEN_RENDERING,
             CUSTOM_SOUNDS,
             CANCEL_SOUNDS,
+            CANCEL_DAMAGE,
             CUSTOM_SKULL,
             BUFFER_SIZE,
             BUFFERS_COUNT,

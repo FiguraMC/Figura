@@ -11,6 +11,7 @@ import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
 import org.figuramc.figura.lua.api.world.ItemStackAPI;
 import org.figuramc.figura.math.vector.FiguraVec3;
+import org.figuramc.figura.permissions.Permissions;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -30,15 +31,26 @@ public abstract class LivingEntityMixin extends Entity {
             ci.cancel();
     }
 
-    @Inject(at = @At("TAIL"), method = "handleDamageEvent")
+    @Inject(at = @At("HEAD"), method = "handleDamageEvent", cancellable = true)
     private void handleDamageEvent(DamageSource source, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatar(this);
-        if (avatar == null) return;
-        avatar.damageEvent(
-                source.typeHolder().unwrapKey().get().location().toString(),
-                EntityAPI.wrap(source.getEntity()),
-                EntityAPI.wrap(source.getDirectEntity()),
-                source.getSourcePosition() != null ? FiguraVec3.fromVec3(source.getSourcePosition()) : null
-        );
+        if (avatar != null) {
+            boolean cancel = avatar.damageEvent(
+                    source.typeHolder().unwrapKey().get().location().toString(),
+                    EntityAPI.wrap(source.getEntity()),
+                    EntityAPI.wrap(source.getDirectEntity()),
+                    source.getSourcePosition() != null ? FiguraVec3.fromVec3(source.getSourcePosition()) : null
+            );
+
+            if (avatar.permissions.get(Permissions.CANCEL_DAMAGE) >= 1) {
+                avatar.noPermissions.remove(Permissions.CANCEL_DAMAGE);
+                if (cancel) {
+                    ci.cancel();
+                }
+
+            } else if (cancel) {
+                avatar.noPermissions.add(Permissions.CANCEL_DAMAGE);
+            }
+        }
     }
 }
