@@ -44,6 +44,7 @@ public class TextTask extends RenderTask {
     private int opacity = 0xFF;
     private int width = 0;
     private boolean wrap = true;
+    private int lineSpace = 1;
 
     private int cachedComplexity, cacheWidth, cacheHeight;
 
@@ -81,7 +82,7 @@ public class TextTask extends RenderTask {
         }
 
         // text
-        for (int i = 0, j = 0; i < text.size(); i++, j += (font.lineHeight + 1)) {
+        for (int i = 0, j = 0; i < text.size(); i++, j += (font.lineHeight + this.lineSpace)) {
             Component text = this.text.get(i);
             int x = -alignment.apply(font, text);
 
@@ -120,7 +121,7 @@ public class TextTask extends RenderTask {
 
         Font font = Minecraft.getInstance().font;
         cacheWidth = TextUtils.getWidth(this.text, font);
-        cacheHeight = TextUtils.getHeight(this.text, font);
+        cacheHeight = TextUtils.getHeight(this.text, font, this.lineSpace);
     }
 
 
@@ -420,5 +421,27 @@ public class TextTask extends RenderTask {
     @Override
     public String toString() {
         return name + " (Text Render Task)";
+    }
+
+    // Internally, the line spacing will be 1 less than what's returned to the user. This is because in reality, a spacing of 1 is 2 pixels.
+    // This is so the user can set the spacing to 0 to make multiple lines of emojis sit flush
+
+    @LuaWhitelist
+    @LuaMethodDoc("text_task.get_spacing")
+    public float getSpacing() {
+        return this.lineSpace + 1;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(overloads = @LuaMethodOverload(argumentTypes = Integer.class, argumentNames = "spacing"), aliases = "lineSpacing", value = "text_task.set_spacing")
+    public TextTask setSpacing(int spacing) {
+        this.lineSpace = spacing - 1;
+        updateText();
+        return this;
+    }
+
+    @LuaWhitelist
+    public TextTask spacing(int spacing) {
+        return setSpacing(spacing);
     }
 }
