@@ -196,14 +196,10 @@ public class TextUtils {
         return width;
     }
 
-    // correctly calculates the height of a list of text componennts
-    public static int getHeight(List<?> text, Font font, int lineSpaceing) {
+    // correctly calculates the height of a list of text components
+    public static int getHeight(List<?> text, Font font, int lineSpacing) {
         int lines = text.size();
-        return (lines * font.lineHeight) + Math.max((lines-1)*lineSpaceing, 0);
-    }
-
-    public static int getHeight(List<?> text, Font font) {
-        return getHeight(text, font, 1);
+        return (lines * font.lineHeight) + (lines - 1) * lineSpacing;
     }
 
     public static Component replaceStyle(FormattedText text, Style newStyle, Predicate<Style> predicate) {
