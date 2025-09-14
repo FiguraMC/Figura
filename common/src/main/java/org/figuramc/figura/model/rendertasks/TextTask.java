@@ -45,6 +45,7 @@ public class TextTask extends RenderTask {
     private int width = 0;
     private boolean wrap = true;
     private int lineSpace = 1;
+    private boolean hasBadges;
 
     private int cachedComplexity, cacheWidth, cacheHeight;
 
@@ -68,6 +69,10 @@ public class TextTask extends RenderTask {
         int op = opacity << 24 | 0xFFFFFF;
         Font.DisplayMode displayMode = seeThrough ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.POLYGON_OFFSET;
         float vertexOffset = outline ? FiguraMod.VERTEX_OFFSET : 0f;
+
+        // badges
+        if (this.hasBadges)
+            updateText();
 
         // background
         if (bg != 0) {
@@ -114,9 +119,11 @@ public class TextTask extends RenderTask {
 
         Component component = TextUtils.tryParseJson(this.textCached);
         component = Badges.noBadges4U(component);
-        component = Badges.appendBadges(component, this.owner.owner, (this.textCached.contains("${badges}") || this.textCached.contains("${segdab}")));
+        this.hasBadges = Badges.hasCustomBadges(component);
+        component = Badges.appendBadges(component, this.owner.owner, this.hasBadges);
         component = Emojis.applyEmojis(component);
         component = Emojis.removeBlacklistedEmojis(component);
+        component = TextUtils.replaceInText(component, "\\$\\{name\\}", this.owner.entityName);
         this.text = TextUtils.formatInBounds(component, Minecraft.getInstance().font, width, wrap);
 
         Font font = Minecraft.getInstance().font;
@@ -423,19 +430,16 @@ public class TextTask extends RenderTask {
         return name + " (Text Render Task)";
     }
 
-    // Internally, the line spacing will be 1 less than what's returned to the user. This is because in reality, a spacing of 1 is 2 pixels.
-    // This is so the user can set the spacing to 0 to make multiple lines of emojis sit flush
-
     @LuaWhitelist
     @LuaMethodDoc("text_task.get_spacing")
     public float getSpacing() {
-        return this.lineSpace + 1;
+        return this.lineSpace;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(overloads = @LuaMethodOverload(argumentTypes = Integer.class, argumentNames = "spacing"), aliases = "lineSpacing", value = "text_task.set_spacing")
     public TextTask setSpacing(int spacing) {
-        this.lineSpace = spacing - 1;
+        this.lineSpace = spacing;
         updateText();
         return this;
     }

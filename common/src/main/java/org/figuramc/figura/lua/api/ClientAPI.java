@@ -314,8 +314,8 @@ public class ClientAPI {
             },
             value = "client.get_text_height"
     )
-    public static int getTextHeight(String text, int lineSpacing) {
-        return TextUtils.getHeight(TextUtils.splitText(TextUtils.tryParseJson(text), "\n"), Minecraft.getInstance().font, lineSpacing);
+    public static int getTextHeight(String text, Integer lineSpacing) {
+        return TextUtils.getHeight(TextUtils.splitText(TextUtils.tryParseJson(text), "\n"), Minecraft.getInstance().font, (lineSpacing == null ? 1 : lineSpacing));
     }
 
     @LuaWhitelist
@@ -332,12 +332,12 @@ public class ClientAPI {
             },
             value = "client.get_text_dimensions"
     )
-    public static FiguraVec2 getTextDimensions(@LuaNotNil String text, int maxWidth, Boolean wrap, int lineSpacing) {
+    public static FiguraVec2 getTextDimensions(@LuaNotNil String text, int maxWidth, Boolean wrap, Integer lineSpacing) {
         Component component = TextUtils.tryParseJson(text);
         Font font = Minecraft.getInstance().font;
         List<Component> list = TextUtils.formatInBounds(component, font, maxWidth, wrap == null || wrap);
         int x = TextUtils.getWidth(list, font);
-        int y = TextUtils.getHeight(list, font, lineSpacing);
+        int y = TextUtils.getHeight(list, font, (lineSpacing == null ? 1 : lineSpacing));
         return FiguraVec2.of(x, y);
     }
 
