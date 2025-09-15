@@ -33,6 +33,11 @@ public class PlatformUtils {
         throw new AssertionError();
     }
 
+    @ExpectPlatform
+    public static String getModName(String modId){
+        throw new AssertionError();
+    }
+
     public static int compareVersionTo(String v1, String v2) {
         if(v1 == null)
             return 1;

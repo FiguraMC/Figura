@@ -31,6 +31,10 @@ public class PlatformUtilsImpl {
         return FabricLoader.getInstance().getModContainer(modId).get().getMetadata().getVersion().getFriendlyString();
     }
 
+    public static String getModName(String modId) {
+        return FabricLoader.getInstance().getModContainer(modId).get().getMetadata().getName();
+    }
+
     public static PlatformUtils.ModLoader getModLoader() {
         return PlatformUtils.ModLoader.FABRIC;
     }
