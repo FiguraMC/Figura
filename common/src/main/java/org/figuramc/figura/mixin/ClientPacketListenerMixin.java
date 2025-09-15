@@ -30,16 +30,14 @@ public abstract class ClientPacketListenerMixin {
     private void handleTotem(ClientboundEntityEventPacket packet, CallbackInfo ci) {
         Level level = getLevel();
         Avatar avatar = AvatarManager.getAvatar(packet.getEntity(level));
-        if (avatar != null) {
-            boolean cancel = avatar.totemEvent();
-            if (avatar.permissions.get(Permissions.CANCEL_DAMAGE) >= 1) {
-                avatar.noPermissions.remove(Permissions.CANCEL_DAMAGE);
-                if (cancel) {
-                    ci.cancel();
-                }
-            } else if (cancel) {
-                avatar.noPermissions.add(Permissions.CANCEL_DAMAGE);
-            }
-        }
+        if (avatar != null || !avatar.totemEvent()) return;
+        if (avatar.permissions.get(Permissions.CANCEL_DAMAGE) >= 1) {
+            avatar.noPermissions.remove(Permissions.CANCEL_DAMAGE);
+            ci.cancel();
+            return;
+        } 
+        avatar.noPermissions.add(Permissions.CANCEL_DAMAGE);
+            
+        
     }
 }
