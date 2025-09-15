@@ -170,15 +170,6 @@ public class NetworkStuff {
         }
     }
 
-    private static boolean checkUUID(UUID id) {
-        if (id.version() != 4) {
-            FiguraMod.debug("Voiding request for non v4 UUID \"" + id + "\" (v" + id.version() + ")");
-            return true;
-        }
-        return false;
-    }
-
-
     // -- token -- //
 
 
@@ -333,10 +324,6 @@ public class NetworkStuff {
     }
 
     public static void getUserFromBackend(UserData user) {
-        if (checkUUID(user.id)) {
-            return;
-        }
-
         queueString(user.id, api -> api.getUser(user.id), (code, data) -> {
             //debug
             responseDebug("getUser", code, data);
@@ -496,10 +483,6 @@ public class NetworkStuff {
             return;
         }
 
-        if (checkUUID(target.id)) {
-            return;
-        }
-
         queueStream(target.id, api -> api.getAvatar(owner, id), (code, stream) -> {
             String s;
             try {
@@ -590,7 +573,7 @@ public class NetworkStuff {
     }
 
     private static void subscribe(UUID id) {
-        if (checkUUID(id) || !checkWS())
+        if (!checkWS())
             return;
 
         WS_REQUESTS.add(new Request<>(Util.NIL_UUID, client -> {
@@ -605,7 +588,7 @@ public class NetworkStuff {
     }
 
     private static void unsubscribe(UUID id) {
-        if (checkUUID(id) || !checkWS())
+        if (!checkWS())
             return;
 
         WS_REQUESTS.add(new Request<>(Util.NIL_UUID, client -> {
