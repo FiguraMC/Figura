@@ -35,6 +35,10 @@ public class PlatformUtilsImpl {
         return ModList.get().getModContainerById(modId).get().getModInfo().getVersion().getQualifier();
     }
 
+    public static String getModName(String modId) {
+        return ModList.get().getModContainerById(modId).get().getModInfo().getDisplayName();
+    }
+
     public static PlatformUtils.ModLoader getModLoader() {
         return PlatformUtils.ModLoader.FORGE;
     }
