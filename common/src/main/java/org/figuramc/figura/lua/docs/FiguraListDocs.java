@@ -21,6 +21,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.animation.Animation;
 import org.figuramc.figura.config.Configs;
+import org.figuramc.figura.ducks.FiguraKeyStorage;
 import org.figuramc.figura.mixin.input.KeyMappingAccessor;
 import org.figuramc.figura.mixin.render.GameRendererAccessor;
 import org.figuramc.figura.model.ParentType;
@@ -42,7 +43,7 @@ public class FiguraListDocs {
 
     // -- types --// 
 
-    public static final LinkedHashSet<String> KEYBINDS = new LinkedHashSet<>();
+    public static final LinkedHashSet<String> KEYBINDS = FiguraKeyStorage.allKeys;
     private static final LinkedHashMap<String, List<String>> PARENT_TYPES = new LinkedHashMap<>() {{
         for (ParentType value : ParentType.values())
             put(value.name(), Arrays.asList(value.aliases));
