@@ -63,7 +63,6 @@ public class FiguraListDocs {
         for (FiguraTextureSet.OverrideType value : FiguraTextureSet.OverrideType.values())
             add(value.name());
     }};
-    private static final Set<String> KEY_IDS = KeyMappingAccessor.getAll().keySet();
     private static final LinkedHashSet<String> ENTITY_POSES = new LinkedHashSet<>() {{
         for (Pose value : Pose.values())
             add(value.name());
@@ -120,7 +119,7 @@ public class FiguraListDocs {
         for (ResourceLocation resourceLocation : BuiltInRegistries.REGISTRY.keySet())
             add(resourceLocation.getPath());
     }};
-    private static final Set<String> FIGURA_CONFIGS = Configs.REGISTRY.keySet();
+    public static final HashMap<String, Object> FIGURA_CONFIGS = new HashMap<>();
     private static final LinkedHashSet<String> SOUND_SOURCES = new LinkedHashSet<>() {{
         for (SoundSource value : SoundSource.values())
             add(value.name());
@@ -156,7 +155,7 @@ public class FiguraListDocs {
         REGISTRIES(() -> FiguraListDocs.REGISTRIES, "Registries", "registries", 1),
         TEXTURE_OVERFLOW_STRATEGIES(() -> FiguraListDocs.TEXTURE_OVERFLOW_STRATEGIES, "TextureOverflowStrategies", "texture_overflow_strategies", 1),
         BLEND_MODES(() -> FiguraListDocs.BLEND_MODES, "BlendModes", "blend_modes", 1),
-        FIGURA_CONFIGS(() -> FiguraListDocs.FIGURA_CONFIGS, "FiguraConfigs", "figura_configs", 1),
+        FIGURA_CONFIGS(() -> new LinkedHashSet<>() {{this.addAll(FiguraListDocs.FIGURA_CONFIGS.keySet());}}, "FiguraConfigs", "figura_configs", 1),
         SOUND_SOURCES(() -> FiguraListDocs.SOUND_SOURCES, "SoundSources", "sound_sources", 2);
 
         private final Supplier<Object> supplier;

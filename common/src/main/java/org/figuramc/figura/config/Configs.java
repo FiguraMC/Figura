@@ -14,6 +14,7 @@ import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.gui.screens.ConfigScreen;
 import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.lua.api.ConfigAPI;
+import org.figuramc.figura.lua.docs.FiguraListDocs;
 import org.figuramc.figura.permissions.PermissionManager;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.resources.FiguraRuntimeResources;
@@ -30,10 +31,10 @@ public class Configs {
     // only change this if you rename old configs
     public static final int CONFIG_VERSION = 1;
 
-    // config update hashmap; <version number, <actual config, old config name>>
-    public static final HashMap<Integer, HashMap<ConfigType<?>, String>> CONFIG_UPDATES = new HashMap<>();
+	// config update hashmap; <version number, <actual config, old config name>>
+	public static final HashMap<Integer, HashMap<ConfigType<?>, String>> CONFIG_UPDATES = new HashMap<>();
 
-    public static HashMap<String, Object> REGISTRY = new HashMap<>();
+    public static HashMap<String, Object> REGISTRY = FiguraListDocs.FIGURA_CONFIGS;
     // code to run when the config is initialized
     public static void init() {
         // test for unused configs
