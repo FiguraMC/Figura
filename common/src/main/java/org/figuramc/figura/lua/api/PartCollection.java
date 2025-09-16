@@ -23,7 +23,7 @@ public class PartCollection implements MutablePart<PartCollection> {
     private Supplier<LuaTypeManager> manager;
     public final Set<FiguraModelPart> parts;
     public final FiguraModelPart parent;
-    public String name;
+    public final String name;
 
     public PartCollection(Supplier<LuaTypeManager> manager, Set<FiguraModelPart> parts) {
         this(manager, parts, "", null);
@@ -51,12 +51,6 @@ public class PartCollection implements MutablePart<PartCollection> {
     @LuaMethodDoc("models.collection.get_name")
     public String getName() {
         return name;
-    }
-    @LuaWhitelist
-    @LuaMethodDoc("models.collection.set_name")
-    public PartCollection setName(String name) {
-        this.name = name;
-        return this;
     }
     @LuaWhitelist
     @LuaMethodDoc("models.collection.get_parts")
