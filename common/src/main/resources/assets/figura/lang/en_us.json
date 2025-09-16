@@ -1375,6 +1375,7 @@
     "figura.docs.model_part.new_part": "Creates a new, empty, group model part as a child of this part, at the same pivot point\nTakes two arguments, the new part's name, and optionally its parent type",
     "figura.docs.model_part.get_collection": "Returns a collection of the parts in the named collection\nShould only be called on model parts that correspond to Blockbench models",
     "figura.docs.model_part.get_collections": "Returns a table of every collection the model has\nShould only be called on model parts that correspond to Blockbench models",
+    "figura.docs.model_part.collect": "Creates a collection with the given name and parts\nThe new collection will not be returned by any getter",
     "figura.docs.models.collection": "Represents a set of model parts, typically from a Blockbench collection\nCollections allow setting many parts' properties at once to improve performance",
     "figura.docs.models.collection.get_parts": "Returns the list of model parts in this collection",
     "figura.docs.models.collection.get_name": "Returns the name of this collection, either from the model or as set by PartCollection.named",

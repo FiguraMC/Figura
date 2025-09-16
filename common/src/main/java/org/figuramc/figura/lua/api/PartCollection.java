@@ -27,18 +27,22 @@ public class PartCollection implements MutablePart<PartCollection> {
     private Supplier<LuaTypeManager> manager;
     public final Set<FiguraModelPart> parts;
 
+    /** Create a part collection with the given name, owner and parts. */
     public PartCollection(String name, @Nullable FiguraModelPart owner, Supplier<LuaTypeManager> manager, Set<FiguraModelPart> parts) {
         this.name = name;
         this.owner = owner;
         this.manager = manager;
         this.parts = parts;
     }
+    /** Create a part collection with the given name and parts. If {@code owner == owner2}, use it as the owner, otherwise, the owner is null. */
     public PartCollection(String name, @Nullable FiguraModelPart owner, @Nullable FiguraModelPart owner2, Supplier<LuaTypeManager> manager, Set<FiguraModelPart> parts) {
         this(name, owner == owner2 ? owner : null, manager, parts);
     }
+    /** Create a part collection with a new set of parts and the name and owner of the given collection. */
     public PartCollection(PartCollection old, Set<FiguraModelPart> parts) {
         this(old.name, old.owner, old.manager, parts);
     }
+    /** Create a part collection with a new set of parts and {@code left}'s name. If {@code left} and {@code right} share an owner, it is the new owner; otherwise, the owner is null. */
     public PartCollection(PartCollection left, PartCollection right, Set<FiguraModelPart> parts) {
         this(left.name, left.owner, right.owner, left.manager, parts);
     }
