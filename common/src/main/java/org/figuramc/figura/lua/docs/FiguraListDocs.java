@@ -63,6 +63,7 @@ public class FiguraListDocs {
         for (FiguraTextureSet.OverrideType value : FiguraTextureSet.OverrideType.values())
             add(value.name());
     }};
+    private static final Set<String> KEY_IDS = KeyMappingAccessor.getAll().keySet();
     private static final LinkedHashSet<String> ENTITY_POSES = new LinkedHashSet<>() {{
         for (Pose value : Pose.values())
             add(value.name());
