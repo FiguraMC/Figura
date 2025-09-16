@@ -98,7 +98,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart>, MutablePart
             Map<String, ImmutableSet.Builder<FiguraModelPart>> builder = new HashMap<>();
             for (String n: collections) builder.put(n, new ImmutableSet.Builder<FiguraModelPart>());
             walkCollections(builder, collections);
-            builder.forEach((key, parts) -> this.collections.put(key, new PartCollection(() -> owner.luaRuntime.typeManager, parts.build())));
+            builder.forEach((key, parts) -> this.collections.put(key, new PartCollection(() -> owner.luaRuntime.typeManager, parts.build(),key,this)));
         } else {
             this.collections = null;
         }

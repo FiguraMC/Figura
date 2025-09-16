@@ -22,12 +22,42 @@ import java.util.function.Supplier;
 public class PartCollection implements MutablePart<PartCollection> {
     private Supplier<LuaTypeManager> manager;
     public final Set<FiguraModelPart> parts;
+    public final FiguraModelPart parent;
+    public String name;
 
     public PartCollection(Supplier<LuaTypeManager> manager, Set<FiguraModelPart> parts) {
+        this(manager, parts, "", null);
+    }
+    public PartCollection(Supplier<LuaTypeManager> manager, Set<FiguraModelPart> parts,FiguraModelPart parent) {
+        this(manager, parts, "", parent);
+
+    }
+    public PartCollection(Supplier<LuaTypeManager> manager, Set<FiguraModelPart> parts,String name) {
+        this(manager, parts, name, null);
+    }
+    public PartCollection(Supplier<LuaTypeManager> manager, Set<FiguraModelPart> parts,String name,FiguraModelPart parent) {
         this.manager = manager;
         this.parts = parts;
+        this.name = name;
+        this.parent = parent;
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc("models.collection.get_parent")
+    public FiguraModelPart getParent() {
+        return parent;
+    }
+    @LuaWhitelist
+    @LuaMethodDoc("models.collection.get_name")
+    public String getName() {
+        return name;
+    }
+    @LuaWhitelist
+    @LuaMethodDoc("models.collection.set_name")
+    public PartCollection setName(String name) {
+        this.name = name;
+        return this;
+    }
     @LuaWhitelist
     @LuaMethodDoc("models.collection.get_parts")
     public Set<FiguraModelPart> getParts() {
@@ -51,7 +81,7 @@ public class PartCollection implements MutablePart<PartCollection> {
     )
     public PartCollection union(Object parts) {
         if (parts instanceof PartCollection c) {
-            return new PartCollection(manager, Sets.union(this.parts, c.parts));
+            return new PartCollection(manager, Sets.union(this.parts, c.parts), c.parent == parent ? parent : null);
         } else if (parts instanceof FiguraModelPart p) {
             return new PartCollection(manager, Sets.union(this.parts, Set.of(p)));
         } else {
@@ -76,9 +106,9 @@ public class PartCollection implements MutablePart<PartCollection> {
     )
     public PartCollection subtract(Object parts) {
         if (parts instanceof PartCollection c) {
-            return new PartCollection(manager, Sets.difference(this.parts, c.parts));
+            return new PartCollection(manager, Sets.difference(this.parts, c.parts),name,parent);
         } else if (parts instanceof FiguraModelPart p) {
-            return new PartCollection(manager, Sets.difference(this.parts, Set.of(p)));
+            return new PartCollection(manager, Sets.difference(this.parts, Set.of(p)),name,parent);
         } else {
             throw new LuaError("Expected argument of either modelpart or collection for 'PartCollection:subtract'");
         }
@@ -244,10 +274,9 @@ public class PartCollection implements MutablePart<PartCollection> {
         getParts().forEach(p -> p.setParentType(parent));
         return this;
     }
-
     // reasonable tostring
     @Override
     public String toString() {
-        return "PartCollection" + parts.toString();
+        return name + " (PartCollection)";
     }
 }
