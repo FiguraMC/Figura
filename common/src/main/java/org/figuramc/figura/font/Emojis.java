@@ -3,6 +3,7 @@ package org.figuramc.figura.font;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -104,7 +105,20 @@ public class Emojis {
     }
 
     private static MutableComponent convertEmoji(String string, Style style) {
-
+        HoverEvent hover = style.getHoverEvent();
+        if (hover != null && hover.getAction() == HoverEvent.Action.SHOW_TEXT) {
+            Object value = hover.getValue(hover.getAction());
+            if (value instanceof Component) {
+                MutableComponent ret = Component.empty();
+                ((Component) value).visit((stl, str) -> {
+                    ret.append(convertEmoji(str, stl));
+                    return Optional.empty();
+                }, Style.EMPTY);
+                style = style.withHoverEvent(
+                    new HoverEvent(HoverEvent.Action.SHOW_TEXT, ret)
+                );
+            }
+        }
         // string lists, every odd index is an emoji
         List<String> strings = new ArrayList<>();
 
