@@ -396,7 +396,7 @@ public class Avatar {
 
     public void preRenderEvent(float delta) {
         if (loaded && luaRuntime != null && luaRuntime.getUser() != null)
-            run("PRE_RENDER", preRender, delta, "RENDER");
+            run("PRE_RENDER", preRender, delta);
     }
 
     public boolean skullRenderEvent(float delta, BlockStateAPI block, ItemStackAPI item, EntityAPI<?> entity, String mode) {
