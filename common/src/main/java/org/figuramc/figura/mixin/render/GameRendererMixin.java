@@ -128,7 +128,7 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
         FiguraMod.popProfiler(2);
     }
 
-    // bobbing fix courtesy of Iris; https://github.com/IrisShaders/Iris/blob/1.20/src/main/java/net/coderbot/iris/mixin/MixinModelViewBobbing.java
+    // bobbing fix courtesy of Iris; https://github.com/IrisShaders/Iris/blob/1.20.1/src/main/java/net/irisshaders/iris/mixin/MixinModelViewBobbing.java
     @Inject(method = "renderLevel", at = @At("HEAD"))
     private void onRenderLevel(float tickDelta, long limitTime, PoseStack stack, CallbackInfo ci) {
         hasShaders = ClientAPI.hasShaderPack();
@@ -171,11 +171,14 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
     private void renderLevelResetProjectionMatrix(float tickDelta, long limitTime, PoseStack matrix, CallbackInfo ci) {
         if (hasShaders) return;
         matrix.last().pose().mul(bobbingMatrix);
-        bobbingMatrix = null;
     }
 
     @Override @Intrinsic
     public double figura$getFov(Camera camera, float tickDelta, boolean changingFov) {
         return this.getFov(camera, tickDelta, changingFov);
+    }
+
+    public Matrix4f figura$getBobbingMatrix() {
+        return this.bobbingMatrix;
     }
 }
