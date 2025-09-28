@@ -26,6 +26,7 @@ import net.minecraft.world.scores.Scoreboard;
 
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.Configs;
+import org.figuramc.figura.font.Emojis;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
@@ -301,7 +302,12 @@ public class ClientAPI {
             value = "client.get_text_width"
     )
     public static int getTextWidth(@LuaNotNil String text) {
-        return TextUtils.getWidth(TextUtils.splitText(TextUtils.tryParseJson(text), "\n"), Minecraft.getInstance().font);
+        Component component = TextUtils.tryParseJson(text);
+        component = Emojis.applyEmojis(component);
+
+        List<Component> components = TextUtils.splitText(component, "\n");
+
+        return TextUtils.getWidth(components, Minecraft.getInstance().font);
     }
 
     @LuaWhitelist
@@ -334,10 +340,14 @@ public class ClientAPI {
     )
     public static FiguraVec2 getTextDimensions(@LuaNotNil String text, int maxWidth, Boolean wrap, Integer lineSpacing) {
         Component component = TextUtils.tryParseJson(text);
+        component = Emojis.applyEmojis(component);
+
         Font font = Minecraft.getInstance().font;
         List<Component> list = TextUtils.formatInBounds(component, font, maxWidth, wrap == null || wrap);
+
         int x = TextUtils.getWidth(list, font);
         int y = TextUtils.getHeight(list, font, (lineSpacing == null ? 1 : lineSpacing));
+
         return FiguraVec2.of(x, y);
     }
 
@@ -841,19 +851,44 @@ public class ClientAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("host.get_focused_chat_height")
-    public static Double getFocusedChatHeight() {
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(argumentTypes = Boolean.class, argumentNames = "focused"),
+            },
+            value = "client.get_chat_height"
+    )
+    public static Double getChatHeight(Boolean focused) {
         // 0 -> 20
         // 1 -> 180
-        return Math.floor(20 + 160 * Minecraft.getInstance().options.chatHeightFocused().get());
+        if (focused)
+            return Math.floor(20 + 160 * Minecraft.getInstance().options.chatHeightFocused().get());
+
+        return Math.floor(20 + 160 * Minecraft.getInstance().options.chatHeightUnfocused().get());
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("host.get_unfocused_chat_height")
-    public static Double getUnfocusedChatHeight() {
-        // 0 -> 20
-        // 1 -> 180
-        return Math.floor(20 + 160 * Minecraft.getInstance().options.chatHeightUnfocused().get());
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(argumentTypes = String.class, argumentNames = "category"),
+            },
+            value = "client.get_emojis"
+    )
+    public static List<String> getEmojis(String category) {
+        List<String> emojis = new ArrayList<>();
+
+        if (category == null)
+            Emojis.getCategoryNames().forEach(name -> {
+                Emojis.getCategory(name).getLookup().getNames().stream().forEach(emojis::add);
+            });
+        else {
+            try {
+                Emojis.getCategory(category).getLookup().getNames().stream().forEach(emojis::add);
+            } catch (Exception e) {
+                throw new LuaError("\"" + category + "\" is not a valid emoji category");
+            }
+        }
+
+        return emojis;
     }
 
     @Override
