@@ -22,6 +22,7 @@ import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.animation.Animation;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.ducks.FiguraKeyStorage;
+import org.figuramc.figura.font.Emojis;
 import org.figuramc.figura.mixin.input.KeyMappingAccessor;
 import org.figuramc.figura.mixin.render.GameRendererAccessor;
 import org.figuramc.figura.model.ParentType;
@@ -134,6 +135,10 @@ public class FiguraListDocs {
         for (FiguraTexture.BlendMode mode : FiguraTexture.BlendMode.values())
             add(mode.name);
     }};
+    private static final LinkedHashSet<String> EMOJI_CATEGORIES = new LinkedHashSet<>() {{
+        for (String name : Emojis.getCategoryNames())
+            add(name);
+    }};
 
     public enum ListDoc {
         KEYBINDS(() -> FiguraListDocs.KEYBINDS, "Keybinds", "keybinds", 2),
@@ -158,7 +163,8 @@ public class FiguraListDocs {
         TEXTURE_OVERFLOW_STRATEGIES(() -> FiguraListDocs.TEXTURE_OVERFLOW_STRATEGIES, "TextureOverflowStrategies", "texture_overflow_strategies", 1),
         BLEND_MODES(() -> FiguraListDocs.BLEND_MODES, "BlendModes", "blend_modes", 1),
         FIGURA_CONFIGS(() -> FiguraListDocs.FIGURA_CONFIGS, "FiguraConfigs", "figura_configs", 1),
-        SOUND_SOURCES(() -> FiguraListDocs.SOUND_SOURCES, "SoundSources", "sound_sources", 2);
+        SOUND_SOURCES(() -> FiguraListDocs.SOUND_SOURCES, "SoundSources", "sound_sources", 2),
+        EMOJI_CATEGORIES(() -> FiguraListDocs.EMOJI_CATEGORIES, "EmojiCategories", "emoji_categories", 1);
 
         private final Supplier<Object> supplier;
         private final String name, id;
