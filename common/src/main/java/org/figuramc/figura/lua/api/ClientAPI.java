@@ -229,10 +229,20 @@ public class ClientAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("client.get_window_size")
-    public static FiguraVec2 getWindowSize() {
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = Boolean.class,
+                    argumentNames = "originalSize"
+            ),
+            value = "client.get_window_size"
+    )
+    public static FiguraVec2 getWindowSize(Boolean originalSize) {
         Window window = Minecraft.getInstance().getWindow();
-        return FiguraVec2.of(window.getWidth(), window.getHeight());
+        if (Boolean.TRUE.equals(originalSize)) {
+            return FiguraVec2.of(window.getWidth(), window.getWidth());
+        } else {
+            return FiguraVec2.of(window.getScreenWidth(), window.getScreenHeight());
+        }
     }
 
     @LuaWhitelist
@@ -250,12 +260,9 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.get_mouse_pos")
     public static FiguraVec2 getMousePos() {
-		MouseHandler mouse = Minecraft.getInstance().mouseHandler;
-		FloatBuffer xScale = BufferUtils.createFloatBuffer(1);
-		FloatBuffer yScale = BufferUtils.createFloatBuffer(1);
-		GLFW.glfwGetWindowContentScale( (long) Minecraft.getInstance().getWindow().getWindow(), xScale, yScale);
-		return FiguraVec2.of(mouse.xpos() * xScale.get(0), mouse.ypos() * yScale.get(0));
-	}
+        MouseHandler mouse = Minecraft.getInstance().mouseHandler;
+        return FiguraVec2.of(mouse.xpos(), mouse.ypos());
+    }
 
     @LuaWhitelist
     @LuaMethodDoc("client.get_scaled_window_size")
