@@ -928,7 +928,7 @@
     "figura.docs.client.get_window_size": "Returns the size of the Minecraft window in pixels, as {width, height}",
     "figura.docs.client.get_fov": "Returns the current FOV option of the client, not including additional effects such as speed or sprinting",
     "figura.docs.client.get_system_time": "Returns the current system time in milliseconds",
-    "figura.docs.client.get_mouse_pos": "Returns the position of the mouse in pixels, relative to the top-left corner",
+    "figura.docs.client.get_mouse_pos": "Returns the position of the mouse in pixels, relative to the top-left corner.\nTo properly scale in GUIs, use (* client.getScaledWindowSize() / client.getWindowSize()) over (/ client.getGuiScale()).",
     "figura.docs.client.get_scaled_window_size": "Returns the size of the window in Minecraft's internal GUI units",
     "figura.docs.client.get_gui_scale": "Returns the current value of your Gui Scale setting\nIf you use auto, then it gets the actual current scale",
     "figura.docs.client.get_camera_pos": "Returns the position of the viewer's camera",
