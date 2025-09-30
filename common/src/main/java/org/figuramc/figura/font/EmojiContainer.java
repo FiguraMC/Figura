@@ -123,14 +123,12 @@ public class EmojiContainer {
             return null;
         }
         EmojiMetadata metadata = lookup.getMetadata(unicode.codePointAt(0));
-        return makeComponent(metadata, unicode, hover, style).withStyle(
-                Style.EMPTY.withClickEvent(
-                        new ClickEvent(
-                                ClickEvent.Action.COPY_TO_CLIPBOARD,
-                                ":"+key+":"
-                        )
+        return makeComponent(metadata, unicode, hover, style).withStyle(Style.EMPTY.withClickEvent(
+                new ClickEvent(
+                        ClickEvent.Action.COPY_TO_CLIPBOARD,
+                        ":"+key+":"
                 )
-        );
+        ).withColor(style.getColor()));
     }
 
     public MutableComponent getShortcutComponent(String shortcut, Style style) {
