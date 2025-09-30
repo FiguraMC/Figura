@@ -31,6 +31,7 @@ public class EmojiContainer {
 
     private static final String ERROR_MSG = "Invalid emoji metadata \"{}\" @ \"{}\", Reason: Field '{}' {}";
 
+    private static final Style STYLE = Style.EMPTY.withColor(ChatFormatting.WHITE);
 
     public final String name;
     private final ResourceLocation font;
@@ -124,11 +125,12 @@ public class EmojiContainer {
         EmojiMetadata metadata = lookup.getMetadata(unicode.codePointAt(0));
         return makeComponent(metadata, unicode, hover, style).withStyle(
                 Style.EMPTY.withClickEvent(
-                    new ClickEvent(
-                        ClickEvent.Action.COPY_TO_CLIPBOARD,
-                        ":"+key+":"
+                        new ClickEvent(
+                                ClickEvent.Action.COPY_TO_CLIPBOARD,
+                                ":"+key+":"
+                        )
                 )
-        ).withColor(style.getColor()));
+        );
     }
 
     public MutableComponent getShortcutComponent(String shortcut, Style style) {
@@ -139,8 +141,12 @@ public class EmojiContainer {
     }
 
     private MutableComponent makeComponent(@Nullable EmojiMetadata metadata, String unicode, MutableComponent hover, Style style) {
-        style = style.withBold(false).withItalic(false).withObfuscated(false).withUnderlined(false);
-        return Component.literal(unicode).withStyle(style.withFont(font).withHoverEvent(
+        Style styleToUse = metadata != null && metadata.canBeColored ? style.withBold(false).withItalic(false).withObfuscated(false).withUnderlined(false) : STYLE;
+        if (metadata != null && metadata.canBeColored && styleToUse.getColor() == null) {
+            styleToUse = styleToUse.withColor(metadata.defaultColor);
+        }
+
+        return Component.literal(unicode).withStyle(styleToUse.withFont(font).withHoverEvent(
                 new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover
                         .append("\n")
                         .append(FiguraText.of("emoji." + name).withStyle(ChatFormatting.DARK_GRAY)))
