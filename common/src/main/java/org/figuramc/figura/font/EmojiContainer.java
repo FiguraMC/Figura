@@ -123,8 +123,9 @@ public class EmojiContainer {
             return null;
         }
         EmojiMetadata metadata = lookup.getMetadata(unicode.codePointAt(0));
-        return makeComponent(metadata, unicode, hover, style).withStyle(Style.EMPTY.withClickEvent(
-                new ClickEvent(
+        return makeComponent(metadata, unicode, hover, style).withStyle(
+                Style.EMPTY.withClickEvent(
+                    new ClickEvent(
                         ClickEvent.Action.COPY_TO_CLIPBOARD,
                         ":"+key+":"
                 )
