@@ -202,24 +202,28 @@ public class Emojis {
             }
             // odd: format and append emoji
             else {
-                TextColor color = TextColor.fromRgb(16777215); // Default to white
+                TextColor color = null;
+
                 // Check if the emoji string has a hex code suffix at the end
                 Matcher matcher = HEX_SUFFIX.matcher(s);
                 if (matcher.matches()) {
                     s = matcher.group(1);
                     color = TextColor.parseColor(matcher.group(2));
                 }
-                appendEmoji(result, s, style.withColor(color));
+                appendEmoji(result, s, style, color);
             }
         }
 
         return result;
     }
 
-    private static void appendEmoji(MutableComponent result, String alias, Style style) {
+    private static void appendEmoji(MutableComponent result, String alias, Style style, TextColor color) {
         MutableComponent emoji = Emojis.getEmoji(alias, style);
         
         if (emoji != null) {
+            if (color != null)
+                emoji.setStyle(emoji.getStyle().withColor(color));
+
             result.append(emoji);
         } else {
             result.append(DELIMITER + alias + DELIMITER);
