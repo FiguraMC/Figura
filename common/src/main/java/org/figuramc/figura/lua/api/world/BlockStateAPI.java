@@ -85,6 +85,14 @@ public class BlockStateAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("blockstate.get_name")
+    public String getName() {
+        // We're not on 1.21, just return the block's name
+        
+        return blockState.getBlock().getName().getString();
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("blockstate.get_properties")
     public LuaTable getProperties() {
         return properties;
