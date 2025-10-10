@@ -6,11 +6,17 @@ import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.AbstractSkullBlock;
+
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
+import org.figuramc.figura.ducks.SkullBlockRendererAccessor;
+import org.figuramc.figura.ducks.SkullBlockRendererAccessor.SkullRenderMode;
 import org.figuramc.figura.lua.api.world.ItemStackAPI;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.jetbrains.annotations.Nullable;
@@ -39,5 +45,25 @@ public abstract class ItemRendererMixin {
 
         if (avatar.itemRenderEvent(ItemStackAPI.verify(itemStack), itemDisplayContext.name(), FiguraVec3.fromVec3f(transform.translation), FiguraVec3.of(transform.rotation.z, transform.rotation.y, transform.rotation.x), FiguraVec3.fromVec3f(transform.scale), leftHanded, stack, buffer, light, overlay))
             ci.cancel();
+    }
+
+    @Inject(at = @At("HEAD"), method = "render(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;ZLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;IILnet/minecraft/client/resources/model/BakedModel;)V")
+    private void onRender(ItemStack stack, ItemDisplayContext modelTransformationMode, boolean leftHanded, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay, BakedModel model, CallbackInfo ci) {
+        if (stack.getItem() instanceof BlockItem bl && bl.getBlock() instanceof AbstractSkullBlock) {
+            SkullRenderMode mode = switch (modelTransformationMode) {
+                case GROUND -> SkullBlockRendererAccessor.SkullRenderMode.GROUND;
+                case FIXED -> SkullBlockRendererAccessor.SkullRenderMode.FIXED;
+                case GUI -> SkullBlockRendererAccessor.SkullRenderMode.GUI;
+                default -> null;
+            };
+
+            if (mode == null)
+                return;
+
+            SkullBlockRendererAccessor.setItem(stack);
+            SkullBlockRendererAccessor.setRenderMode(mode);
+            if (modelTransformationMode == ItemDisplayContext.FIXED)
+                SkullBlockRendererAccessor.setEntity(stack.getFrame());
+        }
     }
 }
