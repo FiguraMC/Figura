@@ -18,7 +18,7 @@ public class ItemEntityRendererMixin {
     private void onRender(ItemEntity itemEntity, float f, float g, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
         if (itemEntity.getItem().getItem() instanceof BlockItem bl && bl.getBlock() instanceof AbstractSkullBlock) {
             SkullBlockRendererAccessor.setEntity(itemEntity);
-            SkullBlockRendererAccessor.setRenderMode(SkullBlockRendererAccessor.SkullRenderMode.ITEM_ENTITY);
+            SkullBlockRendererAccessor.setRenderMode(SkullBlockRendererAccessor.SkullRenderMode.GROUND);
         }
     }
 }
