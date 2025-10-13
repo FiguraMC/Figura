@@ -179,7 +179,6 @@ public class IOUtils {
             for (Path parent = path;
                  !Files.isSameFile(parent, root);
                  parent = parent.resolve("..").normalize()) {
-                FiguraMod.LOGGER.info(parent + " " + Files.isHidden(parent));
                 if (Files.isHidden(parent) || parent.getFileName().toString().startsWith(".")) {
                     return true;
                 }
