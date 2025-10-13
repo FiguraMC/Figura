@@ -167,6 +167,30 @@ public class IOUtils {
         return hidden || getFileNameOrEmpty(path).startsWith(".");
     }
 
+    /*
+     * Same as isHiddenAvatarResource but allows for setting the root path.
+     * Intended for when a script needs to reload the avatar but it exists outside
+     * the avatar through a symlink.
+     */
+    public static boolean isHiddenResource(@NotNull Path path, @NotNull Path root) {
+        try {
+            // Iterate through all parent folders of the avatars
+            // resource to find a hidden one (if any)
+            for (Path parent = path;
+                 !Files.isSameFile(parent, root);
+                 parent = parent.resolve("..").normalize()) {
+                FiguraMod.LOGGER.info(parent + " " + Files.isHidden(parent));
+                if (Files.isHidden(parent) || parent.getFileName().toString().startsWith(".")) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (IOException e) {
+            FiguraMod.LOGGER.error("Failed to get if \"" + path + "\" is hidden", e);
+            return false;
+        }
+    }
+
     /**
      * Checks, if given file is a hidden avatar resource.
      * Avatar resource is hidden, if it is contained within
