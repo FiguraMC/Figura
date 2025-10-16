@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -24,6 +25,7 @@ import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.armortrim.ArmorTrim;
 import net.minecraft.world.item.component.DyedItemColor;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.compat.GeckoLibCompat;
@@ -33,7 +35,10 @@ import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.FiguraArmorPartRenderer;
 import org.figuramc.figura.utils.RenderUtils;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -120,7 +125,8 @@ public abstract class HumanoidArmorLayerMixinNeoForge<T extends LivingEntity, M 
 
         // Make sure the item in the equipment slot is actually a piece of armor
         if ((itemStack.getItem() instanceof ArmorItem armorItem && armorItem.getEquipmentSlot() == slot)) {
-            A armorModel = getArmorModel(slot);
+            A armorModelRaw = getArmorModel(slot);
+            A armorModel = figura$getArmorModelHook(entity, itemStack, slot, armorModelRaw);
 
             // Bones have to be their defaults to prevent issues with clipping
             armorModel.body.xRot = 0.0f;
@@ -287,5 +293,11 @@ public abstract class HumanoidArmorLayerMixinNeoForge<T extends LivingEntity, M 
         if (hasGlint) {
             modelPart.render(poseStack, vertexConsumers.getBuffer(RenderType.armorEntityGlint()), light, OverlayTexture.NO_OVERLAY, -1);
         }
+    }
+
+    @Unique
+    protected A figura$getArmorModelHook(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot slot, HumanoidModel<T> model) {
+        Model model2 = IClientItemExtensions.of(itemStack.getItem()).getGenericArmorModel(livingEntity, itemStack, slot, model);
+        return (A) model2;
     }
 }
