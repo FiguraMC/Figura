@@ -1,9 +1,10 @@
-package org.figuramc.figura.mixin.render.layers;
+package org.figuramc.figura.mixin.forge;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -21,15 +22,20 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.DyeableArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.armortrim.ArmorTrim;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.compat.GeckoLibCompat;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
+import org.figuramc.figura.mixin.render.layers.HumanoidArmorLayerAccessor;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.FiguraArmorPartRenderer;
 import org.figuramc.figura.utils.RenderUtils;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -47,8 +53,12 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
     @Shadow
     protected abstract void renderArmorPiece(PoseStack matrices, MultiBufferSource vertexConsumers, T entity, EquipmentSlot armorSlot, int light, A model);
 
-    @Shadow @Final private A innerModel;
-    @Shadow @Final private A outerModel;
+    @Shadow
+    @Final
+    private A innerModel;
+    @Shadow
+    @Final
+    private A outerModel;
     @Unique
     private boolean figura$renderingVanillaArmor;
 
@@ -68,10 +78,10 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
     public void onRenderEnd(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
         if (figura$avatar == null) return;
 
-        figura$tryRenderArmorPart(EquipmentSlot.HEAD,  this::figura$helmetRenderer, poseStack, livingEntity, multiBufferSource, i, ParentType.HelmetPivot);
+        figura$tryRenderArmorPart(EquipmentSlot.HEAD, this::figura$helmetRenderer, poseStack, livingEntity, multiBufferSource, i, ParentType.HelmetPivot);
         figura$tryRenderArmorPart(EquipmentSlot.CHEST, this::figura$chestplateRenderer, poseStack, livingEntity, multiBufferSource, i, ParentType.LeftShoulderPivot, ParentType.ChestplatePivot, ParentType.RightShoulderPivot);
-        figura$tryRenderArmorPart(EquipmentSlot.LEGS,  this::figura$leggingsRenderer, poseStack, livingEntity, multiBufferSource, i, ParentType.LeftLeggingPivot, ParentType.RightLeggingPivot, ParentType.LeggingsPivot);
-        figura$tryRenderArmorPart(EquipmentSlot.FEET,  this::figura$bootsRenderer, poseStack, livingEntity, multiBufferSource, i, ParentType.LeftBootPivot, ParentType.RightBootPivot);
+        figura$tryRenderArmorPart(EquipmentSlot.LEGS, this::figura$leggingsRenderer, poseStack, livingEntity, multiBufferSource, i, ParentType.LeftLeggingPivot, ParentType.RightLeggingPivot, ParentType.LeggingsPivot);
+        figura$tryRenderArmorPart(EquipmentSlot.FEET, this::figura$bootsRenderer, poseStack, livingEntity, multiBufferSource, i, ParentType.LeftBootPivot, ParentType.RightBootPivot);
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;usesInnerModel(Lnet/minecraft/world/entity/EquipmentSlot;)Z"), method = "renderArmorPiece")
@@ -114,7 +124,8 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
 
         // Make sure the item in the equipment slot is actually a piece of armor
         if ((itemStack.getItem() instanceof ArmorItem armorItem && armorItem.getEquipmentSlot() == slot)) {
-            A armorModel = getArmorModel(slot);
+            A armorModelRaw = getArmorModel(slot);
+            A armorModel = figura$getArmorModelHook(entity, itemStack, slot, armorModelRaw);
 
             // Bones have to be their defaults to prevent issues with clipping
             armorModel.body.xRot = 0.0f;
@@ -140,23 +151,23 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
             if (!GeckoLibCompat.armorHasCustomModel(itemStack)) {
                 // Go through each parent type needed to render the current piece of armor
                 for (ParentType parentType : parentTypes) {
-                        // Skip the part if it's hidden
-                        VanillaPart part = RenderUtils.pivotToPart(figura$avatar, parentType);
-                        if (armorEditPermission == 1 && part != null && !part.checkVisible()) continue;
-                        boolean renderedPivot = false;
-                        // If the user has no permission disable pivot
-                        if (armorEditPermission == 1) {
+                    // Skip the part if it's hidden
+                    VanillaPart part = RenderUtils.pivotToPart(figura$avatar, parentType);
+                    if (armorEditPermission == 1 && part != null && !part.checkVisible()) continue;
+                    boolean renderedPivot = false;
+                    // If the user has no permission disable pivot
+                    if (armorEditPermission == 1) {
                         // Try to render the pivot part
-                            renderedPivot = figura$avatar.pivotPartRender(parentType, stack -> {
-                                stack.pushPose();
-                                figura$prepareArmorRender(stack);
-                                renderer.renderArmorPart(stack, vertexConsumers, light, armorModel, entity, itemStack, slot, armorItem, parentType);
-                                stack.popPose();
-                            });
-                        }
-                        if (renderedPivot) {
-                            allFailed = false;
-                        }
+                        renderedPivot = figura$avatar.pivotPartRender(parentType, stack -> {
+                            stack.pushPose();
+                            figura$prepareArmorRender(stack);
+                            renderer.renderArmorPart(stack, vertexConsumers, light, armorModel, entity, itemStack, slot, armorItem, parentType);
+                            stack.popPose();
+                        });
+                    }
+                    if (renderedPivot) {
+                        allFailed = false;
+                    }
                 }
             }
             // As a fallback, render armor the vanilla way
@@ -273,12 +284,12 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
             hasOverlay = true;
         }
 
-        ResourceLocation normalArmorResource = RenderUtils.getArmorResource((HumanoidArmorLayer<T, M, A>)(Object)this, entity, itemStack, armorItem, armorSlot, bl, null);
+        ResourceLocation normalArmorResource = RenderUtils.getArmorResource((HumanoidArmorLayer<T, M, A>) (Object) this, entity, itemStack, armorItem, armorSlot, bl, null);
         VertexConsumer regularArmorConsumer = vertexConsumers.getBuffer(RenderType.armorCutoutNoCull(normalArmorResource));
         modelPart.render(poseStack, regularArmorConsumer, light, OverlayTexture.NO_OVERLAY, tintR, tintG, tintB, 1f);
 
         if (hasOverlay) {
-            VertexConsumer overlaidArmorConsumer = vertexConsumers.getBuffer(RenderType.armorCutoutNoCull(RenderUtils.getArmorResource((HumanoidArmorLayer<T, M, A>)(Object)this, entity, itemStack, armorItem, armorSlot, bl, "overlay")));
+            VertexConsumer overlaidArmorConsumer = vertexConsumers.getBuffer(RenderType.armorCutoutNoCull(RenderUtils.getArmorResource((HumanoidArmorLayer<T, M, A>) (Object) this, entity, itemStack, armorItem, armorSlot, bl, "overlay")));
             modelPart.render(poseStack, overlaidArmorConsumer, light, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
         }
 
@@ -292,5 +303,11 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
         if (hasGlint) {
             modelPart.render(poseStack, vertexConsumers.getBuffer(RenderType.armorEntityGlint()), light, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
         }
+    }
+
+    @Unique
+    protected A figura$getArmorModelHook(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot slot, HumanoidModel<T> model) {
+        Model model2 = IClientItemExtensions.of(itemStack.getItem()).getGenericArmorModel(livingEntity, itemStack, slot, model);
+        return (A) model2;
     }
 }
