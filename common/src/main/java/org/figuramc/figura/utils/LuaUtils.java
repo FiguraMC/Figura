@@ -105,8 +105,12 @@ public class LuaUtils {
     public static Object[] parseVec(String methodName, int[] vectorSizes, Class<?>[] expectedReturns, Object ...args) {
         return parseVec(methodName, vectorSizes, new double[]{0,0,0,0}, expectedReturns, args);
     }
-
     public static FiguraVec2 parseVec2(String methodName, Object x, Number y) {
+        return parseVec2(methodName, x, y, false);
+    }
+    public static FiguraVec2 parseVec2(String methodName, Object x, Number y, Boolean returnNewVector) {
+        if (x instanceof FiguraVec2 vec && !returnNewVector)
+            return vec;
         return parseVec2(methodName, x, y, 0, 0);
     }
 
@@ -129,6 +133,11 @@ public class LuaUtils {
      * @return A FiguraVec3 representing the data passed in.
      */
     public static FiguraVec3 parseVec3(String methodName, Object x, Number y, Number z) {
+        return parseVec3(methodName, x, y, z, false);
+    }
+    public static FiguraVec3 parseVec3(String methodName, Object x, Number y, Number z, Boolean returnNewVector) {
+        if (x instanceof FiguraVec3 vec && !returnNewVector)
+            return vec;
         return parseVec3(methodName, x, y, z, 0, 0, 0);
     }
 
