@@ -505,7 +505,7 @@ public class RendererAPI {
             aliases = "crosshairOffset",
             value = "renderer.set_crosshair_offset")
     public RendererAPI setCrosshairOffset(Object x, Double y) {
-        this.crosshairOffset = x == null ? null : LuaUtils.parseVec2("setCrosshairOffset", x, y);
+        this.crosshairOffset = x == null ? null : LuaUtils.parseVec2("setCrosshairOffset", x, y, true);
         return this;
     }
 
