@@ -166,7 +166,7 @@ public class LuaUtils {
      * @param y The y coordinate of a vector, used if the first parameter was a number.
      * @param z The z coordinate of a vector, used if the first parameter was a number.
      * @param returnNewVector Whether a new vector is expected to be output or if we should just use the existing one. If false or empty, will return a NEW vector
-     * @return Either the FiguraVec3 or A FiguraVec3 representing the data passed in. Depending on input and if returnNewVector is true
+     * @return Null, Passed in FiguraVec3 or new FiguraVec3. Depending on input and if returnNewVector is true
      */
     public static FiguraVec3 nullableVec3(String methodName, Object x, Number y, Number z) {
         return x == null ? null : parseVec3(methodName, x, y, z, true);
