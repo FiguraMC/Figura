@@ -130,11 +130,13 @@ public class LuaUtils {
      * @param x Either the x coordinate of a vector, or a vector itself.
      * @param y The y coordinate of a vector, used if the first parameter was a number.
      * @param z The z coordinate of a vector, used if the first parameter was a number.
-     * @return A FiguraVec3 representing the data passed in.
+     * @param returnNewVector Whether a new vector is expected to be output or if we should just use the existing one. If false or empty, will return the vector passed in!!
+     * @return Either the FiguraVec3 or A FiguraVec3 representing the data passed in. Depending on input and if returnNewVector is true
      */
     public static FiguraVec3 parseVec3(String methodName, Object x, Number y, Number z) {
         return parseVec3(methodName, x, y, z, false);
     }
+
     public static FiguraVec3 parseVec3(String methodName, Object x, Number y, Number z, Boolean returnNewVector) {
         if (x instanceof FiguraVec3 vec && !returnNewVector)
             return vec;
@@ -158,8 +160,20 @@ public class LuaUtils {
         return parseVec3(methodName, x, y, z, d, d, d);
     }
 
+
+    /**
+     * @param x Either the x coordinate of a vector, or a vector itself.
+     * @param y The y coordinate of a vector, used if the first parameter was a number.
+     * @param z The z coordinate of a vector, used if the first parameter was a number.
+     * @param returnNewVector Whether a new vector is expected to be output or if we should just use the existing one. If false or empty, will return a NEW vector
+     * @return Either the FiguraVec3 or A FiguraVec3 representing the data passed in. Depending on input and if returnNewVector is true
+     */
     public static FiguraVec3 nullableVec3(String methodName, Object x, Number y, Number z) {
-        return x == null ? null : parseVec3(methodName, x, y, z);
+        return x == null ? null : parseVec3(methodName, x, y, z, true);
+    }
+
+    public static FiguraVec3 nullableVec3(String methodName, Object x, Number y, Number z, Boolean returnNewVector) {
+        return x == null ? null : parseVec3(methodName, x, y, z, returnNewVector);
     }
 
     public static Pair<FiguraVec3, FiguraVec3> parse2Vec3(String methodName, Object x, Object y, Number z, Object w, Number t, Number h, int xIndex) {
