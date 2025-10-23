@@ -185,11 +185,15 @@ public class PlayerList extends AbstractList {
             element.disconnected = false;
         }
 
-        if (filter.isEmpty() && showDisconnected.isToggled()) {
+        if (showDisconnected.isToggled()) {
             for (Avatar avatar : AvatarManager.getLoadedAvatars()) {
                 UUID id = avatar.owner;
 
                 if (playerList.contains(id))
+                    continue;
+
+                // filter check
+                if (!avatar.entityName.toLowerCase(Locale.US).contains(filter.toLowerCase(Locale.US)) && !id.toString().contains(filter.toLowerCase(Locale.US)))
                     continue;
 
                 missingPlayers.remove(id);
