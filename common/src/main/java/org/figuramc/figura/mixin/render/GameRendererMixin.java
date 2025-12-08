@@ -177,8 +177,4 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
     public double figura$getFov(Camera camera, float tickDelta, boolean changingFov) {
         return this.getFov(camera, tickDelta, changingFov);
     }
-
-    public Matrix4f figura$getBobbingMatrix() {
-        return this.bobbingMatrix;
-    }
 }

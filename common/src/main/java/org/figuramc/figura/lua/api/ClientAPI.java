@@ -267,13 +267,6 @@ public class ClientAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("client.get_view_bobbing_matrix")
-    public static FiguraMat4 getViewBobbingMatrix() {
-        Matrix4f bobbingMatrix = ((GameRendererAccessor) Minecraft.getInstance().gameRenderer).figura$getBobbingMatrix();
-        return FiguraMat4.of().set(bobbingMatrix);
-    }
-
-    @LuaWhitelist
     @LuaMethodDoc("client.get_system_time")
     public static long getSystemTime() {
         return System.currentTimeMillis();
