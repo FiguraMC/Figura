@@ -346,7 +346,12 @@ public class FiguraTexture extends SimpleTexture {
                     )
             },
             value = "texture.fill")
-    public FiguraTexture fill(int x, int y, int width, int height, Object r, Double g, Double b, Double a) {
+    public FiguraTexture fill(Integer x, Integer y, Integer width, Integer height, Object r, Double g, Double b, Double a) {
+        if (x == null) x = 0;
+        if (y == null) y = 0;
+        if (width == null) width = texture.getWidth();
+        if (height == null) height = texture.getHeight();
+
         try {
             int color = ColorUtils.rgbaToIntABGR(parseColor("fill", r, g, b, a));
             // texture.fillRect just does these loops for us, so we can extract them to add the mapping
@@ -811,7 +816,12 @@ public class FiguraTexture extends SimpleTexture {
             ),
             value = "texture.apply_func"
     )
-    public FiguraTexture applyFunc(int x, int y, int width, int height, @LuaNotNil LuaFunction function) {
+    public FiguraTexture applyFunc(Integer x, Integer y, Integer width, Integer height, @LuaNotNil LuaFunction function) {
+        if (x == null) x = 0;
+        if (y == null) y = 0;
+        if (width == null) width = texture.getWidth();
+        if (height == null) height = texture.getHeight();
+
         backupImage();
         for (int i = y; i < y + height; i++) {
             for (int j = x; j < x + width; j++) {
@@ -848,11 +858,16 @@ public class FiguraTexture extends SimpleTexture {
             ),
             value = "texture.apply_matrix"
     )
-    public FiguraTexture applyMatrix(int x,
-                                     int y,
-                                     int width,
-                                     int height,
+    public FiguraTexture applyMatrix(Integer x,
+                                     Integer y,
+                                     Integer width,
+                                     Integer height,
                                      @LuaNotNil FiguraMat4 matrix) {
+        if (x == null) x = 0;
+        if (y == null) y = 0;
+        if (width == null) width = texture.getWidth();
+        if (height == null) height = texture.getHeight();
+
         backupImage();
         for (int i = y; i < y + height; i++) {
             for (int j = x; j < x + width; j++) {
@@ -928,20 +943,6 @@ public class FiguraTexture extends SimpleTexture {
 
     // Mathematical area operations
 
-    private void assertSameSize(FiguraTexture other) throws LuaError {
-        int otherW = other.getWidth(), otherH = other.getHeight();
-        int thisW = getWidth(), thisH = getHeight();
-        if (thisW != otherW || thisH != otherH) {
-            throw new LuaError(String.format(
-                    "Expected textures to have equal dimensions, but the target is %dx%d and the provided texture is %dx%d",
-                    thisW,
-                    thisH,
-                    otherW,
-                    otherH
-            ));
-        }
-    }
-
     private static double clamp01(double n) {
         if (n < 0) return 0;
         if (n > 1) return 1;
@@ -954,7 +955,6 @@ public class FiguraTexture extends SimpleTexture {
                                     int y,
                                     int w,
                                     int h) {
-        assertSameSize(other);
         backupImage();
         for (int curX = x; curX < x + w; curX++) {
             for (int curY = y; curY < y + h; curY++) {
@@ -963,7 +963,7 @@ public class FiguraTexture extends SimpleTexture {
                 int actualX = actualCoordinates.getFirst(), actualY = actualCoordinates.getSecond();
                 try {
                     FiguraVec4 colorA = ColorUtils.abgrToRGBA(texture.getPixelRGBA(actualX, actualY));
-                    FiguraVec4 colorB = ColorUtils.abgrToRGBA(other.texture.getPixelRGBA(actualX, actualY));
+                    FiguraVec4 colorB = other.getPixel(curX, curY);
                     FiguraVec4 result = transform.apply(colorA, colorB);
                     result = FiguraVec4.of(
                             clamp01(result.x),
@@ -997,11 +997,15 @@ public class FiguraTexture extends SimpleTexture {
     private static final BiFunction<FiguraVec4, FiguraVec4, FiguraVec4> opSubtract = FiguraVec4::minus;
 
     private FiguraTexture mathFunction(@NotNull FiguraTexture other,
-                                       int x,
-                                       int y,
-                                       int w,
-                                       int h,
+                                       Integer x,
+                                       Integer y,
+                                       Integer w,
+                                       Integer h,
                                        BiFunction<FiguraVec4, FiguraVec4, FiguraVec4> transform) {
+        if (x == null) x = 0;
+        if (y == null) y = 0;
+        if (w == null) w = texture.getWidth();
+        if (h == null) h = texture.getHeight();
         return mathApply(other, transform, x, y, w, h);
     }
 
@@ -1013,7 +1017,7 @@ public class FiguraTexture extends SimpleTexture {
                     argumentTypes = {FiguraTexture.class, Integer.class, Integer.class, Integer.class, Integer.class}
             )
     )
-    public FiguraTexture multiply(@LuaNotNil @NotNull FiguraTexture other, int x, int y, int w, int h) {
+    public FiguraTexture multiply(@LuaNotNil @NotNull FiguraTexture other, Integer x, Integer y, Integer w, Integer h) {
         return mathFunction(other, x, y, w, h, opMultiply);
     }
 
@@ -1025,7 +1029,7 @@ public class FiguraTexture extends SimpleTexture {
                     argumentTypes = {FiguraTexture.class, Integer.class, Integer.class, Integer.class, Integer.class}
             )
     )
-    public FiguraTexture divide(@LuaNotNil @NotNull FiguraTexture other, int x, int y, int w, int h) {
+    public FiguraTexture divide(@LuaNotNil @NotNull FiguraTexture other, Integer x, Integer y, Integer w, Integer h) {
         return mathFunction(other, x, y, w, h, opDivide);
     }
 
@@ -1037,7 +1041,7 @@ public class FiguraTexture extends SimpleTexture {
                     argumentTypes = {FiguraTexture.class, Integer.class, Integer.class, Integer.class, Integer.class}
             )
     )
-    public FiguraTexture add(@LuaNotNil @NotNull FiguraTexture other, int x, int y, int w, int h) {
+    public FiguraTexture add(@LuaNotNil @NotNull FiguraTexture other, Integer x, Integer y, Integer w, Integer h) {
         return mathFunction(other, x, y, w, h, opAdd);
     }
 
@@ -1049,7 +1053,7 @@ public class FiguraTexture extends SimpleTexture {
                     argumentTypes = {FiguraTexture.class, Integer.class, Integer.class, Integer.class, Integer.class}
             )
     )
-    public FiguraTexture subtract(@LuaNotNil @NotNull FiguraTexture other, int x, int y, int w, int h) {
+    public FiguraTexture subtract(@LuaNotNil @NotNull FiguraTexture other, Integer x, Integer y, Integer w, Integer h) {
         return mathFunction(other, x, y, w, h, opSubtract);
     }
 
@@ -1067,7 +1071,12 @@ public class FiguraTexture extends SimpleTexture {
                     )
             }
     )
-    public FiguraTexture invert(int x, int y, int w, int h, Boolean invertAlpha) {
+    public FiguraTexture invert(Integer x, Integer y, Integer w, Integer h, Boolean invertAlpha) {
+        if (x == null) x = 0;
+        if (y == null) y = 0;
+        if (w == null) w = texture.getWidth();
+        if (h == null) h = texture.getHeight();
+
         boolean invertAlpha_real = (invertAlpha != null && invertAlpha);
         backupImage();
         for (int i = x; i < x + w; i++) {
