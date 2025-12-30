@@ -123,6 +123,10 @@ public class FiguraTexture extends SimpleTexture {
         ((TextureManagerAccessor) Minecraft.getInstance().getTextureManager()).getByPath().remove(this.location);
     }
 
+    private void assertOpen() {
+        if (isClosed) throw new LuaError("This texture is closed");
+    }
+
     public void uploadIfDirty() {
         if (!registered) {
             Minecraft.getInstance().getTextureManager().register(this.location, this);
@@ -224,6 +228,7 @@ public class FiguraTexture extends SimpleTexture {
             ),
             value = "texture.get_pixel")
     public FiguraVec4 getPixel(int x, int y) {
+        assertOpen();
         Pair<Integer, Integer> actual = mapCoordinates(x, y);
         if (actual == null) throw new LuaError(String.format(
                 "(%d, %d) is out of bounds on %dx%d texture",
@@ -265,6 +270,7 @@ public class FiguraTexture extends SimpleTexture {
             aliases = "pixel",
             value = "texture.set_pixel")
     public FiguraTexture setPixel(int x, int y, Object r, Double g, Double b, Double a) {
+        assertOpen();
         int color = ColorUtils.rgbaToIntABGR(parseColor("setPixel", r, g, b, a));
         Pair<Integer, Integer> actual = mapCoordinates(x, y);
         if (actual == null) return this;
@@ -291,42 +297,47 @@ public class FiguraTexture extends SimpleTexture {
             )
     )
     public FiguraTexture resize(String outputName, int targetWidth, int targetHeight) {
+        assertOpen();
         // float imprecision strikes again (+/- to prevent rounding to the next number when you're approximately equal)
         final double EPSILON = 1e-6;
 
-        NativeImage internal = new NativeImage(targetWidth, targetHeight, true);
-        FiguraTexture result = owner.registerTexture(outputName, internal, false);
-        result.backupImage();
-        int srcWidth = getWidth(), srcHeight = getHeight();
-        for (int outputX = 0; outputX < targetWidth; outputX++) {
-            for (int outputY = 0; outputY < targetHeight; outputY++) {
-                // map the output pixels onto the input pixels
-                int inputX_low = (int) Math.floor((double) outputX / targetWidth * srcWidth + EPSILON);
-                int inputX_high = (int) Math.ceil((double) (outputX + 1) / targetWidth * srcWidth - EPSILON);
-                int inputY_low = (int) Math.floor((double) outputY / targetHeight * srcHeight + EPSILON);
-                int inputY_high = (int) Math.ceil((double) (outputY + 1) / targetHeight * srcHeight - EPSILON);
+        NativeImage internal = new NativeImage(targetWidth, targetHeight, false);
+        try {
+            internal.fillRect(0, 0, targetWidth, targetHeight, 0);
+            int srcWidth = getWidth(), srcHeight = getHeight();
+            for (int outputX = 0; outputX < targetWidth; outputX++) {
+                for (int outputY = 0; outputY < targetHeight; outputY++) {
+                    // map the output pixels onto the input pixels
+                    int inputX_low = (int) Math.floor((double) outputX / targetWidth * srcWidth + EPSILON);
+                    int inputX_high = (int) Math.ceil((double) (outputX + 1) / targetWidth * srcWidth - EPSILON);
+                    int inputY_low = (int) Math.floor((double) outputY / targetHeight * srcHeight + EPSILON);
+                    int inputY_high = (int) Math.ceil((double) (outputY + 1) / targetHeight * srcHeight - EPSILON);
 
-                // compute average color on corresponding source pixels
-                int count = 0;
-                double r = 0, g = 0, b = 0, a = 0;
-                for (int inputX = inputX_low; inputX < inputX_high; inputX++) {
-                    for (int inputY = inputY_low; inputY < inputY_high; inputY++) {
-                        FiguraVec4 color = getActualPixel(inputX, inputY);
-                        r += color.x;
-                        g += color.y;
-                        b += color.z;
-                        a += color.w;
-                        count += 1;
+                    // compute average color on corresponding source pixels
+                    int count = 0;
+                    double r = 0, g = 0, b = 0, a = 0;
+                    for (int inputX = inputX_low; inputX < inputX_high; inputX++) {
+                        for (int inputY = inputY_low; inputY < inputY_high; inputY++) {
+                            FiguraVec4 color = getActualPixel(inputX, inputY);
+                            r += color.x;
+                            g += color.y;
+                            b += color.z;
+                            a += color.w;
+                            count += 1;
+                        }
                     }
+                    r /= count;
+                    g /= count;
+                    b /= count;
+                    a /= count;
+                    internal.setPixelRGBA(outputX, outputY, ColorUtils.rgbaToIntABGR(FiguraVec4.of(r, g, b, a)));
                 }
-                r /= count;
-                g /= count;
-                b /= count;
-                a /= count;
-                result.setActualPixel(outputX, outputY, ColorUtils.rgbaToIntABGR(FiguraVec4.of(r, g, b, a)), false);
             }
+            return owner.registerTexture(outputName, internal, false);
+        } catch (Exception e) {
+            internal.close();
+            throw e;
         }
-        return result;
     }
 
     @LuaWhitelist
@@ -346,15 +357,24 @@ public class FiguraTexture extends SimpleTexture {
                     )
             },
             value = "texture.fill")
-    public FiguraTexture fill(Integer x, Integer y, Integer width, Integer height, Object r, Double g, Double b, Double a) {
+    public FiguraTexture fill(Integer x,
+                              Integer y,
+                              Integer width,
+                              Integer height,
+                              Object r,
+                              Double g,
+                              Double b,
+                              Double a) {
+        assertOpen();
         if (x == null) x = 0;
         if (y == null) y = 0;
         if (width == null) width = texture.getWidth();
         if (height == null) height = texture.getHeight();
 
+        int color = ColorUtils.rgbaToIntABGR(parseColor("fill", r, g, b, a));
+        // texture.fillRect just does these loops for us, so we can extract them to add the mapping
+        NativeImage rollback = copy();
         try {
-            int color = ColorUtils.rgbaToIntABGR(parseColor("fill", r, g, b, a));
-            // texture.fillRect just does these loops for us, so we can extract them to add the mapping
             backupImage();
             for (int i = x; i < x + width; i++) {
                 for (int j = y; j < y + height; j++) {
@@ -366,7 +386,10 @@ public class FiguraTexture extends SimpleTexture {
             }
             return this;
         } catch (Exception e) {
-            throw new LuaError(e.getMessage());
+            texture.copyFrom(rollback);
+            throw e;
+        } finally {
+            rollback.close();
         }
     }
 
@@ -567,23 +590,28 @@ public class FiguraTexture extends SimpleTexture {
 
     public FiguraTexture blit(BlitOptions options) {
         FiguraTexture source = options.source;
-        backupImage();
-        for (int x = 0; x < options.width; x++) {
-            for (int y = 0; y < options.height; y++) {
-                int tX = options.x + x, tY = options.y + y;
-                int sX = options.sourceX + x, sY = options.sourceY + y;
-                Pair<Integer, Integer> real = mapCoordinates(tX, tY);
-                if (real == null) continue;
-                FiguraVec4 sColorTrue = source.getPixel(sX, sY);
-                FiguraVec4 tColorTrue = getActualPixel(real.getFirst(), real.getSecond());
-                setActualPixel(
-                        real.getFirst(), real.getSecond(), ColorUtils.rgbaToIntABGR(
-                                composeColors(tColorTrue, sColorTrue, options.mode, false)
-                        )
-                );
+        assertOpen();
+        source.assertOpen();
+        try (NativeImage flip = copy()) {
+            backupImage();
+            for (int x = 0; x < options.width; x++) {
+                for (int y = 0; y < options.height; y++) {
+                    int tX = options.x + x, tY = options.y + y;
+                    int sX = options.sourceX + x, sY = options.sourceY + y;
+                    Pair<Integer, Integer> real = mapCoordinates(tX, tY);
+                    if (real == null) continue;
+                    FiguraVec4 sColorTrue = source.getPixel(sX, sY);
+                    FiguraVec4 tColorTrue = getActualPixel(real.getFirst(), real.getSecond());
+                    flip.setPixelRGBA(
+                            real.getFirst(), real.getSecond(), ColorUtils.rgbaToIntABGR(
+                                    composeColors(tColorTrue, sColorTrue, options.mode, false)
+                            )
+                    );
+                }
             }
+            texture.copyFrom(flip);
+            return this;
         }
-        return this;
     }
 
     @LuaWhitelist
@@ -760,24 +788,34 @@ public class FiguraTexture extends SimpleTexture {
                     )
             }
     )
-    public void line(
+    public FiguraTexture line(
             FiguraVec2 xy0,
             FiguraVec2 xy1,
             FiguraVec4 color,
             @Nullable Boolean antialias,
             String blend
     ) {
+        assertOpen();
         boolean antialiasActual = (antialias != null) && antialias;
         BlendMode blendActual = BlendMode.NORMAL;
         if (blend != null) {
             blendActual = BlendMode.NAMES.get(blend);
             if (blendActual == null) throw new LuaError(String.format("Unknown blending mode '%s'.", blend));
         }
-        backupImage();
-        if (antialiasActual) {
-            aaLineReal((int) xy0.x, (int) xy0.y, (int) xy1.x, (int) xy1.y, color, blendActual);
-        } else {
-            lineReal((int) xy0.x, (int) xy0.y, (int) xy1.x, (int) xy1.y, color, blendActual);
+        NativeImage rollback = copy();
+        try {
+            backupImage();
+            if (antialiasActual) {
+                aaLineReal((int) xy0.x, (int) xy0.y, (int) xy1.x, (int) xy1.y, color, blendActual);
+            } else {
+                lineReal((int) xy0.x, (int) xy0.y, (int) xy1.x, (int) xy1.y, color, blendActual);
+            }
+            return this;
+        } catch (Exception e) {
+            texture.copyFrom(rollback);
+            throw e;
+        } finally {
+            rollback.close();
         }
     }
 
@@ -791,6 +829,7 @@ public class FiguraTexture extends SimpleTexture {
     @LuaWhitelist
     @LuaMethodDoc("texture.restore")
     public FiguraTexture restore() {
+        assertOpen();
         if (modified) {
             this.texture.copyFrom(backup);
             this.modified = false;
@@ -801,6 +840,7 @@ public class FiguraTexture extends SimpleTexture {
     @LuaWhitelist
     @LuaMethodDoc("texture.save")
     public String save() {
+        assertOpen();
         try {
             return Base64.getEncoder().encodeToString(texture.asByteArray());
         } catch (Exception e) {
@@ -816,38 +856,51 @@ public class FiguraTexture extends SimpleTexture {
             ),
             value = "texture.apply_func"
     )
-    public FiguraTexture applyFunc(Integer x, Integer y, Integer width, Integer height, @LuaNotNil LuaFunction function) {
+    public FiguraTexture applyFunc(Integer x,
+                                   Integer y,
+                                   Integer width,
+                                   Integer height,
+                                   @LuaNotNil LuaFunction function) {
+        assertOpen();
         if (x == null) x = 0;
         if (y == null) y = 0;
         if (width == null) width = texture.getWidth();
         if (height == null) height = texture.getHeight();
 
-        backupImage();
-        for (int i = y; i < y + height; i++) {
-            for (int j = x; j < x + width; j++) {
-                Pair<Integer, Integer> actual = mapCoordinates(j, i);
-                if (actual == null) continue;
-                int actualX = actual.getFirst(), actualY = actual.getSecond();
-                FiguraVec4 color = getActualPixel(actualX, actualY);
-                LuaValue result = function.call(
-                        owner.luaRuntime.typeManager.javaToLua(color).arg1(),
-                        LuaValue.valueOf(j),
-                        LuaValue.valueOf(i)
-                );
-                if (!result.isnil() && result.isuserdata(FiguraVec4.class)) {
-                    FiguraVec4 userdata = (FiguraVec4) result.checkuserdata(FiguraVec4.class);
-                    userdata = FiguraVec4.of(
-                            clamp01(userdata.x),
-                            clamp01(userdata.y),
-                            clamp01(userdata.z),
-                            clamp01(userdata.w)
+        NativeImage rollback = copy();
+        try {
+            backupImage();
+            for (int i = y; i < y + height; i++) {
+                for (int j = x; j < x + width; j++) {
+                    Pair<Integer, Integer> actual = mapCoordinates(j, i);
+                    if (actual == null) continue;
+                    int actualX = actual.getFirst(), actualY = actual.getSecond();
+                    FiguraVec4 color = getActualPixel(actualX, actualY);
+                    LuaValue result = function.call(
+                            owner.luaRuntime.typeManager.javaToLua(color).arg1(),
+                            LuaValue.valueOf(j),
+                            LuaValue.valueOf(i)
                     );
-                    int newColor = ColorUtils.rgbaToIntABGR(userdata);
-                    setActualPixel(actualX, actualY, newColor, false);
+                    if (!result.isnil() && result.isuserdata(FiguraVec4.class)) {
+                        FiguraVec4 userdata = (FiguraVec4) result.checkuserdata(FiguraVec4.class);
+                        userdata = FiguraVec4.of(
+                                clamp01(userdata.x),
+                                clamp01(userdata.y),
+                                clamp01(userdata.z),
+                                clamp01(userdata.w)
+                        );
+                        int newColor = ColorUtils.rgbaToIntABGR(userdata);
+                        setActualPixel(actualX, actualY, newColor, false);
+                    }
                 }
             }
+            return this;
+        } catch (Exception e) {
+            texture.copyFrom(rollback);
+            throw e;
+        } finally {
+            rollback.close();
         }
-        return this;
     }
 
     @LuaWhitelist
@@ -863,29 +916,38 @@ public class FiguraTexture extends SimpleTexture {
                                      Integer width,
                                      Integer height,
                                      @LuaNotNil FiguraMat4 matrix) {
+        assertOpen();
         if (x == null) x = 0;
         if (y == null) y = 0;
         if (width == null) width = texture.getWidth();
         if (height == null) height = texture.getHeight();
 
-        backupImage();
-        for (int i = y; i < y + height; i++) {
-            for (int j = x; j < x + width; j++) {
-                Pair<Integer, Integer> actual = mapCoordinates(j, i);
-                if (actual == null) continue;
-                int actualX = actual.getFirst(), actualY = actual.getSecond();
-                FiguraVec4 color = getActualPixel(actualX, actualY);
-                color.transform(matrix);
+        NativeImage rollback = copy();
+        try {
+            backupImage();
+            for (int i = y; i < y + height; i++) {
+                for (int j = x; j < x + width; j++) {
+                    Pair<Integer, Integer> actual = mapCoordinates(j, i);
+                    if (actual == null) continue;
+                    int actualX = actual.getFirst(), actualY = actual.getSecond();
+                    FiguraVec4 color = getActualPixel(actualX, actualY);
+                    color.transform(matrix);
 
-                color.x = Math.max(0, Math.min(color.x, 1));
-                color.y = Math.max(0, Math.min(color.y, 1));
-                color.z = Math.max(0, Math.min(color.z, 1));
-                color.w = Math.max(0, Math.min(color.w, 1));
+                    color.x = Math.max(0, Math.min(color.x, 1));
+                    color.y = Math.max(0, Math.min(color.y, 1));
+                    color.z = Math.max(0, Math.min(color.z, 1));
+                    color.w = Math.max(0, Math.min(color.w, 1));
 
-                setActualPixel(actualX, actualY, ColorUtils.rgbaToIntABGR(color), false);
+                    setActualPixel(actualX, actualY, ColorUtils.rgbaToIntABGR(color), false);
+                }
             }
+            return this;
+        } catch (Exception e) {
+            texture.copyFrom(rollback);
+            throw e;
+        } finally {
+            rollback.close();
         }
-        return this;
     }
 
     private static final HashMap<String, TextureOverflowStrategy> name2OverflowStrategy = new HashMap<>();
@@ -956,39 +1018,59 @@ public class FiguraTexture extends SimpleTexture {
                                     int w,
                                     int h) {
         backupImage();
-        for (int curX = x; curX < x + w; curX++) {
-            for (int curY = y; curY < y + h; curY++) {
-                Pair<Integer, Integer> actualCoordinates = mapCoordinates(curX, curY);
-                if (actualCoordinates == null) continue;
-                int actualX = actualCoordinates.getFirst(), actualY = actualCoordinates.getSecond();
-                try {
-                    FiguraVec4 colorA = ColorUtils.abgrToRGBA(texture.getPixelRGBA(actualX, actualY));
-                    FiguraVec4 colorB = other.getPixel(curX, curY);
-                    FiguraVec4 result = transform.apply(colorA, colorB);
-                    result = FiguraVec4.of(
-                            clamp01(result.x),
-                            clamp01(result.y),
-                            clamp01(result.z),
-                            clamp01(result.w)
-                    );
-                    texture.setPixelRGBA(actualX, actualY, ColorUtils.rgbaToIntABGR(result));
-                } catch (Exception e) {
-                    restore();
-                    if (curX != actualX || curY != actualY)
+        NativeImage rollback = copy();
+        try {
+            for (int curX = x; curX < x + w; curX++) {
+                for (int curY = y; curY < y + h; curY++) {
+                    Pair<Integer, Integer> actualCoordinates = mapCoordinates(curX, curY);
+                    if (actualCoordinates == null) continue;
+                    int actualX = actualCoordinates.getFirst(), actualY = actualCoordinates.getSecond();
+                    FiguraVec4 colorB;
+                    try {
+                        colorB = other.getPixel(curX, curY);
+                    } catch (Exception e) {
+                        if (curX != actualX || curY != actualY)
+                            throw new LuaError(String.format(
+                                    "source texture: %s",
+                                    e.getMessage()
+                            ));
                         throw new LuaError(String.format(
-                                "While applying pixel at actual(%d, %d) / virtual(%d, %d): %s",
-                                actualX, actualY,
-                                curX, curY,
+                                "source texture: %s",
                                 e.getMessage()
                         ));
-                    throw new LuaError(String.format(
-                            "While applying pixel at (%d, %d): %s",
-                            actualX, actualY, e.getMessage()
-                    ));
+                    }
+                    try {
+                        FiguraVec4 colorA = ColorUtils.abgrToRGBA(texture.getPixelRGBA(actualX, actualY));
+                        FiguraVec4 result = transform.apply(colorA, colorB);
+                        result = FiguraVec4.of(
+                                clamp01(result.x),
+                                clamp01(result.y),
+                                clamp01(result.z),
+                                clamp01(result.w)
+                        );
+                        texture.setPixelRGBA(actualX, actualY, ColorUtils.rgbaToIntABGR(result));
+                    } catch (Exception e) {
+                        if (curX != actualX || curY != actualY)
+                            throw new LuaError(String.format(
+                                    "While writing pixel at actual(%d, %d) / virtual(%d, %d): %s",
+                                    actualX, actualY,
+                                    curX, curY,
+                                    e.getMessage()
+                            ));
+                        throw new LuaError(String.format(
+                                "While writing pixel at (%d, %d): %s",
+                                actualX, actualY, e.getMessage()
+                        ));
+                    }
                 }
             }
+            return this;
+        } catch (Exception e) {
+            texture.copyFrom(rollback);
+            throw e;
+        } finally {
+            rollback.close();
         }
-        return this;
     }
 
     private static final BiFunction<FiguraVec4, FiguraVec4, FiguraVec4> opMultiply = FiguraVec4::times;
@@ -1002,6 +1084,8 @@ public class FiguraTexture extends SimpleTexture {
                                        Integer w,
                                        Integer h,
                                        BiFunction<FiguraVec4, FiguraVec4, FiguraVec4> transform) {
+        assertOpen();
+        other.assertOpen();
         if (x == null) x = 0;
         if (y == null) y = 0;
         if (w == null) w = texture.getWidth();
@@ -1072,6 +1156,7 @@ public class FiguraTexture extends SimpleTexture {
             }
     )
     public FiguraTexture invert(Integer x, Integer y, Integer w, Integer h, Boolean invertAlpha) {
+        assertOpen();
         if (x == null) x = 0;
         if (y == null) y = 0;
         if (w == null) w = texture.getWidth();
@@ -1079,22 +1164,30 @@ public class FiguraTexture extends SimpleTexture {
 
         boolean invertAlpha_real = (invertAlpha != null && invertAlpha);
         backupImage();
-        for (int i = x; i < x + w; i++) {
-            for (int j = y; j < y + h; j++) {
-                Pair<Integer, Integer> actual = mapCoordinates(i, j);
-                if (actual == null) continue;
-                int realX = actual.getFirst(), realY = actual.getSecond();
-                FiguraVec4 current = getActualPixel(realX, realY);
-                FiguraVec4 inverted = FiguraVec4.of(
-                        1 - current.x,
-                        1 - current.y,
-                        1 - current.z,
-                        invertAlpha_real ? 1 - current.w : current.w
-                );
-                setActualPixel(realX, realY, ColorUtils.rgbaToIntABGR(inverted), false);
+        NativeImage rollback = copy();
+        try {
+            for (int i = x; i < x + w; i++) {
+                for (int j = y; j < y + h; j++) {
+                    Pair<Integer, Integer> actual = mapCoordinates(i, j);
+                    if (actual == null) continue;
+                    int realX = actual.getFirst(), realY = actual.getSecond();
+                    FiguraVec4 current = getActualPixel(realX, realY);
+                    FiguraVec4 inverted = FiguraVec4.of(
+                            1 - current.x,
+                            1 - current.y,
+                            1 - current.z,
+                            invertAlpha_real ? 1 - current.w : current.w
+                    );
+                    setActualPixel(realX, realY, ColorUtils.rgbaToIntABGR(inverted), false);
+                }
             }
+            return this;
+        } catch (Exception e) {
+            texture.copyFrom(rollback);
+            throw e;
+        } finally {
+            rollback.close();
         }
-        return this;
     }
 
     // Color mapping
@@ -1133,11 +1226,12 @@ public class FiguraTexture extends SimpleTexture {
     @LuaMethodDoc(
             value = "texture.remap_colors",
             overloads = @LuaMethodOverload(
-                    argumentNames = { "from", "to" },
-                    argumentTypes = { LuaTable.class, LuaTable.class }
+                    argumentNames = {"from", "to"},
+                    argumentTypes = {LuaTable.class, LuaTable.class}
             )
     )
     public FiguraTexture remapColors(LuaTable from, LuaTable to) {
+        assertOpen();
         // Expect a sequence-like `from`
         int size = from.length();
         if (size != to.length()) throw new LuaError("remapColors: from and to tables are different lengths");
@@ -1148,20 +1242,22 @@ public class FiguraTexture extends SimpleTexture {
             FiguraVec4 fromV;
             LuaValue fromLua = from.get(i + 1);
 
-            if (fromLua.isuserdata(FiguraVec4.class)) fromV = (FiguraVec4)fromLua.checkuserdata(FiguraVec4.class);
-            else if (fromLua.isuserdata(FiguraVec3.class)) fromV = ((FiguraVec3)fromLua.checkuserdata(FiguraVec3.class)).augmented(1.0);
+            if (fromLua.isuserdata(FiguraVec4.class)) fromV = (FiguraVec4) fromLua.checkuserdata(FiguraVec4.class);
+            else if (fromLua.isuserdata(FiguraVec3.class))
+                fromV = ((FiguraVec3) fromLua.checkuserdata(FiguraVec3.class)).augmented(1.0);
             else throw new LuaError(String.format(
-                    "remapColors: 'from' table should only contain Vector3s or Vector4s, instead found a %s at index %d",
-                    fromLua.isuserdata() ? fromLua.checkuserdata().getClass().getSimpleName() : fromLua.typename(),
-                    i + 1
-            ));
+                        "remapColors: 'from' table should only contain Vector3s or Vector4s, instead found a %s at index %d",
+                        fromLua.isuserdata() ? fromLua.checkuserdata().getClass().getSimpleName() : fromLua.typename(),
+                        i + 1
+                ));
             mappedFrom[i] = ColorUtils.rgbaToIntABGR(fromV);
 
             FiguraVec4 toV;
             LuaValue toLua = to.get(i + 1);
 
-            if (toLua.isuserdata(FiguraVec4.class)) toV = (FiguraVec4)toLua.checkuserdata(FiguraVec4.class);
-            else if (toLua.isuserdata(FiguraVec3.class)) toV = ((FiguraVec3)toLua.checkuserdata(FiguraVec3.class)).augmented(1.0);
+            if (toLua.isuserdata(FiguraVec4.class)) toV = (FiguraVec4) toLua.checkuserdata(FiguraVec4.class);
+            else if (toLua.isuserdata(FiguraVec3.class))
+                toV = ((FiguraVec3) toLua.checkuserdata(FiguraVec3.class)).augmented(1.0);
             else throw new LuaError(String.format(
                         "remapColors: 'to' table should only contain Vector3s or Vector4s, instead found a %s at index %d",
                         toLua.isuserdata() ? toLua.checkuserdata().getClass().getSimpleName() : toLua.typename(),
