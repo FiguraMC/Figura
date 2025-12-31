@@ -1303,6 +1303,18 @@ public class FiguraTexture extends SimpleTexture {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            value = "texture.new_copy",
+            overloads = @LuaMethodOverload(
+                    argumentNames = "name",
+                    argumentTypes = String.class
+            )
+    )
+    public FiguraTexture newCopy(String name) {
+        return owner.registerTexture(name, copy(), false);
+    }
+
+    @LuaWhitelist
     public Object __index(String arg) {
         return "name".equals(arg) ? name : null;
     }
