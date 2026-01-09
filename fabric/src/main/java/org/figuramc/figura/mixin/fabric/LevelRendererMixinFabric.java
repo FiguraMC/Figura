@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import net.minecraft.client.renderer.state.LevelRenderState;
 import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
@@ -40,8 +41,18 @@ public class LevelRendererMixinFabric {
 
     @Shadow @Final private Minecraft minecraft;
 
+    @Shadow
+    @Final
+    private SubmitNodeStorage submitNodeStorage;
+
     @Inject(method = {"method_62214"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;checkPoseStack(Lcom/mojang/blaze3d/vertex/PoseStack;)V", ordinal = 0))
-    private void renderLevelFirstPerson(GpuBufferSlice gpuBufferSlice, DeltaTracker deltaTracker, Camera camera, ProfilerFiller profiler, Matrix4f matrix4f, ResourceHandle resourceHandle, ResourceHandle resourceHandle2, boolean bl, Frustum frustum, ResourceHandle resourceHandle3, ResourceHandle resourceHandle4, CallbackInfo ci, @Local PoseStack stack) {
+    private void renderLevelFirstPerson(GpuBufferSlice gpuBufferSlice, LevelRenderState levelRenderState, ProfilerFiller profiler,
+                                        Matrix4f matrix4f, ResourceHandle resourceHandle, ResourceHandle resourceHandle2, boolean bl,
+                                        Frustum frustum, ResourceHandle resourceHandle3, ResourceHandle resourceHandle4, CallbackInfo ci,
+                                        @Local PoseStack stack
+    ) {
+        Camera camera = this.minecraft.gameRenderer.getMainCamera();
+        DeltaTracker deltaTracker = this.minecraft.getDeltaTracker();
         if (camera.isDetached())
             return;
 
@@ -78,7 +89,7 @@ public class LevelRendererMixinFabric {
         );
 
 
-        entityRenderer.render(state, stack, bufferSource, LightTexture.FULL_BRIGHT);
+        entityRenderer.submit(state, stack, submitNodeStorage, levelRenderState.cameraRenderState);
 
         do {
             stack.popPose();
@@ -89,7 +100,7 @@ public class LevelRendererMixinFabric {
 
 
     @Inject(method =  {"method_62214"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderBuffers;bufferSource()Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;"))
-    public void applyFiguraNormals(GpuBufferSlice gpuBufferSlice, DeltaTracker tracker, Camera camera, ProfilerFiller profiler, Matrix4f matrix4f, ResourceHandle resourceHandle, ResourceHandle resourceHandle2, boolean bl, Frustum frustum, ResourceHandle resourceHandle3, ResourceHandle resourceHandle4, CallbackInfo ci, @Local PoseStack poseStack) {
+    public void applyFiguraNormals(GpuBufferSlice gpuBufferSlice, LevelRenderState levelRenderState, ProfilerFiller profiler, Matrix4f matrix4f, ResourceHandle resourceHandle, ResourceHandle resourceHandle2, boolean bl, Frustum frustum, ResourceHandle resourceHandle3, ResourceHandle resourceHandle4, CallbackInfo ci, @Local PoseStack poseStack) {
         Avatar avatar = AvatarManager.getAvatar(this.minecraft.getCameraEntity() == null ? this.minecraft.player : this.minecraft.getCameraEntity());
         if (!RenderUtils.vanillaModelAndScript(avatar)) return;
 

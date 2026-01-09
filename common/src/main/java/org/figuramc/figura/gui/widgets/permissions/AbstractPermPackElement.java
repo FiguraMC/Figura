@@ -1,5 +1,6 @@
 package org.figuramc.figura.gui.widgets.permissions;
 
+import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.figuramc.figura.avatar.Avatar;
@@ -49,7 +50,7 @@ public class AbstractPermPackElement extends Button implements Comparable<Abstra
     }
 
     @Override
-    public void onPress() {
+    public void onPress(InputWithModifiers inputWithModifiers) {
         // set selected entry
         parent.selectedEntry = this;
 

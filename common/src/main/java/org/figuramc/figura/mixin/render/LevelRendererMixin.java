@@ -2,30 +2,23 @@ package org.figuramc.figura.mixin.render;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
-import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
-import com.mojang.blaze3d.resource.ResourceHandle;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import net.minecraft.client.renderer.state.LevelRenderState;
 import net.minecraft.util.ARGB;
-import net.minecraft.util.Mth;
-import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
-import org.figuramc.figura.config.Configs;
-import org.figuramc.figura.math.matrix.FiguraMat3;
+import org.figuramc.figura.ducks.FiguraEntityRenderStateExtension;
+import org.figuramc.figura.ducks.NodeCollectorExtension;
 import org.figuramc.figura.math.vector.FiguraVec4;
 import org.figuramc.figura.model.rendering.EntityRenderMode;
 import org.figuramc.figura.utils.ColorUtils;
@@ -47,49 +40,60 @@ public abstract class LevelRendererMixin {
     @Shadow @Final private RenderBuffers renderBuffers;
     @Shadow @Final private Minecraft minecraft;
 
-    @ModifyArg(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;renderEntity(Lnet/minecraft/world/entity/Entity;DDDFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;)V"))
-    private Entity renderLevelRenderEntity(Entity entity) {
-        Avatar avatar = AvatarManager.getAvatar(entity);
+    @ModifyArg(method = "submitEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/EntityRenderDispatcher;submit(Lnet/minecraft/client/renderer/entity/state/EntityRenderState;Lnet/minecraft/client/renderer/state/CameraRenderState;DDDLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;)V"))
+    private <S extends EntityRenderState> S renderLevelRenderEntity(S entityRenderState) {
+        Avatar avatar = AvatarManager.getAvatar(entityRenderState);
         if (avatar != null)
             avatar.renderMode = EntityRenderMode.RENDER;
-        return entity;
+        return entityRenderState;
     }
 
-    @Inject(method = "renderEntity", at = @At("HEAD"))
-    private void renderEntity(Entity entity, double cameraX, double cameraY, double cameraZ, float tickDelta, PoseStack matrices, MultiBufferSource bufferSource, CallbackInfo ci) {
-        Avatar avatar = AvatarManager.getAvatar(entity);
-        if (avatar == null)
+    @Inject(method = "submitEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/EntityRenderDispatcher;submit(Lnet/minecraft/client/renderer/entity/state/EntityRenderState;Lnet/minecraft/client/renderer/state/CameraRenderState;DDDLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;)V"))
+    private <S extends EntityRenderState> void renderEntity(PoseStack poseStack, LevelRenderState levelRenderState, SubmitNodeCollector submitNodeCollector, CallbackInfo ci, @Local S entityRenderState) {
+        Entity entity = Minecraft.getInstance().level.getEntity(((FiguraEntityRenderStateExtension)entityRenderState).figura$getEntityId());
+        float tickDelta = ((FiguraEntityRenderStateExtension)entityRenderState).figura$getTickDelta();
+
+        Avatar av = AvatarManager.getAvatar(entityRenderState);
+
+        if (av == null)
             return;
 
-        if (bufferSource instanceof OutlineBufferSource outline && RenderUtils.vanillaModelAndScript(avatar) && avatar.luaRuntime.renderer.outlineColor != null) {
-            int i = ColorUtils.rgbToInt(avatar.luaRuntime.renderer.outlineColor);
-            outline.setColor(
-                    i >> 16 & 0xFF,
-                    i >> 8 & 0xFF,
-                    i & 0xFF,
-                    0xFF // does nothing :(
-            );
-        }
 
-        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
-        FiguraMod.pushProfiler(avatar);
-        FiguraMod.pushProfiler("worldRender");
+        NodeCollectorExtension collectorExt = (NodeCollectorExtension) submitNodeCollector;
 
-        avatar.worldRender(entity, cameraX, cameraY, cameraZ, matrices, bufferSource, entityRenderDispatcher.getPackedLightCoords(entity, tickDelta), tickDelta, EntityRenderMode.WORLD);
+        collectorExt.submitFiguraModel(av, entityRenderState, ((avatar, entityState, multiBufferSource) -> {
 
-        FiguraMod.popProfiler(3);
+            if (multiBufferSource instanceof OutlineBufferSource outline && RenderUtils.vanillaModelAndScript(avatar) && avatar.luaRuntime.renderer.outlineColor != null) {
+                int i = ColorUtils.rgbToInt(avatar.luaRuntime.renderer.outlineColor);
+                outline.setColor(
+                        i
+                );
+            }
+
+            FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+            FiguraMod.pushProfiler(avatar);
+            FiguraMod.pushProfiler("worldRender");
+            Vec3 cameraPos = levelRenderState.cameraRenderState.pos;
+
+            avatar.worldRender(entity, cameraPos.x(), cameraPos.y(), cameraPos.z(), poseStack, multiBufferSource, entityRenderDispatcher.getPackedLightCoords(entity, tickDelta), tickDelta, EntityRenderMode.WORLD);
+
+            FiguraMod.popProfiler(3);
+
+            return null;
+        }));
+
     }
 
     // TODO: Neo does not boot, complains method must be static but it won't compile if it is, the hell?
     // method_62214 for Fabric, lambda$addMainPass$2 for Neo and lambda$addMainPass$1 for Lex
 
     @Inject(method = "renderLevel", at = @At("HEAD"))
-    private void onRenderLevel(GraphicsResourceAllocator graphicsResourceAllocator, DeltaTracker deltaTracker, boolean bl, Camera camera, Matrix4f matrix4f, Matrix4f matrix4f2, GpuBufferSlice gpuBufferSlice, Vector4f vector4f, boolean bl2, CallbackInfo ci) {
+    private void onRenderLevel(GraphicsResourceAllocator graphicsResourceAllocator, DeltaTracker deltaTracker, boolean bl, Camera camera, Matrix4f matrix4f, Matrix4f matrix4f2, Matrix4f matrix4f3, GpuBufferSlice gpuBufferSlice, Vector4f vector4f, boolean bl2, CallbackInfo ci) {
         AvatarManager.executeAll("worldRender", avatar -> avatar.render(deltaTracker.getGameTimeDeltaPartialTick(false)));
     }
 
     @Inject(method = "renderLevel", at = @At("RETURN"))
-    private void afterRenderLevel(GraphicsResourceAllocator graphicsResourceAllocator, DeltaTracker deltaTracker, boolean bl, Camera camera, Matrix4f matrix4f, Matrix4f matrix4f2, GpuBufferSlice gpuBufferSlice, Vector4f vector4f, boolean bl2, CallbackInfo ci) {
+    private void afterRenderLevel(GraphicsResourceAllocator graphicsResourceAllocator, DeltaTracker deltaTracker, boolean bl, Camera camera, Matrix4f matrix4f, Matrix4f matrix4f2, Matrix4f matrix4f3, GpuBufferSlice gpuBufferSlice, Vector4f vector4f, boolean bl2, CallbackInfo ci) {
         AvatarManager.executeAll("postWorldRender", avatar -> avatar.postWorldRenderEvent(deltaTracker.getGameTimeDeltaPartialTick(false)));
     }
 

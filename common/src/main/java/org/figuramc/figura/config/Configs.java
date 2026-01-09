@@ -141,8 +141,8 @@ public class Configs {
     public static final ConfigType.BoolConfig
             ALLOW_FP_HANDS = new ConfigType.BoolConfig("allow_fp_hands", RENDERING, false),
             FIRST_PERSON_MATRICES = new ConfigType.BoolConfig("first_person_matrices", RENDERING, true),
-            INVENTORY_SCISSOR = new ConfigType.BoolConfig("inventory_scissor", RENDERING, true);
-
+            INVENTORY_SCISSOR = new ConfigType.BoolConfig("inventory_scissor", RENDERING, true),
+            RENDER_STATS = new ConfigType.BoolConfig("render_stats", RENDERING, true, false);
 
     // -- ACTION WHEEL -- // 
 

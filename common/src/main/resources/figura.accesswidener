@@ -2,6 +2,7 @@ accessWidener v2 named
 
 accessible class net/minecraft/world/level/biome/Biome$ClimateSettings
 accessible class net/minecraft/client/gui/font/providers/BitmapProvider$Glyph
+accessible class net/minecraft/client/gui/font/FontSet$SelectedGlyphs
 
 accessible method net/minecraft/client/renderer/texture/ReloadableTexture doLoad (Lcom/mojang/blaze3d/platform/NativeImage;ZZ)V
 
@@ -48,3 +49,5 @@ accessible class net/minecraft/client/renderer/entity/layers/EquipmentLayerRende
 accessible method net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer$TrimSpriteKey <init> (Lnet/minecraft/world/item/equipment/trim/ArmorTrim;Lnet/minecraft/client/resources/model/EquipmentClientInfo$LayerType;Lnet/minecraft/resources/ResourceKey;)V
 
 accessible class net/minecraft/client/gui/components/SubtitleOverlay$Subtitle
+accessible class net/minecraft/client/particle/ParticleResources$MutableSpriteSet
+accessible class net/minecraft/client/resources/model/AtlasManager$AtlasEntry

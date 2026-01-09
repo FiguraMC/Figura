@@ -2,6 +2,7 @@ package org.figuramc.figura.gui.screens;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -55,8 +56,11 @@ public class HelpScreen extends AbstractPanelScreen {
         this.addRenderableWidget(new IconButton(middle - 124, y += lineHeight + 4, 80, 24, 0, 20, 20, ICONS, 60, 40, Component.literal("Discord"), null, bx -> UIHelper.openURL(FiguraMod.Links.Discord.url).run()));
         this.addRenderableWidget(new IconButton(middle - 40, y, 80, 24, 20, 20, 20, ICONS, 60, 40, Component.literal("GitHub"), null, bx -> UIHelper.openURL(FiguraMod.Links.Github.url).run()) {
             @Override
-            public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                if (Configs.EASTER_EGGS.value && this.isHoveredOrFocused() && this.isMouseOver(mouseX, mouseY) && button == 1) {
+            public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
+                double mouseX = mouseButtonEvent.x();
+                double mouseY = mouseButtonEvent.y();
+
+                if (Configs.EASTER_EGGS.value && this.isHoveredOrFocused() && this.isMouseOver(mouseX, mouseY) && mouseButtonEvent.button() == 1) {
                     int dim = getTextureSize();
                     int x = (int) (Math.random() * dim) + getX() + 2;
                     int y = (int) (Math.random() * dim) + getY() + 2;
@@ -67,7 +71,7 @@ public class HelpScreen extends AbstractPanelScreen {
                     return false;
                 }
 
-                return super.mouseClicked(mouseX, mouseY, button);
+                return super.mouseClicked(mouseButtonEvent, bl);
             }
         });
         this.addRenderableWidget(kofi = new IconButton(middle + 44, y, 80, 24, 40, 20, 20, ICONS, 60, 40, Component.literal("Ko-fi"), null, b -> UIHelper.openURL(FiguraMod.Links.Kofi.url).run()));

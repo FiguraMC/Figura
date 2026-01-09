@@ -106,7 +106,7 @@ public class FiguraKeybind {
         for (FiguraKeybind keybind : bindings) {
             int value = keybind.key.getValue();
             if (keybind.enabled && keybind.key.getType() == InputConstants.Type.KEYSYM && value != InputConstants.UNKNOWN.getValue())
-                keybind.setDown(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), value), -1);
+                keybind.setDown(InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), value), -1);
         }
     }
 

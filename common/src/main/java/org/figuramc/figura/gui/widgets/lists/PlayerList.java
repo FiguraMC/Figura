@@ -163,8 +163,8 @@ public class PlayerList extends AbstractList {
                 continue;
 
             // get player data
-            String name = player.getProfile().getName();
-            ResourceLocation skin = player.getSkin().texture();
+            String name = player.getProfile().name();
+            ResourceLocation skin = player.getSkin().body().texturePath();
             Avatar avatar = AvatarManager.getAvatarForPlayer(uuid);
 
             // filter check
@@ -232,9 +232,9 @@ public class PlayerList extends AbstractList {
     private void selectLocalPlayer() {
         PlayerPermPackElement local = Minecraft.getInstance().player != null ? players.get(Minecraft.getInstance().player.getUUID()) : null;
         if (local != null) {
-            local.onPress();
+            local.onPress(null);
         } else {
-            maxCategory.onPress();
+            maxCategory.onPress(null);
         }
 
         scrollToSelected();

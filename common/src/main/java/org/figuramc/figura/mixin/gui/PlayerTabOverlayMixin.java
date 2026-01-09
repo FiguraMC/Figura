@@ -36,9 +36,9 @@ public class PlayerTabOverlayMixin {
 
         // apply customization
         Component text = cir.getReturnValue();
-        Component name = Component.literal(playerInfo.getProfile().getName());
+        Component name = Component.literal(playerInfo.getProfile().name());
 
-        UUID uuid = playerInfo.getProfile().getId();
+        UUID uuid = playerInfo.getProfile().id();
         Avatar avatar = AvatarManager.getAvatarForPlayer(uuid);
         NameplateCustomization custom = avatar == null || avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.LIST;
 
@@ -54,7 +54,7 @@ public class PlayerTabOverlayMixin {
         // trim
         replacement = TextUtils.trim(replacement);
 
-        text = TextUtils.replaceInText(text, "\\b" + Pattern.quote(playerInfo.getProfile().getName()) + "\\b", replacement);
+        text = TextUtils.replaceInText(text, "\\b" + Pattern.quote(playerInfo.getProfile().name()) + "\\b", replacement);
 
         cir.setReturnValue(text);
     }

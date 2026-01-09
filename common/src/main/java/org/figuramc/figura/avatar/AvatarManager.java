@@ -6,8 +6,8 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.ints.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
-import net.minecraft.client.renderer.entity.state.PlayerRenderState;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -162,7 +162,7 @@ public class AvatarManager {
     public static Avatar getAvatar(EntityRenderState state) {
         if (panic || Minecraft.getInstance().level == null || state == null) return null;
 
-        if (state instanceof PlayerRenderState playerRenderState) {
+        if (state instanceof AvatarRenderState playerRenderState) {
             return getAvatar(Minecraft.getInstance().level.getEntity(playerRenderState.id));
         }
         Integer id = ((FiguraEntityRenderStateExtension)state).figura$getEntityId();
@@ -173,7 +173,7 @@ public class AvatarManager {
     public static Entity getEntity(EntityRenderState state) {
         if (Minecraft.getInstance().level == null || state == null) return null;
 
-        if (state instanceof PlayerRenderState playerRenderState) {
+        if (state instanceof AvatarRenderState playerRenderState) {
             return Minecraft.getInstance().level.getEntity(playerRenderState.id);
         }
         Integer id = ((FiguraEntityRenderStateExtension)state).figura$getEntityId();
@@ -290,7 +290,7 @@ public class AvatarManager {
     public static Avatar loadEntityAvatar(EntityRenderState entity, CompoundTag nbt) {
         Avatar targetAvatar = new Avatar(entity);
         targetAvatar.load(nbt);
-        Integer id = entity instanceof PlayerRenderState playerRenderState ? playerRenderState.id : ((FiguraEntityRenderStateExtension)entity).figura$getEntityId();
+        Integer id = entity instanceof AvatarRenderState playerRenderState ? playerRenderState.id : ((FiguraEntityRenderStateExtension)entity).figura$getEntityId();
         LOADED_CEM.put(id, targetAvatar);
         AvatarManager.ENTITY_CACHE.putIfAbsent(id, WorldAPI.getCurrentWorld().getEntity(id));
         return targetAvatar;

@@ -12,7 +12,7 @@ public class ConfigKeyBind extends KeyMapping {
     private final ConfigType.KeybindConfig config;
 
     public ConfigKeyBind(String translationKey, InputConstants.Key key, ConfigType.KeybindConfig config) {
-        super(translationKey, key.getType(), key.getValue(), FiguraMod.MOD_ID);
+        super(translationKey, key.getType(), key.getValue(), FiguraMod.FIGURA_KEY_CATEGORY);
         this.config = config;
 
         if (FiguraMod.debugModeEnabled() || !config.disabled)

@@ -25,19 +25,20 @@ import software.bernie.geckolib.renderer.GeoArmorRenderer;
 import software.bernie.geckolib.renderer.base.GeoRenderState;
 import software.bernie.geckolib.renderer.base.GeoRenderer;
 
+//TODO :FIX THIS
 @Pseudo
 @Mixin(value = GeoRenderer.class, remap = false)
 public interface GeckolibGeoRendererMixin<R extends GeoRenderState> {
 
-    @Shadow
+/*    @Shadow
     void renderRecursively(R renderState, PoseStack poseStack, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, int packedLight, int packedOverlay, int renderColor);
-
+*/
     /**
      * @author UnlikePaladin
      * @reason Upstream Sponge Mixin, that is anything that's not Fabric's fork doesn't support interface injection so we have to overwrite :(
      *  The functionality is the same as geckolib's but calls our pivots first
      */
-    @Overwrite
+  /*  @Overwrite
     default void actuallyRender(R renderState, PoseStack poseStack, BakedGeoModel model, @Nullable RenderType renderType, MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, boolean isReRender, int packedLight, int packedOverlay, int renderColor) {
         if (buffer == null) {
             if (renderType == null)
@@ -185,5 +186,5 @@ public interface GeckolibGeoRendererMixin<R extends GeoRenderState> {
         stack.scale(16, 16, 16);
         stack.mulPose(Axis.XP.rotationDegrees(180f));
         stack.mulPose(Axis.YP.rotationDegrees(180f));
-    }
+    }*/
 }

@@ -11,13 +11,14 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.renderer.entity.player.AvatarRenderer;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
-import net.minecraft.client.renderer.entity.state.PlayerRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.sounds.JOrbisAudioStream;
 import net.minecraft.core.Direction;
@@ -37,7 +38,6 @@ import org.figuramc.figura.animation.AnimationPlayer;
 import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.ducks.FiguraEntityRenderStateExtension;
-import org.figuramc.figura.ducks.GuiEntityRenderStateExtension;
 import org.figuramc.figura.gui.FiguraPortraitRenderState;
 import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.lua.FiguraLuaRuntime;
@@ -60,9 +60,9 @@ import org.figuramc.figura.mixin.gui.GuiGraphicsAccessor;
 import org.figuramc.figura.model.FiguraModelPart;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.model.PartCustomization;
-import org.figuramc.figura.model.rendering.AvatarRenderer;
+import org.figuramc.figura.model.rendering.FiguraRenderer;
 import org.figuramc.figura.model.rendering.EntityRenderMode;
-import org.figuramc.figura.model.rendering.ImmediateAvatarRenderer;
+import org.figuramc.figura.model.rendering.ImmediateFiguraRenderer;
 import org.figuramc.figura.model.rendering.PartFilterScheme;
 import org.figuramc.figura.model.rendering.texture.FiguraTexture;
 import org.figuramc.figura.permissions.PermissionManager;
@@ -124,7 +124,7 @@ public class Avatar {
     public final ArrayList<FiguraInputStream> openInputStreams = new ArrayList<>();
     public final ArrayList<FiguraOutputStream> openOutputStreams = new ArrayList<>();
 
-    public AvatarRenderer renderer;
+    public FiguraRenderer renderer;
     public FiguraLuaRuntime luaRuntime;
     public EntityRenderMode renderMode = EntityRenderMode.OTHER;
 
@@ -179,7 +179,7 @@ public class Avatar {
     }
 
     public Avatar(EntityRenderState entity) {
-        this(AvatarManager.ENTITY_CACHE.computeIfAbsent((int)(entity instanceof PlayerRenderState playerRenderState ? playerRenderState.id : ((FiguraEntityRenderStateExtension)entity).figura$getEntityId()), (id2) -> WorldAPI.getCurrentWorld().getEntity(id2)));
+        this(AvatarManager.ENTITY_CACHE.computeIfAbsent((int)(entity instanceof AvatarRenderState playerRenderState ? playerRenderState.id : ((FiguraEntityRenderStateExtension)entity).figura$getEntityId()), (id2) -> WorldAPI.getCurrentWorld().getEntity(id2)));
     }
 
     public void load(CompoundTag nbt) {
@@ -233,7 +233,7 @@ public class Avatar {
 
                 // animations and models
                 loadAnimations();
-                renderer = new ImmediateAvatarRenderer(this);
+                renderer = new ImmediateFiguraRenderer(this);
 
                 // sounds and script
                 loadCustomSounds();
@@ -525,11 +525,11 @@ public class Avatar {
         complexity.remaining = prev;
     }
 
-    public void render(Entity entity, float yaw, float delta, float alpha, PoseStack stack, MultiBufferSource bufferSource, int light, int overlay, LivingEntityRenderer<?, ?, ?> entityRenderer, PartFilterScheme filter, boolean translucent, boolean glowing) {
+    public void render(Entity entity, float yaw, float delta, float alpha, PoseStack stack, MultiBufferSource bufferSource, int light, int overlay, EntityModel<?> entityModel, PartFilterScheme filter, boolean translucent, boolean glowing) {
         if (renderer == null || !loaded)
             return;
 
-        renderer.vanillaModelData.update(entityRenderer);
+        renderer.vanillaModelData.update(entityModel);
         renderer.yaw = yaw;
         renderer.entity = entity;
 
@@ -635,11 +635,11 @@ public class Avatar {
         FiguraMod.popProfiler(3);
     }
 
-    public void firstPersonRender(PoseStack stack, MultiBufferSource bufferSource, Player player, PlayerRenderer playerRenderer, ModelPart arm, int light, float tickDelta) {
+    public void firstPersonRender(PoseStack stack, MultiBufferSource bufferSource, Player player, PlayerModel playerModel, ModelPart arm, int light, float tickDelta) {
         if (renderer == null || !loaded)
             return;
 
-        boolean lefty = arm == playerRenderer.getModel().leftArm;
+        boolean lefty = arm == playerModel.leftArm;
 
         FiguraMod.pushProfiler(FiguraMod.MOD_ID);
         FiguraMod.pushProfiler(this);
@@ -658,7 +658,7 @@ public class Avatar {
             stack.mulPose(Axis.YP.rotation(arm.yRot));
             stack.mulPose(Axis.XP.rotation(arm.xRot));
         }
-        render(player, 0f, tickDelta, 1f, stack, bufferSource, light, OverlayTexture.NO_OVERLAY, playerRenderer, filter, false, false);
+        render(player, 0f, tickDelta, 1f, stack, bufferSource, light, OverlayTexture.NO_OVERLAY, playerModel, filter, false, false);
         stack.popPose();
 
         renderer.allowHiddenTransforms = true;
@@ -921,7 +921,7 @@ public class Avatar {
         return true;
     }
 
-    public void updateMatrices(LivingEntityRenderer<?, ?, ?> entityRenderer, PoseStack stack) {
+    public void updateMatrices(EntityModel<?> entityModel, PoseStack stack) {
         if (renderer == null || !loaded)
             return;
 
@@ -929,7 +929,7 @@ public class Avatar {
         FiguraMod.pushProfiler(this);
         FiguraMod.pushProfiler("updateMatrices");
 
-        renderer.vanillaModelData.update(entityRenderer);
+        renderer.vanillaModelData.update(entityModel);
         renderer.currentFilterScheme = PartFilterScheme.MODEL;
         renderer.setMatrices(stack);
         renderer.updateMatrices();

@@ -171,7 +171,7 @@ public class BlockStateAPI {
     @LuaWhitelist
     @LuaMethodDoc("blockstate.get_comparator_output")
     public int getComparatorOutput() {
-        return blockState.getAnalogOutputSignal(WorldAPI.getCurrentWorld(), getBlockPos());
+        return blockState.getAnalogOutputSignal(WorldAPI.getCurrentWorld(), getBlockPos(), null);
     }
 
     @LuaWhitelist

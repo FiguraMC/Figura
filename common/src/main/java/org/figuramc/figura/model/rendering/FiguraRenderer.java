@@ -5,7 +5,6 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -36,7 +35,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Mainly exists as an abstract superclass for VAO-based and
  * immediate mode avatar renderers. (VAO-based don't exist yet)
  */
-public abstract class AvatarRenderer {
+public abstract class FiguraRenderer {
 
     protected final Avatar avatar;
     public FiguraModelPart root;
@@ -77,7 +76,7 @@ public abstract class AvatarRenderer {
     public boolean ignoreVanillaVisibility = false;
     public FiguraModelPart itemToRender;
 
-    public AvatarRenderer(Avatar avatar) {
+    public FiguraRenderer(Avatar avatar) {
         this.avatar = avatar;
 
         // textures

@@ -6,6 +6,7 @@ import com.mojang.blaze3d.systems.CommandEncoder;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.GpuTexture;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
@@ -47,7 +48,11 @@ public class TextureCustomization {
 
         // is there a way to check if an atlas exists without getAtlas? cause that is the only thing that will cause an error, and try catch blocks can be pricy
         try {
-            TextureAtlas atlas = Minecraft.getInstance().getModelManager().getAtlas(resourceLocation);
+            // will throw an error if the resource location is not a texture atlas, ignored anyway
+            AbstractTexture atlas = Minecraft.getInstance().getTextureManager().getTexture(resourceLocation);
+            if (!(atlas instanceof TextureAtlas))
+                throw new LuaError("Resource is not a texture atlas: " + resourceLocation);
+
             GpuTexture atlasGpuTexture = atlas.getTexture();
             TextureAtlasAccessor atlasAccessor = (TextureAtlasAccessor) atlas;
             NativeImage nativeImage = new NativeImage(atlasAccessor.figura$getWidth(), atlasAccessor.figura$getHeight(), false);

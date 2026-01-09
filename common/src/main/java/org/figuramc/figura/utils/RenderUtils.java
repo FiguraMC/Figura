@@ -1,22 +1,27 @@
 package org.figuramc.figura.utils;
 
-import com.mojang.blaze3d.opengl.GlStateManager;
-import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import dev.architectury.injectables.annotations.ExpectPlatform;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.SubmitNodeStorage;
+import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.entity.layers.WingsLayer;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.PlayerModelPart;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.permissions.Permissions;
-import org.lwjgl.opengl.GL30;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 public class RenderUtils {
@@ -34,7 +39,7 @@ public class RenderUtils {
             return null;
 
         ResourceLocation layer = avatar.luaRuntime.renderer.fireLayer1;
-        return layer != null ? Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(layer) : null;
+        return layer != null ? Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(TextureAtlas.LOCATION_BLOCKS).getSprite(layer) : null;
     }
 
     public static TextureAtlasSprite secondFireLayer(Avatar avatar) {
@@ -45,9 +50,9 @@ public class RenderUtils {
         ResourceLocation layer2 = avatar.luaRuntime.renderer.fireLayer2;
 
         if (layer2 != null)
-            return Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(layer2);
+            return Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(TextureAtlas.LOCATION_BLOCKS).getSprite(layer2);
         if (layer1 != null)
-            return Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(layer1);
+            return Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(TextureAtlas.LOCATION_BLOCKS).getSprite(layer1);
 
         return null;
     }
@@ -130,5 +135,25 @@ public class RenderUtils {
     @ExpectPlatform
     public static ResourceLocation getPlayerSkinTexture(WingsLayer<?, ?> wingsLayer, HumanoidRenderState renderState) {
         throw new AssertionError();
+    }
+
+    static final ItemStackRenderState itemStackRenderState = new ItemStackRenderState();
+    public static void renderStatic(LivingEntity entity, ItemStack item, ItemDisplayContext displayMode, PoseStack poseStack, int newLight, int newOverlay) {
+        Minecraft client = Minecraft.getInstance();
+        FeatureRenderDispatcher featureRenderDispatcher = client.gameRenderer.getFeatureRenderDispatcher();
+        SubmitNodeStorage submitNodeStorage = featureRenderDispatcher.getSubmitNodeStorage();
+        client.getItemModelResolver().updateForLiving(itemStackRenderState, item, displayMode, entity);
+        itemStackRenderState.submit(poseStack, submitNodeStorage, newLight, newOverlay, 0);
+    }
+
+    public static boolean isEntityUpsideDown(LivingEntity livingEntity) {
+        if (livingEntity instanceof Player || livingEntity.hasCustomName()) {
+            String string = ChatFormatting.stripFormatting(livingEntity.getName().getString());
+            if ("Dinnerbone".equals(string) || "Grumm".equals(string)) {
+                return !(livingEntity instanceof Player player && !player.isModelPartShown(PlayerModelPart.CAPE));
+            }
+        }
+
+        return false;
     }
 }

@@ -4,8 +4,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.debug.DebugScreenEntries;
+import net.minecraft.client.gui.components.debug.DebugScreenEntryStatus;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.TagParser;
@@ -25,6 +29,7 @@ import org.figuramc.figura.mixin.LivingEntityAccessor;
 import org.figuramc.figura.model.FiguraModelPart;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
 import org.luaj.vm2.LuaError;
 
 import java.util.OptionalInt;
@@ -52,20 +57,27 @@ public class EntityTask extends RenderTask {
             assert Minecraft.getInstance().level != null;
             entity.tickCount = (int) (Minecraft.getInstance().level.getGameTime() - ticksSinceEntity);
             EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
-            boolean h = dispatcher.shouldRenderHitBoxes();
-            dispatcher.setRenderHitBoxes(false);
+            Minecraft minecraft = Minecraft.getInstance();
+            DebugScreenEntryStatus h = minecraft.debugEntries.getStatus(DebugScreenEntries.ENTITY_HITBOXES);
+            minecraft.debugEntries.setStatus(DebugScreenEntries.ENTITY_HITBOXES, DebugScreenEntryStatus.NEVER);
             OptionalInt prev = LivingEntityRendererAccessor.overrideOverlay;
             LivingEntityRendererAccessor.overrideOverlay = OptionalInt.of(this.customization.overlay != null ? this.customization.overlay : overlay);
+            float tickDelta = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);
             try {
-                Minecraft.getInstance().getEntityRenderDispatcher()
-                        .render(
-                                entity, 0.0, 0.0, 0.0F, Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true), stack, buffer,
-                                this.customization.light != null ? this.customization.light : light
-                        );
+                CameraRenderState cameraRenderState = new CameraRenderState();
+                cameraRenderState.initialized = minecraft.gameRenderer.getMainCamera().isInitialized();
+                cameraRenderState.pos = minecraft.gameRenderer.getMainCamera().getPosition();
+                cameraRenderState.blockPos = minecraft.gameRenderer.getMainCamera().getBlockPosition();
+                cameraRenderState.entityPos = minecraft.gameRenderer.getMainCamera().getEntity().getPosition(tickDelta);
+                cameraRenderState.orientation = new Quaternionf(minecraft.gameRenderer.getMainCamera().rotation());
+
+                EntityRenderState state = dispatcher.extractEntity(entity, tickDelta);
+                state.lightCoords = this.customization.light != null ? this.customization.light : light;
+                dispatcher.submit(state, cameraRenderState, 0, 0, 0, stack, minecraft.gameRenderer.getSubmitNodeStorage());
             }
             finally {
                 LivingEntityRendererAccessor.overrideOverlay = prev;
-                dispatcher.setRenderHitBoxes(h);
+                minecraft.debugEntries.setStatus(DebugScreenEntries.ENTITY_HITBOXES, h);
             }
         }
     }

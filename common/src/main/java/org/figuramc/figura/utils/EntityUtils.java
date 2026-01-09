@@ -60,7 +60,7 @@ public class EntityUtils {
     public static String getNameForUUID(UUID uuid) {
         PlayerInfo player = getPlayerInfo(uuid);
         if (player != null)
-            return player.getProfile().getName();
+            return player.getProfile().name();
 
         Entity e = getEntityByUUID(uuid);
         if (e != null)
@@ -79,7 +79,7 @@ public class EntityUtils {
         for (UUID uuid : connection.getOnlinePlayerIds()) {
             PlayerInfo player = connection.getPlayerInfo(uuid);
             if (player != null)
-                playerList.put(player.getProfile().getName(), uuid);
+                playerList.put(player.getProfile().name(), uuid);
         }
 
         return playerList;
@@ -98,7 +98,7 @@ public class EntityUtils {
             return false;
 
         GameProfile profile = playerInfo.getProfile();
-        String name = profile.getName();
+        String name = profile.name();
         return name != null && (name.isBlank() || name.charAt(0) == '\u0000');
     }
 }

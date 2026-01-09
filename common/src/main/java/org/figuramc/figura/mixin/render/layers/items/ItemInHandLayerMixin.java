@@ -8,6 +8,7 @@ import com.mojang.math.Axis;
 import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
@@ -23,6 +24,7 @@ import net.minecraft.world.level.block.AbstractSkullBlock;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.ducks.FiguraItemStackRenderStateExtension;
+import org.figuramc.figura.ducks.NodeCollectorExtension;
 import org.figuramc.figura.ducks.SkullBlockRendererAccessor;
 import org.figuramc.figura.lua.api.world.ItemStackAPI;
 import org.figuramc.figura.math.vector.FiguraVec3;
@@ -38,26 +40,26 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M extends EntityModel<S> & ArmedModel> extends RenderLayer<S, M> {
 
     @Unique
-    private Avatar avatar;
+    private Avatar av;
 
     public ItemInHandLayerMixin(RenderLayerParent<S, M> renderLayerParent) {
         super(renderLayerParent);
     }
 
-    @Inject(method = "renderArmWithItem", at = @At("HEAD"), cancellable = true)
-    protected void renderArmWithItemInject(S state, ItemStackRenderState itemStackRenderState, HumanoidArm humanoidArm, PoseStack matrices, MultiBufferSource multiBufferSource, int light, CallbackInfo ci) {
-        avatar = AvatarManager.getAvatar(state);
+    @Inject(method = "submitArmWithItem", at = @At("HEAD"), cancellable = true)
+    protected void renderArmWithItemInject(S state, ItemStackRenderState itemStackRenderState, HumanoidArm humanoidArm, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int light, CallbackInfo ci) {
+        av = AvatarManager.getAvatar(state);
 
         if (itemStackRenderState.isEmpty())
             return;
 
         boolean left = humanoidArm == HumanoidArm.LEFT;
 
-        if (!RenderUtils.renderArmItem(avatar, left, ci))
+        if (!RenderUtils.renderArmItem(av, left, ci))
             return;
 
         // pivot part
-        if (avatar.pivotPartRender(left ? ParentType.LeftItemPivot : ParentType.RightItemPivot, stack -> {
+        if (av.pivotPartRender(left ? ParentType.LeftItemPivot : ParentType.RightItemPivot, stack -> {
             final float s = 16f;
             stack.scale(s, s, s);
             stack.mulPose(Axis.XP.rotationDegrees(-90f));
@@ -75,20 +77,30 @@ public abstract class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M e
                 });
             }
 
-            // sorta have to do this manually otherwise itemRenderEvent isn't called
-            ItemTransform transform = ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getItemTransform();
-            if (avatar == null || !avatar.itemRenderEvent(ItemStackAPI.verify(((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getItemStack()), ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getDisplayContext().name(), FiguraVec3.fromVec3f(transform.translation()), FiguraVec3.of(transform.rotation().z(), transform.rotation().y(), transform.rotation().x()), FiguraVec3.fromVec3f(transform.scale()), ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$isLeftHanded(), stack, multiBufferSource, light, OverlayTexture.NO_OVERLAY))
-                itemStackRenderState.render(stack, multiBufferSource, light, OverlayTexture.NO_OVERLAY);
+            NodeCollectorExtension nodeCollectorExtension = (NodeCollectorExtension) submitNodeCollector;
+            nodeCollectorExtension.submitFiguraModel(av, state, (avatar, livingEntity, bufferSource) -> {
+                // sorta have to do this manually otherwise itemRenderEvent isn't called
+                ItemTransform transform = ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getItemTransform();
+
+                if (av == null || !av.itemRenderEvent(ItemStackAPI.verify(((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getItemStack()),
+                        ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getDisplayContext().name(), FiguraVec3.fromVec3f(transform.translation()),
+                        FiguraVec3.of(transform.rotation().z(), transform.rotation().y(), transform.rotation().x()), FiguraVec3.fromVec3f(transform.scale()),
+                        ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$isLeftHanded(), stack, bufferSource, light, OverlayTexture.NO_OVERLAY)
+                )
+                    itemStackRenderState.submit(poseStack, submitNodeCollector, light, OverlayTexture.NO_OVERLAY, livingEntity.outlineColor);
+
+                return null;
+            });
         })) {
             ci.cancel();
         }
     }
 
-    @WrapOperation(method = "renderArmWithItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/item/ItemStackRenderState;render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;II)V"))
-    private void figuraItemEvent(ItemStackRenderState instance, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay, Operation<Void> original, @Local(argsOnly = true) S armedState) {
+    @WrapOperation(method = "submitArmWithItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/item/ItemStackRenderState;submit(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;III)V"))
+    private void figuraItemEvent(ItemStackRenderState instance, PoseStack matrices, SubmitNodeCollector submitNodeCollector, int light, int overlay, int outlineColor, Operation<Void> original, @Local(argsOnly = true) S armedState) {
         ItemStack stack = ((FiguraItemStackRenderStateExtension)instance).figura$getItemStack();
         Entity entity = AvatarManager.getEntity(armedState);
-        if (avatar != null && stack != null && entity != null && stack.getItem() instanceof BlockItem bl && bl.getBlock() instanceof AbstractSkullBlock sk) {
+        if (av != null && stack != null && entity != null && stack.getItem() instanceof BlockItem bl && bl.getBlock() instanceof AbstractSkullBlock sk) {
             SkullBlockRendererAccessor.setEntity(entity);
             SkullBlockRendererAccessor.setRenderMode(switch (((FiguraItemStackRenderStateExtension) instance).figura$getDisplayContext()) {
                 case FIRST_PERSON_LEFT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.FIRST_PERSON_LEFT_HAND;
@@ -100,7 +112,20 @@ public abstract class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M e
             });
         }
         ItemTransform transform = ((FiguraItemStackRenderStateExtension)instance).figura$getItemTransform();
-        if (avatar == null || !avatar.itemRenderEvent(ItemStackAPI.verify(stack), ((FiguraItemStackRenderStateExtension)instance).figura$getDisplayContext().name(), FiguraVec3.fromVec3f(transform.translation()), FiguraVec3.of(transform.rotation().z(), transform.rotation().y(), transform.rotation().x()), FiguraVec3.fromVec3f(transform.scale()), ((FiguraItemStackRenderStateExtension)instance).figura$isLeftHanded(), matrices, vertexConsumers, light, overlay))
-            original.call(instance, matrices, vertexConsumers, light, overlay);
+        NodeCollectorExtension nodeCollectorExtension = (NodeCollectorExtension) submitNodeCollector;
+
+        if (av != null) {
+            nodeCollectorExtension.submitFiguraModel(av, armedState, (avatar, livingEntity, bufferSource) -> {
+
+                if (avatar == null || !avatar.itemRenderEvent(ItemStackAPI.verify(stack), ((FiguraItemStackRenderStateExtension) instance).figura$getDisplayContext().name(),
+                        FiguraVec3.fromVec3f(transform.translation()), FiguraVec3.of(transform.rotation().z(), transform.rotation().y(), transform.rotation().x()),
+                        FiguraVec3.fromVec3f(transform.scale()), ((FiguraItemStackRenderStateExtension) instance).figura$isLeftHanded(),
+                        matrices, bufferSource, light, overlay)
+                )
+                    original.call(instance, matrices, submitNodeCollector, light, overlay, outlineColor);
+
+                return null;
+            });
+        }
     }
 }

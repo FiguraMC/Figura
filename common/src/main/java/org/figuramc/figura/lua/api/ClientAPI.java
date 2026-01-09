@@ -2,14 +2,17 @@ package org.figuramc.figura.lua.api;
 
 import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.platform.Window;
+import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.ClientBrandRetriever;
+import net.minecraft.client.CloudStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.resources.model.AtlasManager;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.core.Registry;
 import net.minecraft.core.UUIDUtil;
@@ -34,7 +37,7 @@ import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.mixin.gui.GuiAccessor;
 import org.figuramc.figura.mixin.gui.PlayerTabOverlayAccessor;
-import org.figuramc.figura.mixin.render.ModelManagerAccessor;
+import org.figuramc.figura.mixin.render.AtlasManagerAccessor;
 import org.figuramc.figura.utils.*;
 import org.joml.Vector3f;
 import org.luaj.vm2.LuaError;
@@ -94,7 +97,28 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.get_fps_string")
     public static String getFPSString() {
-        return Minecraft.getInstance().fpsString;
+        int fps = Minecraft.getInstance().getFps();
+        int maxFps = Minecraft.getInstance().getFramerateLimitTracker().getFramerateLimit();
+        String gpuUtilization;
+        if (Minecraft.getInstance().getGpuUtilization() > 0.0) {
+            gpuUtilization = " GPU: " + (Minecraft.getInstance().getGpuUtilization() > 100.0 ? ChatFormatting.RED + "100%" :
+                    Math.round(Minecraft.getInstance().getGpuUtilization()) + "%");
+        } else {
+            gpuUtilization = "";
+        }
+
+        return String.format(
+                Locale.ROOT,
+                "%d fps T: %s%s%s%s B: %d%s",
+                fps,
+                maxFps == 260 ? "inf" : maxFps,
+                Minecraft.getInstance().options.enableVsync().get() ? " vsync " : " ",
+                Minecraft.getInstance().options.graphicsMode().get(),
+                Minecraft.getInstance().options.cloudStatus().get() == CloudStatus.OFF ? "" :
+                        (Minecraft.getInstance().options.cloudStatus().get() == CloudStatus.FAST ? " fast-clouds" : " fancy-clouds"),
+                Minecraft.getInstance().options.biomeBlendRadius().get(),
+                gpuUtilization
+        );
     }
 
     @LuaWhitelist
@@ -644,8 +668,8 @@ public class ClientAPI {
     @LuaMethodDoc("client.list_atlases")
     public static List<String> listAtlases() {
         List<String> list = new ArrayList<>();
-        for (ResourceLocation res : ModelManagerAccessor.getVanillaAtlases().keySet())
-            list.add(res.toString());
+        for (AtlasManager.AtlasConfig config : AtlasManagerAccessor.getVanillaAtlases())
+            list.add(config.textureId().toString());
         return list;
     }
 
@@ -660,7 +684,7 @@ public class ClientAPI {
     public static TextureAtlasAPI getAtlas(@LuaNotNil String atlas) {
         ResourceLocation path = LuaUtils.parsePath(atlas);
         try {
-            return new TextureAtlasAPI(Minecraft.getInstance().getModelManager().getAtlas(path));
+            return new TextureAtlasAPI(Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(path));
         } catch (Exception ignored) {
             return null;
         }
@@ -682,7 +706,7 @@ public class ClientAPI {
         // players
         List<String> list = new ArrayList<>();
         for (PlayerInfo entry : EntityUtils.getTabList())
-            list.add(entry.getTabListDisplayName() != null ? entry.getTabListDisplayName().getString() : entry.getProfile().getName());
+            list.add(entry.getTabListDisplayName() != null ? entry.getTabListDisplayName().getString() : entry.getProfile().name());
         map.put("players", list);
 
         // footer

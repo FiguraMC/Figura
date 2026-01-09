@@ -622,7 +622,7 @@ public class WorldAPI {
     @LuaMethodDoc("world.get_spawn_point")
     public static FiguraVec3 getSpawnPoint() {
         Level world = getCurrentWorld();
-        return FiguraVec3.fromBlockPos(world.getSharedSpawnPos());
+        return FiguraVec3.fromBlockPos(world.getRespawnData().pos());
     }
 
     @Override

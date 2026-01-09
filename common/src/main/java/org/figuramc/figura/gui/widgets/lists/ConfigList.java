@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.util.Mth;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.ConfigKeyBind;
@@ -77,18 +78,18 @@ public class ConfigList extends AbstractList {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
         // fix mojang focusing for text fields
         for (CategoryWidget categoryWidget : configs) {
             for (GuiEventListener children : categoryWidget.children()) {
                 if (children instanceof InputElement inputElement) {
                     TextField field = inputElement.getTextField();
-                    field.getField().setFocused(field.isEnabled() && field.isMouseOver(mouseX, mouseY));
+                    field.getField().setFocused(field.isEnabled() && field.isMouseOver(mouseButtonEvent.x(), mouseButtonEvent.y()));
                 }
             }
         }
 
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(mouseButtonEvent, bl);
     }
 
     public void updateList() {

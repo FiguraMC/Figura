@@ -4,6 +4,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
@@ -41,12 +43,15 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
 
     // -- methods -- // 
 
+
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (!this.isActive() || !this.isHoveredOrFocused() || !this.isMouseOver(mouseX, mouseY))
+    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
+        if (!this.isActive() || !this.isHoveredOrFocused() || !this.isMouseOver(mouseButtonEvent.x(), mouseButtonEvent.y()))
             return false;
 
-        if (button == 0) {
+        if (mouseButtonEvent.button() == 0) {
+            double mouseX = mouseButtonEvent.x();
+            double mouseY = mouseButtonEvent.y();
             // jump to pos when not clicking on head
             double scrollPos = Mth.lerp(scrollPrecise, 0d, (vertical ? getHeight() - headHeight : getWidth() - headWidth) + 2d);
 
@@ -60,12 +65,12 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
             return true;
         }
 
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(mouseButtonEvent, bl);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (button == 0 && isScrolling) {
+    public boolean mouseReleased(MouseButtonEvent mouseButtonEvent) {
+        if (mouseButtonEvent.button() == 0 && isScrolling) {
             isScrolling = false;
             return true;
         }
@@ -74,7 +79,9 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+    public boolean mouseDragged(MouseButtonEvent mouseButtonEvent, double deltaX, double deltaY) {
+        double mouseX = mouseButtonEvent.x();
+        double mouseY = mouseButtonEvent.y();
         if (isScrolling) {
             // vertical drag
             if (vertical) {
@@ -101,7 +108,7 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
             }
         }
 
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        return super.mouseDragged(mouseButtonEvent, deltaX, deltaY);
     }
 
     @Override
@@ -112,15 +119,16 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent keyEvent) {
         if (!this.isActive()) return false;
 
+        int keyCode = keyEvent.key();
         if (keyCode > 261 && keyCode < 266) {
             scroll((keyCode % 2 == 0 ? 1 : -1) * (vertical ? getHeight() : getWidth()) * 0.05d * scrollRatio);
             return true;
         }
 
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(keyEvent);
     }
 
     @Override

@@ -26,5 +26,4 @@ public interface EquipmentLayerRendererAccessor {
     static int getColorForLayer(EquipmentClientInfo.Layer layer, int i) {
         throw new AssertionError();
     }
-
 }

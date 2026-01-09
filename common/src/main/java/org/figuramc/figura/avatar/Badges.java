@@ -33,7 +33,7 @@ public class Badges {
         if (pair == null)
             return Component.empty();
 
-        MutableComponent badges = Component.empty().withStyle(Style.EMPTY.withFont(FONT).withColor(ChatFormatting.WHITE).withObfuscated(false));
+        MutableComponent badges = Component.empty().withStyle(Style.EMPTY.withFont(new FontDescription.Resource(FONT)).withColor(ChatFormatting.WHITE).withObfuscated(false));
 
         // avatar badges
         Avatar avatar = AvatarManager.getAvatarForPlayer(id);

@@ -2,6 +2,7 @@ package org.figuramc.figura.mixin.particle;
 
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.client.particle.ParticleResources;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.resources.ResourceLocation;
@@ -19,20 +20,14 @@ import java.util.*;
 @Mixin(ParticleEngine.class)
 public abstract class ParticleEngineMixin implements ParticleEngineAccessor {
 
-    @Final @Shadow private Map<ResourceLocation, SpriteSet> spriteSets;
-
     @Shadow @Nullable protected abstract <T extends ParticleOptions> Particle makeParticle(T parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ);
 
     @Shadow public abstract void add(Particle particle);
 
+    @Shadow
+    @Final
+    private ParticleResources resourceManager;
     @Unique private final HashMap<Particle, UUID> particleMap = new HashMap<>();
-
-    // This fixes a conflict with Optifine having slightly different args + it should be more stable in general, capturing Locals is bad practice
-    @ModifyVariable(method = "tickParticleList", at = @At(value = "INVOKE", target = "Ljava/util/Iterator;remove()V", ordinal = 0))
-    private Particle tickParticleList(Particle particle) {
-        particleMap.remove(particle);
-        return particle;
-    }
 
     @Override @Intrinsic
     public <T extends ParticleOptions> Particle figura$makeParticle(T parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
@@ -58,8 +53,13 @@ public abstract class ParticleEngineMixin implements ParticleEngineAccessor {
         }
     }
 
-    @Override @Intrinsic
-    public SpriteSet figura$getParticleSprite(ResourceLocation particleID) {
-        return spriteSets.get(particleID);
+    @Override
+    public void figura$removeParticle(Particle particle) {
+        particleMap.remove(particle);
+    }
+
+    @Override
+    public ParticleResources figura$getParticleResources() {
+        return resourceManager;
     }
 }

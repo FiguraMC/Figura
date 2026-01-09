@@ -14,6 +14,7 @@ import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.entries.FiguraScreen;
 import org.figuramc.figura.gui.screens.*;
 import org.figuramc.figura.utils.FiguraIdentifier;
+import org.figuramc.figura.utils.IOUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
 
 import java.util.ArrayList;
@@ -101,7 +102,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
     }
 
     public boolean cycleTab(int keyCode) {
-        if (Screen.hasControlDown()) {
+        if (IOUtils.hasControlDown()) {
             int i = this.getNextPanel(keyCode);
             if (i >= 0 && i < buttons.size()) {
                 PanelButton button = buttons.get(i);
@@ -123,7 +124,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
             // get current button
             int index = buttons.indexOf(selected);
 
-            int i = Screen.hasShiftDown() ? index - 1 : index + 1;
+            int i = IOUtils.hasShiftDown() ? index - 1 : index + 1;
             return Math.floorMod(i, buttons.size());
         }
 

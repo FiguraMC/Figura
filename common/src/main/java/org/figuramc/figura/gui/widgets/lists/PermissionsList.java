@@ -5,6 +5,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.input.InputWithModifiers;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
@@ -195,18 +197,18 @@ public class PermissionsList extends AbstractList {
         }
 
         @Override
-        public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (!this.isActive() || !this.isHoveredOrFocused() || !this.isMouseOver(mouseX, mouseY))
+        public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
+            if (!this.isActive() || !this.isHoveredOrFocused() || !this.isMouseOver(mouseButtonEvent.x(), mouseButtonEvent.y()))
                 return false;
 
-            if (button == 1) {
+            if (mouseButtonEvent.button() == 1) {
                 container.reset(permissions);
                 this.parent.updateList(container);
                 playDownSound(Minecraft.getInstance().getSoundManager());
                 return true;
             }
 
-            return super.mouseClicked(mouseX, mouseY, button);
+            return super.mouseClicked(mouseButtonEvent, bl);
         }
 
         @Override
@@ -237,7 +239,7 @@ public class PermissionsList extends AbstractList {
         }
 
         @Override
-        public void onPress() {
+        public void onPress(InputWithModifiers inputWithModifiers) {
             // update permission
             boolean value = !this.isToggled();
 
@@ -247,7 +249,7 @@ public class PermissionsList extends AbstractList {
             // update text
             this.value = FiguraText.of("permissions." + (value ? "enabled" : "disabled"));
 
-            super.onPress();
+            super.onPress(inputWithModifiers);
         }
 
         @Override
@@ -284,18 +286,18 @@ public class PermissionsList extends AbstractList {
         }
 
         @Override
-        public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (!this.isActive() || !this.isHoveredOrFocused() || !this.isMouseOver(mouseX, mouseY))
+        public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
+            if (!this.isActive() || !this.isHoveredOrFocused() || !this.isMouseOver(mouseButtonEvent.x(), mouseButtonEvent.y()))
                 return false;
 
-            if (button == 1) {
+            if (mouseButtonEvent.button() == 1) {
                 container.reset(permissions);
                 this.parent.updateList(container);
                 playDownSound(Minecraft.getInstance().getSoundManager());
                 return true;
             }
 
-            return super.mouseClicked(mouseX, mouseY, button);
+            return super.mouseClicked(mouseButtonEvent, bl);
         }
 
         @Override
@@ -390,18 +392,18 @@ public class PermissionsList extends AbstractList {
         }
 
         @Override
-        public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (!this.isEnabled() || !this.isMouseOver(mouseX, mouseY))
+        public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
+            if (!this.isEnabled() || !this.isMouseOver(mouseButtonEvent.x(), mouseButtonEvent.y()))
                 return false;
 
-            if (button == 1) {
+            if (mouseButtonEvent.button() == 1) {
                 container.reset(permissions);
                 this.parent.updateList(container);
                 this.getField().playDownSound(Minecraft.getInstance().getSoundManager());
                 return true;
             }
 
-            return super.mouseClicked(mouseX, mouseY, button);
+            return super.mouseClicked(mouseButtonEvent, bl);
         }
 
         @Override

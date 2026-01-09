@@ -4,7 +4,11 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.InputWithModifiers;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.Mth;
@@ -93,7 +97,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
                 UIHelper.renderOutlineText(gui, font, text, 0, 0, 0xFFFFFF, 0x202020);
                 pose.popMatrix();
 
-                MutableComponent info = Component.literal("?").withStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
+                MutableComponent info = Component.literal("?").withStyle(Style.EMPTY.withFont(new FontDescription.Resource(UIHelper.UI_FONT)));
                 int color = 0x404040;
 
                 int width = font.width(info);
@@ -164,8 +168,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
 
         addRenderableWidget(precisePermissions = new SwitchButton(middle + 66, height, listWidth - 88, 20, FiguraText.of("gui.permissions.precise"), false) {
             @Override
-            public void onPress() {
-                super.onPress();
+            public void onPress(InputWithModifiers inputWithModifiers) {
                 permissionsList.precise = this.isToggled();
                 permissionsList.updateList(playerList.selectedEntry.getPack());
             }
@@ -222,22 +225,24 @@ public class PermissionsScreen extends AbstractPanelScreen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent keyEvent) {
         // yeet ESC key press for collapsing the card list
-        if (keyCode == 256 && expandButton.isToggled()) {
-            expandButton.onPress();
+        if (keyEvent.key() == 256 && expandButton.isToggled()) {
+            expandButton.onPress(keyEvent);
             return true;
         }
 
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(keyEvent);
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        boolean bool = super.mouseClicked(mouseX, mouseY, button);
+    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
+        boolean bool = super.mouseClicked(mouseButtonEvent, bl);
         dragged = null;
 
-        if (button == 0 && playerList.selectedEntry instanceof PlayerPermPackElement element && element.isMouseOver(mouseX, mouseY)) {
+        double mouseX = mouseButtonEvent.x();
+        double mouseY = mouseButtonEvent.y();
+        if (mouseButtonEvent.button() == 0 && playerList.selectedEntry instanceof PlayerPermPackElement element && element.isMouseOver(mouseX, mouseY)) {
             dragged = element;
             element.anchorX = (int) mouseX;
             element.anchorY = (int) mouseY;
@@ -248,19 +253,19 @@ public class PermissionsScreen extends AbstractPanelScreen {
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+    public boolean mouseDragged(MouseButtonEvent mouseButtonEvent, double d, double e) {
         if (dragged != null) {
-            dragged.index = playerList.getCategoryAt(mouseY);
+            dragged.index = playerList.getCategoryAt(mouseButtonEvent.y());
             dragged.dragged = true;
             return true;
         }
 
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        return super.mouseDragged(mouseButtonEvent, d, e);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        boolean bool = super.mouseReleased(mouseX, mouseY, button);
+    public boolean mouseReleased(MouseButtonEvent mouseButtonEvent) {
+        boolean bool = super.mouseReleased(mouseButtonEvent);
 
         if (dragged == null || !dragged.dragged)
             return bool;

@@ -1,6 +1,7 @@
 package org.figuramc.figura.ducks;
 
 import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleResources;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.resources.ResourceLocation;
@@ -13,4 +14,6 @@ public interface ParticleEngineAccessor {
     void figura$spawnParticle(Particle particle, UUID owner);
     void figura$clearParticles(UUID owner);
     SpriteSet figura$getParticleSprite(ResourceLocation particleID);
+    void figura$removeParticle(Particle particle);
+    ParticleResources figura$getParticleResources();
 }

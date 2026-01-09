@@ -7,6 +7,7 @@ import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import org.figuramc.figura.utils.ui.UIHelper;
 
@@ -48,12 +49,12 @@ public abstract class AbstractContainerElement extends AbstractContainerEventHan
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
         GuiEventListener widget = null;
 
         // update children focused
         for (GuiEventListener children : List.copyOf(this.children())) {
-            boolean clicked = children.mouseClicked(mouseX, mouseY, button);
+            boolean clicked = children.mouseClicked(mouseButtonEvent, bl);
             children.setFocused(clicked);
             if (clicked) widget = children;
         }
@@ -63,7 +64,7 @@ public abstract class AbstractContainerElement extends AbstractContainerEventHan
             setFocused(widget);
 
         if (widget != null) {
-            if (button == 0) this.setDragging(true);
+            if (mouseButtonEvent.button() == 0) this.setDragging(true);
             return true;
         }
 
@@ -76,15 +77,15 @@ public abstract class AbstractContainerElement extends AbstractContainerEventHan
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+    public boolean mouseDragged(MouseButtonEvent mouseButtonEvent, double deltaX, double deltaY) {
         // yeet mouse 0 and isDragging check
-        return this.getFocused() != null && this.getFocused().mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        return this.getFocused() != null && this.getFocused().mouseDragged(mouseButtonEvent, deltaX, deltaY);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(MouseButtonEvent mouseButtonEvent) {
         // better check for mouse released when outside node's boundaries
-        boolean bool = this.getFocused() != null && this.getFocused().mouseReleased(mouseX, mouseY, button);
+        boolean bool = this.getFocused() != null && this.getFocused().mouseReleased(mouseButtonEvent);
 
         // remove focused when clicking
         if (bool) setFocused(null);

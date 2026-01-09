@@ -17,6 +17,7 @@ import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.mixin.FoodDataMixin;
+import org.figuramc.figura.mixin.PlayerModelTypeAccessor;
 import org.figuramc.figura.utils.EntityUtils;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
@@ -89,7 +90,7 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
     @LuaMethodDoc("player.get_model_type")
     public String getModelType() {
         checkEntity();
-        return (checkPlayerInfo() ? playerInfo.getSkin().model().id().toUpperCase() : DefaultPlayerSkin.get(entity.getUUID()).model().id()).toUpperCase(Locale.US);
+        return (checkPlayerInfo() ? playerInfo.getSkin().model().name().toUpperCase() : ((PlayerModelTypeAccessor)(Object)DefaultPlayerSkin.get(entity.getUUID()).model()).figura$getLegacyServicesId()).toUpperCase(Locale.US);
     }
 
     @LuaWhitelist
@@ -107,14 +108,14 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
     @LuaMethodDoc("player.has_cape")
     public boolean hasCape() {
         checkEntity();
-        return checkPlayerInfo() && playerInfo.getSkin().capeTexture() != null;
+        return checkPlayerInfo() && playerInfo.getSkin().cape() != null;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("player.has_skin")
     public boolean hasSkin() {
         checkEntity();
-        return checkPlayerInfo() && playerInfo.getSkin().texture() != null;
+        return checkPlayerInfo() && playerInfo.getSkin().body() != null;
     }
 
     @LuaWhitelist
@@ -162,7 +163,9 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
             value = "player.get_shoulder_entity")
     public LuaTable getShoulderEntity(boolean right) {
         checkEntity();
-        return new ReadOnlyLuaTable(NbtToLua.convert(right ? entity.getShoulderEntityRight() : entity.getShoulderEntityLeft()));
+        return new ReadOnlyLuaTable(new LuaTable());
+        //todo: can this even be fixed?
+        //return new ReadOnlyLuaTable(NbtToLua.convert(right ? entity.getShoulderParrotLeft() : entity.getShoulderEntityLeft()));
     }
 
     @LuaWhitelist

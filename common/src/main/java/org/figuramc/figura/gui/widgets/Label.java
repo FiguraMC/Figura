@@ -8,6 +8,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -143,13 +144,13 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
         if (hovered != null && Minecraft.getInstance().screen != null) {
             Minecraft.getInstance().screen.handleComponentClicked(hovered);
             return true;
         }
 
-        return GuiEventListener.super.mouseClicked(mouseX, mouseY, button);
+        return GuiEventListener.super.mouseClicked(mouseButtonEvent, bl);
     }
 
     @Override

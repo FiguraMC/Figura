@@ -1,6 +1,7 @@
 package org.figuramc.figura.gui.widgets;
 
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
@@ -42,15 +43,16 @@ public class SliderWidget extends ScrollBarWidget {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent keyEvent) {
         if (!this.isActive()) return false;
 
+        int keyCode = keyEvent.key();
         if (keyCode > 261 && keyCode < 266) {
-            scroll(stepSize * (keyCode % 2 == 0 ? 1 : -1) * Math.max(modifiers * 10, 1) * (getWidth() - headWidth + 2d));
+            scroll(stepSize * (keyCode % 2 == 0 ? 1 : -1) * Math.max(keyEvent.modifiers() * 10, 1) * (getWidth() - headWidth + 2d));
             return true;
         }
 
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(keyEvent);
     }
 
     @Override

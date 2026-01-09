@@ -12,6 +12,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.entity.Entity;
@@ -40,15 +41,15 @@ public class PopupMenu {
     private static final FiguraIdentifier ICONS = new FiguraIdentifier("textures/gui/popup_icons.png");
 
     private static final MutableComponent VERSION_WARN = Component.empty()
-            .append(Badges.System.WARNING.badge.copy().withStyle(Style.EMPTY.withFont(Badges.FONT)))
+            .append(Badges.System.WARNING.badge.copy().withStyle(Style.EMPTY.withFont(new FontDescription.Resource(Badges.FONT))))
             .append(" ")
             .append(Badges.System.WARNING.desc.copy().withStyle(ChatFormatting.YELLOW));
     private static final MutableComponent ERROR_WARN = Component.empty()
-            .append(Badges.System.ERROR.badge.copy().withStyle(Style.EMPTY.withFont(Badges.FONT)))
+            .append(Badges.System.ERROR.badge.copy().withStyle(Style.EMPTY.withFont(new FontDescription.Resource(Badges.FONT))))
             .append(" ")
             .append(Badges.System.ERROR.desc.copy().withStyle(ChatFormatting.RED));
     private static final MutableComponent PERMISSION_WARN = Component.empty()
-            .append(Badges.System.PERMISSIONS.badge.copy().withStyle(Style.EMPTY.withFont(Badges.FONT)))
+            .append(Badges.System.PERMISSIONS.badge.copy().withStyle(Style.EMPTY.withFont(new FontDescription.Resource(Badges.FONT))))
             .append(" ")
             .append(Badges.System.PERMISSIONS.desc.copy().withStyle(ChatFormatting.BLUE));
 

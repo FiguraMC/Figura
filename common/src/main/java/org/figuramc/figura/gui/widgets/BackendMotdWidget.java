@@ -5,6 +5,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractTextAreaWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -104,8 +105,8 @@ public class BackendMotdWidget extends AbstractTextAreaWidget {
     private boolean mouseDown = false;
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        mouseDown = super.mouseClicked(mouseX, mouseY, button);
+    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
+        mouseDown = super.mouseClicked(mouseButtonEvent, bl);
         return mouseDown;
     }
     protected void updateWidgetNarration(NarrationElementOutput builder) {

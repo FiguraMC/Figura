@@ -3,6 +3,7 @@ package org.figuramc.figura.mixin.gui;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.SplashManager;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.RandomSource;
 import org.figuramc.figura.FiguraMod;
@@ -31,7 +32,7 @@ public class SplashManagerMixin {
     @Unique
     private static final List<Component> FIGURA_SPLASHES = List.of(
             Component.literal("Also try ears ")
-                    .append(Component.literal("\uD83D\uDC3E").withStyle(Style.EMPTY.withFont(UIHelper.SPECIAL_FONT).withColor(ChatFormatting.WHITE)))
+                    .append(Component.literal("\uD83D\uDC3E").withStyle(Style.EMPTY.withFont(new FontDescription.Resource(UIHelper.SPECIAL_FONT)).withColor(ChatFormatting.WHITE)))
                     .append("!")
     );
 
@@ -58,7 +59,7 @@ public class SplashManagerMixin {
 
         if (who != null) {
             FiguraMod.splashText = Component.literal("Happy birthday " + who + " ")
-                    .append(Badges.System.DEFAULT.badge.copy().withStyle(Style.EMPTY.withFont(Badges.FONT).withColor(ColorUtils.Colors.DEFAULT.hex)))
+                    .append(Badges.System.DEFAULT.badge.copy().withStyle(Style.EMPTY.withFont(new FontDescription.Resource(Badges.FONT)).withColor(ColorUtils.Colors.DEFAULT.hex)))
                     .append("!");
         } else {
             int size = this.splashes.size();

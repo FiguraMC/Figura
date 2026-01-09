@@ -1,10 +1,10 @@
 package org.figuramc.figura;
 
-import com.google.common.cache.LoadingCache;
-import com.mojang.authlib.GameProfile;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -20,8 +20,9 @@ import org.figuramc.figura.entries.EntryPointManager;
 import org.figuramc.figura.font.Emojis;
 import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.lua.docs.FiguraDocsManager;
+import org.figuramc.figura.mixin.gui.DebugScreenEntriesAccessor;
 import org.figuramc.figura.mixin.MinecraftAccesor;
-import org.figuramc.figura.mixin.SkullBlockEntityAccessor;
+import org.figuramc.figura.gui.widgets.DebugEntryFigura;
 import org.figuramc.figura.permissions.PermissionManager;
 import org.figuramc.figura.resources.FiguraRuntimeResources;
 import org.figuramc.figura.utils.*;
@@ -31,8 +32,6 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 public class FiguraMod {
 
@@ -50,6 +49,8 @@ public class FiguraMod {
     public static Component splashText;
     public static boolean parseMessages = true;
     public static boolean processingKeybind;
+    public static KeyMapping.Category FIGURA_KEY_CATEGORY = new KeyMapping.Category(new FiguraIdentifier("keys"));
+    public static ResourceLocation FIGURA_DEBUG_KEY = new ResourceLocation(MOD_ID, "figura_debug_info");
 
     /* For some reason, the mod menu entrypoint (or something) is able to call this before the Config
     class can initialize, meaning Configs.DEBUG_MODE can be null when this is called.... Weird */
@@ -66,6 +67,7 @@ public class FiguraMod {
         CacheAvatarLoader.init();
         FiguraDocsManager.init();
         FiguraRuntimeResources.init();
+        DebugScreenEntriesAccessor.figura$invokeRegister(FIGURA_DEBUG_KEY, new DebugEntryFigura());
 
         GeckoLibCompat.init();
         SimpleVCCompat.init();
@@ -146,27 +148,6 @@ public class FiguraMod {
         } else {
             LOGGER.info(message.getString());
         }
-    }
-
-    /**
-     * Converts a player name to UUID using minecraft internal functions.
-     *
-     * @param playerName - the player name
-     * @return - the player's uuid or null
-     */
-    public static UUID playerNameToUUID(String playerName) {
-        LoadingCache<String, CompletableFuture<Optional<GameProfile>>> cache = SkullBlockEntityAccessor.getProfileCache();
-        if (cache == null) return null;
-
-        Optional<GameProfile> profile = Optional.empty();
-        try {
-            try {
-                profile = cache.get(playerName).get();
-            } catch (InterruptedException ignored) {
-            }
-        } catch (ExecutionException ignored) {
-        }
-        return profile.map(GameProfile::getId).orElse(null);
     }
 
     public static Style getAccentColor() {

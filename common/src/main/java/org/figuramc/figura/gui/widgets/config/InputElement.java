@@ -12,6 +12,7 @@ import org.figuramc.figura.gui.widgets.ParentedButton;
 import org.figuramc.figura.gui.widgets.TextField;
 import org.figuramc.figura.gui.widgets.lists.ConfigList;
 import org.figuramc.figura.utils.ColorUtils;
+import org.figuramc.figura.utils.IOUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
 
 import java.util.function.Consumer;
@@ -34,7 +35,7 @@ public class InputElement extends AbstractConfigElement {
                 config.setTempValue(text);
         });
         updateTextFieldText(formatText(config.tempValue));
-        textField.getField().moveCursorToStart(Screen.hasShiftDown());
+        textField.getField().moveCursorToStart(IOUtils.hasShiftDown());
         textField.setEnabled(FiguraMod.debugModeEnabled() || !config.disabled);
 
         children.add(0, textField);

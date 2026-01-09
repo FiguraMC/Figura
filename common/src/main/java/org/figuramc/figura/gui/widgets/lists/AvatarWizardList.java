@@ -5,6 +5,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.input.InputWithModifiers;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
@@ -97,14 +99,14 @@ public class AvatarWizardList extends AbstractList {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
         // fix mojang focusing for text fields
         for (GuiEventListener widget : children()) {
             if (widget instanceof TextField field)
-                field.getField().setFocused(field.isEnabled() && field.isMouseOver(mouseX, mouseY));
+                field.getField().setFocused(field.isEnabled() && field.isMouseOver(mouseButtonEvent.x(), mouseButtonEvent.y()));
         }
 
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(mouseButtonEvent, bl);
     }
 
     private void generate() {
@@ -183,8 +185,8 @@ public class AvatarWizardList extends AbstractList {
         }
 
         @Override
-        public void onPress() {
-            super.onPress();
+        public void onPress(InputWithModifiers inputWithModifiers) {
+            super.onPress(inputWithModifiers);
             parent.wizard.changeEntry(entry, this.isToggled());
         }
 

@@ -5,6 +5,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.network.chat.Component;
@@ -24,10 +25,7 @@ import org.figuramc.figura.lua.api.nameplate.NameplateCustomization;
 import org.figuramc.figura.permissions.PermissionManager;
 import org.figuramc.figura.permissions.PermissionPack;
 import org.figuramc.figura.permissions.Permissions;
-import org.figuramc.figura.utils.EntityUtils;
-import org.figuramc.figura.utils.FiguraIdentifier;
-import org.figuramc.figura.utils.FiguraText;
-import org.figuramc.figura.utils.TextUtils;
+import org.figuramc.figura.utils.*;
 import org.figuramc.figura.utils.ui.UIHelper;
 import org.joml.Matrix3x2fStack;
 
@@ -153,7 +151,7 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
                     name = custom.getJson().copy();
 
                 Entity e = EntityUtils.getEntityByUUID(owner);
-                boolean upsideDown = e instanceof LivingEntity entity && LivingEntityRenderer.isEntityUpsideDown(entity);
+                boolean upsideDown = e instanceof LivingEntity entity && RenderUtils.isEntityUpsideDown(entity);
                 head = avatar.submitPortraitDraw(gui, this.skin, x + 4, y + 4, Math.round(32f * scale), 64, upsideDown);
             }
 
@@ -216,12 +214,14 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
+        double mouseX = mouseButtonEvent.x();
+        double mouseY = mouseButtonEvent.y();
         if (!this.isMouseOver(mouseX, mouseY))
             return false;
 
         // context menu on right click
-        if (button == 1) {
+        if (mouseButtonEvent.button() == 1) {
             context.setX((int) mouseX);
             context.setY((int) mouseY);
             context.setVisible(true);
@@ -233,7 +233,7 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
             context.setVisible(false);
         }
 
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(mouseButtonEvent, bl);
     }
 
     @Override

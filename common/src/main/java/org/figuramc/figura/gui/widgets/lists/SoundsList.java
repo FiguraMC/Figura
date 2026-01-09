@@ -5,6 +5,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -178,8 +179,10 @@ public class SoundsList extends AbstractList {
         }
 
         @Override
-        public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            boolean clicked = super.mouseClicked(mouseX, mouseY, button);
+        public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
+            boolean clicked = super.mouseClicked(mouseButtonEvent, bl);
+            double mouseX = mouseButtonEvent.x();
+            double mouseY = mouseButtonEvent.y();
             if (!clicked) {
                 if (isMouseOver(mouseX, mouseY)) {
                     parent.selected = this;

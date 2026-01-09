@@ -141,7 +141,7 @@ public class KeybindWidgetHelper {
             if (key.saveString().equals(keyName)) {
                 this.vanillaConflict = true;
                 message.append(Component.literal("\n• ").withStyle(ChatFormatting.RED)
-                        .append(Component.translatable(key.getCategory()))
+                        .append(key.getCategory().label())
                         .append(": ")
                         .append(Component.translatable(key.getName()))
                 );
@@ -162,7 +162,7 @@ public class KeybindWidgetHelper {
             if (key != keybind && key.saveString().equals(keyName)) {
                 this.vanillaConflict = true;
                 message.append(Component.literal("\n• ").withStyle(ChatFormatting.RED)
-                        .append(Component.translatable(key.getCategory()))
+                        .append(key.getCategory().label())
                         .append(": ")
                         .append(Component.translatable(key.getName()))
                 );

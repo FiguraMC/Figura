@@ -1,23 +1,19 @@
 package org.figuramc.figura.mixin.font;
 
-import com.mojang.blaze3d.font.GlyphInfo;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.font.GlyphProvider;
-import com.mojang.blaze3d.font.SheetGlyphInfo;
+import com.mojang.blaze3d.font.UnbakedGlyph;
 import net.minecraft.client.gui.font.FontSet;
-import net.minecraft.client.gui.font.FontTexture;
-import net.minecraft.client.gui.font.glyphs.BakedGlyph;
+import net.minecraft.client.gui.font.GlyphStitcher;
 import net.minecraft.client.gui.font.providers.BitmapProvider;
-import net.minecraft.resources.ResourceLocation;
-import org.figuramc.figura.ducks.BakedGlyphAccessor;
 import org.figuramc.figura.ducks.BitmapProviderGlyphAccessor;
-import org.figuramc.figura.font.Emojis;
+import org.figuramc.figura.ducks.GlyphStitcherExtension;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
@@ -31,32 +27,25 @@ public abstract class FontSetMixin {
 
     @Shadow
     @Final
-    private ResourceLocation name;
+    private GlyphStitcher stitcher;
     @Unique
     int figura$codePoint = -1;
 
     //method_57035 for fabric intermediary, lambda$selectProviders$5 for everything else
-    @Inject(method = {"method_57035", "lambda$selectProviders$5"}, at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/font/GlyphInfo;getAdvance(Z)F", shift = At.Shift.BEFORE, remap = true), locals = LocalCapture.CAPTURE_FAILEXCEPTION, remap = false)
-    public void thing(List<?> list, Set<?> set, int i, CallbackInfo ci, Iterator<?> var4, GlyphProvider glyphProvider, GlyphInfo glyphInfo) {
-        if (figura$isEmojiFont() && glyphInfo instanceof BitmapProvider.Glyph) {
-            ((BitmapProviderGlyphAccessor) glyphInfo).figura$setAdvance(8);
+    @Inject(method = {"method_57035"}, at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/font/GlyphInfo;getAdvance(Z)F", shift = At.Shift.BEFORE, remap = true), locals = LocalCapture.CAPTURE_FAILEXCEPTION, remap = false)
+    public void thing(List<?> list, Set<?> set, int i, CallbackInfo ci, Iterator var4, GlyphProvider glyphProvider, UnbakedGlyph unbakedGlyph) {
+        if (figura$isEmojiFont() && unbakedGlyph instanceof BitmapProvider.Glyph) {
+            ((BitmapProviderGlyphAccessor) unbakedGlyph).figura$setAdvance(8);
         }
     }
 
-    @Inject(method = "computeBakedGlyph", at = @At("HEAD"))
-    public void computeBakedGlyphMixin(int codePoint, CallbackInfoReturnable<BakedGlyph> cir) {
-        figura$codePoint = codePoint;
-    }
+    @Inject(method = "computeGlyphInfo", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/font/GlyphProvider;getGlyph(I)Lcom/mojang/blaze3d/font/UnbakedGlyph;"))
+    public void computeBakedGlyphMixin(int codePoint, CallbackInfoReturnable cir, @Local GlyphProvider provider) {
+        UnbakedGlyph unbakedGlyph = provider.getGlyph(codePoint);
 
-    @Redirect(method = "stitch", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/font/FontTexture;add(Lcom/mojang/blaze3d/font/SheetGlyphInfo;)Lnet/minecraft/client/gui/font/glyphs/BakedGlyph;"))
-    public BakedGlyph insertDataIntoBakedGlyph(FontTexture instance, SheetGlyphInfo glyphInfo) {
-        BakedGlyph glyph = instance.add(glyphInfo);
-
-        if (figura$isEmojiFont() && glyph != null) {
-            ((BakedGlyphAccessor) glyph).figura$setupEmoji(Emojis.getCategoryByFont(name), figura$codePoint);
+        if (unbakedGlyph != null) {
+            ((GlyphStitcherExtension) stitcher).addCodePoint(unbakedGlyph.info(), codePoint);
         }
-
-        return glyph;
     }
 
     @Inject(method = "reload(Ljava/util/Set;)V", at = @At("HEAD"))
@@ -66,6 +55,6 @@ public abstract class FontSetMixin {
 
     @Unique
     private boolean figura$isEmojiFont() {
-        return name.getNamespace().equals("figura");
+        return ((GlyphStitcherAccessor)stitcher).getName().getNamespace().equals("figura");
     }
 }

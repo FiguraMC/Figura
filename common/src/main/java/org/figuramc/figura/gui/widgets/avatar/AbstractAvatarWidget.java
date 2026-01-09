@@ -4,7 +4,9 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.Style;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.local.LocalAvatarFetcher;
@@ -23,7 +25,7 @@ import java.util.Locale;
 public abstract class AbstractAvatarWidget extends AbstractContainerElement implements Comparable<AbstractAvatarWidget> {
 
     protected static final int SPACING = 6;
-    protected static final Component FAVOURITE = Component.literal("★").withStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
+    protected static final Component FAVOURITE = Component.literal("★").withStyle(Style.EMPTY.withFont(new FontDescription.Resource(UIHelper.UI_FONT)));
     protected static final Component ADD_FAVOURITE = FiguraText.of("gui.context.favorite.add");
     protected static final Component REMOVE_FAVOURITE = FiguraText.of("gui.context.favorite.remove");
 
@@ -85,11 +87,14 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
+        double mouseX = mouseButtonEvent.x();
+        double mouseY = mouseButtonEvent.y();
+        int button = mouseButtonEvent.button();
         if (!this.isMouseOver(mouseX, mouseY))
             return false;
 
-        if (super.mouseClicked(mouseX, mouseY, button))
+        if (super.mouseClicked(mouseButtonEvent, bl))
             return true;
 
         // context menu on right click

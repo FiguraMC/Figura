@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.gui.widgets.Button;
@@ -77,7 +78,8 @@ public class GameScreen extends AbstractPanelScreen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent keyEvent) {
+        int keyCode = keyEvent.key();
         switch (keyCode) {
             case GLFW.GLFW_KEY_R -> grid.init();
             case GLFW.GLFW_KEY_P -> paused = !paused;
@@ -87,7 +89,7 @@ public class GameScreen extends AbstractPanelScreen {
                 stats.setVisible(!stats.isVisible());
             }
             default -> {
-                return super.keyPressed(keyCode, scanCode, modifiers);
+                return super.keyPressed(keyEvent);
             }
         }
 

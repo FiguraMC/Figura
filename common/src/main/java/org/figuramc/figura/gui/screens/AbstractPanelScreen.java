@@ -6,6 +6,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.config.Configs;
@@ -135,16 +137,16 @@ public abstract class AbstractPanelScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
         // context menu first
-        if (this.contextMenuClick(mouseX, mouseY, button))
+        if (this.contextMenuClick(mouseButtonEvent, bl))
             return true;
 
         GuiEventListener widget = null;
 
         // update children focused
         for (GuiEventListener children : List.copyOf(this.children())) {
-            boolean clicked = children.mouseClicked(mouseX, mouseY, button);
+            boolean clicked = children.mouseClicked(mouseButtonEvent, bl);
             children.setFocused(clicked);
             if (clicked) widget = children;
         }
@@ -154,22 +156,22 @@ public abstract class AbstractPanelScreen extends Screen {
             setFocused(widget);
 
         if (widget != null) {
-            if (button == 0) this.setDragging(true);
+            if (mouseButtonEvent.button() == 0) this.setDragging(true);
             return true;
         }
 
         return false;
     }
 
-    public boolean contextMenuClick(double mouseX, double mouseY, int button) {
+    public boolean contextMenuClick(MouseButtonEvent mouseButtonEvent, boolean bl) {
         // attempt to run context first
         if (contextMenu != null && contextMenu.isVisible()) {
             // attempt to click on the context menu
-            boolean clicked = contextMenu.mouseClicked(mouseX, mouseY, button);
+            boolean clicked = contextMenu.mouseClicked(mouseButtonEvent, false);
 
             // then try to click on the category container and suppress it
             // let the category handle the context menu visibility
-            if (!clicked && contextMenu.parent != null && contextMenu.parent.mouseClicked(mouseX, mouseY, button))
+            if (!clicked && contextMenu.parent != null && contextMenu.parent.mouseClicked(mouseButtonEvent, bl))
                 return true;
 
             // otherwise, remove visibility and suppress the click only if we clicked on the context
@@ -182,15 +184,15 @@ public abstract class AbstractPanelScreen extends Screen {
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+    public boolean mouseDragged(MouseButtonEvent mouseButtonEvent, double d, double e) {
         // yeet mouse 0 and isDragging check
-        return this.getFocused() != null && this.getFocused().mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        return this.getFocused() != null && this.getFocused().mouseDragged(mouseButtonEvent, d, e);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(MouseButtonEvent mouseButtonEvent) {
         // better check for mouse released when outside element boundaries
-        boolean bool = this.getFocused() != null && this.getFocused().mouseReleased(mouseX, mouseY, button);
+        boolean bool = this.getFocused() != null && this.getFocused().mouseReleased(mouseButtonEvent);
 
         // remove focused when clicking
         if (bool) setFocused(null);
@@ -215,23 +217,23 @@ public abstract class AbstractPanelScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        egg += (char) keyCode;
+    public boolean keyPressed(KeyEvent keyEvent) {
+        egg += (char) keyEvent.key();
         egg = egg.substring(1);
         if (EGG.equals(egg)) {
             Minecraft.getInstance().setScreen(new GameScreen(this));
             return true;
         }
 
-        if (children().contains(panels) && panels.cycleTab(keyCode))
+        if (children().contains(panels) && panels.cycleTab(keyEvent.key()))
             return true;
 
-        if (keyCode == 256 && contextMenu != null && contextMenu.isVisible()) {
+        if (keyEvent.key() == 256 && contextMenu != null && contextMenu.isVisible()) {
             contextMenu.setVisible(false);
             return true;
         }
 
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(keyEvent);
     }
 
     // No blur in our screens!

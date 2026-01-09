@@ -121,7 +121,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
                     .append(" ")
                     .append(Component.literal("=")
                             .withStyle(Style.EMPTY
-                                    .withFont(UIHelper.UI_FONT)
+                                    .withFont(new FontDescription.Resource(UIHelper.UI_FONT))
                                     .withItalic(false)
                                     .applyLegacyFormat(ChatFormatting.WHITE)
                             ))

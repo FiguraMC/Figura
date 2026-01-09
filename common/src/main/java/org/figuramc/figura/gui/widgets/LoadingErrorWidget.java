@@ -2,6 +2,7 @@ package org.figuramc.figura.gui.widgets;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -11,7 +12,7 @@ import org.figuramc.figura.utils.ui.UIHelper;
 
 public class LoadingErrorWidget extends StatusWidget {
 
-    private static final MutableComponent ICON = Component.literal("=").withStyle(Style.EMPTY.withFont(UIHelper.UI_FONT).withColor(ChatFormatting.WHITE));
+    private static final MutableComponent ICON = Component.literal("=").withStyle(Style.EMPTY.withFont(new FontDescription.Resource(UIHelper.UI_FONT)).withColor(ChatFormatting.WHITE));
 
     private String string;
 

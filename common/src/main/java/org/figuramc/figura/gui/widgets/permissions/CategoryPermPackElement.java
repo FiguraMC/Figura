@@ -4,6 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.InputWithModifiers;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.gui.widgets.lists.PlayerList;
@@ -55,12 +57,12 @@ public class CategoryPermPackElement extends AbstractPermPackElement {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        return this.isMouseOver(mouseX, mouseY) && super.mouseClicked(mouseX, mouseY, button);
+    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
+        return this.isMouseOver(mouseButtonEvent.x(), mouseButtonEvent.y()) && super.mouseClicked(mouseButtonEvent, bl);
     }
 
     @Override
-    public void onPress() {
+    public void onPress(InputWithModifiers inputWithModifiers) {
         if (parent.selectedEntry == this) {
             enabled = !enabled;
             pack.setVisible(enabled);
@@ -68,7 +70,7 @@ public class CategoryPermPackElement extends AbstractPermPackElement {
             parent.updateScroll();
         }
 
-        super.onPress();
+        super.onPress(inputWithModifiers);
     }
 
     @Override

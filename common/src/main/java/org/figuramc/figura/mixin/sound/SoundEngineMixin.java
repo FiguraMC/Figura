@@ -92,7 +92,7 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
     }
 
     @Inject(at = @At("RETURN"), method = "updateCategoryVolume")
-    private void updateCategoryVolume(SoundSource category, float vol, CallbackInfo ci) {
+    private void updateCategoryVolume(SoundSource category, CallbackInfo ci) {
         if (!this.loaded || category != SoundSource.PLAYERS)
             return;
 

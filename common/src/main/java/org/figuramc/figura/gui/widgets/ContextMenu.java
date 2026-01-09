@@ -6,7 +6,9 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.utils.FiguraIdentifier;
@@ -167,8 +169,8 @@ public class ContextMenu extends AbstractContainerElement {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        boolean result = super.mouseClicked(mouseX, mouseY, button);
+    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
+        boolean result = super.mouseClicked(mouseButtonEvent, bl);
         setFocused(null);
         return result;
     }
@@ -229,14 +231,14 @@ public class ContextMenu extends AbstractContainerElement {
         }
 
         @Override
-        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
             return false;
         }
     }
 
     private static class TabButton extends ContextButton {
 
-        private static final Component ARROW = Component.literal(">").setStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
+        private static final Component ARROW = Component.literal(">").setStyle(Style.EMPTY.withFont(new FontDescription.Resource(UIHelper.UI_FONT)));
         private final ContextMenu context;
 
         public TabButton(int x, int y, Component text, Component tooltip, ContextMenu parent, ContextMenu context) {

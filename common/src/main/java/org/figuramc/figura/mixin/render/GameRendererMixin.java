@@ -214,9 +214,9 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
         return stack;
     }
 
-    @ModifyArg(method = "<init>", index = 2,
+    @ModifyArg(method = "<init>", index = 4,
             at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/render/GuiRenderer;<init>(Lnet/minecraft/client/gui/render/state/GuiRenderState;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;Ljava/util/List;)V"))
+                    target = "Lnet/minecraft/client/gui/render/GuiRenderer;<init>(Lnet/minecraft/client/gui/render/state/GuiRenderState;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/feature/FeatureRenderDispatcher;Ljava/util/List;)V"))
     private List<PictureInPictureRenderer<?>> addPortraitRenderer(List<PictureInPictureRenderer<?>> list, @Local MultiBufferSource.BufferSource source) {
         List<PictureInPictureRenderer<?>> newList = new ArrayList<>(list);
         newList.add(new FiguraPortraitRenderer(source));

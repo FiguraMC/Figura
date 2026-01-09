@@ -2,6 +2,7 @@ package org.figuramc.figura.mixin.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.input.KeyEvent;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -43,7 +44,7 @@ public class KeyMappingMixin {
     }
 
     @Inject(method = "matches", at = @At("HEAD"), cancellable = true)
-    private void matches(int keyCode, int scanCode, CallbackInfoReturnable<Boolean> cir) {
+    private void matches(KeyEvent keyEvent, CallbackInfoReturnable<Boolean> cir) {
         if (FiguraMod.processingKeybind)
             cir.setReturnValue(false);
     }

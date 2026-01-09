@@ -4,10 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.utils.FiguraIdentifier;
@@ -131,7 +128,7 @@ public class EmojiContainer {
     }
 
     private Component makeComponent(String unicode, MutableComponent hover) {
-        return Component.literal(unicode).withStyle(STYLE.withFont(font).withHoverEvent(
+        return Component.literal(unicode).withStyle(STYLE.withFont(new FontDescription.Resource(font)).withHoverEvent(
                 new HoverEvent.ShowText(hover
                         .append("\n")
                         .append(FiguraText.of("emoji." + name).withStyle(ChatFormatting.DARK_GRAY)))

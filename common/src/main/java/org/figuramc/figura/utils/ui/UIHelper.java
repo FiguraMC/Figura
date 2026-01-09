@@ -14,7 +14,11 @@ import com.mojang.math.Axis;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GlyphSource;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.debug.DebugScreenEntries;
+import net.minecraft.client.gui.components.debug.DebugScreenEntryList;
+import net.minecraft.client.gui.components.debug.DebugScreenEntryStatus;
 import net.minecraft.client.gui.font.FontSet;
 import net.minecraft.client.gui.font.glyphs.BakedGlyph;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
@@ -28,8 +32,10 @@ import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -52,6 +58,7 @@ import org.figuramc.figura.gui.widgets.ContextMenu;
 import org.figuramc.figura.gui.widgets.FiguraWidget;
 import org.figuramc.figura.math.vector.FiguraVec4;
 import org.figuramc.figura.mixin.font.FontAccessor;
+import org.figuramc.figura.mixin.font.FontSet$SourceAccessor;
 import org.figuramc.figura.mixin.gui.GuiGraphicsAccessor;
 import org.figuramc.figura.mixin.gui.GuiRendererAccessor;
 import org.figuramc.figura.model.rendering.EntityRenderMode;
@@ -79,8 +86,8 @@ public final class UIHelper {
     public static final ResourceLocation UI_FONT = new FiguraIdentifier("ui");
     public static final ResourceLocation SPECIAL_FONT = new FiguraIdentifier("special");
 
-    public static final Component UP_ARROW = Component.literal("^").withStyle(Style.EMPTY.withFont(UI_FONT));
-    public static final Component DOWN_ARROW = Component.literal("V").withStyle(Style.EMPTY.withFont(UI_FONT));
+    public static final Component UP_ARROW = Component.literal("^").withStyle(Style.EMPTY.withFont(new FontDescription.Resource(UIHelper.UI_FONT)));
+    public static final Component DOWN_ARROW = Component.literal("V").withStyle(Style.EMPTY.withFont(new FontDescription.Resource(UIHelper.UI_FONT)));
 
     // Used for GUI rendering
     //private static final CustomFramebuffer FIGURA_FRAMEBUFFER = new CustomFramebuffer();
@@ -250,10 +257,12 @@ public final class UIHelper {
         // setup entity renderer
         Minecraft minecraft = Minecraft.getInstance();
         EntityRenderDispatcher dispatcher = minecraft.getEntityRenderDispatcher();
-        boolean renderHitboxes = dispatcher.shouldRenderHitBoxes();
-        dispatcher.setRenderHitBoxes(false);
-        dispatcher.setRenderShadow(false);
-        dispatcher.overrideCameraOrientation(quaternion3);
+        DebugScreenEntryList entryList = Minecraft.getInstance().debugEntries;
+
+        DebugScreenEntryStatus renderHitboxes = entryList.getStatus(DebugScreenEntries.ENTITY_HITBOXES);
+        entryList.setStatus(DebugScreenEntries.ENTITY_HITBOXES, DebugScreenEntryStatus.NEVER);
+        CameraRenderState cameraRenderState = new CameraRenderState();
+        cameraRenderState.orientation = quaternion3;
 
         // render
         paperdoll = true;
@@ -277,8 +286,8 @@ public final class UIHelper {
         paperdoll = false;
 
         // restore entity rendering data
-        dispatcher.setRenderHitBoxes(renderHitboxes);
-        dispatcher.setRenderShadow(true);
+        entryList.setStatus(DebugScreenEntries.ENTITY_HITBOXES, renderHitboxes);
+        //dispatcher.setRenderShadow(true);
 
         // pop matrix
         pose.popMatrix();
@@ -620,7 +629,7 @@ public final class UIHelper {
     }
 
     public static void renderLoading(GuiGraphics gui, int x, int y) {
-        Component text = Component.literal(Integer.toHexString(Math.abs(FiguraMod.ticks) % 16)).withStyle(Style.EMPTY.withFont(Badges.FONT));
+        Component text = Component.literal(Integer.toHexString(Math.abs(FiguraMod.ticks) % 16)).withStyle(Style.EMPTY.withFont(new FontDescription.Resource(Badges.FONT)));
         Font font = Minecraft.getInstance().font;
         gui.drawString(font, text, x - font.width(text) / 2, y - font.lineHeight / 2, UIHelper.adjustColor(-1), false);
     }
@@ -681,8 +690,8 @@ public final class UIHelper {
                             int o = m;
                             formattedCharSequence.accept((lx, style, mx) -> {
                                 boolean bl = style.isBold();
-                                FontSet fontSet = ((FontAccessor) font).figura$getFontSet(style.getFont());
-                                GlyphInfo glyphInfo = fontSet.getGlyphInfo(mx, ((FontAccessor) font).figura$shouldFilterFishyGlyphs());
+                                GlyphSource fontSet = ((FontAccessor) font).figura$getFontSet(style.getFont());
+                                GlyphInfo glyphInfo = fontSet.getGlyph(mx).info();
                                 preparedTextBuilder.x = fs[0] + n * glyphInfo.getShadowOffset();
                                 preparedTextBuilder.y = y + o * glyphInfo.getShadowOffset();
                                 fs[0] += glyphInfo.getAdvance(bl);

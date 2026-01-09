@@ -4,15 +4,19 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.LevelReader;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
+import org.figuramc.figura.ducks.FiguraEntityRenderStateExtension;
 import org.figuramc.figura.utils.RenderUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
 import org.joml.Quaternionf;
@@ -31,9 +35,9 @@ public class EntityRenderDispatcherMixin {
     @Shadow public Camera camera;
     @Unique private Avatar avatar;
 
-    @Inject(method = "renderFlame", at = @At("HEAD"), cancellable = true)
-    private void renderFlame(PoseStack matrices, MultiBufferSource vertexConsumers, EntityRenderState entity, Quaternionf quaternionf, CallbackInfo ci) {
-        Avatar a = AvatarManager.getAvatar(entity);
+    @Inject(method = "submit", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitFlame(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/entity/state/EntityRenderState;Lorg/joml/Quaternionf;)V"), cancellable = true)
+    private <S extends EntityRenderState> void renderFlame(S entityRenderState, CameraRenderState cameraRenderState, double d, double e, double f, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CallbackInfo ci) {
+        Avatar a = AvatarManager.getAvatar(entityRenderState);
         if (RenderUtils.vanillaModelAndScript(a)) {
             if (!a.luaRuntime.renderer.renderFire) {
                 ci.cancel();
@@ -43,25 +47,12 @@ public class EntityRenderDispatcherMixin {
         }
     }
 
-    @ModifyVariable(method = "renderFlame", at = @At(value = "HEAD"), argsOnly = true)
+    @ModifyArg(method = "submit", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitFlame(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/entity/state/EntityRenderState;Lorg/joml/Quaternionf;)V"))
     private Quaternionf renderFlameRot(Quaternionf f) {
         return UIHelper.paperdoll ? Axis.YP.rotationDegrees(UIHelper.fireRot) : f;
     }
 
-    @ModifyVariable(method = "renderFlame", at = @At("STORE"), ordinal = 0)
-    private TextureAtlasSprite firstFireTexture(TextureAtlasSprite sprite) {
-        TextureAtlasSprite s = RenderUtils.firstFireLayer(avatar);
-        return s != null ? s : sprite;
-    }
-
-    @ModifyVariable(method = "renderFlame", at = @At("STORE"), ordinal = 1)
-    private TextureAtlasSprite secondFireTexture(TextureAtlasSprite sprite) {
-        TextureAtlasSprite s = RenderUtils.secondFireLayer(avatar);
-        avatar = null;
-        return s != null ? s : sprite;
-    }
-
-    @ModifyVariable(method = "renderShadow", at = @At("HEAD"), ordinal = 1, argsOnly = true)
+    @ModifyArg(method = "submit", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitShadow(Lcom/mojang/blaze3d/vertex/PoseStack;FLjava/util/List;)V"))
     private static float modifyShadowSize(float h, @Local(argsOnly = true) EntityRenderState entity) {
         Avatar avatar = AvatarManager.getAvatar(entity);
         if (RenderUtils.vanillaModelAndScript(avatar) && avatar.luaRuntime.renderer.shadowRadius != null)
@@ -69,11 +60,14 @@ public class EntityRenderDispatcherMixin {
         return h;
     }
 
-    @Inject(method = "render(Lnet/minecraft/world/entity/Entity;DDDFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/renderer/entity/EntityRenderer;)V", at = @At("HEAD"), cancellable = true)
-    private <E extends Entity, S extends EntityRenderState> void render(E entity, double d, double e, double f, float g, PoseStack poseStack, MultiBufferSource multiBufferSource, int light, EntityRenderer<? super E, S> entityRenderer, CallbackInfo ci) {
+    @Inject(method = "submit", at = @At("HEAD"), cancellable = true)
+    private <E extends Entity, S extends EntityRenderState> void render(S entityRenderState, CameraRenderState cameraRenderState, double d, double e, double f, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CallbackInfo ci) {
         if (this.camera == null)
             ci.cancel();
 
+        Entity entity = Minecraft.getInstance().level.getEntity(((FiguraEntityRenderStateExtension)entityRenderState).figura$getEntityId());
+        if (entity == null)
+            return;
         Entity owner = entity.getFirstPassenger();
         if (owner == null)
             return;

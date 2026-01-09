@@ -8,7 +8,7 @@ import net.minecraft.nbt.NbtIo;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.docs.FiguraDocsManager;
-import org.figuramc.figura.model.rendering.AvatarRenderer;
+import org.figuramc.figura.model.rendering.FiguraRenderer;
 import org.figuramc.figura.model.rendering.texture.FiguraTexture;
 import org.figuramc.figura.utils.FiguraClientCommandSource;
 import org.figuramc.figura.utils.FiguraText;
@@ -47,7 +47,7 @@ class ExportCommand {
 
     private static int runTextureExport(CommandContext<FiguraClientCommandSource> context, String filename) {
         String textureName = StringArgumentType.getString(context, "texture name");
-        AvatarRenderer renderer = FiguraCommands.getRenderer(context);
+        FiguraRenderer renderer = FiguraCommands.getRenderer(context);
         if (renderer == null)
             return 0;
 

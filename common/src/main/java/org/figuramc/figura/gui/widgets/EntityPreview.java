@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
@@ -115,11 +116,15 @@ public class EntityPreview extends AbstractContainerElement {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
+        double mouseX = mouseButtonEvent.x();
+        double mouseY = mouseButtonEvent.y();
+        int button = mouseButtonEvent.button();
+
         if (!this.isVisible() || !this.isMouseOver(mouseX, mouseY))
             return false;
 
-        if (super.mouseClicked(mouseX, mouseY, button))
+        if (super.mouseClicked(mouseButtonEvent, bl))
             return true;
 
         switch (button) {
@@ -175,7 +180,8 @@ public class EntityPreview extends AbstractContainerElement {
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(MouseButtonEvent mouseButtonEvent) {
+        int button = mouseButtonEvent.button();
         // left click - stop rotating
         if (button == 0) {
             isRotating = false;
@@ -188,11 +194,13 @@ public class EntityPreview extends AbstractContainerElement {
             return true;
         }
 
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(mouseButtonEvent);
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+    public boolean mouseDragged(MouseButtonEvent mouseButtonEvent, double deltaX, double deltaY) {
+        double mouseX = mouseButtonEvent.x();
+        double mouseY = mouseButtonEvent.y();
         // left click - rotate
         if (isRotating) {
             // get starter rotation angle then get hot much is moved and divided by a slow factor
@@ -229,7 +237,7 @@ public class EntityPreview extends AbstractContainerElement {
             return true;
         }
 
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        return super.mouseDragged(mouseButtonEvent, deltaX, deltaY);
     }
 
     @Override

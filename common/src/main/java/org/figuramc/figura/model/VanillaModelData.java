@@ -17,12 +17,9 @@ public class VanillaModelData {
         }
     }};
 
-    public void update(LivingEntityRenderer<?, ?, ?> entityRenderer) {
+    public void update(EntityModel<?> vanillaModel) {
         for (Map.Entry<ParentType, PartData> entry : partMap.entrySet()) {
             ParentType parent = entry.getKey();
-
-            EntityModel<?> vanillaModel;
-            vanillaModel = entityRenderer.getModel();
 
             if (vanillaModel == null)
                 continue;

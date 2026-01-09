@@ -18,6 +18,7 @@ import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.model.FiguraModelPart;
 import org.figuramc.figura.utils.LuaUtils;
+import org.figuramc.figura.utils.RenderUtils;
 import org.luaj.vm2.LuaError;
 
 import java.util.Locale;
@@ -46,11 +47,10 @@ public class ItemTask extends RenderTask {
         int newLight = this.customization.light != null ? this.customization.light : light;
         int newOverlay = this.customization.overlay != null ? this.customization.overlay : overlay;
         int seed = entity != null ? entity.getId() + displayMode.ordinal() : 0;
-
-        Minecraft.getInstance().getItemRenderer().renderStatic(
+        RenderUtils.renderStatic(
                 entity, item, displayMode,
-                poseStack, buffer, WorldAPI.getCurrentWorld(),
-                newLight, newOverlay, seed
+                poseStack,
+                newLight, newOverlay
         );
     }
 

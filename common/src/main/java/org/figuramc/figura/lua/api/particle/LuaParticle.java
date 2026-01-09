@@ -135,8 +135,11 @@ public class LuaParticle {
     @LuaWhitelist
     @LuaMethodDoc("particle.get_color")
     public FiguraVec4 getColor() {
-        ParticleAccessor p = (ParticleAccessor) particle;
-        return FiguraVec4.of(p.getRCol(), p.getGCol(), p.getBCol(), p.getAlpha());
+        if (!(particle instanceof SingleQuadParticle)) {
+            return FiguraVec4.of(1, 1, 1, 1);
+        }
+        SingleQuadParticleAccessor p = (SingleQuadParticleAccessor) particle;
+        return FiguraVec4.of(p.figura$getRCol(), p.figura$getGCol(), p.figura$getBCol(), p.figura$getAlpha());
     }
 
     @LuaWhitelist
@@ -159,8 +162,10 @@ public class LuaParticle {
             value = "particle.set_color")
     public LuaParticle setColor(Object r, Double g, Double b, Double a) {
         FiguraVec4 vec = LuaUtils.parseVec4("setColor", r, g, b, a, 1, 1, 1, 1);
-        particle.setColor((float) vec.x, (float) vec.y, (float) vec.z);
-        ((ParticleAccessor) particle).setParticleAlpha((float) vec.w);
+        if (particle instanceof SingleQuadParticle quadParticle) {
+            quadParticle.setColor((float) vec.x, (float) vec.y, (float) vec.z);
+            ((SingleQuadParticleAccessor) particle).figura$setParticleAlpha((float) vec.w);
+        }
         return this;
     }
 

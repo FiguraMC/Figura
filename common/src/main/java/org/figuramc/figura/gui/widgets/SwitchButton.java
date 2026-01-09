@@ -2,6 +2,7 @@ package org.figuramc.figura.gui.widgets;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
@@ -41,9 +42,9 @@ public class SwitchButton extends Button {
     }
 
     @Override
-    public void onPress() {
+    public void onPress(InputWithModifiers inputWithModifiers) {
         this.toggled = !this.toggled;
-        super.onPress();
+        super.onPress(inputWithModifiers);
     }
 
     @Override

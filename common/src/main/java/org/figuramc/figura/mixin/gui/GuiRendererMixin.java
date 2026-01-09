@@ -11,7 +11,9 @@ import net.minecraft.client.gui.render.state.GuiRenderState;
 import net.minecraft.client.gui.render.state.pip.GuiEntityRenderState;
 import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
 import org.figuramc.figura.ducks.GuiEntityRenderStateExtension;
 import org.figuramc.figura.ducks.GuiMessageAccessor;
 import org.figuramc.figura.gui.FiguraGuiEntityRenderer;
@@ -35,7 +37,7 @@ public class GuiRendererMixin {
     FiguraGuiEntityRenderer figura$paperDollRenderer;
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void initializePaperDollRenderer(GuiRenderState guiRenderState, MultiBufferSource.BufferSource bufferSource, List<PictureInPictureRenderer<?>> list, CallbackInfo ci) {
+    private void initializePaperDollRenderer(GuiRenderState guiRenderState, MultiBufferSource.BufferSource bufferSource, SubmitNodeCollector submitNodeCollector, FeatureRenderDispatcher featureRenderDispatcher, List<PictureInPictureRenderer<?>> list, CallbackInfo ci) {
         figura$paperDollRenderer = new FiguraGuiEntityRenderer(bufferSource, Minecraft.getInstance().getEntityRenderDispatcher());
     }
 

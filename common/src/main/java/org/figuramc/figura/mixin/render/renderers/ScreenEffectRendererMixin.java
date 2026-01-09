@@ -22,7 +22,7 @@ public class ScreenEffectRendererMixin {
     private static Avatar avatar;
 
     @Inject(method = "renderFire", at = @At("HEAD"), cancellable = true)
-    private static void renderFire(PoseStack matrices, MultiBufferSource vertexConsumers, CallbackInfo ci) {
+    private static void renderFire(PoseStack poseStack, MultiBufferSource multiBufferSource, TextureAtlasSprite textureAtlasSprite, CallbackInfo ci) {
         Avatar a = AvatarManager.getAvatar(Minecraft.getInstance().getCameraEntity());
         if (RenderUtils.vanillaModelAndScript(a)) {
             if (!a.luaRuntime.renderer.renderFire) {
@@ -33,7 +33,7 @@ public class ScreenEffectRendererMixin {
         }
     }
 
-    @ModifyVariable(method = "renderFire", at = @At("STORE"), ordinal = 0)
+    @ModifyVariable(method = "renderFire", at = @At("HEAD"), ordinal = 0, argsOnly = true)
     private static TextureAtlasSprite secondFireTexture(TextureAtlasSprite sprite) {
         TextureAtlasSprite s = RenderUtils.secondFireLayer(avatar);
         avatar = null;

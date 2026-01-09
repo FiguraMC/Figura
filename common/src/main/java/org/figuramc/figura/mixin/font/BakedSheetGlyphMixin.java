@@ -1,13 +1,11 @@
 package org.figuramc.figura.mixin.font;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.gui.font.glyphs.BakedGlyph;
+import net.minecraft.client.gui.font.glyphs.BakedSheetGlyph;
 import org.figuramc.figura.compat.ImmediatelyFastCompat;
 import org.figuramc.figura.ducks.BakedGlyphAccessor;
 import org.figuramc.figura.font.EmojiContainer;
 import org.figuramc.figura.font.EmojiMetadata;
-import org.figuramc.figura.font.Emojis;
-import org.figuramc.figura.utils.PlatformUtils;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
@@ -18,10 +16,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.lang.reflect.Field;
-
-@Mixin(BakedGlyph.class)
-public abstract class BakedGlyphMixin implements BakedGlyphAccessor {
+@Mixin(BakedSheetGlyph.class)
+public abstract class BakedSheetGlyphMixin implements BakedGlyphAccessor {
     @Shadow
     @Final
     private float up;

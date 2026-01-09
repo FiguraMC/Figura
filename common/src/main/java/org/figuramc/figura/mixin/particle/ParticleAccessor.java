@@ -38,10 +38,6 @@ public interface ParticleAccessor {
     void setZo(double zo);
 
     @Intrinsic
-    @Invoker("setAlpha")
-    void setParticleAlpha(float alpha);
-
-    @Intrinsic
     @Accessor("x")
     double getX();
 
@@ -56,22 +52,6 @@ public interface ParticleAccessor {
     @Intrinsic
     @Accessor
     float getBbWidth();
-
-    @Intrinsic
-    @Accessor
-    float getRCol();
-
-    @Intrinsic
-    @Accessor
-    float getGCol();
-
-    @Intrinsic
-    @Accessor
-    float getBCol();
-
-    @Intrinsic
-    @Accessor
-    float getAlpha();
 
     @Intrinsic
     @Accessor
