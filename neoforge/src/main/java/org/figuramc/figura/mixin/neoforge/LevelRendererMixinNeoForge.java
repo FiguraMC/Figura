@@ -1,17 +1,21 @@
 package org.figuramc.figura.mixin.neoforge;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.resource.ResourceHandle;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderBuffers;
+import net.minecraft.client.renderer.SubmitNodeStorage;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import net.minecraft.client.renderer.state.LevelRenderState;
 import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
@@ -38,9 +42,18 @@ public class LevelRendererMixinNeoForge {
     @Shadow @Final private RenderBuffers renderBuffers;
 
     @Shadow @Final private Minecraft minecraft;
+    @Shadow
+    @Final
+    private SubmitNodeStorage submitNodeStorage;
 
-    @Inject(method = {"lambda$addMainPass$2"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;checkPoseStack(Lcom/mojang/blaze3d/vertex/PoseStack;)V", ordinal = 0))
-    private void renderLevelFirstPerson(FogParameters fogParameters, DeltaTracker deltaTracker, Camera camera, ProfilerFiller profiler, Matrix4f matrix4f, Matrix4f matrix4f2, ResourceHandle<RenderTarget> resourceHandle, ResourceHandle<RenderTarget> resourceHandle2, ResourceHandle<RenderTarget> resourceHandle3, ResourceHandle<RenderTarget> resourceHandle4, Frustum frustum, boolean bl, ResourceHandle<RenderTarget> resourceHandle5, CallbackInfo ci, @Local PoseStack stack) {
+    @Inject(method = {"method_62214"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;checkPoseStack(Lcom/mojang/blaze3d/vertex/PoseStack;)V", ordinal = 0))
+    private void renderLevelFirstPerson(GpuBufferSlice gpuBufferSlice, LevelRenderState levelRenderState, ProfilerFiller profiler,
+                                        Matrix4f matrix4f, ResourceHandle resourceHandle, ResourceHandle resourceHandle2, boolean bl,
+                                        Frustum frustum, ResourceHandle resourceHandle3, ResourceHandle resourceHandle4, CallbackInfo ci,
+                                        @Local PoseStack stack
+    ) {
+        Camera camera = this.minecraft.gameRenderer.getMainCamera();
+        DeltaTracker deltaTracker = this.minecraft.getDeltaTracker();
         if (camera.isDetached())
             return;
 
@@ -64,7 +77,7 @@ public class LevelRendererMixinNeoForge {
 
         Avatar.firstPerson = true;
 
-        int size = ((PoseStackAccessor)stack).getPoseStack().size();
+        int lastIndex = ((PoseStackAccessor) stack).getLastIndex();
         stack.pushPose();
 
         Vec3 offset = entityRenderer.getRenderOffset(state);
@@ -77,18 +90,17 @@ public class LevelRendererMixinNeoForge {
         );
 
 
-        entityRenderer.render(state, stack, bufferSource, LightTexture.FULL_BRIGHT);
+        entityRenderer.submit(state, stack, submitNodeStorage, levelRenderState.cameraRenderState);
 
         do {
             stack.popPose();
-        } while(((PoseStackAccessor)stack).getPoseStack().size() > size);
+        } while (((PoseStackAccessor) stack).getLastIndex() > lastIndex);
 
         Avatar.firstPerson = false;
     }
 
-
-    @Inject(method =  {"lambda$addMainPass$2"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderBuffers;bufferSource()Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;"))
-    public void applyFiguraNormals(FogParameters fogParameters, DeltaTracker tracker, Camera camera, ProfilerFiller profiler, Matrix4f matrix4f, Matrix4f matrix4f2, ResourceHandle resourceHandle, ResourceHandle resourceHandle2, ResourceHandle resourceHandle3, ResourceHandle resourceHandle4, Frustum frustum, boolean bl, ResourceHandle resourceHandle5, CallbackInfo ci, @Local PoseStack poseStack) {
+    @Inject(method = {"method_62214"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderBuffers;bufferSource()Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;"))
+    public void applyFiguraNormals(GpuBufferSlice gpuBufferSlice, LevelRenderState levelRenderState, ProfilerFiller profiler, Matrix4f matrix4f, ResourceHandle resourceHandle, ResourceHandle resourceHandle2, boolean bl, Frustum frustum, ResourceHandle resourceHandle3, ResourceHandle resourceHandle4, CallbackInfo ci, @Local PoseStack poseStack) {
         Avatar avatar = AvatarManager.getAvatar(this.minecraft.getCameraEntity() == null ? this.minecraft.player : this.minecraft.getCameraEntity());
         if (!RenderUtils.vanillaModelAndScript(avatar)) return;
 
