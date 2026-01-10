@@ -23,6 +23,7 @@ import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.ducks.FiguraEntityRenderStateExtension;
+import org.figuramc.figura.ducks.FiguraSubmitCallBackExtension;
 import org.figuramc.figura.ducks.LivingEntityRendererAccessor;
 import org.figuramc.figura.ducks.NodeCollectorExtension;
 import org.figuramc.figura.gui.PopupMenu;
@@ -128,6 +129,24 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
         poseStack2.pushPose();
         poseStack2.last().set(poseStack.last());
 
+        FiguraSubmitCallBackExtension submitCallBackExtension = (FiguraSubmitCallBackExtension) model;
+
+        Avatar av = currentAvatar;
+        submitCallBackExtension.figura$setPreRenderingCallback((bufferSource, stack) -> {
+
+            if (av.luaRuntime != null) {
+                VanillaPart part = av.luaRuntime.vanilla_model.PLAYER;
+                part.save(model);
+                if (av.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1)
+                    part.preTransform(model);
+            }
+
+            if (av.luaRuntime != null && av.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1)
+                av.luaRuntime.vanilla_model.PLAYER.posTransform(getModel());
+
+            return true;
+        });
+
         nodeCollectorExtension.submitFiguraModel(currentAvatar, livingEntityRenderState, ((avatar, livingEntityState, bufferSource) -> {
 
             if (avatar.luaRuntime != null) {
@@ -180,17 +199,16 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
         if (currentAvatar == null)
             return;
 
-        NodeCollectorExtension nodeCollectorExtension = (NodeCollectorExtension) submitNodeCollector;
-
         M model = this.getModel();
 
-        nodeCollectorExtension.submitFiguraModel(currentAvatar, livingEntityRenderState, ((avatar, livingEntityState, bufferSource) -> {
+        FiguraSubmitCallBackExtension submitCallBackExtension = (FiguraSubmitCallBackExtension) model;
+
+        Avatar avatar = currentAvatar;
+        submitCallBackExtension.figura$setPostRenderingCallback(() -> {
             // Render avatar with params
             if (avatar.luaRuntime != null)
                 avatar.luaRuntime.vanilla_model.PLAYER.restore(model);
-
-            return null;
-        }));
+        });
 
         currentAvatar = null;
         lastPose = null;

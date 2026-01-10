@@ -440,18 +440,19 @@ public class LuaUtils {
             TypedDataComponent<?> typedDataComponent = iterator.next();
             Optional<Tag> optional = typedDataComponent.encodeValue(dynamicOps).result();
             ResourceLocation resourceLocation = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(typedDataComponent.type());
-            if (typedDataComponent.type() == DataComponents.ITEM_NAME && optional.isPresent() && optional.get().asString().get().contains("translate"))
+            // apparently sometimes the game will not return a string, go figure
+            String op = optional.map(tag -> tag.asString().orElse(tag.toString().isEmpty() ? "" : tag.toString())).orElse("");
+            if (typedDataComponent.type() == DataComponents.ITEM_NAME && optional.isPresent() && op.contains("translate"))
                 continue;
 
             if (optional.isPresent() && resourceLocation != null){
                 builder.append(resourceLocation).append("=");
-                String op = optional.get().asString().get();
                 // minecraft gets super picky if you give it a resource location so this check has to be added, ew
                 ResourceLocation flag = ResourceLocation.tryParse(op);
                 if (optional.get().getType() == StringTag.TYPE && flag != null) {
-                    builder.append("\"").append(optional.get().asString().get()).append("\"");
+                    builder.append("\"").append(op).append("\"");
                 } else {
-                    builder.append(optional.get().asString().get());
+                    builder.append(op);
                 }
                 if (iterator.hasNext()) {
                     builder.append(",");
