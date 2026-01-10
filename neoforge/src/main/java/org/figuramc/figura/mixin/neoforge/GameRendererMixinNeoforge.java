@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(GameRenderer.class)
-public class GameRendererMixin {
-    @ModifyArg(method = "<init>", index = 4,
+public class GameRendererMixinNeoforge {
+    @ModifyArg(method = "<init>",
             at = @At(value = "INVOKE",
                     target = "Lnet/neoforged/neoforge/client/ClientHooks;gatherPictureInPictureRenderers(Ljava/util/List;)Ljava/util/List;"))
     private List<PictureInPictureRendererRegistration<?>> addPortraitRenderer(List<PictureInPictureRendererRegistration<?>> list, @Local MultiBufferSource.BufferSource source) {

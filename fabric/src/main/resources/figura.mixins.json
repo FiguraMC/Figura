@@ -6,9 +6,9 @@
   "client": [
     "CommandSuggestionsMixinFabric",
     "ElytraLayerAccessor",
-    "GameRendererMixin",
+    "GameRendererFabricMixin",
     "GuiMixin",
-    "GuiRendererMixin",
+    "GuiRendererFabricMixin",
     "HumanoidArmorLayerMixinFabric",
     "LevelRendererMixinFabric"
   ],

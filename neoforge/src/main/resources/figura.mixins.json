@@ -7,8 +7,8 @@
     "ClientCommandSourceMixinNeoForge",
     "CommandSuggestionsMixinNeoForge",
     "ElytraLayerAccessor",
-    "GameRendererMixin",
-    "GuiRendererMixin",
+    "GameRendererMixinNeoforge",
+    "GuiRendererMixinNeoforge",
     "HumanoidArmorLayerMixinNeoForge",
     "LevelRendererMixinNeoForge"
   ],

@@ -25,7 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.List;
 
 @Mixin(GuiRenderer.class)
-public class GuiRendererMixin {
+public class GuiRendererMixinNeoforge {
 
     @Shadow
     @Final

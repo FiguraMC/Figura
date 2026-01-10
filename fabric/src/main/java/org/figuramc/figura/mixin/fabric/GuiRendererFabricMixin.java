@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 @Mixin(GuiRenderer.class)
-public class GuiRendererMixin {
+public class GuiRendererFabricMixin {
 
     @Shadow @Final
     GuiRenderState renderState;
