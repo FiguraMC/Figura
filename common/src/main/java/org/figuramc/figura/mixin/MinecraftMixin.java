@@ -104,10 +104,9 @@ public abstract class MinecraftMixin {
                     BlockPos pos = blockHit.getBlockPos();
                     BlockEntity block = this.cameraEntity.level().getBlockEntity(pos);
 
-                    if (block == null || !(block instanceof SkullBlockEntity skull))
-                        return;
-
-                    PopupMenu.setEntity(skull);
+                    if (block instanceof SkullBlockEntity skull) {
+                        PopupMenu.setEntity(skull);
+                    }
                 }
             }
         } else if (PopupMenu.isEnabled()) {
