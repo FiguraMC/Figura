@@ -445,7 +445,7 @@ public class LuaUtils {
             if (typedDataComponent.type() == DataComponents.ITEM_NAME && optional.isPresent() && op.contains("translate"))
                 continue;
 
-            if (optional.isPresent() && resourceLocation != null){
+            if (optional.isPresent() && resourceLocation != null && !op.isEmpty()) {
                 builder.append(resourceLocation).append("=");
                 // minecraft gets super picky if you give it a resource location so this check has to be added, ew
                 ResourceLocation flag = ResourceLocation.tryParse(op);
