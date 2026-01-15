@@ -14,6 +14,7 @@ import org.figuramc.figura.math.matrix.FiguraMat4;
 import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.model.rendering.FiguraRenderer;
+import org.figuramc.figura.model.rendering.EntityRenderMode;
 import org.figuramc.figura.model.rendering.ImmediateFiguraRenderer;
 import org.figuramc.figura.model.rendering.Vertex;
 import org.figuramc.figura.model.rendering.texture.FiguraTexture;
@@ -197,7 +198,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
 
         double s = 1 / 16d;
         if (UIHelper.paperdoll) {
-            s *= -UIHelper.dollScale;
+            s *= -UIHelper.dollScale * 4;
         } else {
             prevPartToView.rightMultiply(FiguraRenderer.worldToViewMatrix());
         }

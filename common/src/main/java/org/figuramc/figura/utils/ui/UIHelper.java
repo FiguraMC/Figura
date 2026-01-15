@@ -264,7 +264,6 @@ public final class UIHelper {
         cameraRenderState.orientation = quaternion3;
 
         // render
-        paperdoll = true;
         fireRot = -yRot;
         dollScale = scale;
 
@@ -282,7 +281,6 @@ public final class UIHelper {
         ((GuiEntityRenderStateExtension)(Object)state).setYPos(yPos);
 
         ((GuiGraphicsAccessor)gui).figura$getRenderState().submitPicturesInPictureState(state);
-        paperdoll = false;
 
         // restore entity rendering data
         entryList.setStatus(DebugScreenEntries.ENTITY_HITBOXES, renderHitboxes);
