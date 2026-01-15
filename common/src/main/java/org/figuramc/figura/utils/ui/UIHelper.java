@@ -252,7 +252,6 @@ public final class UIHelper {
         Quaternionf quaternion3 = Axis.XP.rotationDegrees(xRot);
         quaternion3.mul(quaternion2);
         quaternion.mul(quaternion3);
-        quaternion3.conjugate();
 
         // setup entity renderer
         Minecraft minecraft = Minecraft.getInstance();
