@@ -73,7 +73,6 @@ public class PopupMenu {
 
                 // maps volume to next of 100, 50, 0, 100...
                 int volume = pack.get(Permissions.VOLUME) / 50;
-                volume = volume - volume % 1;
                 volume = (volume + 2) % 3 * 50;
 
                 pack.insert(Permissions.VOLUME, volume, FiguraMod.MOD_ID);
