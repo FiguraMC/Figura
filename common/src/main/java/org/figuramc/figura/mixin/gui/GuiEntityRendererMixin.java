@@ -43,6 +43,9 @@ public abstract class GuiEntityRendererMixin extends PictureInPictureRenderer<Gu
     @WrapOperation(method = "renderToTexture(Lnet/minecraft/client/gui/render/state/pip/GuiEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/EntityRenderDispatcher;submit(Lnet/minecraft/client/renderer/entity/state/EntityRenderState;Lnet/minecraft/client/renderer/state/CameraRenderState;DDDLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;)V"))
     private <S extends EntityRenderState> void setFiguraRenderProperties(EntityRenderDispatcher instance, S entityRenderState, CameraRenderState cameraRenderState, double d, double e, double f, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, Operation<Void> original, @Local(argsOnly = true) GuiEntityRenderState guiEntityRenderState) {
         GuiEntityRenderStateExtension extended = (GuiEntityRenderStateExtension) (Object) guiEntityRenderState;
+        if (AvatarManager.getAvatar(entityRenderState) != null && extended.getRenderMode() != null) {
+            AvatarManager.getAvatar(entityRenderState).renderMode = extended.getRenderMode();
+        }
         original.call(instance, entityRenderState, cameraRenderState, d+extended.getXPos(), e+extended.getYPos(), f, poseStack, submitNodeCollector);
     }
 
