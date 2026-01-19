@@ -264,6 +264,7 @@ public final class UIHelper {
         cameraRenderState.orientation = quaternion3;
 
         // render
+        paperdoll = true;
         fireRot = -yRot;
         dollScale = scale;
 
