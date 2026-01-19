@@ -196,6 +196,8 @@ public class Configs {
             PAPERDOLL_SCALE = new ConfigType.FloatConfig("paperdoll_scale", PAPERDOLL, 1f),
             PAPERDOLL_X = new ConfigType.FloatConfig("paperdoll_x", PAPERDOLL, 0f),
             PAPERDOLL_Y = new ConfigType.FloatConfig("paperdoll_y", PAPERDOLL, 0f),
+            PAPERDOLL_OFFSET_X = new ConfigType.FloatConfig("paperdoll_offset_x", PAPERDOLL, 0f),
+            PAPERDOLL_OFFSET_Y = new ConfigType.FloatConfig("paperdoll_offset_y", PAPERDOLL, 0f),
             PAPERDOLL_PITCH = new ConfigType.FloatConfig("paperdoll_pitch", PAPERDOLL, 0f),
             PAPERDOLL_YAW = new ConfigType.FloatConfig("paperdoll_yaw", PAPERDOLL, 20);
 
