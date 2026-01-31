@@ -1,5 +1,6 @@
 package org.figuramc.figura.mixin;
 
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundEntityEventPacket;
@@ -12,17 +13,16 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = ClientPacketListener.class, priority = 999)
 public abstract class ClientPacketListenerMixin {
 
     @Shadow public abstract ClientLevel getLevel();
 
-    @Inject(at = @At("HEAD"), method = "sendCommand", cancellable = true)
-    private void sendUnsignedCommand(String command, CallbackInfo cir) {
+    @Inject(at = @At("HEAD"), method = "sendUnattendedCommand", cancellable = true)
+    private void sendUnsignedCommand(String command, Screen screen, CallbackInfo ci) {
         if (command.startsWith(FiguraMod.MOD_ID))
-            cir.cancel();
+            ci.cancel();
     }
 
     @Inject(method = "handleEntityEvent", at = @At(value = "FIELD", target = "Lnet/minecraft/core/particles/ParticleTypes;TOTEM_OF_UNDYING:Lnet/minecraft/core/particles/SimpleParticleType;"), cancellable = true)
