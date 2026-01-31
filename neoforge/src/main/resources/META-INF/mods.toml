@@ -32,6 +32,11 @@ versionRange = "[${minecraft_version},)"
 ordering = "NONE"
 side = "BOTH"
 
+[[dependencies.figura]]
+modId = "figurav5addon"
+type = "incompatible"
+reason = "This addon's features are already included in this Figura version!"
+
 [[mixins]]
 config = "figura-common.mixins.json"
 [[mixins]]
