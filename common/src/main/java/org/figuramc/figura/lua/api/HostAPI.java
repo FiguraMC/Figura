@@ -1,6 +1,13 @@
 package org.figuramc.figura.lua.api;
 
+import com.mojang.blaze3d.buffers.BufferType;
+import com.mojang.blaze3d.buffers.BufferUsage;
+import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.systems.CommandEncoder;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.GuiMessage;
 import net.minecraft.client.GuiMessageTag;
@@ -504,10 +511,29 @@ public class HostAPI {
     public FiguraTexture screenshot(@LuaNotNil String name) {
         if (!isHost())
             return null;
-        AtomicReference<NativeImage> img = new AtomicReference<>();
-        Consumer<NativeImage> cons = img::set;
-        Screenshot.takeScreenshot(this.minecraft.getMainRenderTarget(), cons);
-        return owner.luaRuntime.texture.register(name, img.get(), true);
+
+        // manually recreate screenshot logic to get around the main thread screenshot saving
+        RenderTarget renderTarget = this.minecraft.getMainRenderTarget();
+        GpuTexture gpuTexture = renderTarget.getColorTexture();
+        int width = renderTarget.width;
+        int height = renderTarget.height;
+        NativeImage nativeImage = new NativeImage(width, height, false);
+        GpuBuffer gpuBuffer = RenderSystem.getDevice()
+                .createBuffer(() -> "Figura Screenshot buffer", BufferType.PIXEL_PACK, BufferUsage.STATIC_READ, width * height * gpuTexture.getFormat().pixelSize());
+        CommandEncoder commandEncoder = RenderSystem.getDevice().createCommandEncoder();
+        RenderSystem.getDevice().createCommandEncoder().copyTextureToBuffer(gpuTexture, gpuBuffer, 0, () -> {
+            try (GpuBuffer.ReadView readView = commandEncoder.readBuffer(gpuBuffer)) {
+                for (int k = 0; k < height; k++) {
+                    for (int l = 0; l < width; l++) {
+                        int m = readView.data().getInt((l + k * width) * gpuTexture.getFormat().pixelSize());
+                        nativeImage.setPixelABGR(l, height - k - 1, m | 0xFF000000);
+                    }
+                }
+
+            }
+            gpuBuffer.close();
+        }, 0);
+        return owner.luaRuntime.texture.register(name, nativeImage, true);
     }
 
     @LuaWhitelist
