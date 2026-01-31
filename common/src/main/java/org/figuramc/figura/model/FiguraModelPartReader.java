@@ -218,18 +218,25 @@ public class FiguraModelPartReader {
         if (!keyframeNbt.contains(tag))
             return null;
 
-        ListTag floatList = keyframeNbt.getListOrEmpty(tag);
-        if (!floatList.isEmpty()) {
+        ListTag keyframeVec = keyframeNbt.getListOrEmpty(tag);
+        if (!keyframeVec.isEmpty() && isNumberList(keyframeVec)) {
             FiguraVec3 ret = FiguraVec3.of();
-            readVec3(ret, floatList);
+            readVec3(ret, keyframeVec);
             return Pair.of(ret, null);
         } else {
-            ListTag stringList = keyframeNbt.getListOrEmpty(tag);
             return Pair.of(
                     null,
-                    new String[]{stringList.getStringOr(0, ""), stringList.getStringOr(1, ""), stringList.getStringOr(2, "")}
+                    new String[]{keyframeVec.getStringOr(0, ""), keyframeVec.getStringOr(1, ""), keyframeVec.getStringOr(2, "")}
             );
         }
+    }
+
+    private static boolean isNumberList(ListTag list) {
+        for (Tag tag : list) {
+            if (tag.asNumber().isEmpty())
+                return false;
+        }
+        return true;
     }
 
     /**
