@@ -6,6 +6,7 @@
   "mixins": [
   ],
   "client": [
+    "gui.PlayerHeadRenderInfoMixin",
     "AABBInvoker",
     "BiomeAccessor",
     "BlockBehaviourAccessor",
