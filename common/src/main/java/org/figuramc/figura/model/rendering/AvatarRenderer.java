@@ -21,6 +21,7 @@ import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.model.VanillaModelData;
 import org.figuramc.figura.model.rendering.texture.FiguraTexture;
 import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
+import org.figuramc.figura.FiguraMod;
 import org.joml.Matrix3f;
 import org.joml.Matrix4d;
 import org.joml.Quaternionf;
@@ -87,7 +88,11 @@ public abstract class AvatarRenderer {
 
         // src files
         for (String key : src.keySet()) {
-            byte[] bytes = src.getByteArray(key).get();
+            byte[] bytes = src.getByteArray(key).orElseGet(() -> {
+                FiguraMod.LOGGER.warn("Missing byte array data for texture key: " + key);
+                return new byte[0];
+            });
+            
             if (bytes.length > 0) {
                 textures.put(key, new FiguraTexture(avatar, key, bytes));
             } else {
