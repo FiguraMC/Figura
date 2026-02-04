@@ -199,7 +199,7 @@ public class TextUtils {
     // correctly calculates the height of a list of text components
     public static int getHeight(List<?> text, Font font, int lineSpacing) {
         int lines = text.size();
-        return (lines * font.lineHeight) + (lines - 1) * lineSpacing;
+        return Math.max((lines * font.lineHeight) + (lines - 1) * lineSpacing, 0);
     }
 
     public static Component replaceStyle(FormattedText text, Style newStyle, Predicate<Style> predicate) {
