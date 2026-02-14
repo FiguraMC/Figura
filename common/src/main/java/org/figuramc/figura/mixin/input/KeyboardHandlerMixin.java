@@ -28,7 +28,7 @@ public class KeyboardHandlerMixin {
         if (window != this.minecraft.getWindow().handle())
             return;
 
-        if (event.input() == 1 && Configs.PANIC_BUTTON.keyBind.matches(event)) {
+        if (action == 1 && Configs.PANIC_BUTTON.keyBind.matches(event)) {
             AvatarManager.togglePanic();
             ci.cancel();
         }
