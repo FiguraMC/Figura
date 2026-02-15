@@ -126,6 +126,8 @@ public abstract class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M e
 
                 return null;
             });
+        } else {
+            original.call(instance, matrices, submitNodeCollector, light, overlay, outlineColor);
         }
     }
 }
