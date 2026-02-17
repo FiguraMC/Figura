@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
@@ -21,12 +20,15 @@ import org.figuramc.figura.ducks.SkullBlockRendererAccessor;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaModelPart;
 import org.figuramc.figura.math.matrix.FiguraMat4;
 import org.figuramc.figura.model.rendering.EntityRenderMode;
+import org.figuramc.figura.utils.RenderUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.BitSet;
 
 @Mixin(ItemInHandRenderer.class)
 public abstract class ItemInHandRendererMixin {
@@ -38,18 +40,27 @@ public abstract class ItemInHandRendererMixin {
 
     @Unique Avatar avatar;
 
+    @Unique
+    BitSet figura$submissionSelection = new BitSet(3);
+
     @Inject(method = "renderHandsWithItems", at = @At("HEAD"))
     private void onRenderHandsWithItems(float tickDelta, PoseStack matrices, SubmitNodeCollector submitNodeCollector, LocalPlayer player, int light, CallbackInfo ci) {
         avatar = AvatarManager.getAvatarForPlayer(player.getUUID());
         if (avatar == null)
             return;
+        figura$submissionSelection.set(2);
 
-        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
-        FiguraMod.pushProfiler(avatar);
-        FiguraMod.pushProfiler("renderEvent");
-        avatar.renderMode = EntityRenderMode.FIRST_PERSON;
-        avatar.renderEvent(tickDelta, new FiguraMat4().set(matrices.last().pose()));
-        FiguraMod.popProfiler(3);
+        RenderUtils.createDummySubmission(figura$submissionSelection, submitNodeCollector, ((bufferSource, poseStack) -> {
+            FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+            FiguraMod.pushProfiler(avatar);
+            FiguraMod.pushProfiler("renderEvent");
+            avatar.renderMode = EntityRenderMode.FIRST_PERSON;
+            avatar.renderEvent(tickDelta, new FiguraMat4().set(matrices.last().pose()));
+            FiguraMod.popProfiler(3);
+
+            return false;
+        }), null);
+
     }
 
     @Inject(method = "renderHandsWithItems", at = @At("RETURN"))
@@ -57,12 +68,18 @@ public abstract class ItemInHandRendererMixin {
         if (avatar == null)
             return;
 
-        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
-        FiguraMod.pushProfiler(avatar);
-        FiguraMod.pushProfiler("postRenderEvent");
-        avatar.postRenderEvent(tickDelta, new FiguraMat4().set(matrices.last().pose()));
-        avatar = null;
-        FiguraMod.popProfiler(3);
+        figura$submissionSelection.set(2);
+
+        RenderUtils.createDummySubmission(figura$submissionSelection, submitNodeCollector, ((bufferSource, poseStack) -> {
+            FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+            FiguraMod.pushProfiler(avatar);
+            FiguraMod.pushProfiler("postRenderEvent");
+            avatar.postRenderEvent(tickDelta, new FiguraMat4().set(matrices.last().pose()));
+            avatar = null;
+            FiguraMod.popProfiler(3);
+
+            return false;
+        }), null);
     }
 
     @Inject(method = "renderArmWithItem", at = @At("HEAD"), cancellable = true)

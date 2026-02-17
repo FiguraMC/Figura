@@ -108,14 +108,10 @@ public abstract class CustomHeadLayerMixin<S extends LivingEntityRenderState, M 
             stack.translate(0d, 4d, 0d);
             stack.scale(s, s, s);
             ItemTransform transform = ((FiguraItemStackRenderStateExtension) itemStackState).figura$getItemTransform();
-            NodeCollectorExtension nodeCollectorExtension = (NodeCollectorExtension) submitNodeCollector;
-            nodeCollectorExtension.submitFiguraModel(avatar, entityState, ((avatar, livingEntityRenderState, multiBufferSource) -> {
 
-                if (!avatar.itemRenderEvent(ItemStackAPI.verify(((FiguraItemStackRenderStateExtension)itemStackState).figura$getItemStack()), ((FiguraItemStackRenderStateExtension)itemStackState).figura$getDisplayContext().name(), FiguraVec3.fromVec3f(transform.translation()), FiguraVec3.of(transform.rotation().z(), transform.rotation().y(), transform.rotation().x()), FiguraVec3.fromVec3f(transform.scale()), ((FiguraItemStackRenderStateExtension) itemStackState).figura$isLeftHanded(), stack, multiBufferSource, livingEntityRenderState.lightCoords, OverlayTexture.NO_OVERLAY))
-                    livingEntityRenderState.headItem.submit(poseStack, submitNodeCollector, i, OverlayTexture.NO_OVERLAY, livingEntityRenderState.outlineColor);
-                return null;
-            }));
-
+            boolean shouldSubmitVanilla = avatar.itemRenderEvent(ItemStackAPI.verify(((FiguraItemStackRenderStateExtension)itemStackState).figura$getItemStack()), ((FiguraItemStackRenderStateExtension)itemStackState).figura$getDisplayContext().name(), FiguraVec3.fromVec3f(transform.translation()), FiguraVec3.of(transform.rotation().z(), transform.rotation().y(), transform.rotation().x()), FiguraVec3.fromVec3f(transform.scale()), ((FiguraItemStackRenderStateExtension) itemStackState).figura$isLeftHanded(), stack, submitNodeCollector, entityState.lightCoords, OverlayTexture.NO_OVERLAY);
+            if (shouldSubmitVanilla)
+                entityState.headItem.submit(poseStack, submitNodeCollector, i, OverlayTexture.NO_OVERLAY, entityState.outlineColor);
         })) {
             ci.cancel();
         }
@@ -124,12 +120,9 @@ public abstract class CustomHeadLayerMixin<S extends LivingEntityRenderState, M 
     @WrapOperation(method = "submit(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;ILnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;FF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/item/ItemStackRenderState;submit(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;III)V"))
     private void figuraItemEvent(ItemStackRenderState instance, PoseStack matrices, SubmitNodeCollector submitNodeCollector, int i, int j, int k, Operation<Void> original, @Local(argsOnly = true) S entityState) {
         ItemTransform transform =  ((FiguraItemStackRenderStateExtension) instance).figura$getItemTransform();
-        NodeCollectorExtension nodeCollectorExtension = (NodeCollectorExtension) submitNodeCollector;
-        nodeCollectorExtension.submitFiguraModel(avatar, entityState, ((avatar, livingEntityRenderState, multiBufferSource) -> {
-            if (avatar == null || !avatar.itemRenderEvent(ItemStackAPI.verify(((FiguraItemStackRenderStateExtension)instance).figura$getItemStack()), ((FiguraItemStackRenderStateExtension)instance).figura$getDisplayContext().name(), FiguraVec3.fromVec3f(transform.translation()), FiguraVec3.of(transform.rotation().z(), transform.rotation().y(), transform.rotation().x()), FiguraVec3.fromVec3f(transform.scale()), ((FiguraItemStackRenderStateExtension) instance).figura$isLeftHanded(), matrices, multiBufferSource, i, j))
-                original.call(instance, matrices, submitNodeCollector, i, j, k);
-            return null;
-        }));
+        boolean callOriginal = avatar == null || !avatar.itemRenderEvent(ItemStackAPI.verify(((FiguraItemStackRenderStateExtension)instance).figura$getItemStack()), ((FiguraItemStackRenderStateExtension)instance).figura$getDisplayContext().name(), FiguraVec3.fromVec3f(transform.translation()), FiguraVec3.of(transform.rotation().z(), transform.rotation().y(), transform.rotation().x()), FiguraVec3.fromVec3f(transform.scale()), ((FiguraItemStackRenderStateExtension) instance).figura$isLeftHanded(), matrices, submitNodeCollector, i, j);
+        if (callOriginal)
+            original.call(instance, matrices, submitNodeCollector, i, j, k);
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/blockentity/SkullBlockRenderer;submitSkull(Lnet/minecraft/core/Direction;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;ILnet/minecraft/client/model/SkullModelBase;Lnet/minecraft/client/renderer/RenderType;ILnet/minecraft/client/renderer/feature/ModelFeatureRenderer$CrumblingOverlay;)V"), method = "submit(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;ILnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;FF)V")

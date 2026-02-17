@@ -21,6 +21,7 @@ import org.figuramc.figura.mixin.PlayerModelTypeAccessor;
 import org.figuramc.figura.utils.EntityUtils;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -163,9 +164,14 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
             value = "player.get_shoulder_entity")
     public LuaTable getShoulderEntity(boolean right) {
         checkEntity();
-        return new ReadOnlyLuaTable(new LuaTable());
-        //todo: can this even be fixed?
-        //return new ReadOnlyLuaTable(NbtToLua.convert(right ? entity.getShoulderParrotLeft() : entity.getShoulderEntityLeft()));
+        // best i can do
+        LuaTable table = new LuaTable();
+        if (right ? entity.getShoulderParrotRight().isEmpty() : entity.getShoulderParrotLeft().isEmpty()) {
+            table.set("ParrotVariant", LuaValue.NIL);
+            return new ReadOnlyLuaTable(table);
+        }
+        table.set("ParrotVariant", LuaValue.valueOf((right ? entity.getShoulderParrotRight() : entity.getShoulderParrotLeft()).get().toString()));
+        return new ReadOnlyLuaTable(table);
     }
 
     @LuaWhitelist

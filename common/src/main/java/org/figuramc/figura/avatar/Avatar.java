@@ -15,8 +15,7 @@ import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.client.renderer.entity.player.AvatarRenderer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -38,6 +37,7 @@ import org.figuramc.figura.animation.AnimationPlayer;
 import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.ducks.FiguraEntityRenderStateExtension;
+import org.figuramc.figura.ducks.NodeCollectorExtension;
 import org.figuramc.figura.gui.FiguraPortraitRenderState;
 import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.lua.FiguraLuaRuntime;
@@ -429,19 +429,31 @@ public class Avatar {
         return isCancelled(result);
     }
 
-    public boolean itemRenderEvent(ItemStackAPI item, String mode, FiguraVec3 pos, FiguraVec3 rot, FiguraVec3 scale, boolean leftHanded, PoseStack stack, MultiBufferSource bufferSource, int light, int overlay) {
+    public boolean itemRenderEvent(ItemStackAPI item, String mode, FiguraVec3 pos, FiguraVec3 rot, FiguraVec3 scale, boolean leftHanded, PoseStack stack, SubmitNodeCollector nodeCollector, int light, int overlay) {
         if (!loaded || renderer == null || !renderer.interceptRendersIntoFigura) {
             return false;
         }
         Varargs result = run("ITEM_RENDER", render, item, mode, pos, rot, scale, leftHanded);
+        NodeCollectorExtension extension = (NodeCollectorExtension) nodeCollector;
 
         if(result == null)
             return false;
 
         boolean rendered = false;
         for (int i = 1; i <= result.narg(); i++) {
-            if (result.arg(i).isuserdata(FiguraModelPart.class))
-                rendered |= renderItem(stack, bufferSource, (FiguraModelPart) result.arg(i).checkuserdata(FiguraModelPart.class), light, overlay);
+            if (result.arg(i).isuserdata(FiguraModelPart.class)) {
+                FiguraModelPart modelPart = (FiguraModelPart) result.arg(i).checkuserdata(FiguraModelPart.class);
+
+                boolean renderedPart = figuraItemRendered(modelPart);
+                rendered |= renderedPart;
+                if (renderedPart) {
+                    extension.submitFiguraModel(this, null, (avatar, entity, bufferSource) -> {
+                        renderItem(stack, bufferSource, modelPart, light, overlay);
+                        return null;
+                    });
+                }
+            }
+
         }
         return rendered;
     }
@@ -876,8 +888,12 @@ public class Avatar {
         return comp > 0;
     }
 
+    public boolean isItemPart(FiguraModelPart modelPart) {
+        return renderer != null && loaded && modelPart.parentType == ParentType.Item;
+    }
+
     public boolean renderItem(PoseStack stack, MultiBufferSource bufferSource, FiguraModelPart part, int light, int overlay) {
-        if (renderer == null || !loaded || part.parentType != ParentType.Item)
+        if (!isItemPart(part))
             return false;
 
         stack.pushPose();
@@ -894,6 +910,19 @@ public class Avatar {
         int ret = renderer.renderSpecialParts();
 
         stack.popPose();
+        return ret > 0;
+    }
+
+    public boolean figuraItemRendered(FiguraModelPart part) {
+        if (!isItemPart(part))
+            return false;
+        // save current filter scheme, set it to item, get complexity, and then set it back
+        PartFilterScheme partFilterScheme = renderer.currentFilterScheme;
+        renderer.currentFilterScheme = PartFilterScheme.ITEM;
+        renderer.itemToRender = part;
+        int ret = renderer.getComplexity();
+        renderer.currentFilterScheme = partFilterScheme;
+
         return ret > 0;
     }
 

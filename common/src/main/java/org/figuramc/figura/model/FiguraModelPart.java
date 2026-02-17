@@ -14,7 +14,6 @@ import org.figuramc.figura.math.matrix.FiguraMat4;
 import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.model.rendering.FiguraRenderer;
-import org.figuramc.figura.model.rendering.EntityRenderMode;
 import org.figuramc.figura.model.rendering.ImmediateFiguraRenderer;
 import org.figuramc.figura.model.rendering.Vertex;
 import org.figuramc.figura.model.rendering.texture.FiguraTexture;
@@ -108,6 +107,15 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                 return false;
             remainingComplexity[0] -= facesByTexture.get(i);
             avatarRenderer.pushFaces(facesByTexture.get(i) + Math.min(remainingComplexity[0], 0), remainingComplexity, textures.get(i), vertices.get(i));
+        }
+        return true;
+    }
+
+    public boolean calculateComplexity(int[] remainingComplexity) {
+        for (int i = 0; i < facesByTexture.size(); i++) {
+            if (remainingComplexity[0] <= 0)
+                return false;
+            remainingComplexity[0] -= facesByTexture.get(i);
         }
         return true;
     }

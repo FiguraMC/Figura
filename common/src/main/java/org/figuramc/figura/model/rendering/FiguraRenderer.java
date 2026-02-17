@@ -137,6 +137,7 @@ public abstract class FiguraRenderer {
     }
 
     public abstract int render();
+    public abstract int getComplexity();
     public abstract int renderSpecialParts();
     public abstract void updateMatrices();
 

@@ -77,20 +77,15 @@ public abstract class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M e
                 });
             }
 
-            NodeCollectorExtension nodeCollectorExtension = (NodeCollectorExtension) submitNodeCollector;
-            nodeCollectorExtension.submitFiguraModel(av, state, (avatar, livingEntity, bufferSource) -> {
-                // sorta have to do this manually otherwise itemRenderEvent isn't called
-                ItemTransform transform = ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getItemTransform();
+            // sorta have to do this manually otherwise itemRenderEvent isn't called
+            ItemTransform transform = ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getItemTransform();
 
-                if (av == null || !av.itemRenderEvent(ItemStackAPI.verify(((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getItemStack()),
-                        ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getDisplayContext().name(), FiguraVec3.fromVec3f(transform.translation()),
-                        FiguraVec3.of(transform.rotation().z(), transform.rotation().y(), transform.rotation().x()), FiguraVec3.fromVec3f(transform.scale()),
-                        ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$isLeftHanded(), stack, bufferSource, light, OverlayTexture.NO_OVERLAY)
-                )
-                    itemStackRenderState.submit(poseStack, submitNodeCollector, light, OverlayTexture.NO_OVERLAY, livingEntity.outlineColor);
-
-                return null;
-            });
+            if (av == null || !av.itemRenderEvent(ItemStackAPI.verify(((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getItemStack()),
+                    ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getDisplayContext().name(), FiguraVec3.fromVec3f(transform.translation()),
+                    FiguraVec3.of(transform.rotation().z(), transform.rotation().y(), transform.rotation().x()), FiguraVec3.fromVec3f(transform.scale()),
+                    ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$isLeftHanded(), stack, submitNodeCollector, light, OverlayTexture.NO_OVERLAY)
+            )
+                itemStackRenderState.submit(stack, submitNodeCollector, light, OverlayTexture.NO_OVERLAY, state.outlineColor);
         })) {
             ci.cancel();
         }
@@ -112,22 +107,12 @@ public abstract class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M e
             });
         }
         ItemTransform transform = ((FiguraItemStackRenderStateExtension)instance).figura$getItemTransform();
-        NodeCollectorExtension nodeCollectorExtension = (NodeCollectorExtension) submitNodeCollector;
 
-        if (av != null) {
-            nodeCollectorExtension.submitFiguraModel(av, armedState, (avatar, livingEntity, bufferSource) -> {
-
-                if (avatar == null || !avatar.itemRenderEvent(ItemStackAPI.verify(stack), ((FiguraItemStackRenderStateExtension) instance).figura$getDisplayContext().name(),
-                        FiguraVec3.fromVec3f(transform.translation()), FiguraVec3.of(transform.rotation().z(), transform.rotation().y(), transform.rotation().x()),
-                        FiguraVec3.fromVec3f(transform.scale()), ((FiguraItemStackRenderStateExtension) instance).figura$isLeftHanded(),
-                        matrices, bufferSource, light, overlay)
-                )
-                    original.call(instance, matrices, submitNodeCollector, light, overlay, outlineColor);
-
-                return null;
-            });
-        } else {
+        if (av == null || !av.itemRenderEvent(ItemStackAPI.verify(stack), ((FiguraItemStackRenderStateExtension) instance).figura$getDisplayContext().name(),
+                FiguraVec3.fromVec3f(transform.translation()), FiguraVec3.of(transform.rotation().z(), transform.rotation().y(), transform.rotation().x()),
+                FiguraVec3.fromVec3f(transform.scale()), ((FiguraItemStackRenderStateExtension) instance).figura$isLeftHanded(),
+                matrices, submitNodeCollector, light, overlay)
+        )
             original.call(instance, matrices, submitNodeCollector, light, overlay, outlineColor);
-        }
     }
 }

@@ -71,7 +71,7 @@ public abstract class PlayerItemInHandLayerMixin <S extends AvatarRenderState, M
             ItemTransform transform = ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getItemTransform();
             NodeCollectorExtension nodeCollectorExtension = (NodeCollectorExtension) submitNodeCollector;
             nodeCollectorExtension.submitFiguraModel(av, avatarRenderState, (avatar, entityState, multibufferSource) -> {
-                if (!avatar.itemRenderEvent(ItemStackAPI.verify(((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getItemStack()), ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getDisplayContext().name(), FiguraVec3.fromVec3f(transform.translation()), FiguraVec3.of(transform.rotation().z(), transform.rotation().y(), transform.rotation().x()), FiguraVec3.fromVec3f(transform.scale()), ((FiguraItemStackRenderStateExtension) itemStackRenderState).figura$isLeftHanded(), stack, multibufferSource, light, OverlayTexture.NO_OVERLAY))
+                if (!avatar.itemRenderEvent(ItemStackAPI.verify(((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getItemStack()), ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getDisplayContext().name(), FiguraVec3.fromVec3f(transform.translation()), FiguraVec3.of(transform.rotation().z(), transform.rotation().y(), transform.rotation().x()), FiguraVec3.fromVec3f(transform.scale()), ((FiguraItemStackRenderStateExtension) itemStackRenderState).figura$isLeftHanded(), stack, submitNodeCollector, light, OverlayTexture.NO_OVERLAY))
                     itemStackRenderState.submit(stack, submitNodeCollector, light, OverlayTexture.NO_OVERLAY, entityState.outlineColor);
 
                 return null;

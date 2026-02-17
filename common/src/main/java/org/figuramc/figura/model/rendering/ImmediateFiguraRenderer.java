@@ -87,6 +87,30 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
         this.isRendering = false;
     }
 
+    public int getComplexity() {
+        // complexity
+        int prev = avatar.complexity.remaining;
+        int[] remainingComplexity = new int[] {prev};
+
+        // explore all model parts
+        if (root.customization.visible) {
+            if (currentFilterScheme.parentType.isSeparate) {
+                List<FiguraModelPart> parts = separatedParts.get(currentFilterScheme.parentType);
+                if (parts != null) {
+                    for (FiguraModelPart part : parts) {
+                        if (currentFilterScheme.parentType == ParentType.Item && part != itemToRender)
+                            continue;
+
+                        getPartComplexity(part, remainingComplexity, currentFilterScheme.initialValue);
+                    }
+                }
+            } else {
+                getPartComplexity(root, remainingComplexity, currentFilterScheme.initialValue);
+            }
+        }
+        return prev - Math.max(remainingComplexity[0], 0);
+    }
+
     protected int commonRender(double vertOffset) {
         // flag rendering state
         this.isRendering = true;
@@ -385,6 +409,54 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
         customizationStack.pop();
         FiguraMod.popProfiler(2);
 
+        return !breakRender;
+    }
+
+
+    protected boolean getPartComplexity(FiguraModelPart part, int[] remainingComplexity, boolean prevPredicate) {
+        PartCustomization custom = part.customization;
+
+        // test the current filter scheme
+        Boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, prevPredicate);
+        if (thisPassedPredicate == null || (!custom.visible)) {
+            return true;
+        }
+
+        // visibility
+        if (!ignoreVanillaVisibility && custom.vanillaVisible != null && !custom.vanillaVisible) {
+            return true;
+        }
+
+        // calculate this part's complexity
+        FiguraMod.popPushProfiler("pushVertices");
+        boolean breakRender = thisPassedPredicate && !part.calculateComplexity(remainingComplexity);
+
+        // calculate extras
+        if (!breakRender && thisPassedPredicate) {
+            boolean renderTasks = !part.renderTasks.isEmpty();
+            // add tasks
+            if (renderTasks) {
+
+                for (RenderTask task : part.renderTasks.values()) {
+                    if (!task.shouldRender())
+                        continue;
+                    int neededComplexity = task.getComplexity();
+                    if (neededComplexity > remainingComplexity[0])
+                        break;
+                    FiguraMod.pushProfiler(task.getName());
+                    remainingComplexity[0] -= neededComplexity;
+                    FiguraMod.popProfiler();
+                }
+            }
+        }
+
+        // calculate children
+        for (FiguraModelPart child : List.copyOf(part.children)) {
+            if (!getPartComplexity(child, remainingComplexity, thisPassedPredicate)) {
+                breakRender = true;
+                break;
+            }
+        }
         return !breakRender;
     }
 

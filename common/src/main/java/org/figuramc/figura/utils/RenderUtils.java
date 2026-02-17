@@ -4,7 +4,14 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.SubmitNodeStorage;
+import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -19,10 +26,15 @@ import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.figuramc.figura.avatar.Avatar;
+import org.figuramc.figura.ducks.FiguraSubmitCallBackExtension;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.permissions.Permissions;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.BitSet;
+import java.util.List;
+import java.util.function.BiFunction;
 
 public class RenderUtils {
 
@@ -142,8 +154,44 @@ public class RenderUtils {
         Minecraft client = Minecraft.getInstance();
         FeatureRenderDispatcher featureRenderDispatcher = client.gameRenderer.getFeatureRenderDispatcher();
         SubmitNodeStorage submitNodeStorage = featureRenderDispatcher.getSubmitNodeStorage();
-        client.getItemModelResolver().updateForLiving(itemStackRenderState, item, displayMode, entity);
+        if (entity != null)
+            client.getItemModelResolver().updateForLiving(itemStackRenderState, item, displayMode, entity);
+        else
+            client.getItemModelResolver().updateForTopItem(itemStackRenderState, item, displayMode, client.level, null, 0);
         itemStackRenderState.submit(poseStack, submitNodeStorage, newLight, newOverlay, 0);
+    }
+
+
+
+    static PoseStack dummyPoseStack = new PoseStack();
+    public static void createDummySubmission(BitSet selection, SubmitNodeCollector submitNodeStorage, BiFunction<MultiBufferSource, PoseStack, Boolean> preRender, Runnable postRender) {
+        // otherwise something is very wrong and this will cause out of bounds exceptions and other bad things
+        assert (selection.size() >= 3);
+
+
+        AvatarRenderer<AbstractClientPlayer> avatarRenderer = Minecraft.getInstance().getEntityRenderDispatcher().getPlayerRenderer(Minecraft.getInstance().player);
+
+        if (selection.get(1)) {
+            PlayerModel playerModel = avatarRenderer.getModel();
+            ((FiguraSubmitCallBackExtension) playerModel).figura$setPreRenderingCallback(preRender);
+            ((FiguraSubmitCallBackExtension) playerModel).figura$setPostRenderingCallback(postRender);
+            submitNodeStorage.submitModel(playerModel, null, dummyPoseStack, RenderType.LINES, 0, 0, 0, null);
+        }
+
+        if (selection.get(2)) {
+            ModelPart modelPart = avatarRenderer.getModel().leftArm;
+            ((FiguraSubmitCallBackExtension) (Object)modelPart).figura$setPreRenderingCallback(preRender);
+            ((FiguraSubmitCallBackExtension) (Object)modelPart).figura$setPostRenderingCallback(postRender);
+            submitNodeStorage.submitModelPart(modelPart, dummyPoseStack, RenderType.LINES, 0, 0, null);
+        }
+
+        if (selection.get(3)) {
+            // TODO ITEM SUBMISSION
+            //  submitNodeStorage.submitItem(dummyStack, ItemDisplayContext.FIXED, 0, 0, 0, dummyArr, List.of(), RenderType.LINES, ItemStackRenderState.FoilType.NONE);
+        }
+
+
+
     }
 
     public static boolean isEntityUpsideDown(LivingEntity livingEntity) {
