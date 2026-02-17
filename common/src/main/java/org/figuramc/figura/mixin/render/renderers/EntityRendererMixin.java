@@ -1,7 +1,6 @@
 package org.figuramc.figura.mixin.render.renderers;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
@@ -16,6 +15,7 @@ import org.figuramc.figura.permissions.Permissions;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -36,13 +36,23 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
     }
 
 
-    @Inject(method = "submitNameTag", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitNameTag(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/phys/Vec3;ILnet/minecraft/network/chat/Component;ZIDLnet/minecraft/client/renderer/state/CameraRenderState;)V", shift = At.Shift.BEFORE))
-    private void setAvatarForSubmission(S entityRenderState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, CallbackInfo ci) {
+    @ModifyArg(method = "submitNameTag", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitNameTag(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/phys/Vec3;ILnet/minecraft/network/chat/Component;ZIDLnet/minecraft/client/renderer/state/CameraRenderState;)V"), index = 7)
+    private CameraRenderState setAvatarForSubmission(CameraRenderState cameraRenderState, @Local(argsOnly = true) S entityRenderState) {
         Avatar figura$avatar = AvatarManager.getAvatar(entityRenderState);
+
         if (figura$avatar != null) {
+            CameraRenderState replacement = new CameraRenderState();
+            replacement.pos = cameraRenderState.pos;
+            replacement.blockPos = cameraRenderState.blockPos;
+            replacement.entityPos = cameraRenderState.entityPos;
+            replacement.initialized = cameraRenderState.initialized;
+            replacement.orientation = cameraRenderState.orientation;
+
             // i literally cannot believe we have to do this, but here we are
-            ((CameraRenderStateExtension)cameraRenderState).figura$setAvatar(figura$avatar);
-            ((CameraRenderStateExtension)cameraRenderState).figura$setRenderingNameTag(figura$isRenderingName());
+            ((CameraRenderStateExtension)replacement).figura$setAvatar(figura$avatar);
+            ((CameraRenderStateExtension)replacement).figura$setRenderingNameTag(figura$isRenderingName());
+            return replacement;
         }
+        return cameraRenderState;
     }
 }

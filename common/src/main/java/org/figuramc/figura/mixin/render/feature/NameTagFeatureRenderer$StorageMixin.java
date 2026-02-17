@@ -62,11 +62,24 @@ public class NameTagFeatureRenderer$StorageMixin implements NameTagFeatureRender
         ((CameraRenderStateExtension)cameraRenderState).figura$setAvatar(null);
         ((CameraRenderStateExtension)cameraRenderState).figura$setRenderingNameTag(false);
 
+        if (figura$avatar == null)
+            return;
+
         figura$custom = figura$avatar == null || figura$avatar.luaRuntime == null ? null : figura$avatar.luaRuntime.nameplate.ENTITY;
         figura$hasCustomNameplate = figura$custom != null && figura$avatar.permissions.get(Permissions.NAMEPLATE_EDIT) == 1;
         figura$enabled =  Configs.ENTITY_NAMEPLATE.value > 0 && !AvatarManager.panic && figura$hasCustomNameplate;
 
         figura$textList = TextUtils.splitText(component, "\n");
+    }
+
+    @Inject(at = @At(value = "TAIL"), method = "add")
+    private void clearAvatar(PoseStack poseStack, Vec3 vec3, int i, Component component, boolean bl, int j, double d, CameraRenderState cameraRenderState, CallbackInfo ci) {
+        figura$avatar = null;
+        figura$isRenderingName = false;
+        figura$custom = null;
+        figura$hasCustomNameplate = false;
+        figura$enabled =  false;
+        figura$textList = null;
     }
 
     // Push pivot transformations when the nametag is being pivoted (set to entity height in vanilla)
