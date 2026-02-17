@@ -66,6 +66,7 @@ public class SubmitNodeCollectionMixin implements NodeCollectorExtension {
         modelExtension.figura$setPreventAnimSetup(false);
         modelExtension.figura$setPreRenderingCallback(null);
         modelExtension.figura$setPostRenderingCallback(null);
+        original.call(instance, key, modelPartSubmit);
     }
 
     @WrapOperation(method = "submitItem", at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z"))
