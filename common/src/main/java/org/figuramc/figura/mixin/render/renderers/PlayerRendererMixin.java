@@ -180,12 +180,12 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
                     part.posTransform(model);
                 }
             }
-            return false;
+            return true;
         };
 
         ((FiguraSubmitCallBackExtension)(Object)modelPart).figura$setPreRenderingCallback(lambda);
         ((FiguraSubmitCallBackExtension)(Object)modelPart).figura$setPostRenderingCallback(() -> {
-            if (avatar.luaRuntime != null)
+            if (avatar != null && avatar.luaRuntime != null)
                 avatar.luaRuntime.vanilla_model.PLAYER.restore(model);
             }
         );
