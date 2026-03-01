@@ -136,7 +136,9 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
             return true;
         });
 
-        int entityId = ((FiguraEntityRenderStateExtension)livingEntityRenderState).figura$getEntityId();
+        Integer entityIdBoxed = ((FiguraEntityRenderStateExtension)livingEntityRenderState).figura$getEntityId();
+        if (entityIdBoxed == null) return;
+        int entityId = entityIdBoxed;
         float tickDelta = ((FiguraEntityRenderStateExtension)livingEntityRenderState).figura$getTickDelta();
 
         Entity entity = Minecraft.getInstance().level.getEntity(entityId);

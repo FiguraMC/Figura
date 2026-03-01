@@ -65,7 +65,10 @@ public class EntityRenderDispatcherMixin {
         if (this.camera == null)
             ci.cancel();
 
-        Entity entity = Minecraft.getInstance().level.getEntity(((FiguraEntityRenderStateExtension)entityRenderState).figura$getEntityId());
+        Integer entityId = ((FiguraEntityRenderStateExtension)entityRenderState).figura$getEntityId();
+        if (entityId == null)
+            return;
+        Entity entity = Minecraft.getInstance().level.getEntity(entityId);
         if (entity == null)
             return;
         Entity owner = entity.getFirstPassenger();
