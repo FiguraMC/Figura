@@ -132,7 +132,9 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
 
         submitCallBackExtension.figura$setPreRenderingCallback((bufferSource, pose) -> {
             // transform parts so render layers see figura changes
+            // do pos/rot/scale, then visibility
             figura$transformParts(localAvatar, model);
+            figura$doPosTransform(localAvatar, model);
             return true;
         });
 
@@ -168,9 +170,9 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
 
             FiguraMod.popProfiler(3);
 
-            figura$restoreParts(avatar, model);
-
-            // go figure, it wants a return value even though it's a void lambda
+            // undo transformations
+            if (avatar.luaRuntime != null)
+                avatar.luaRuntime.vanilla_model.PLAYER.restore(getModel());
             return null;
         }));
 
@@ -187,8 +189,9 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
 
         Avatar avatar = currentAvatar;
         submitCallBackExtension.figura$setPostRenderingCallback(() -> {
-            // Render avatar with params
-            figura$restoreParts(avatar, model);
+            // Restore transform
+            if (avatar.luaRuntime != null)
+                avatar.luaRuntime.vanilla_model.PLAYER.restore(getModel());
         });
 
         currentAvatar = null;
@@ -214,13 +217,16 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
         if (currentAvatar.luaRuntime != null) {
             VanillaPart part = currentAvatar.luaRuntime.vanilla_model.PLAYER;
             part.save(model);
-            if (currentAvatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1)
+            if (currentAvatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1) {
+                // this one basically does transformations such as rotation
                 part.preTransform(model);
+            }
         }
     }
 
     @Unique
-    void figura$restoreParts(Avatar currentAvatar, M model) {
+    void figura$doPosTransform(Avatar currentAvatar, M model) {
+        // this is responsible for visibility stuff
         if (currentAvatar.luaRuntime != null && currentAvatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1)
             currentAvatar.luaRuntime.vanilla_model.PLAYER.posTransform(model);
     }
