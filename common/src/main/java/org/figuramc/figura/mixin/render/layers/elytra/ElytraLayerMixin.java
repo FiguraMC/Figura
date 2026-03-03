@@ -83,23 +83,11 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, S extends Humanoi
         if (figura$avatar == null)
             return;
 
-        Avatar avatar = figura$avatar;
 
         FiguraSubmitCallBackExtension submitCallBackExtension = (FiguraSubmitCallBackExtension) elytraModel;
-        if (avatar.luaRuntime != null) {
-            VanillaPart part = avatar.luaRuntime.vanilla_model.ELYTRA;
-            part.save(elytraModel);
-            if (avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1) {
-                vanillaPart = part;
-                vanillaPart.preTransform(elytraModel);
-            }
-        }
+        NodeCollectorExtension nodeCollectorExtension = (NodeCollectorExtension) submitNodeCollector;
 
-        if (vanillaPart != null)
-            vanillaPart.posTransform(elytraModel);
-
-
-        submitCallBackExtension.figura$setPreRenderingCallback(((multiBufferSource, poseStack) -> {
+        nodeCollectorExtension.submitFiguraModel(figura$avatar, humanoidRenderState, (avatar, renderState, multiBufferSource) -> {
             if (avatar.luaRuntime != null) {
                 VanillaPart part = avatar.luaRuntime.vanilla_model.ELYTRA;
                 part.save(elytraModel);
@@ -111,14 +99,28 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, S extends Humanoi
 
             Integer id = humanoidRenderState instanceof AvatarRenderState playerRenderState ? playerRenderState.id : ((FiguraEntityRenderStateExtension)humanoidRenderState).figura$getEntityId();
             if (id != null)
-                avatar.elytraRender(Minecraft.getInstance().level.getEntity(id), multiBufferSource, poseStack, light, ((FiguraEntityRenderStateExtension)humanoidRenderState).figura$getTickDelta(), elytraModel);
+                avatar.elytraRender(Minecraft.getInstance().level.getEntity(id), multiBufferSource, pose, light, ((FiguraEntityRenderStateExtension)humanoidRenderState).figura$getTickDelta(), elytraModel);
+
+            if (vanillaPart != null)
+                vanillaPart.restore(elytraModel);
+            return null;
+        });
+
+        Avatar avatar = figura$avatar;
+        submitCallBackExtension.figura$setPreRenderingCallback(((multiBufferSource, poseStack) -> {
+            if (avatar.luaRuntime != null) {
+                VanillaPart part = avatar.luaRuntime.vanilla_model.ELYTRA;
+                part.save(elytraModel);
+                if (avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1) {
+                    vanillaPart = part;
+                    vanillaPart.preTransform(elytraModel);
+                }
+            }
 
             if (vanillaPart != null)
                 vanillaPart.posTransform(elytraModel);
-
             return true;
         }));
-
 
         submitCallBackExtension.figura$setPostRenderingCallback((() -> {
             if (vanillaPart != null)
@@ -127,33 +129,11 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, S extends Humanoi
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer;renderLayers(Lnet/minecraft/client/resources/model/EquipmentClientInfo$LayerType;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/client/model/Model;Ljava/lang/Object;Lnet/minecraft/world/item/ItemStack;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;ILnet/minecraft/resources/ResourceLocation;II)V"), method = "submit(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;ILnet/minecraft/client/renderer/entity/state/HumanoidRenderState;FF)V", cancellable = true)
-    public void cancelVanillaPart(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int notLight, S humanoidRenderState, float f, float g, CallbackInfo ci, @Local ElytraModel elytraModel) {
+    public void cancelVanillaPart(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int light, S humanoidRenderState, float f, float g, CallbackInfo ci, @Local ElytraModel elytraModel) {
         renderedPivot = true;
-        submitElytraPivot(humanoidRenderState, poseStack, submitNodeCollector, humanoidRenderState.lightCoords, elytraModel);
+        submitElytraPivot(humanoidRenderState, poseStack, submitNodeCollector, light, elytraModel);
+
         if (renderedPivot) {
-            NodeCollectorExtension nodeCollectorExtension = (NodeCollectorExtension) submitNodeCollector;
-
-            // figura event
-            nodeCollectorExtension.submitFiguraModel(figura$avatar, humanoidRenderState, (avatar, renderState, bufferSource) -> {
-                if (avatar.luaRuntime != null) {
-                    VanillaPart part = avatar.luaRuntime.vanilla_model.ELYTRA;
-                    part.save(elytraModel);
-                    if (avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1) {
-                        vanillaPart = part;
-                        vanillaPart.preTransform(elytraModel);
-                    }
-                }
-
-                Integer id = renderState instanceof AvatarRenderState playerRenderState ? playerRenderState.id : ((FiguraEntityRenderStateExtension)renderState).figura$getEntityId();
-                if (id != null)
-                    avatar.elytraRender(Minecraft.getInstance().level.getEntity(id), bufferSource, poseStack, humanoidRenderState.lightCoords, ((FiguraEntityRenderStateExtension)renderState).figura$getTickDelta(), elytraModel);
-
-                if (vanillaPart != null)
-                    vanillaPart.restore(elytraModel);
-
-                return null;
-            });
-
             poseStack.popPose();
             ci.cancel();
         }
@@ -172,13 +152,13 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, S extends Humanoi
             VanillaPart part = RenderUtils.pivotToPart(figura$Avatar, ParentType.LeftElytraPivot);
             if (part != null && part.checkVisible()) {
                 boolean leftWing = figura$Avatar.pivotPartRender(ParentType.LeftElytraPivot, stack -> {
-                    stack.pushPose();
-                    stack.scale(16, 16, 16);
-                    stack.mulPose(Axis.XP.rotationDegrees(180f));
-                    stack.mulPose(Axis.YP.rotationDegrees(180f));
-                    stack.translate(0.0f, 0.0f, 0.125f);
-                    figura$submitElytraPart(elytraModel, state, ((ElytraModelAccessor)elytraModel).getLeftWing(), stack, nodeCollector, light, state.outlineColor, itemStack, playerTexture);
-                    stack.popPose();
+                        stack.pushPose();
+                        stack.scale(16, 16, 16);
+                        stack.mulPose(Axis.XP.rotationDegrees(180f));
+                        stack.mulPose(Axis.YP.rotationDegrees(180f));
+                        stack.translate(0.0f, 0.0f, 0.125f);
+                        figura$submitElytraPart(elytraModel, state, ((ElytraModelAccessor)elytraModel).getLeftWing(), stack, nodeCollector, light, state.outlineColor, itemStack, playerTexture);
+                        stack.popPose();
                 });
                 if (!leftWing) {
                     figura$submitElytraPart(elytraModel, state, ((ElytraModelAccessor)elytraModel).getLeftWing(), poseStack, nodeCollector, light, state.outlineColor, itemStack, playerTexture);
@@ -188,7 +168,7 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, S extends Humanoi
 
             part = RenderUtils.pivotToPart(figura$Avatar, ParentType.RightElytraPivot);
             if (part != null && part.checkVisible()) {
-                    boolean rightWing = figura$Avatar.pivotPartRender(ParentType.RightElytraPivot, stack -> {
+                boolean rightWing = figura$Avatar.pivotPartRender(ParentType.RightElytraPivot, stack -> {
                     stack.pushPose();
                     stack.scale(16, 16, 16);
                     stack.mulPose(Axis.XP.rotationDegrees(180f));
@@ -233,13 +213,13 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, S extends Humanoi
                     elytraModel.setupAnim(state);
                     return true;
                 });
-                nodeCollector.order(order++).submitModelPart(modelPart, poseStack, RenderType.armorCutoutNoCull(normalArmorResource), light, OverlayTexture.NO_OVERLAY, null, outlineColor, null);
+                nodeCollector.order(order++).submitModelPart(modelPart, poseStack, RenderType.armorCutoutNoCull(normalArmorResource), light, OverlayTexture.NO_OVERLAY, null, -1, null);
                 if (hasGlint) {
                     ((FiguraSubmitCallBackExtension)(Object)modelPart).figura$setPreRenderingCallback((multiBufferSource, stack) -> {
                         elytraModel.setupAnim(state);
                         return true;
                     });
-                    nodeCollector.order(order++).submitModelPart(modelPart, poseStack, RenderType.armorEntityGlint(), light, OverlayTexture.NO_OVERLAY, null, outlineColor, null);
+                    nodeCollector.order(order++).submitModelPart(modelPart, poseStack, RenderType.armorEntityGlint(), light, OverlayTexture.NO_OVERLAY, null, -1 , null);
                 }
                 hasGlint = false;
             }
