@@ -1,6 +1,7 @@
 package org.figuramc.figura;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.players.GameProfileCache;
@@ -130,7 +131,8 @@ public class FiguraMod {
     }
 
     public static boolean isOffline(UUID other) {
-        return !Minecraft.getInstance().getConnection().getOnlinePlayerIds().contains(other);
+        ClientPacketListener connection = Minecraft.getInstance().getConnection();
+        return connection == null || !connection.getOnlinePlayerIds().contains(other);
     }
 
     /**
