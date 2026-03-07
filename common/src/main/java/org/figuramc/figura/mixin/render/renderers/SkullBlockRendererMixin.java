@@ -76,7 +76,7 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
         float tickDelta = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);
 
         FiguraSubmitCallBackExtension modelExtension = (FiguraSubmitCallBackExtension) model;
-        modelExtension.figura$setPreRenderingCallback((bufferSource, poseStack) -> {
+        modelExtension.figura$addPreRenderingCallback((bufferSource, poseStack) -> {
 
             FiguraMod.pushProfiler(FiguraMod.MOD_ID);
             FiguraMod.pushProfiler(localAvatar);

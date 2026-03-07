@@ -168,14 +168,15 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
     @Inject(at = @At(value = "INVOKE", shift = At.Shift.BEFORE, target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitModelPart(Lnet/minecraft/client/model/geom/ModelPart;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/RenderType;IILnet/minecraft/client/renderer/texture/TextureAtlasSprite;)V"), method = "renderHand")
     private void onRenderHand(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int i, ResourceLocation resourceLocation, ModelPart modelPart, boolean bl, CallbackInfo ci) {
         avatar = AvatarManager.getAvatarForPlayer(Minecraft.getInstance().player.getUUID());
+        Avatar localAvatar = avatar;
         BiFunction<MultiBufferSource, PoseStack, Boolean> lambda = (bufferSource, stack) -> {
-            if (avatar != null && avatar.luaRuntime != null) {
-                VanillaPart part = avatar.luaRuntime.vanilla_model.PLAYER;
+            if (localAvatar != null && localAvatar.luaRuntime != null) {
+                VanillaPart part = localAvatar.luaRuntime.vanilla_model.PLAYER;
                 PlayerModel model = this.getModel();
 
                 part.save(model);
 
-                if (avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1) {
+                if (localAvatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1) {
                     part.preTransform(model);
                     part.posTransform(model);
                 }
@@ -183,10 +184,10 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
             return true;
         };
 
-        ((FiguraSubmitCallBackExtension)(Object)modelPart).figura$setPreRenderingCallback(lambda);
-        ((FiguraSubmitCallBackExtension)(Object)modelPart).figura$setPostRenderingCallback(() -> {
-            if (avatar != null && avatar.luaRuntime != null)
-                avatar.luaRuntime.vanilla_model.PLAYER.restore(model);
+        ((FiguraSubmitCallBackExtension)(Object)modelPart).figura$addPreRenderingCallback(lambda);
+        ((FiguraSubmitCallBackExtension)(Object)modelPart).figura$addPostRenderingCallback(() -> {
+            if (localAvatar != null && localAvatar.luaRuntime != null)
+                localAvatar.luaRuntime.vanilla_model.PLAYER.restore(model);
             }
         );
     }
@@ -203,13 +204,13 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         PlayerModel playerModel = getModel();
 
         nodeCollectorExt.submitFiguraModel(avatar, null, (playerAvatar, state, bufferSource) -> {
-            if (avatar != null && avatar.luaRuntime != null) {
-                VanillaPart part = avatar.luaRuntime.vanilla_model.PLAYER;
+            if (playerAvatar != null && playerAvatar.luaRuntime != null) {
+                VanillaPart part = playerAvatar.luaRuntime.vanilla_model.PLAYER;
                 PlayerModel model = this.getModel();
 
                 part.save(model);
 
-                if (avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1) {
+                if (playerAvatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1) {
                     part.preTransform(model);
                     part.posTransform(model);
                 }

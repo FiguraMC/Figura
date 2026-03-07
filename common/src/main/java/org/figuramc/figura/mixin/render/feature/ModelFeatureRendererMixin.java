@@ -38,18 +38,18 @@ public class ModelFeatureRendererMixin {
                                             OutlineBufferSource outlineBufferSource, MultiBufferSource.BufferSource bufferSource, CallbackInfo ci) {
         FiguraSubmitCallBackExtension callBackExtension = (FiguraSubmitCallBackExtension) (Object) modelSubmit;
 
-        boolean shouldCancel = callBackExtension.figura$getPreRenderingCallback() != null &&
-                    !callBackExtension.figura$getPreRenderingCallback().apply(bufferSource, poseStack);
-
-        if (shouldCancel)
-            ci.cancel();
+        for (var callback : callBackExtension.figura$getPreRenderingCallbacks()) {
+            if (!callback.apply(bufferSource, poseStack)) {
+                ci.cancel();
+            }
+        }
     }
 
     @Inject(method = "renderModel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/Model;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;III)V", ordinal = 0, shift = At.Shift.AFTER))
     private <S> void figura$postRender(SubmitNodeStorage.ModelSubmit<S> modelSubmit, RenderType renderType, VertexConsumer vertexConsumer,
                                       OutlineBufferSource outlineBufferSource, MultiBufferSource.BufferSource bufferSource, CallbackInfo ci) {
         FiguraSubmitCallBackExtension callBackExtension = (FiguraSubmitCallBackExtension) (Object) modelSubmit;
-        if (callBackExtension.figura$getPostRenderingCallback() != null)
-            callBackExtension.figura$getPostRenderingCallback().run();
+        for (var callback : callBackExtension.figura$getPostRenderingCallbacks())
+            callback.run();
     }
 }

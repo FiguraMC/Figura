@@ -25,18 +25,18 @@ public class ModelPartFeatureRendererMixin {
                                       OutlineBufferSource outlineBufferSource, MultiBufferSource.BufferSource crumblingBufferSource, CallbackInfo ci, @Local SubmitNodeStorage.ModelPartSubmit modelSubmit) {
         FiguraSubmitCallBackExtension callBackExtension = (FiguraSubmitCallBackExtension) (Object) modelSubmit;
 
-        boolean shouldCancel = callBackExtension.figura$getPreRenderingCallback() != null &&
-                    !callBackExtension.figura$getPreRenderingCallback().apply(bufferSource, poseStack);
-
-        if (shouldCancel)
-            ci.cancel();
+        for (var callback : callBackExtension.figura$getPreRenderingCallbacks()) {
+             if (!callback.apply(bufferSource, poseStack)) {
+                 ci.cancel();
+             }
+        }
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/geom/ModelPart;render(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;III)V", ordinal = 0, shift = At.Shift.AFTER))
     private <S> void figura$postRender(SubmitNodeCollection submitNodeCollection, MultiBufferSource.BufferSource bufferSource,
                                        OutlineBufferSource outlineBufferSource, MultiBufferSource.BufferSource crumblingBufferSource, CallbackInfo ci, @Local SubmitNodeStorage.ModelPartSubmit modelSubmit) {
         FiguraSubmitCallBackExtension callBackExtension = (FiguraSubmitCallBackExtension) (Object) modelSubmit;
-        if (callBackExtension.figura$getPostRenderingCallback() != null)
-            callBackExtension.figura$getPostRenderingCallback().run();
+        for (var callback : callBackExtension.figura$getPostRenderingCallbacks())
+             callback.run();
     }
 }

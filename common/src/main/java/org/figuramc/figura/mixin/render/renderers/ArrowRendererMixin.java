@@ -51,7 +51,7 @@ public abstract class ArrowRendererMixin<T extends AbstractArrow, S extends Arro
         if (avatar == null || avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 0)
             return par1;
 
-        ((FiguraSubmitCallBackExtension)par1).figura$setPreRenderingCallback((multiBufferSource, poseStack) -> {
+        ((FiguraSubmitCallBackExtension)par1).figura$addPreRenderingCallback((multiBufferSource, poseStack) -> {
             FiguraMod.pushProfiler(FiguraMod.MOD_ID);
             FiguraMod.pushProfiler(avatar);
             FiguraMod.pushProfiler("arrowRender");

@@ -8,32 +8,34 @@ import org.figuramc.figura.ducks.FiguraSubmitCallBackExtension;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiFunction;
 
 @Mixin(Model.class)
 public class ModelMixin implements FiguraSubmitCallBackExtension {
     @Unique
-    private BiFunction<MultiBufferSource, PoseStack, Boolean> figura$preRenderingCallback;
+    private final List<BiFunction<MultiBufferSource, PoseStack, Boolean>> figura$preRenderingCallback = new ArrayList<>();
     @Unique
-    private Runnable figura$postRenderingCallback;
+    private final List<Runnable> figura$postRenderingCallback = new ArrayList<>();
 
     @Override
-    public void figura$setPreRenderingCallback(BiFunction<MultiBufferSource, PoseStack, Boolean> callback) {
-        this.figura$preRenderingCallback = callback;
+    public void figura$addPreRenderingCallback(BiFunction<MultiBufferSource, PoseStack, Boolean> callback) {
+        this.figura$preRenderingCallback.add(callback);
     }
 
     @Override
-    public void figura$setPostRenderingCallback(Runnable callback) {
-        this.figura$postRenderingCallback = callback;
+    public void figura$addPostRenderingCallback(Runnable callback) {
+        this.figura$postRenderingCallback.add(callback);
     }
 
     @Override
-    public Runnable figura$getPostRenderingCallback() {
+    public List<Runnable> figura$getPostRenderingCallbacks() {
         return figura$postRenderingCallback;
     }
 
     @Override
-    public BiFunction<MultiBufferSource, PoseStack, Boolean> figura$getPreRenderingCallback() {
+    public List<BiFunction<MultiBufferSource, PoseStack, Boolean>> figura$getPreRenderingCallbacks() {
         return figura$preRenderingCallback;
     }
 }

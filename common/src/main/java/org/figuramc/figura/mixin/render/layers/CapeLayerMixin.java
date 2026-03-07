@@ -123,7 +123,7 @@ public abstract class CapeLayerMixin extends RenderLayer<AvatarRenderState, Play
 
         FiguraSubmitCallBackExtension submitCallBackExtension = (FiguraSubmitCallBackExtension) (Object) realCloak;
 
-        submitCallBackExtension.figura$setPreRenderingCallback((multiBufferSource, poseStack) -> {
+        submitCallBackExtension.figura$addPreRenderingCallback((multiBufferSource, poseStack) -> {
             // rot
             fakeCloak.setRotation(
                     (float) Math.toRadians(6f + finalR / 2f + finalQ),
@@ -148,7 +148,7 @@ public abstract class CapeLayerMixin extends RenderLayer<AvatarRenderState, Play
             return true;
         });
 
-        submitCallBackExtension.figura$setPostRenderingCallback(() -> {
+        submitCallBackExtension.figura$addPostRenderingCallback(() -> {
             if (avatar == null)
                 return;
 

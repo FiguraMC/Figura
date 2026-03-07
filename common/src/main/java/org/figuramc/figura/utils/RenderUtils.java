@@ -173,15 +173,15 @@ public class RenderUtils {
 
         if (selection.get(1)) {
             PlayerModel playerModel = avatarRenderer.getModel();
-            ((FiguraSubmitCallBackExtension) playerModel).figura$setPreRenderingCallback(preRender);
-            ((FiguraSubmitCallBackExtension) playerModel).figura$setPostRenderingCallback(postRender);
+            ((FiguraSubmitCallBackExtension) playerModel).figura$addPreRenderingCallback(preRender);
+            ((FiguraSubmitCallBackExtension) playerModel).figura$addPostRenderingCallback(postRender);
             submitNodeStorage.submitModel(playerModel, null, dummyPoseStack, RenderType.LINES, 0, 0, 0, null);
         }
 
         if (selection.get(2)) {
             ModelPart modelPart = avatarRenderer.getModel().leftArm;
-            ((FiguraSubmitCallBackExtension) (Object)modelPart).figura$setPreRenderingCallback(preRender);
-            ((FiguraSubmitCallBackExtension) (Object)modelPart).figura$setPostRenderingCallback(postRender);
+            ((FiguraSubmitCallBackExtension) (Object)modelPart).figura$addPreRenderingCallback(preRender);
+            ((FiguraSubmitCallBackExtension) (Object)modelPart).figura$addPostRenderingCallback(postRender);
             submitNodeStorage.submitModelPart(modelPart, dummyPoseStack, RenderType.LINES, 0, 0, null);
         }
 

@@ -107,7 +107,7 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, S extends Humanoi
         });
 
         Avatar avatar = figura$avatar;
-        submitCallBackExtension.figura$setPreRenderingCallback(((multiBufferSource, poseStack) -> {
+        submitCallBackExtension.figura$addPreRenderingCallback(((multiBufferSource, poseStack) -> {
             if (avatar.luaRuntime != null) {
                 VanillaPart part = avatar.luaRuntime.vanilla_model.ELYTRA;
                 part.save(elytraModel);
@@ -122,7 +122,7 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, S extends Humanoi
             return true;
         }));
 
-        submitCallBackExtension.figura$setPostRenderingCallback((() -> {
+        submitCallBackExtension.figura$addPostRenderingCallback((() -> {
             if (vanillaPart != null)
                 vanillaPart.restore(elytraModel);
         }));
@@ -209,13 +209,13 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, S extends Humanoi
 
             if (k != 0) {
                 ResourceLocation normalArmorResource = layer.usePlayerTexture() && playerLocation != null ? playerLocation : ((EquipmentLayerRendererAccessor)this.equipmentRenderer).layerTextureLookup().apply(new EquipmentLayerRenderer.LayerTextureKey(layerType, layer));
-                ((FiguraSubmitCallBackExtension)(Object)modelPart).figura$setPreRenderingCallback((multiBufferSource, stack) -> {
+                ((FiguraSubmitCallBackExtension)(Object)modelPart).figura$addPreRenderingCallback((multiBufferSource, stack) -> {
                     elytraModel.setupAnim(state);
                     return true;
                 });
                 nodeCollector.order(order++).submitModelPart(modelPart, poseStack, RenderType.armorCutoutNoCull(normalArmorResource), light, OverlayTexture.NO_OVERLAY, null, -1, null);
                 if (hasGlint) {
-                    ((FiguraSubmitCallBackExtension)(Object)modelPart).figura$setPreRenderingCallback((multiBufferSource, stack) -> {
+                    ((FiguraSubmitCallBackExtension)(Object)modelPart).figura$addPreRenderingCallback((multiBufferSource, stack) -> {
                         elytraModel.setupAnim(state);
                         return true;
                     });
@@ -230,7 +230,7 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, S extends Humanoi
             TextureAtlasSprite textureAtlasSprite = ((EquipmentLayerRendererAccessor)equipmentRenderer).trimSpriteLookup()
                     .apply(new EquipmentLayerRenderer.TrimSpriteKey(trim, layerType, location.get()));
             RenderType renderType = Sheets.armorTrimsSheet(trim.pattern().value().decal());
-            ((FiguraSubmitCallBackExtension)(Object)modelPart).figura$setPreRenderingCallback((multiBufferSource, stack) -> {
+            ((FiguraSubmitCallBackExtension)(Object)modelPart).figura$addPreRenderingCallback((multiBufferSource, stack) -> {
                 elytraModel.setupAnim(state);
                 return true;
             });

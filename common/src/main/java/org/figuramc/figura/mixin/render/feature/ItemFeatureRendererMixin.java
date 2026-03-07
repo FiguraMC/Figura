@@ -27,18 +27,18 @@ public class ItemFeatureRendererMixin {
                                   OutlineBufferSource outlineBufferSource, CallbackInfo ci, @Local SubmitNodeStorage.ItemSubmit itemSubmit) {
         FiguraSubmitCallBackExtension callBackExtension = (FiguraSubmitCallBackExtension) (Object) itemSubmit;
 
-        boolean shouldCancel = callBackExtension.figura$getPreRenderingCallback() != null &&
-                !callBackExtension.figura$getPreRenderingCallback().apply(bufferSource, poseStack);
-
-        if (shouldCancel)
-            ci.cancel();
+        for (var callback : callBackExtension.figura$getPreRenderingCallbacks()) {
+            if (!callback.apply(bufferSource, poseStack)) {
+                ci.cancel();
+            }
+        }
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/ItemRenderer;renderItem(Lnet/minecraft/world/item/ItemDisplayContext;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;II[ILjava/util/List;Lnet/minecraft/client/renderer/RenderType;Lnet/minecraft/client/renderer/item/ItemStackRenderState$FoilType;)V", ordinal = 0, shift = At.Shift.AFTER))
     private <S> void figura$postRender(SubmitNodeCollection submitNodeCollection, MultiBufferSource.BufferSource bufferSource,
                                        OutlineBufferSource outlineBufferSource, CallbackInfo ci, @Local SubmitNodeStorage.ItemSubmit itemSubmit) {
         FiguraSubmitCallBackExtension callBackExtension = (FiguraSubmitCallBackExtension) (Object) itemSubmit;
-        if (callBackExtension.figura$getPostRenderingCallback() != null)
-            callBackExtension.figura$getPostRenderingCallback().run();
+        for (var callback : callBackExtension.figura$getPostRenderingCallbacks())
+            callback.run();
     }
 }

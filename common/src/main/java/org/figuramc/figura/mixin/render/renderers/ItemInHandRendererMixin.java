@@ -40,46 +40,33 @@ public abstract class ItemInHandRendererMixin {
 
     @Unique Avatar avatar;
 
-    @Unique
-    BitSet figura$submissionSelection = new BitSet(3);
-
+    // apparently hands are basically still immediate mode, wow thanks game...
     @Inject(method = "renderHandsWithItems", at = @At("HEAD"))
     private void onRenderHandsWithItems(float tickDelta, PoseStack matrices, SubmitNodeCollector submitNodeCollector, LocalPlayer player, int light, CallbackInfo ci) {
         avatar = AvatarManager.getAvatarForPlayer(player.getUUID());
         if (avatar == null)
             return;
-        figura$submissionSelection.set(2);
 
-        RenderUtils.createDummySubmission(figura$submissionSelection, submitNodeCollector, ((bufferSource, poseStack) -> {
-            FiguraMod.pushProfiler(FiguraMod.MOD_ID);
-            FiguraMod.pushProfiler(avatar);
-            FiguraMod.pushProfiler("renderEvent");
-            avatar.renderMode = EntityRenderMode.FIRST_PERSON;
-            avatar.renderEvent(tickDelta, new FiguraMat4().set(matrices.last().pose()));
-            FiguraMod.popProfiler(3);
-
-            return false;
-        }), null);
-
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+        FiguraMod.pushProfiler(avatar);
+        FiguraMod.pushProfiler("renderEvent");
+        avatar.renderMode = EntityRenderMode.FIRST_PERSON;
+        avatar.renderEvent(tickDelta, new FiguraMat4().set(matrices.last().pose()));
+        FiguraMod.popProfiler(3);
     }
 
-    @Inject(method = "renderHandsWithItems", at = @At("RETURN"))
+    @Inject(method = "renderHandsWithItems", at = @At(value = "RETURN"))
     private void afterRenderHandsWithItems(float tickDelta, PoseStack matrices, SubmitNodeCollector submitNodeCollector, LocalPlayer player, int light, CallbackInfo ci) {
         if (avatar == null)
             return;
 
-        figura$submissionSelection.set(2);
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+        FiguraMod.pushProfiler(avatar);
+        FiguraMod.pushProfiler("postRenderEvent");
+        avatar.postRenderEvent(tickDelta, new FiguraMat4().set(matrices.last().pose()));
+        avatar = null;
+        FiguraMod.popProfiler(3);
 
-        RenderUtils.createDummySubmission(figura$submissionSelection, submitNodeCollector, ((bufferSource, poseStack) -> {
-            FiguraMod.pushProfiler(FiguraMod.MOD_ID);
-            FiguraMod.pushProfiler(avatar);
-            FiguraMod.pushProfiler("postRenderEvent");
-            avatar.postRenderEvent(tickDelta, new FiguraMat4().set(matrices.last().pose()));
-            avatar = null;
-            FiguraMod.popProfiler(3);
-
-            return false;
-        }), null);
     }
 
     @Inject(method = "renderArmWithItem", at = @At("HEAD"), cancellable = true)

@@ -130,7 +130,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
         poseStack2.last().set(poseStack.last());
         FiguraSubmitCallBackExtension submitCallBackExtension = (FiguraSubmitCallBackExtension) model;
 
-        submitCallBackExtension.figura$setPreRenderingCallback((bufferSource, pose) -> {
+        submitCallBackExtension.figura$addPreRenderingCallback((bufferSource, pose) -> {
             // transform parts so render layers see figura changes
             // do pos/rot/scale, then visibility
             figura$transformParts(localAvatar, model);
@@ -188,7 +188,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
         FiguraSubmitCallBackExtension submitCallBackExtension = (FiguraSubmitCallBackExtension) model;
 
         Avatar avatar = currentAvatar;
-        submitCallBackExtension.figura$setPostRenderingCallback(() -> {
+        submitCallBackExtension.figura$addPostRenderingCallback(() -> {
             // Restore transform
             if (avatar.luaRuntime != null)
                 avatar.luaRuntime.vanilla_model.PLAYER.restore(getModel());

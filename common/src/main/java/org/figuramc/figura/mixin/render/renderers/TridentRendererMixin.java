@@ -61,7 +61,7 @@ public abstract class TridentRendererMixin<T extends ThrownTrident, S extends Th
 
         FiguraSubmitCallBackExtension figura$submitCallback = (FiguraSubmitCallBackExtension) model;
 
-        figura$submitCallback.figura$setPreRenderingCallback((bufferSource, poseStack) -> {
+        figura$submitCallback.figura$addPreRenderingCallback((bufferSource, poseStack) -> {
             FiguraMod.pushProfiler(FiguraMod.MOD_ID);
             FiguraMod.pushProfiler(avatar);
             FiguraMod.pushProfiler("tridentRender");
