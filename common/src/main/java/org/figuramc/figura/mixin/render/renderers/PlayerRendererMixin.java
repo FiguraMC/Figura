@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -37,6 +38,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
@@ -212,7 +214,12 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
         PlayerModel playerModel = getModel();
 
+        Map<ModelPart, PartPose> modelState = RenderUtils.captureModelState(playerModel);
+
         nodeCollectorExt.submitFiguraModel(avatar, null, (playerAvatar, state, bufferSource) -> {
+
+            RenderUtils.restoreModelPoseState(playerModel, modelState);
+
             if (playerAvatar != null && playerAvatar.luaRuntime != null) {
                 VanillaPart part = playerAvatar.luaRuntime.vanilla_model.PLAYER;
                 PlayerModel model = this.getModel();

@@ -4,8 +4,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.Model;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -33,7 +35,9 @@ import org.figuramc.figura.permissions.Permissions;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.BitSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 
 public class RenderUtils {
@@ -192,6 +196,24 @@ public class RenderUtils {
 
 
 
+    }
+
+
+    public static <M extends Model<?>> Map<ModelPart, PartPose> captureModelState(M model) {
+        HashMap<ModelPart, PartPose> map = new HashMap<>();
+        for (ModelPart part : model.allParts()) {
+            PartPose pose = part.storePose();
+            map.put(part, pose);
+        }
+        return map;
+    }
+
+    public static <M extends Model<?>> void restoreModelPoseState(M model, Map<ModelPart, PartPose> map) {
+        for (ModelPart part : model.allParts()) {
+            PartPose pose = map.get(part);
+            if (pose != null)
+                part.loadPose(pose);
+        }
     }
 
     public static boolean isEntityUpsideDown(LivingEntity livingEntity) {

@@ -438,6 +438,9 @@ public class Avatar {
 
         if(result == null)
             return false;
+        PoseStack copy = new PoseStack();
+        copy.pushPose();
+        copy.last().set(stack.last());
 
         boolean rendered = false;
         for (int i = 1; i <= result.narg(); i++) {
@@ -448,7 +451,7 @@ public class Avatar {
                 rendered |= renderedPart;
                 if (renderedPart) {
                     extension.submitFiguraModel(this, null, (avatar, entity, bufferSource) -> {
-                        renderItem(stack, bufferSource, modelPart, light, overlay);
+                        renderItem(copy, bufferSource, modelPart, light, overlay);
                         return null;
                     });
                 }

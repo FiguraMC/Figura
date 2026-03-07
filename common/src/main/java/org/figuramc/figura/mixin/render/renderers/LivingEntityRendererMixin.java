@@ -145,8 +145,12 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
 
         Entity entity = Minecraft.getInstance().level.getEntity(entityId);
         // actually do the render here
+
+        var modelState = RenderUtils.captureModelState(model);
         nodeCollectorExtension.submitFiguraModel(localAvatar, livingEntityRenderState, ((avatar, livingEntityState, bufferSource) -> {
             // When viewed 3rd person, render all non-world parts.
+            RenderUtils.restoreModelPoseState(model, modelState);
+
             PartFilterScheme filter = invisible ? PartFilterScheme.PIVOTS : PartFilterScheme.MODEL;
 
             FiguraMod.pushProfiler(FiguraMod.MOD_ID);
