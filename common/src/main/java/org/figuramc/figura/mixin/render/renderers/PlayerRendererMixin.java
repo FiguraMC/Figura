@@ -168,8 +168,12 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
     @Inject(at = @At(value = "INVOKE", shift = At.Shift.BEFORE, target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitModelPart(Lnet/minecraft/client/model/geom/ModelPart;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/RenderType;IILnet/minecraft/client/renderer/texture/TextureAtlasSprite;)V"), method = "renderHand")
     private void onRenderHand(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int i, ResourceLocation resourceLocation, ModelPart modelPart, boolean bl, CallbackInfo ci) {
         avatar = AvatarManager.getAvatarForPlayer(Minecraft.getInstance().player.getUUID());
+
+
         Avatar localAvatar = avatar;
         BiFunction<MultiBufferSource, PoseStack, Boolean> lambda = (bufferSource, stack) -> {
+            float delta = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);
+
             if (localAvatar != null && localAvatar.luaRuntime != null) {
                 VanillaPart part = localAvatar.luaRuntime.vanilla_model.PLAYER;
                 PlayerModel model = this.getModel();
@@ -181,6 +185,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
                     part.posTransform(model);
                 }
             }
+
             return true;
         };
 
@@ -201,6 +206,10 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
         float delta = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);
 
+        PoseStack copy = new PoseStack();
+        copy.pushPose(); // save the current stack
+        copy.last().set(stack.last());
+
         PlayerModel playerModel = getModel();
 
         nodeCollectorExt.submitFiguraModel(avatar, null, (playerAvatar, state, bufferSource) -> {
@@ -216,7 +225,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
                 }
             }
 
-            playerAvatar.firstPersonRender(stack, bufferSource, Minecraft.getInstance().player, playerModel, arm, light, delta);
+            playerAvatar.firstPersonRender(copy, bufferSource, Minecraft.getInstance().player, playerModel, arm, light, delta);
 
             if (playerAvatar.luaRuntime != null)
                 playerAvatar.luaRuntime.vanilla_model.PLAYER.restore(playerModel);
