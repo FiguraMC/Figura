@@ -31,6 +31,7 @@ import net.minecraft.world.phys.Vec3;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.animation.Animation;
 import org.figuramc.figura.animation.AnimationPlayer;
+import org.figuramc.figura.avatar.Avatar.Instructions;
 import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.lua.FiguraLuaPrinter;
@@ -395,6 +396,7 @@ public class Avatar {
     }
 
     public void preRenderEvent(float delta) {
+        preRender.reset(permissions.get(Permissions.RENDER_INST));
         if (loaded && luaRuntime != null && luaRuntime.getUser() != null)
             run("PRE_RENDER", preRender, delta, renderMode.name());
     }

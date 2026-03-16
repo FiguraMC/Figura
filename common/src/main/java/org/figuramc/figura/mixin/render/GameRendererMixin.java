@@ -181,11 +181,6 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
     
     @Inject(method = "render", at = @At("HEAD"))
     private void preRender(float tickDelta, long startTime, boolean tick, CallbackInfo ci) {
-        Avatar avatar = AvatarManager.getAvatar(this.minecraft.getCameraEntity());
-        if (avatar == null)
-            return;
-        avatar.preRender.reset(avatar.permissions.get(Permissions.RENDER_INST));
-
         AvatarManager.executeAll("preRender", renderedAvatar -> renderedAvatar.preRenderEvent(tickDelta));
     }
 }
