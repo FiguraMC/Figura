@@ -2,16 +2,13 @@ package org.figuramc.figura.mixin.fabric;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
@@ -38,6 +35,7 @@ import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.compat.GeckoLibCompat;
 import org.figuramc.figura.ducks.FiguraEntityRenderStateExtension;
+import org.figuramc.figura.ducks.FiguraSubmitCallBackExtension;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
 import org.figuramc.figura.mixin.render.layers.EquipmentLayerRendererAccessor;
 import org.figuramc.figura.mixin.render.layers.HumanoidArmorLayerAccessor;
@@ -88,16 +86,27 @@ public abstract class HumanoidArmorLayerMixinFabric<S extends HumanoidRenderStat
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;usesInnerModel(Lnet/minecraft/world/entity/EquipmentSlot;)Z"), method = "renderArmorPiece")
-    public void onRenderArmorPiece(PoseStack matrices, SubmitNodeCollector submitNodeCollector, ItemStack stack, EquipmentSlot equipmentSlot, int light, S state, CallbackInfo ci) {
+    public void addFiguraCallbacks(PoseStack matrices, SubmitNodeCollector submitNodeCollector, ItemStack stack, EquipmentSlot equipmentSlot, int light, S state, CallbackInfo ci) {
         if (figura$avatar == null) return;
+        Avatar localAvatar = figura$avatar;
         A humanoidModel = this.getArmorModel(state, equipmentSlot);
 
-        VanillaPart part = RenderUtils.partFromSlot(figura$avatar, equipmentSlot);
-        if (part != null) {
-            part.save(humanoidModel);
-            part.preTransform(humanoidModel);
-            part.posTransform(humanoidModel);
-        }
+        var extension = (FiguraSubmitCallBackExtension)humanoidModel;
+        extension.figura$addPreRenderingCallback((poseStack, nodeCollector) -> {
+            VanillaPart part = RenderUtils.partFromSlot(localAvatar, equipmentSlot);
+            if (part != null) {
+                part.save(humanoidModel);
+                part.preTransform(humanoidModel);
+                part.posTransform(humanoidModel);
+            }
+            return true;
+        });
+
+        extension.figura$addPostRenderingCallback(() -> {
+            VanillaPart part = RenderUtils.partFromSlot(localAvatar, equipmentSlot);
+            if (part != null)
+                part.restore(humanoidModel);
+        });
     }
 
 
@@ -107,17 +116,6 @@ public abstract class HumanoidArmorLayerMixinFabric<S extends HumanoidRenderStat
             return;
         }
         figura$setPartVisibility(humanoidModel, armorSlot);
-    }
-
-
-    @Inject(at = @At("RETURN"), method = "renderArmorPiece")
-    public void postRenderArmorPiece(PoseStack matrices, SubmitNodeCollector submitNodeCollector, ItemStack stack, EquipmentSlot equipmentSlot, int light, S state, CallbackInfo ci) {
-        A humanoidModel = this.getArmorModel(state, equipmentSlot);
-        if (figura$avatar == null) return;
-
-        VanillaPart part = RenderUtils.partFromSlot(figura$avatar, equipmentSlot);
-        if (part != null)
-            part.restore(humanoidModel);
     }
 
     @Unique

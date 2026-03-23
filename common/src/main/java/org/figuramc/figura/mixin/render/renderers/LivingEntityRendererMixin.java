@@ -96,14 +96,41 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
         return LivingEntityRendererAccessor.overrideOverlay.orElse(thing);
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;setupAnim(Ljava/lang/Object;)V", shift = At.Shift.AFTER), method = "submit(Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V", cancellable = true)
-    private void submitFiguraModel(S livingEntityRenderState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, CallbackInfo ci) {
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitModel(Lnet/minecraft/client/model/Model;Ljava/lang/Object;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/RenderType;IIILnet/minecraft/client/renderer/texture/TextureAtlasSprite;ILnet/minecraft/client/renderer/feature/ModelFeatureRenderer$CrumblingOverlay;)V", shift = At.Shift.BEFORE), method = "submit(Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V", cancellable = true)
+    private void setFiguraCallbacks(S livingEntityRenderState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, CallbackInfo ci) {
         if (currentAvatar == null)
             return;
 
         Avatar localAvatar = currentAvatar;
         M model = getModel();
 
+        // so basically set the figura callbacks up before the model is submitted
+        FiguraSubmitCallBackExtension submitCallBackExtension = (FiguraSubmitCallBackExtension) model;
+        submitCallBackExtension.figura$addPreRenderingCallback((bufferSource, pose) -> {
+            // transform parts so render layers see figura changes
+            // do pos/rot/scale, then visibility
+            figura$transformParts(localAvatar, model);
+            figura$doPosTransform(localAvatar, model);
+            return true;
+        });
+
+        submitCallBackExtension.figura$addPostRenderingCallback(() -> {
+            // Restore transform
+            if (localAvatar.luaRuntime != null)
+                localAvatar.luaRuntime.vanilla_model.PLAYER.restore(getModel());
+        });
+    }
+
+    // then submit the figura model once vanilla has set posing up
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;setupAnim(Ljava/lang/Object;)V", shift = At.Shift.AFTER), method = "submit(Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V")
+    private void submitFiguraModel(S livingEntityRenderState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, CallbackInfo ci) {
+        if (currentAvatar == null)
+            return;
+
+        Avatar localAvatar = currentAvatar;
+
+        M model = getModel();
+        
         if (Avatar.firstPerson) {
             localAvatar.updateMatrices(model, poseStack);
             currentAvatar = null;
@@ -120,7 +147,17 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
         Integer id = livingEntityRenderState instanceof AvatarRenderState playerRenderState ? playerRenderState.id : ((FiguraEntityRenderStateExtension)livingEntityRenderState).figura$getEntityId();
         if (id == null) return;
 
+        var modelState = RenderUtils.captureModelState(model);
+
+        Integer entityIdBoxed = ((FiguraEntityRenderStateExtension)livingEntityRenderState).figura$getEntityId();
+        if (entityIdBoxed == null) return;
+        int entityId = entityIdBoxed;
+        float tickDelta = ((FiguraEntityRenderStateExtension)livingEntityRenderState).figura$getTickDelta();
+
         int overlay = getOverlayCoords(livingEntityRenderState, getWhiteOverlayProgress(livingEntityRenderState));
+
+        Entity entity = Minecraft.getInstance().level.getEntity(entityId);
+        // actually do the render here
 
         NodeCollectorExtension nodeCollectorExtension = (NodeCollectorExtension) submitNodeCollector;
 
@@ -128,25 +165,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
         PoseStack poseStack2 = new PoseStack();
         poseStack2.pushPose();
         poseStack2.last().set(poseStack.last());
-        FiguraSubmitCallBackExtension submitCallBackExtension = (FiguraSubmitCallBackExtension) model;
 
-        submitCallBackExtension.figura$addPreRenderingCallback((bufferSource, pose) -> {
-            // transform parts so render layers see figura changes
-            // do pos/rot/scale, then visibility
-            figura$transformParts(localAvatar, model);
-            figura$doPosTransform(localAvatar, model);
-            return true;
-        });
-
-        Integer entityIdBoxed = ((FiguraEntityRenderStateExtension)livingEntityRenderState).figura$getEntityId();
-        if (entityIdBoxed == null) return;
-        int entityId = entityIdBoxed;
-        float tickDelta = ((FiguraEntityRenderStateExtension)livingEntityRenderState).figura$getTickDelta();
-
-        Entity entity = Minecraft.getInstance().level.getEntity(entityId);
-        // actually do the render here
-
-        var modelState = RenderUtils.captureModelState(model);
         nodeCollectorExtension.submitFiguraModel(localAvatar, livingEntityRenderState, ((avatar, livingEntityState, bufferSource) -> {
             // When viewed 3rd person, render all non-world parts.
             RenderUtils.restoreModelPoseState(model, modelState);
@@ -176,27 +195,15 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
 
             // undo transformations
             if (avatar.luaRuntime != null)
-                avatar.luaRuntime.vanilla_model.PLAYER.restore(getModel());
+                avatar.luaRuntime.vanilla_model.PLAYER.restore(model);
             return null;
         }));
-
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V"), method = "submit(Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V")
-    private void setEndRenderCallback(S livingEntityRenderState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, CallbackInfo ci) {
+    private void nullifyAvatar(S livingEntityRenderState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, CallbackInfo ci) {
         if (currentAvatar == null)
             return;
-
-        M model = this.getModel();
-
-        FiguraSubmitCallBackExtension submitCallBackExtension = (FiguraSubmitCallBackExtension) model;
-
-        Avatar avatar = currentAvatar;
-        submitCallBackExtension.figura$addPostRenderingCallback(() -> {
-            // Restore transform
-            if (avatar.luaRuntime != null)
-                avatar.luaRuntime.vanilla_model.PLAYER.restore(getModel());
-        });
 
         currentAvatar = null;
         lastPose = null;

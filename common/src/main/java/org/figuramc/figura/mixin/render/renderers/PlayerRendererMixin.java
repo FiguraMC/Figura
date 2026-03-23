@@ -172,14 +172,14 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         avatar = AvatarManager.getAvatarForPlayer(Minecraft.getInstance().player.getUUID());
 
 
+        PlayerModel model = this.getModel();
+        Map<ModelPart, PartPose> modelState = RenderUtils.captureModelState(model);
+
         Avatar localAvatar = avatar;
         BiFunction<MultiBufferSource, PoseStack, Boolean> lambda = (bufferSource, stack) -> {
-            float delta = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);
-
             if (localAvatar != null && localAvatar.luaRuntime != null) {
                 VanillaPart part = localAvatar.luaRuntime.vanilla_model.PLAYER;
-                PlayerModel model = this.getModel();
-
+                RenderUtils.restoreModelPoseState(model, modelState);
                 part.save(model);
 
                 if (localAvatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1) {

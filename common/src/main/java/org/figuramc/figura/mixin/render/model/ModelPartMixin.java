@@ -1,13 +1,19 @@
 
 package org.figuramc.figura.mixin.render.model;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.renderer.MultiBufferSource;
 import org.figuramc.figura.ducks.FiguraSubmitCallBackExtension;
+import org.figuramc.figura.ducks.PartPoseExtension;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +22,8 @@ import java.util.function.BiFunction;
 // i hate this sooo much
 @Mixin(ModelPart.class)
 public class ModelPartMixin implements FiguraSubmitCallBackExtension {
+    @Shadow
+    public boolean visible;
     @Unique
     private final List<BiFunction<MultiBufferSource, PoseStack, Boolean>> figura$preRenderingCallback = new ArrayList<>();
     @Unique
@@ -39,5 +47,18 @@ public class ModelPartMixin implements FiguraSubmitCallBackExtension {
     @Override
     public List<BiFunction<MultiBufferSource, PoseStack, Boolean>> figura$getPreRenderingCallbacks() {
         return figura$preRenderingCallback;
+    }
+
+    // yipee store visibility in pose
+    @ModifyReturnValue(method = "storePose", at = @At("TAIL"))
+    public PartPose figura$storeVisibility(PartPose original) {
+        ((PartPoseExtension)(Object)original).figura$setVisible(this.visible);
+        return original;
+    }
+
+    @Inject(method = "loadPose", at = @At("HEAD"))
+    public void figura$loadVisibility(PartPose pose, CallbackInfo ci) {
+        if (((PartPoseExtension)(Object)pose).figura$isVisible() != null)
+            this.visible = ((PartPoseExtension)(Object)pose).figura$isVisible();
     }
 }

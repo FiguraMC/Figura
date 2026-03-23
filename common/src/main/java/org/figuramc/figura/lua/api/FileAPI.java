@@ -34,6 +34,7 @@ public class FileAPI {
     private Path securityCheck(String path) {
         if (!parent.isHost) throw new LuaError("You can't use FileAPI outside of host environment");
         Path p = relativizePath(path);
+        if (Files.isSymbolicLink(p)) throw new LuaError("Symbolic links are not allowed in FileAPI %s!".formatted(path));
         if (!isPathAllowed(p)) throw new LuaError("Path %s is not allowed in FileAPI".formatted(path));
         return p;
     }
@@ -63,7 +64,7 @@ public class FileAPI {
     }
 
     public boolean isPathAllowed(Path path) {
-        return path.toAbsolutePath().startsWith(dataPath());
+        return !Files.isSymbolicLink(path) && path.toAbsolutePath().startsWith(dataPath());
     }
 
     @LuaWhitelist

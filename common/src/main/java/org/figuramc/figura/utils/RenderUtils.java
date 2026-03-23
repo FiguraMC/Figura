@@ -198,7 +198,6 @@ public class RenderUtils {
 
     }
 
-
     public static <M extends Model<?>> Map<ModelPart, PartPose> captureModelState(M model) {
         HashMap<ModelPart, PartPose> map = new HashMap<>();
         for (ModelPart part : model.allParts()) {
