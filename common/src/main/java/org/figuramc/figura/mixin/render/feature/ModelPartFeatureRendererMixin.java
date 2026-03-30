@@ -30,6 +30,14 @@ public class ModelPartFeatureRendererMixin {
                  ci.cancel();
              }
         }
+
+        if (ci.isCancelled()) {
+            for (var callback : callBackExtension.figura$getPostRenderingCallbacks())
+                callback.run();
+
+            callBackExtension.figura$getPostRenderingCallbacks().clear();
+        }
+        callBackExtension.figura$getPreRenderingCallbacks().clear();
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/geom/ModelPart;render(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;III)V", ordinal = 0, shift = At.Shift.AFTER))
@@ -38,5 +46,6 @@ public class ModelPartFeatureRendererMixin {
         FiguraSubmitCallBackExtension callBackExtension = (FiguraSubmitCallBackExtension) (Object) modelSubmit;
         for (var callback : callBackExtension.figura$getPostRenderingCallbacks())
              callback.run();
+        callBackExtension.figura$getPostRenderingCallbacks().clear();
     }
 }

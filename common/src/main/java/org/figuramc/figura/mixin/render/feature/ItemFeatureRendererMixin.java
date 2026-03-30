@@ -32,6 +32,15 @@ public class ItemFeatureRendererMixin {
                 ci.cancel();
             }
         }
+
+        if (ci.isCancelled()) {
+            for (var callback : callBackExtension.figura$getPostRenderingCallbacks())
+                callback.run();
+
+            callBackExtension.figura$getPostRenderingCallbacks().clear();
+        }
+
+        callBackExtension.figura$getPreRenderingCallbacks().clear();
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/ItemRenderer;renderItem(Lnet/minecraft/world/item/ItemDisplayContext;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;II[ILjava/util/List;Lnet/minecraft/client/renderer/RenderType;Lnet/minecraft/client/renderer/item/ItemStackRenderState$FoilType;)V", ordinal = 0, shift = At.Shift.AFTER))

@@ -43,6 +43,15 @@ public class ModelFeatureRendererMixin {
                 ci.cancel();
             }
         }
+
+        if (ci.isCancelled()) {
+            for (var callback : callBackExtension.figura$getPostRenderingCallbacks())
+                callback.run();
+
+            callBackExtension.figura$getPostRenderingCallbacks().clear();
+        }
+
+        callBackExtension.figura$getPreRenderingCallbacks().clear();
     }
 
     @Inject(method = "renderModel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/Model;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;III)V", ordinal = 0, shift = At.Shift.AFTER))
@@ -51,5 +60,7 @@ public class ModelFeatureRendererMixin {
         FiguraSubmitCallBackExtension callBackExtension = (FiguraSubmitCallBackExtension) (Object) modelSubmit;
         for (var callback : callBackExtension.figura$getPostRenderingCallbacks())
             callback.run();
+
+        callBackExtension.figura$getPostRenderingCallbacks().clear();
     }
 }
