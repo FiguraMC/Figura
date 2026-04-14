@@ -720,12 +720,15 @@ public class Avatar {
 
         stack.pushPose();
 
+        /*
         if (direction == null)
             stack.translate(0.5d, 0d, 0.5d);
         else
             stack.translate((0.5d - direction.getStepX() * 0.25d), 0.25d, (0.5d - direction.getStepZ() * 0.25d));
 
         stack.scale(-1f, -1f, 1f);
+        */
+
         stack.mulPose(Axis.YP.rotationDegrees(yaw));
 
         renderer.allowPivotParts = false;
