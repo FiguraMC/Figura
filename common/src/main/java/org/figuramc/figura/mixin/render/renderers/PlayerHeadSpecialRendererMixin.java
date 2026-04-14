@@ -13,8 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ResolvableProfile;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
-import org.figuramc.figura.ducks.PlayerHeadRenderInfoExtension;
-import org.figuramc.figura.ducks.SkullBlockRendererHelper;
+import org.figuramc.figura.ducks.FiguraSkullAvatarAssociationExtension;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -26,7 +25,7 @@ public abstract class PlayerHeadSpecialRendererMixin {
     public PlayerSkinRenderCache.RenderInfo setAvatar(PlayerSkinRenderCache.RenderInfo original, @Local(argsOnly = true) ItemStack itemStack) {
         ResolvableProfile profile = itemStack.get(DataComponents.PROFILE);
         Avatar avatar = profile != null ? AvatarManager.getAvatarForPlayer(profile.partialProfile().id()) : null;
-        ((PlayerHeadRenderInfoExtension)(Object)original).figura$setAvatar(avatar);
+        ((FiguraSkullAvatarAssociationExtension)(Object)original).figura$setAvatar(avatar);
         return original;
     }
 
@@ -35,7 +34,9 @@ public abstract class PlayerHeadSpecialRendererMixin {
         if (playerHeadRenderInfo == null) {
             return;
         }
-        Avatar avatar = ((PlayerHeadRenderInfoExtension)(Object)playerHeadRenderInfo).figura$getAvatar();
-        SkullBlockRendererHelper.setAvatar(avatar);
+        // copy the avatar from the playerHeadRenderInfo into the inner renderType()
+        // possibly redundant, see PlayerHeadRenderInfoMixin for implementation details
+        Avatar avatar = ((FiguraSkullAvatarAssociationExtension)(Object)playerHeadRenderInfo).figura$getAvatar();
+        ((FiguraSkullAvatarAssociationExtension)playerHeadRenderInfo.renderType()).figura$setAvatar(avatar);
     }
 }
