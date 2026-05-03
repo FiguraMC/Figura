@@ -9,5 +9,5 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface BlockBehaviourAccessor {
     @Intrinsic
     @Accessor("hasCollision")
-    boolean hasCollision();
+    boolean getHasCollision();
 }
