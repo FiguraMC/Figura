@@ -34,6 +34,8 @@
     "figura.toast.load_error": "Failed to load avatar!",
     "figura.toast.wardrobe_copy.success": "Copied %s file(s)!",
     "figura.toast.wardrobe_copy.error": "Failed to copy files!",
+    "figura.toast.zip_load_error": "See game log for details",
+    "figura.toast.zip_load_error.why": "Error: %s",
     "figura.toast.cache_clear": "Cleared Cache!",
     "figura.toast.avatar_data_clear": "Cleared Avatar Data!",
     "figura.permissions.category.blocked": "Blocked",
