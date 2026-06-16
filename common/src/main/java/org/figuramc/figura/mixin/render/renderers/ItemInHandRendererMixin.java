@@ -121,6 +121,11 @@ public abstract class ItemInHandRendererMixin {
             matrices.popPose();
         }
 
+        VanillaModelPart part = arm == HumanoidArm.LEFT ? avatar.luaRuntime.vanilla_model.LEFT_ITEM : avatar.luaRuntime.vanilla_model.RIGHT_ITEM;
+        if (willRenderItem && !part.checkVisible()) {
+            ci.cancel();
+        }
+
         if (willRenderItem) {
             matrices.pushPose();
 
@@ -213,7 +218,8 @@ public abstract class ItemInHandRendererMixin {
             this.swingArm(swingProgress, equipProgress, matrices, q, arm);
 //                }
 
-            boolean rendered = avatar.itemRenderEvent(
+            // attempt the render event
+            avatar.itemRenderEvent(
                     ItemStackAPI.verify(item),
                     leftHanded ? "FIRST_PERSON_LEFT_HAND" : "FIRST_PERSON_RIGHT_HAND",
                     FiguraVec3.of(0, 0, 0),
@@ -227,10 +233,6 @@ public abstract class ItemInHandRendererMixin {
             );
 
             matrices.popPose();
-
-            if (rendered) {
-                ci.cancel();
-            }
         }
     }
 
