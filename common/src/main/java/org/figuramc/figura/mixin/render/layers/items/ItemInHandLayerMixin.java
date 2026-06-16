@@ -49,44 +49,36 @@ public abstract class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M e
     @Inject(method = "submitArmWithItem", at = @At("HEAD"), cancellable = true)
     protected void renderArmWithItemInject(S state, ItemStackRenderState itemStackRenderState, HumanoidArm humanoidArm, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int light, CallbackInfo ci) {
         av = AvatarManager.getAvatar(state);
-
-        if (itemStackRenderState.isEmpty())
+        if (av == null || av.luaRuntime == null || itemStackRenderState.isEmpty())
             return;
 
         boolean left = humanoidArm == HumanoidArm.LEFT;
+        String mode = left ? "THIRD_PERSON_LEFT_HAND" : "THIRD_PERSON_RIGHT_HAND";
 
-        if (!RenderUtils.renderArmItem(av, left, ci))
-            return;
+        poseStack.pushPose();
+        this.getParentModel().translateToHand(state, humanoidArm, poseStack);
+        poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
+        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
 
-        // pivot part
-        if (av.pivotPartRender(left ? ParentType.LeftItemPivot : ParentType.RightItemPivot, stack -> {
-            final float s = 16f;
-            stack.scale(s, s, s);
-            stack.mulPose(Axis.XP.rotationDegrees(-90f));
-            // Must do this bs manually
-            if (((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getItemStack().getItem() instanceof BlockItem bl && bl.getBlock() instanceof AbstractSkullBlock) {
-                Entity entity = AvatarManager.getEntity(state);
-                SkullBlockRendererAccessor.setEntity(entity);
-                SkullBlockRendererAccessor.setRenderMode(switch (((FiguraItemStackRenderStateExtension) itemStackRenderState).figura$getDisplayContext()) {
-                    case FIRST_PERSON_LEFT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.FIRST_PERSON_LEFT_HAND;
-                    case FIRST_PERSON_RIGHT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.FIRST_PERSON_RIGHT_HAND;
-                    case THIRD_PERSON_LEFT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_LEFT_HAND;
-                    case THIRD_PERSON_RIGHT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_RIGHT_HAND;
-                    default -> left ? SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_LEFT_HAND // should never happen
-                            : SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_RIGHT_HAND;
-                });
-            }
+        boolean bl = humanoidArm == HumanoidArm.LEFT;
+        poseStack.translate((float)(bl ? -1 : 1) / 16.0F, 0.125F, -0.625F);
 
-            // sorta have to do this manually otherwise itemRenderEvent isn't called
-            ItemTransform transform = ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getItemTransform();
+        boolean rendered = av.itemRenderEvent(
+                ItemStackAPI.verify(((FiguraItemStackRenderStateExtension) itemStackRenderState).figura$getItemStack()),
+                mode,
+                FiguraVec3.of(0,0,0),
+                FiguraVec3.of(0,0,0),
+                FiguraVec3.of(1,1,1),
+                ((FiguraItemStackRenderStateExtension) itemStackRenderState).figura$isLeftHanded(),
+                poseStack,
+                submitNodeCollector,
+                light,
+                OverlayTexture.NO_OVERLAY
+        );
 
-            if (av == null || !av.itemRenderEvent(ItemStackAPI.verify(((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getItemStack()),
-                    ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getDisplayContext().name(), FiguraVec3.fromVec3f(transform.translation()),
-                    FiguraVec3.of(transform.rotation().z(), transform.rotation().y(), transform.rotation().x()), FiguraVec3.fromVec3f(transform.scale()),
-                    ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$isLeftHanded(), stack, submitNodeCollector, light, OverlayTexture.NO_OVERLAY)
-            )
-                itemStackRenderState.submit(stack, submitNodeCollector, light, OverlayTexture.NO_OVERLAY, state.outlineColor);
-        })) {
+        poseStack.popPose();
+
+        if (rendered) {
             ci.cancel();
         }
     }
