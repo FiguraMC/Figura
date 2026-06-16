@@ -95,10 +95,6 @@ public abstract class ItemInHandRendererMixin {
         boolean leftHanded = arm == HumanoidArm.LEFT;
         boolean rightHanded = arm == HumanoidArm.RIGHT;
 
-        VanillaModelPart vanillaPart = leftHanded
-                ? avatar.luaRuntime.vanilla_model.LEFT_ITEM
-                : avatar.luaRuntime.vanilla_model.RIGHT_ITEM;
-
         boolean willRenderItem = !item.isEmpty();
         boolean willRenderArm = (!willRenderItem && mainHand)
                 || item.is(Items.FILLED_MAP)
