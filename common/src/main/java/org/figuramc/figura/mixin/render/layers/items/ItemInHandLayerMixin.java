@@ -7,7 +7,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
@@ -24,7 +23,6 @@ import net.minecraft.world.level.block.AbstractSkullBlock;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.ducks.FiguraItemStackRenderStateExtension;
-import org.figuramc.figura.ducks.NodeCollectorExtension;
 import org.figuramc.figura.ducks.SkullBlockRendererAccessor;
 import org.figuramc.figura.lua.api.world.ItemStackAPI;
 import org.figuramc.figura.math.vector.FiguraVec3;
@@ -50,8 +48,10 @@ public abstract class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M e
     protected void renderArmWithItemInject(S state, ItemStackRenderState itemStackRenderState, HumanoidArm humanoidArm, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int light, CallbackInfo ci) {
         av = AvatarManager.getAvatar(state);
 
-        if (itemStackRenderState.isEmpty())
+        if (av == null || av.luaRuntime == null || itemStackRenderState.isEmpty())
             return;
+
+        FiguraItemStackRenderStateExtension renderStateExtension = (FiguraItemStackRenderStateExtension) itemStackRenderState;
 
         boolean left = humanoidArm == HumanoidArm.LEFT;
 
@@ -63,29 +63,36 @@ public abstract class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M e
             final float s = 16f;
             stack.scale(s, s, s);
             stack.mulPose(Axis.XP.rotationDegrees(-90f));
+
             // Must do this bs manually
-            if (((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getItemStack().getItem() instanceof BlockItem bl && bl.getBlock() instanceof AbstractSkullBlock) {
+            if (renderStateExtension.figura$getItemStack().getItem() instanceof BlockItem bl && bl.getBlock() instanceof AbstractSkullBlock) {
                 Entity entity = AvatarManager.getEntity(state);
                 SkullBlockRendererAccessor.setEntity(entity);
-                SkullBlockRendererAccessor.setRenderMode(switch (((FiguraItemStackRenderStateExtension) itemStackRenderState).figura$getDisplayContext()) {
-                    case FIRST_PERSON_LEFT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.FIRST_PERSON_LEFT_HAND;
-                    case FIRST_PERSON_RIGHT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.FIRST_PERSON_RIGHT_HAND;
-                    case THIRD_PERSON_LEFT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_LEFT_HAND;
-                    case THIRD_PERSON_RIGHT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_RIGHT_HAND;
-                    default -> left ? SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_LEFT_HAND // should never happen
-                            : SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_RIGHT_HAND;
-                });
+                SkullBlockRendererAccessor.setRenderMode(
+                        switch (renderStateExtension.figura$getDisplayContext()) {
+                            case FIRST_PERSON_LEFT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.FIRST_PERSON_LEFT_HAND;
+                            case FIRST_PERSON_RIGHT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.FIRST_PERSON_RIGHT_HAND;
+                            case THIRD_PERSON_LEFT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_LEFT_HAND;
+                            case THIRD_PERSON_RIGHT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_RIGHT_HAND;
+                            default -> left ? SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_LEFT_HAND // should never happen
+                                    : SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_RIGHT_HAND;
+                        }
+                );
             }
 
             // sorta have to do this manually otherwise itemRenderEvent isn't called
-            ItemTransform transform = ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getItemTransform();
-
-            if (av == null || !av.itemRenderEvent(ItemStackAPI.verify(((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getItemStack()),
-                    ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getDisplayContext().name(), FiguraVec3.fromVec3f(transform.translation()),
-                    FiguraVec3.of(transform.rotation().z(), transform.rotation().y(), transform.rotation().x()), FiguraVec3.fromVec3f(transform.scale()),
-                    ((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$isLeftHanded(), stack, submitNodeCollector, light, OverlayTexture.NO_OVERLAY)
-            )
-                itemStackRenderState.submit(stack, submitNodeCollector, light, OverlayTexture.NO_OVERLAY, state.outlineColor);
+            ItemTransform transform = renderStateExtension.figura$getItemTransform();
+            if (av == null ||
+                    !av.itemRenderEvent(
+                            ItemStackAPI.verify(renderStateExtension.figura$getItemStack()),
+                            renderStateExtension.figura$getDisplayContext().name(),
+                            FiguraVec3.fromVec3f(transform.translation()),
+                            FiguraVec3.of(transform.rotation().z(), transform.rotation().y(), transform.rotation().x()),
+                            FiguraVec3.fromVec3f(transform.scale()),
+                            renderStateExtension.figura$isLeftHanded(),
+                            stack, submitNodeCollector, light, OverlayTexture.NO_OVERLAY
+                    )
+            ) itemStackRenderState.submit(stack, submitNodeCollector, light, OverlayTexture.NO_OVERLAY, state.outlineColor);
         })) {
             ci.cancel();
         }
@@ -93,25 +100,32 @@ public abstract class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M e
 
     @WrapOperation(method = "submitArmWithItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/item/ItemStackRenderState;submit(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;III)V"))
     private void figuraItemEvent(ItemStackRenderState instance, PoseStack matrices, SubmitNodeCollector submitNodeCollector, int light, int overlay, int outlineColor, Operation<Void> original, @Local(argsOnly = true) S armedState) {
-        ItemStack stack = ((FiguraItemStackRenderStateExtension)instance).figura$getItemStack();
+        FiguraItemStackRenderStateExtension renderStateExtension = (FiguraItemStackRenderStateExtension) instance;
+        ItemStack stack = renderStateExtension.figura$getItemStack();
         Entity entity = AvatarManager.getEntity(armedState);
+
         if (av != null && stack != null && entity != null && stack.getItem() instanceof BlockItem bl && bl.getBlock() instanceof AbstractSkullBlock sk) {
             SkullBlockRendererAccessor.setEntity(entity);
-            SkullBlockRendererAccessor.setRenderMode(switch (((FiguraItemStackRenderStateExtension) instance).figura$getDisplayContext()) {
+            SkullBlockRendererAccessor.setRenderMode(switch (renderStateExtension.figura$getDisplayContext()) {
                 case FIRST_PERSON_LEFT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.FIRST_PERSON_LEFT_HAND;
                 case FIRST_PERSON_RIGHT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.FIRST_PERSON_RIGHT_HAND;
                 case THIRD_PERSON_LEFT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_LEFT_HAND;
                 case THIRD_PERSON_RIGHT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_RIGHT_HAND;
-                default -> ((FiguraItemStackRenderStateExtension) instance).figura$isLeftHanded() ? SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_LEFT_HAND // should never happen
+                default -> renderStateExtension.figura$isLeftHanded() ? SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_LEFT_HAND // should never happen
                         : SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_RIGHT_HAND;
             });
         }
-        ItemTransform transform = ((FiguraItemStackRenderStateExtension)instance).figura$getItemTransform();
+        ItemTransform transform = renderStateExtension.figura$getItemTransform();
 
-        if (av == null || !av.itemRenderEvent(ItemStackAPI.verify(stack), ((FiguraItemStackRenderStateExtension) instance).figura$getDisplayContext().name(),
-                FiguraVec3.fromVec3f(transform.translation()), FiguraVec3.of(transform.rotation().z(), transform.rotation().y(), transform.rotation().x()),
-                FiguraVec3.fromVec3f(transform.scale()), ((FiguraItemStackRenderStateExtension) instance).figura$isLeftHanded(),
-                matrices, submitNodeCollector, light, overlay)
+        if (av == null ||
+            !av.itemRenderEvent(
+                ItemStackAPI.verify(stack),
+                renderStateExtension.figura$getDisplayContext().name(),
+                FiguraVec3.fromVec3f(transform.translation()),
+                FiguraVec3.of(transform.rotation().z(), transform.rotation().y(), transform.rotation().x()),
+                FiguraVec3.fromVec3f(transform.scale()), renderStateExtension.figura$isLeftHanded(),
+                matrices, submitNodeCollector, light, overlay
+            )
         )
             original.call(instance, matrices, submitNodeCollector, light, overlay, outlineColor);
     }
