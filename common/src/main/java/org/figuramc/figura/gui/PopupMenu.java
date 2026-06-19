@@ -8,13 +8,14 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
@@ -37,8 +38,8 @@ import java.util.function.Consumer;
 
 public class PopupMenu {
 
-    private static final FiguraIdentifier BACKGROUND = new FiguraIdentifier("textures/gui/popup.png");
-    private static final FiguraIdentifier ICONS = new FiguraIdentifier("textures/gui/popup_icons.png");
+    private static final Identifier BACKGROUND = FiguraIdentifier.of("textures/gui/popup.png");
+    private static final Identifier ICONS = FiguraIdentifier.of("textures/gui/popup_icons.png");
 
     private static final MutableComponent VERSION_WARN = Component.empty()
             .append(Badges.System.WARNING.badge.copy().withStyle(Style.EMPTY.withFont(new FontDescription.Resource(Badges.FONT))))
@@ -78,7 +79,7 @@ public class PopupMenu {
     private static Entity entity;
     private static UUID id;
 
-    public static void render(GuiGraphics gui) {
+    public static void render(GuiGraphicsExtractor gui) {
         if (!isEnabled()) return;
 
         if (entity == null) {
@@ -158,7 +159,7 @@ public class PopupMenu {
         pose.translate(0f, 0f);
 
         UIHelper.renderOutlineText(gui, font, permissionName, -font.width(permissionName) / 2, -54, 0xFFFFFF, 0x202020);
-        gui.drawString(font, title, -width + 4, -12, UIHelper.adjustColor(0xFFFFFF));
+        gui.text(font, title, -width + 4, -12, UIHelper.adjustColor(0xFFFFFF));
 
         if (error)
             UIHelper.renderOutlineText(gui, font, ERROR_WARN, -font.width(ERROR_WARN) / 2, 0, 0xFFFFFF, 0x202020);

@@ -67,7 +67,7 @@ public class FiguraTexture extends SimpleTexture {
     private boolean isClosed = false;
 
     public FiguraTexture(Avatar owner, String name, byte[] data) {
-        super(new FiguraIdentifier("avatar_tex/" + owner.owner + "/" + UUID.randomUUID()));
+        super(FiguraIdentifier.of("avatar_tex/" + owner.owner + "/" + UUID.randomUUID()));
 
         // Read image from wrapper
         NativeImage image;
@@ -87,14 +87,14 @@ public class FiguraTexture extends SimpleTexture {
     }
 
     public FiguraTexture(Avatar owner, String name, int width, int height) {
-        super(new FiguraIdentifier("avatar_tex/" + owner.owner + "/" + UUID.randomUUID()));
+        super(FiguraIdentifier.of("avatar_tex/" + owner.owner + "/" + UUID.randomUUID()));
         this.nativeImageTexture = new NativeImage(width, height, true);
         this.name = name;
         this.owner = owner;
     }
 
     public FiguraTexture(Avatar owner, String name, NativeImage image) {
-        super(new FiguraIdentifier("avatar_tex/" + owner.owner + "/custom/" + UUID.randomUUID()));
+        super(FiguraIdentifier.of("avatar_tex/" + owner.owner + "/custom/" + UUID.randomUUID()));
         this.nativeImageTexture = image;
         this.name = name;
         this.owner = owner;

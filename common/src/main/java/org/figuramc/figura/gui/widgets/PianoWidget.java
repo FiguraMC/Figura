@@ -2,7 +2,7 @@ package org.figuramc.figura.gui.widgets;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
@@ -58,7 +58,7 @@ public class PianoWidget extends AbstractContainerElement {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         this.setHovered(this.isMouseOver(mouseX, mouseY));
 
         // background
@@ -71,7 +71,7 @@ public class PianoWidget extends AbstractContainerElement {
             key.setHovered(key.isMouseOver(mouseX, mouseY));
 
         // render children
-        super.render(gui, mouseX, mouseY, delta);
+        super.extractRenderState(gui, mouseX, mouseY, delta);
 
         if (pressed && hovered != lastHovered && hovered != null)
             hovered.run();
@@ -101,7 +101,7 @@ public class PianoWidget extends AbstractContainerElement {
         }
 
         @Override
-        public void renderContents(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+        public void extractContents(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
             if (!this.isVisible())
                 return;
 
@@ -118,7 +118,7 @@ public class PianoWidget extends AbstractContainerElement {
             int y = getY() + getHeight() / 2 - font.lineHeight / 2;
             if (!isSharp)
                 y += getHeight() / 4;
-            gui.drawString(font, getMessage(), x, y, UIHelper.adjustColor(isSharp ? 0xFFFFFF : 0), false);
+            gui.text(font, getMessage(), x, y, UIHelper.adjustColor(isSharp ? 0xFFFFFF : 0), false);
         }
 
         @Override

@@ -188,13 +188,13 @@ public class LivingEntityAPI<T extends LivingEntity> extends EntityAPI<T> {
         checkEntity();
 
         EntityType<?> mobType = entity.getType(); // why it is not an enum
-        if (mobType.is(EntityTypeTags.ARTHROPOD))
+        if (mobType.builtInRegistryHolder().is(EntityTypeTags.ARTHROPOD))
             return "ARTHROPOD";
-        if (mobType.is(EntityTypeTags.UNDEAD))
+        if (mobType.builtInRegistryHolder().is(EntityTypeTags.UNDEAD))
             return "UNDEAD";
-        if (mobType.is(EntityTypeTags.AQUATIC))
+        if (mobType.builtInRegistryHolder().is(EntityTypeTags.AQUATIC))
             return "WATER";
-        if (mobType.is(EntityTypeTags.ILLAGER))
+        if (mobType.builtInRegistryHolder().is(EntityTypeTags.ILLAGER))
             return "ILLAGER";
 
         return "UNDEFINED";

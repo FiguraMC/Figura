@@ -11,16 +11,17 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
-import net.minecraft.client.gui.render.state.BlitRenderState;
-import net.minecraft.client.gui.render.state.GuiRenderState;
-import net.minecraft.client.renderer.CachedOrthoProjectionMatrixBuffer;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.state.gui.BlitRenderState;
+import net.minecraft.client.renderer.state.gui.GuiRenderState;
+import net.minecraft.client.renderer.ProjectionMatrixBuffer;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.gui.widgets.permissions.PlayerPermPackElement;
 import org.figuramc.figura.utils.ui.UIHelper;
+import org.joml.Matrix4f;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,8 +30,8 @@ import java.util.OptionalDouble;
 
 public class FiguraPortraitRenderer extends PictureInPictureRenderer<FiguraPortraitRenderState> {
 
-    private final CachedOrthoProjectionMatrixBuffer avatarProjectionMatrixBuffer = new CachedOrthoProjectionMatrixBuffer(
-            "Portrait-PIP - " + this.getClass().getSimpleName(), -1000.0F, 1000.0F, true
+    private final ProjectionMatrixBuffer avatarProjectionMatrixBuffer = new ProjectionMatrixBuffer(
+            "Portrait-PIP - " + this.getClass().getSimpleName()
     );
     Map<Avatar, TextureEntry> avatarToTexture = new HashMap<>();
     private boolean renderSkin;
@@ -49,7 +50,7 @@ public class FiguraPortraitRenderer extends PictureInPictureRenderer<FiguraPortr
 
         Avatar avatar = portraitState.avatar();
         if (avatar != null) {
-            renderSkin = !avatar.renderHeadForPortrait(this.bufferSource, poseStack, LightTexture.FULL_BRIGHT, portraitState.modelScale(), portraitState.upsideDown());
+            renderSkin = !avatar.renderHeadForPortrait(this.bufferSource, poseStack, LightCoordsUtil.FULL_BRIGHT, portraitState.modelScale(), portraitState.upsideDown());
         } else {
             renderSkin = true;
         }
@@ -107,7 +108,7 @@ public class FiguraPortraitRenderer extends PictureInPictureRenderer<FiguraPortr
         }
 
         gpuDevice.createCommandEncoder().clearColorAndDepthTextures(entry.texture, 0, entry.depthTexture, 1.0);
-        RenderSystem.setProjectionMatrix(this.avatarProjectionMatrixBuffer.getBuffer(i, j), ProjectionType.ORTHOGRAPHIC);
+        RenderSystem.setProjectionMatrix(this.avatarProjectionMatrixBuffer.getBuffer(new Matrix4f().setOrtho(0.0F, i, j, 0.0F, -1000.0F, 1000.0F)), ProjectionType.ORTHOGRAPHIC);
     }
 
     @Override
@@ -115,7 +116,7 @@ public class FiguraPortraitRenderer extends PictureInPictureRenderer<FiguraPortr
         if (!renderSkin){
             TextureEntry entry = avatarToTexture.get(pictureInPictureRenderState.avatar());
 
-            guiRenderState.submitBlitToCurrentLayer(
+            guiRenderState.addBlitToCurrentLayer(
                     new BlitRenderState(
                             RenderPipelines.GUI_TEXTURED_PREMULTIPLIED_ALPHA,
                             TextureSetup.singleTexture(entry.textureView, entry.sampler),
@@ -143,7 +144,7 @@ public class FiguraPortraitRenderer extends PictureInPictureRenderer<FiguraPortr
             GpuTextureView gpuTextureView = Minecraft.getInstance().getTextureManager().getTexture(texture).getTextureView();
             GpuSampler sampler = Minecraft.getInstance().getTextureManager().getTexture(texture).getSampler();
 
-            guiRenderState.submitBlitToCurrentLayer(
+            guiRenderState.addBlitToCurrentLayer(
                     new BlitRenderState(
                             RenderPipelines.GUI_TEXTURED_PREMULTIPLIED_ALPHA,
                             TextureSetup.singleTexture(gpuTextureView, sampler),
@@ -164,7 +165,7 @@ public class FiguraPortraitRenderer extends PictureInPictureRenderer<FiguraPortr
 
             // hat
             GlStateManager._enableBlend();
-            guiRenderState.submitBlitToCurrentLayer(
+            guiRenderState.addBlitToCurrentLayer(
                     new BlitRenderState(
                             RenderPipelines.GUI_TEXTURED_PREMULTIPLIED_ALPHA,
                             TextureSetup.singleTexture(gpuTextureView, sampler),
@@ -186,7 +187,7 @@ public class FiguraPortraitRenderer extends PictureInPictureRenderer<FiguraPortr
         } else {
             GpuTextureView gpuTextureView = Minecraft.getInstance().getTextureManager().getTexture(PlayerPermPackElement.UNKNOWN).getTextureView();
             GpuSampler sampler = Minecraft.getInstance().getTextureManager().getTexture(PlayerPermPackElement.UNKNOWN).getSampler();
-            guiRenderState.submitBlitToCurrentLayer(
+            guiRenderState.addBlitToCurrentLayer(
                     new BlitRenderState(
                             RenderPipelines.GUI_TEXTURED_PREMULTIPLIED_ALPHA,
                             TextureSetup.singleTexture(gpuTextureView, sampler),

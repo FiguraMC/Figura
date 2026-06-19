@@ -6,9 +6,7 @@ import net.minecraft.client.renderer.PlayerSkinRenderCache;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.special.PlayerHeadSpecialRenderer;
 import net.minecraft.client.renderer.special.SkullSpecialRenderer;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.ResolvableProfile;
 import org.figuramc.figura.ducks.SkullBlockRendererAccessor;
 import org.figuramc.figura.ducks.SkullSpecialRendererExtension;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,14 +23,14 @@ public class BlockEntityWithoutLevelRendererMixin implements SkullSpecialRendere
     ItemStack figura$stack;
 
     @Inject(method = "extractArgument(Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/client/renderer/PlayerSkinRenderCache$RenderInfo;", at = @At("HEAD"), require = 0)
-    void saveTargetItem(ItemStack stack, CallbackInfoReturnable<ResolvableProfile> cir) {
+    void saveTargetItem(ItemStack stack, CallbackInfoReturnable<PlayerSkinRenderCache.RenderInfo> cir) {
         SkullBlockRendererAccessor.setItem(stack);
         figura$stack = stack;
     }
 
 
-    @Inject(method = "submit(Lnet/minecraft/client/renderer/PlayerSkinRenderCache$RenderInfo;Lnet/minecraft/world/item/ItemDisplayContext;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;IIZI)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/blockentity/SkullBlockRenderer;submitSkull(Lnet/minecraft/core/Direction;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;ILnet/minecraft/client/model/object/skull/SkullModelBase;Lnet/minecraft/client/renderer/rendertype/RenderType;ILnet/minecraft/client/renderer/feature/ModelFeatureRenderer$CrumblingOverlay;)V"), require = 0)
-    void setTargetItem(PlayerSkinRenderCache.RenderInfo renderInfo, ItemDisplayContext itemDisplayContext, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int i, int j, boolean bl, int k, CallbackInfo ci) {
+    @Inject(method = "submit(Lnet/minecraft/client/renderer/PlayerSkinRenderCache$RenderInfo;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;IIZI)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/blockentity/SkullBlockRenderer;submitSkull(FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;ILnet/minecraft/client/model/object/skull/SkullModelBase;Lnet/minecraft/client/renderer/rendertype/RenderType;ILnet/minecraft/client/renderer/feature/ModelFeatureRenderer$CrumblingOverlay;)V"), require = 0)
+    void setTargetItem(PlayerSkinRenderCache.RenderInfo renderInfo, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int i, int j, boolean bl, int k, CallbackInfo ci) {
         SkullBlockRendererAccessor.setItem(figura$stack);
     }
 

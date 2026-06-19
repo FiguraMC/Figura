@@ -10,8 +10,9 @@ import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.feature.FlameFeatureRenderer;
 import net.minecraft.client.renderer.feature.ItemFeatureRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.AtlasManager;
+import net.minecraft.client.resources.model.sprite.AtlasManager;
 import org.figuramc.figura.avatar.Avatar;
+import org.figuramc.figura.ducks.FlameSubmitExtension;
 import org.figuramc.figura.ducks.FiguraSubmitCallBackExtension;
 import org.figuramc.figura.utils.RenderUtils;
 import org.joml.Quaternionf;
@@ -42,9 +43,9 @@ public class FlameFeatureRendererMixin {
         return s != null ? s : sprite;
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/feature/FlameFeatureRenderer;renderFlame(Lcom/mojang/blaze3d/vertex/PoseStack$Pose;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/renderer/entity/state/EntityRenderState;Lorg/joml/Quaternionf;Lnet/minecraft/client/resources/model/AtlasManager;)V"))
+    @Inject(method = "renderSolid", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/feature/FlameFeatureRenderer;renderFlame(Lcom/mojang/blaze3d/vertex/PoseStack$Pose;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/renderer/entity/state/EntityRenderState;Lorg/joml/Quaternionf;Lnet/minecraft/client/resources/model/sprite/AtlasManager;)V"))
     private void figura$preRender(
             SubmitNodeCollection submitNodeCollection, MultiBufferSource.BufferSource bufferSource, AtlasManager atlasManager, CallbackInfo ci, @Local SubmitNodeStorage.FlameSubmit flameSubmit ) {
-
+        figura$avatar = ((FlameSubmitExtension) (Object) flameSubmit).figura$getAvatar();
     }
 }

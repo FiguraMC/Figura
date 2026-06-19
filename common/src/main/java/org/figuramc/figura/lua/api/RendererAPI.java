@@ -560,7 +560,7 @@ public class RendererAPI {
 
         fireLayer1 = LuaUtils.parsePath(id);
         if (fireLayer1.getPath().startsWith("textures/"))
-            fireLayer1 = new Identifier(fireLayer1.getNamespace(), fireLayer1.getPath().substring("textures/".length()));
+            fireLayer1 = Identifier.fromNamespaceAndPath(fireLayer1.getNamespace(), fireLayer1.getPath().substring("textures/".length()));
 
         return this;
     }
@@ -582,7 +582,7 @@ public class RendererAPI {
 
         fireLayer2 = LuaUtils.parsePath(id);
         if (fireLayer2.getPath().startsWith("textures/"))
-            fireLayer2 = new Identifier(fireLayer2.getNamespace(), fireLayer2.getPath().substring("textures/".length()));
+            fireLayer2 = Identifier.fromNamespaceAndPath(fireLayer2.getNamespace(), fireLayer2.getPath().substring("textures/".length()));
 
         return this;
     }

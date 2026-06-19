@@ -1,7 +1,7 @@
 package org.figuramc.figura.gui.widgets;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.KeyEvent;
@@ -19,7 +19,7 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
 
     // -- fields -- // 
 
-    public static final Identifier SCROLLBAR_TEXTURE = new FiguraIdentifier("textures/gui/scrollbar.png");
+    public static final Identifier SCROLLBAR_TEXTURE = FiguraIdentifier.of("textures/gui/scrollbar.png");
 
     protected final int headHeight = 20;
     protected final int headWidth = 10;
@@ -149,7 +149,7 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
     }
 
     @Override
-    public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         if (!isVisible())
             return;
 

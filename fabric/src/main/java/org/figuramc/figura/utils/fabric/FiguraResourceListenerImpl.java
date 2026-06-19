@@ -1,14 +1,16 @@
 package org.figuramc.figura.utils.fabric;
 
-import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.FiguraResourceListener;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
-public class FiguraResourceListenerImpl extends FiguraResourceListener implements SimpleSynchronousResourceReloadListener {
+public class FiguraResourceListenerImpl extends FiguraResourceListener implements PreparableReloadListener {
     public FiguraResourceListenerImpl(String id, Consumer<ResourceManager> reloadConsumer) {
         super(id, reloadConsumer);
     }
@@ -17,12 +19,13 @@ public class FiguraResourceListenerImpl extends FiguraResourceListener implement
         return new FiguraResourceListenerImpl(id, reloadConsumer);
     }
 
-    public Identifier getFabricId() {
-        return new FiguraIdentifier(this.id());
+    public Identifier getId() {
+        return FiguraIdentifier.of(this.id());
     }
 
     @Override
-    public void onResourceManagerReload(ResourceManager manager) {
-        reloadConsumer().accept(manager);
+    public CompletableFuture<Void> reload(SharedState sharedState, Executor prepareExecutor, PreparationBarrier preparationBarrier, Executor applyExecutor) {
+        ResourceManager manager = sharedState.resourceManager();
+        return preparationBarrier.wait(null).thenRunAsync(() -> reloadConsumer().accept(manager), applyExecutor);
     }
 }

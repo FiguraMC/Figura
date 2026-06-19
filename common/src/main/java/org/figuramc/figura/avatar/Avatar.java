@@ -9,11 +9,11 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
@@ -56,7 +56,7 @@ import org.figuramc.figura.lua.api.world.WorldAPI;
 import org.figuramc.figura.math.matrix.FiguraMat3;
 import org.figuramc.figura.math.matrix.FiguraMat4;
 import org.figuramc.figura.math.vector.FiguraVec3;
-import org.figuramc.figura.mixin.gui.GuiGraphicsAccessor;
+import org.figuramc.figura.mixin.gui.GuiGraphicsExtractorAccessor;
 import org.figuramc.figura.model.FiguraModelPart;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.model.PartCustomization;
@@ -700,7 +700,7 @@ public class Avatar {
 
         renderer.setupRenderer(
                 PartFilterScheme.HUD, bufferSource, stack,
-                tickDelta, LightTexture.FULL_BRIGHT, 1f, OverlayTexture.NO_OVERLAY,
+                tickDelta, LightCoordsUtil.FULL_BRIGHT, 1f, OverlayTexture.NO_OVERLAY,
                 false, false
         );
 
@@ -777,7 +777,7 @@ public class Avatar {
         return comp > 0 && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.checkVisible();
     }
 
-    public boolean submitPortraitDraw(GuiGraphics gui, Identifier fallback, int x, int y, int size, float modelScale, boolean upsideDown) {
+    public boolean submitPortraitDraw(GuiGraphicsExtractor gui, Identifier fallback, int x, int y, int size, float modelScale, boolean upsideDown) {
         if (!Configs.AVATAR_PORTRAIT.value || renderer == null || !loaded)
             return false;
 
@@ -806,9 +806,9 @@ public class Avatar {
         pose.translate((float)(4d / 16d), (float) (upsideDown ? 0 : (8d / 16d)));
 
 
-        FiguraPortraitRenderState state = new FiguraPortraitRenderState(this, fallback, modelScale, upsideDown, x1, y1, x2, y2, size, ((GuiGraphicsAccessor)gui).figura$getScissorStack().peek());
+        FiguraPortraitRenderState state = new FiguraPortraitRenderState(this, fallback, modelScale, upsideDown, x1, y1, x2, y2, size, ((GuiGraphicsExtractorAccessor)gui).figura$getScissorStack().peek());
         gui.fill(x1, y1, x2, y2, -1);
-        ((GuiGraphicsAccessor)gui).figura$getRenderState().submitPicturesInPictureState(state);
+        ((GuiGraphicsExtractorAccessor)gui).figura$getRenderState().addPicturesInPictureState(state);
         gui.pose().popMatrix();
 
         gui.disableScissor();

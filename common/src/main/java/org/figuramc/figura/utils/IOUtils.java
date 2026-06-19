@@ -203,7 +203,13 @@ public class IOUtils {
         try {
             // Iterate through all parent folders of the avatars
             // resource to find a hidden one (if any)
-            for (Path parent = path;
+            Path existingPath = path;
+            while (existingPath != null && !Files.exists(existingPath))
+                existingPath = existingPath.getParent();
+            if (existingPath == null)
+                return false;
+
+            for (Path parent = existingPath;
                  !Files.isSameFile(parent, avatarsDirectory);
                  parent = parent.resolve("..").normalize()) {
                 if (Files.isHidden(parent) || parent.getFileName().toString().startsWith(".")) {

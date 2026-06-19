@@ -20,10 +20,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import software.bernie.geckolib.animatable.GeoItem;
-import software.bernie.geckolib.cache.model.GeoBone;
-import software.bernie.geckolib.renderer.GeoArmorRenderer;
-import software.bernie.geckolib.renderer.base.GeoRenderState;
+import com.geckolib.animatable.GeoItem;
+import com.geckolib.cache.model.GeoBone;
+import com.geckolib.renderer.GeoArmorRenderer;
+import com.geckolib.renderer.base.GeoRenderState;
 
 @Pseudo
 @Mixin(value = GeoArmorRenderer.class, remap = false)

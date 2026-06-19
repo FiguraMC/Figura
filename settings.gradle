@@ -7,8 +7,8 @@ pluginManagement {
     }
 }
 
-include("common")
-include("common:mojmap")
+//include("common")
+//include("common:mojmap")
 //include("forge")
 include("fabric")
 //include("neoforge")

@@ -3,7 +3,7 @@ package org.figuramc.figura.gui.widgets;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
@@ -23,7 +23,7 @@ import java.util.function.Function;
 
 public class PanelSelectorWidget extends AbstractContainerElement {
 
-    public static final Identifier BACKGROUND = new FiguraIdentifier("textures/gui/panels_background.png");
+    public static final Identifier BACKGROUND = FiguraIdentifier.of("textures/gui/panels_background.png");
 
     private static final List<Function<Screen, Pair<Screen, PanelIcon>>> PANELS = new ArrayList<>() {{
                 add(s -> Pair.of(new ProfileScreen(s), PanelIcon.PROFILE));
@@ -94,10 +94,10 @@ public class PanelSelectorWidget extends AbstractContainerElement {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         UIHelper.blitSliced(gui, getX(), getY(), selected.getX() - getX(), getHeight() - 4, BACKGROUND);
         UIHelper.blitSliced(gui, selected.getX() + selected.getWidth(), getY(), getWidth() - selected.getX() - selected.getWidth(), getHeight() - 4, BACKGROUND);
-        super.render(gui, mouseX, mouseY, delta);
+        super.extractRenderState(gui, mouseX, mouseY, delta);
     }
 
     public boolean cycleTab(int keyCode) {
@@ -148,8 +148,8 @@ public class PanelSelectorWidget extends AbstractContainerElement {
 
     private static class PanelButton extends IconButton {
 
-        public static final Identifier TEXTURE = new FiguraIdentifier("textures/gui/panels_button.png");
-        public static final Identifier ICONS = new FiguraIdentifier("textures/gui/panels.png");
+        public static final Identifier TEXTURE = FiguraIdentifier.of("textures/gui/panels_button.png");
+        public static final Identifier ICONS = FiguraIdentifier.of("textures/gui/panels.png");
 
         private final PanelSelectorWidget parent;
 
@@ -159,8 +159,8 @@ public class PanelSelectorWidget extends AbstractContainerElement {
         }
 
         @Override
-        public void renderContents(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-            super.renderContents(gui, mouseX, mouseY, delta);
+        public void extractContents(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
+            super.extractContents(gui, mouseX, mouseY, delta);
             boolean iconOnly = iconsOnly();
 
             if (iconOnly && this.isMouseOver(mouseX, mouseY))
@@ -168,7 +168,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
         }
 
         @Override
-        protected void renderTexture(GuiGraphics gui, float delta) {
+        protected void renderTexture(GuiGraphicsExtractor gui, float delta) {
             UIHelper.blitSliced(gui, getX(), getY(), getWidth(), getHeight(), isSelected() ? 24f : 0f, this.isHoveredOrFocused() ? 24f : 0f, 24, 24, 48, 48, TEXTURE);
 
             UIHelper.enableBlend();
@@ -177,7 +177,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
         }
 
         @Override
-        protected void renderText(GuiGraphics gui, float delta) {
+        protected void renderText(GuiGraphicsExtractor gui, float delta) {
             if (iconsOnly())
                 return;
 

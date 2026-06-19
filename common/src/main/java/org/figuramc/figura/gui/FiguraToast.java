@@ -2,7 +2,7 @@ package org.figuramc.figura.gui;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastManager;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -42,7 +42,7 @@ public class FiguraToast implements Toast {
     }
 
     @Override
-    public void render(GuiGraphics gui, Font font, long startTime) {
+    public void extractRenderState(GuiGraphicsExtractor gui, Font font, long startTime) {
         int titleTime = Math.round(Configs.TOAST_TITLE_TIME.value * 1000);
 
         long timeDiff = startTime - this.startTime;
@@ -61,8 +61,8 @@ public class FiguraToast implements Toast {
 
             if (a.size() == 1 && b.size() == 1) {
                 int y = Math.round(height() / 2f - font.lineHeight - 1);
-                gui.drawString(font, this.title, type.spacing, y, UIHelper.adjustColor(0xFFFFFF));
-                gui.drawString(font, this.message, type.spacing, y * 2 + 4, UIHelper.adjustColor(0xFFFFFF));
+                gui.text(font, this.title, type.spacing, y, UIHelper.adjustColor(0xFFFFFF));
+                gui.text(font, this.message, type.spacing, y * 2 + 4, UIHelper.adjustColor(0xFFFFFF));
             } else if (timeDiff < titleTime) {
                 renderText(this.title, font, gui, Math.round(Math.min(Math.max((titleTime - timeDiff) / 300f, 0), 1) * 255));
             } else {
@@ -92,14 +92,14 @@ public class FiguraToast implements Toast {
         visibility = timeDiff < time ? Visibility.SHOW : Visibility.HIDE;
     }
 
-    public void renderText(Component text, Font font, GuiGraphics gui, int alpha) {
+    public void renderText(Component text, Font font, GuiGraphicsExtractor gui, int alpha) {
         List<FormattedCharSequence> list = font.split(text, width() - type.spacing - 1);
         if (list.size() == 1)
-            gui.drawString(font, text, type.spacing, Math.round(height() / 2f - font.lineHeight / 2f), UIHelper.adjustColor(0xFFFFFF + (alpha << 24)));
+            gui.text(font, text, type.spacing, Math.round(height() / 2f - font.lineHeight / 2f), UIHelper.adjustColor(0xFFFFFF + (alpha << 24)));
         else {
             int y = Math.round(height() / 2f - font.lineHeight - 1);
             for (int i = 0; i < list.size(); i++)
-                gui.drawString(font, list.get(i), type.spacing, y * (i + 1) + 4 * i, UIHelper.adjustColor(0xFFFFFF + (alpha << 24)));
+                gui.text(font, list.get(i), type.spacing, y * (i + 1) + 4 * i, UIHelper.adjustColor(0xFFFFFF + (alpha << 24)));
         }
     }
 
@@ -155,10 +155,10 @@ public class FiguraToast implements Toast {
     }
 
     public enum ToastType {
-        DEFAULT(new FiguraIdentifier("textures/gui/toast/default.png"), 4, 160, 31, 0x55FFFF),
-        WARNING(new FiguraIdentifier("textures/gui/toast/warning.png"), 4, 160, 31, 0xFFFF00),
-        ERROR(new FiguraIdentifier("textures/gui/toast/error.png"), 4, 160, 31, 0xFF0000),
-        CHEESE(new FiguraIdentifier("textures/gui/toast/cheese.png"), 1, 160, 31, ColorUtils.Colors.CHEESE.hex);
+        DEFAULT(FiguraIdentifier.of("textures/gui/toast/default.png"), 4, 160, 31, 0x55FFFF),
+        WARNING(FiguraIdentifier.of("textures/gui/toast/warning.png"), 4, 160, 31, 0xFFFF00),
+        ERROR(FiguraIdentifier.of("textures/gui/toast/error.png"), 4, 160, 31, 0xFF0000),
+        CHEESE(FiguraIdentifier.of("textures/gui/toast/cheese.png"), 1, 160, 31, ColorUtils.Colors.CHEESE.hex);
 
         private final Identifier texture;
         private final int frames;

@@ -1,7 +1,8 @@
 package org.figuramc.figura.gui.widgets;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractScrollArea;
 import net.minecraft.client.gui.components.AbstractTextAreaWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -20,7 +21,7 @@ public class BackendMotdWidget extends AbstractTextAreaWidget {
     private int maxWidth;
 
     public BackendMotdWidget(int i, int j, int k, int l, Component text, Font font) {
-        super(i, j, k, l, text);
+        super(i, j, k, l, text, AbstractScrollArea.defaultSettings(font.lineHeight));
         this.font = font;
         this.textHelper = new ClickableTextHelper();
         this.maxWidth = this.getWidth() - this.totalInnerPadding();
@@ -51,34 +52,34 @@ public class BackendMotdWidget extends AbstractTextAreaWidget {
     }
 
     @Override
-    protected void renderBorder(GuiGraphics graphics, int x, int y, int width, int height) {
+    protected void extractBorder(GuiGraphicsExtractor graphics, int x, int y, int width, int height) {
         UIHelper.blitSliced(graphics, this.getX() - this.innerPadding(), this.getY() - this.innerPadding(), this.getWidth() + this.totalInnerPadding(), this.getHeight() + this.totalInnerPadding(), UIHelper.OUTLINE_FILL);
     }
 
     @Override
-    protected void renderBackground(GuiGraphics graphics) {
+    protected void extractBackground(GuiGraphicsExtractor graphics) {
         UIHelper.blitSliced(graphics, this.getX() - this.innerPadding(), this.getY() - this.innerPadding(), this.getWidth() + this.totalInnerPadding(), this.getHeight() + this.totalInnerPadding(), UIHelper.OUTLINE_FILL);
     }
 
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         if (this.visible) {
-            if (!scrollbarVisible()) {
-                renderBackground(graphics);
-                renderContents(graphics, mouseX, mouseY, delta);
+            if (!scrollable()) {
+                extractBackground(graphics);
+                extractContents(graphics, mouseX, mouseY, delta);
             } else {
-                super.renderWidget(graphics, mouseX, mouseY, delta);
+                super.extractWidgetRenderState(graphics, mouseX, mouseY, delta);
             }
         }
     }
 
-    protected void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+    protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         int xx = this.getX() + this.innerPadding();
         int yy = this.getY() + this.innerPadding();
 
         int scroll = (int)scrollAmount();
         textHelper.update(font, maxWidth);
 
-        textHelper.visit((text, style, x, y, textWidth, textHeight) -> graphics.drawString(font, Component.literal(text).setStyle(style), xx + x, yy + y, UIHelper.adjustColor(0xFFFFFFFF)));
+        textHelper.visit((text, style, x, y, textWidth, textHeight) -> graphics.text(font, Component.literal(text).setStyle(style), xx + x, yy + y, UIHelper.adjustColor(0xFFFFFFFF)));
 
         //textHelper.renderDebug(graphics, xx, yy, mouseX, mouseY + scroll);
 

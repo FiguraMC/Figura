@@ -1,7 +1,7 @@
 package org.figuramc.figura.gui.widgets.lists;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
@@ -61,11 +61,11 @@ public class PlayerList extends AbstractList {
         }));
 
         // show figura only button
-        children.add(showFigura = new SwitchButton(x + width - 48, y + 4, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/show_figura.png"), 60, 40, FiguraText.of("gui.permissions.figura_only.tooltip"), button -> showFiguraBl = ((SwitchButton) button).isToggled()));
+        children.add(showFigura = new SwitchButton(x + width - 48, y + 4, 20, 20, 0, 0, 20, FiguraIdentifier.of("textures/gui/show_figura.png"), 60, 40, FiguraText.of("gui.permissions.figura_only.tooltip"), button -> showFiguraBl = ((SwitchButton) button).isToggled()));
         showFigura.setToggled(showFiguraBl);
 
         // show disconnected button
-        children.add(showDisconnected = new SwitchButton(x + width - 24, y + 4, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/show_disconnected.png"), 60, 40, FiguraText.of("gui.permissions.disconnected.tooltip"), button -> showDisconnectedBl = ((SwitchButton) button).isToggled()));
+        children.add(showDisconnected = new SwitchButton(x + width - 24, y + 4, 20, 20, 0, 0, 20, FiguraIdentifier.of("textures/gui/show_disconnected.png"), 60, 40, FiguraText.of("gui.permissions.disconnected.tooltip"), button -> showDisconnectedBl = ((SwitchButton) button).isToggled()));
         showDisconnected.setToggled(showDisconnectedBl);
 
         // initial load
@@ -84,7 +84,7 @@ public class PlayerList extends AbstractList {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         int x = getX();
         int y = getY();
         int width = getWidth();
@@ -122,7 +122,7 @@ public class PlayerList extends AbstractList {
             pack.setY(y + playerY);
 
             if (pack.getY() + pack.getHeight() > minY && pack.getY() < maxY)
-                pack.render(gui, mouseX, mouseY, delta);
+                pack.extractRenderState(gui, mouseX, mouseY, delta);
 
             playerY += pack.getHeight() + 8;
         }
@@ -131,7 +131,7 @@ public class PlayerList extends AbstractList {
         gui.disableScissor();
 
         // render children
-        super.render(gui, mouseX, mouseY, delta);
+        super.extractRenderState(gui, mouseX, mouseY, delta);
     }
 
     @Override

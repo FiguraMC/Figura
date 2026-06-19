@@ -2,14 +2,14 @@ package org.figuramc.figura.mixin.gui;
 
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import net.minecraft.client.GuiMessage;
+import net.minecraft.client.multiplayer.chat.GuiMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.render.GuiRenderer;
 import net.minecraft.client.gui.render.pip.GuiEntityRenderer;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
-import net.minecraft.client.gui.render.state.GuiRenderState;
-import net.minecraft.client.gui.render.state.pip.GuiEntityRenderState;
-import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState;
+import net.minecraft.client.renderer.state.gui.GuiRenderState;
+import net.minecraft.client.renderer.state.gui.pip.GuiEntityRenderState;
+import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;

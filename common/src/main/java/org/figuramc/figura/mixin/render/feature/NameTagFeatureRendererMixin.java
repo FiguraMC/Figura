@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(NameTagFeatureRenderer.class)
 public class NameTagFeatureRendererMixin {
-    @Inject(method = "render", at = @At(value = "TAIL"))
+    @Inject(method = "renderTranslucent", at = @At(value = "TAIL"))
     private void renderOutlineTexts(CallbackInfo ci, @Local(argsOnly = true) MultiBufferSource.BufferSource bufferSource,
                                     @Local(argsOnly = true) Font font, @Local NameTagFeatureRenderer.Storage storage) {
         NameTagFeatureRenderer$StorageExtension storageExt = (NameTagFeatureRenderer$StorageExtension) storage;

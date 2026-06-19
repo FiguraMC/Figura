@@ -2,7 +2,7 @@ package org.figuramc.figura.gui.screens;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
@@ -26,9 +26,9 @@ import java.util.List;
 public abstract class AbstractPanelScreen extends Screen {
 
     public static final List<Identifier> BACKGROUNDS = List.of(
-            new FiguraIdentifier("textures/gui/background/background_0.png"),
-            new FiguraIdentifier("textures/gui/background/background_1.png"),
-            new FiguraIdentifier("textures/gui/background/background_2.png")
+            FiguraIdentifier.of("textures/gui/background/background_0.png"),
+            FiguraIdentifier.of("textures/gui/background/background_1.png"),
+            FiguraIdentifier.of("textures/gui/background/background_2.png")
     );
 
     // variables
@@ -81,7 +81,7 @@ public abstract class AbstractPanelScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         // setup figura framebuffer
         // UIHelper.useFiguraGuiFramebuffer();
 
@@ -89,7 +89,7 @@ public abstract class AbstractPanelScreen extends Screen {
         this.renderBackground(gui, delta);
 
         // render contents
-        super.render(gui, mouseX, mouseY, delta);
+        super.extractRenderState(gui, mouseX, mouseY, delta);
 
         // render overlays
         this.renderOverlays(gui, mouseX, mouseY, delta);
@@ -98,7 +98,7 @@ public abstract class AbstractPanelScreen extends Screen {
         // UIHelper.useVanillaFramebuffer();
     }
 
-    public void renderBackground(GuiGraphics gui, float delta) {
+    public void renderBackground(GuiGraphicsExtractor gui, float delta) {
         // render
         float speed = Configs.BACKGROUND_SCROLL_SPEED.tempValue * 0.125f;
         for (Identifier background : BACKGROUNDS) {
@@ -108,10 +108,10 @@ public abstract class AbstractPanelScreen extends Screen {
         gui.nextStratum();
     }
 
-    public void renderOverlays(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void renderOverlays(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         // fps
         if (Configs.GUI_FPS.value)
-            gui.drawString(Minecraft.getInstance().font, ClientAPI.getFPS() + " fps", 1, 1, UIHelper.adjustColor(0xFFFFFF));
+            gui.text(Minecraft.getInstance().font, ClientAPI.getFPS() + " fps", 1, 1, UIHelper.adjustColor(0xFFFFFF));
 
         // render context
         if (contextMenu != null && contextMenu.isVisible()) {
@@ -120,7 +120,7 @@ public abstract class AbstractPanelScreen extends Screen {
             pose.pushMatrix();
 //            pose.translate(0f, 0f, 500f);
             gui.nextStratum();
-            contextMenu.render(gui, mouseX, mouseY, delta);
+            contextMenu.extractRenderState(gui, mouseX, mouseY, delta);
             pose.popMatrix();
         }
 
@@ -238,7 +238,7 @@ public abstract class AbstractPanelScreen extends Screen {
 
     // No blur in our screens!
     @Override
-    protected void renderBlurredBackground(GuiGraphics guiGraphics) {
+    protected void extractBlurredBackground(GuiGraphicsExtractor guiGraphics) {
 
     }
 }

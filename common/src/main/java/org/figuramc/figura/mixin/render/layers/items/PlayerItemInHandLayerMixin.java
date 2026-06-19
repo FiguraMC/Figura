@@ -6,7 +6,7 @@ import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HeadedModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.block.model.ItemTransform;
+import net.minecraft.client.resources.model.cuboid.ItemTransform;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.client.renderer.entity.layers.PlayerItemInHandLayer;
@@ -37,7 +37,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * @param <M>
  */
 @Mixin(PlayerItemInHandLayer.class)
-public abstract class PlayerItemInHandLayerMixin <S extends AvatarRenderState, M extends EntityModel<S> & ArmedModel & HeadedModel> extends ItemInHandLayer<S, M> {
+public abstract class PlayerItemInHandLayerMixin <S extends AvatarRenderState, M extends EntityModel<S> & ArmedModel<S> & HeadedModel> extends ItemInHandLayer<S, M> {
 
     public PlayerItemInHandLayerMixin(RenderLayerParent<S, M> renderLayerParent) {
         super(renderLayerParent);

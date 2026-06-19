@@ -2,9 +2,9 @@ package org.figuramc.figura.utils;
 
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.world.phys.Vec3;
 import org.figuramc.figura.config.Configs;
-import org.figuramc.figura.ducks.GameRendererAccessor;
 import org.figuramc.figura.math.matrix.FiguraMat2;
 import org.figuramc.figura.math.matrix.FiguraMat3;
 import org.figuramc.figura.math.matrix.FiguraMat4;
@@ -98,7 +98,9 @@ public class MathUtils {
         transformMatrix.transform(camSpace);
 
         Vector4f projectiveCamSpace = new Vector4f(camSpace, 1f);
-        Matrix4f projMat = minecraft.gameRenderer.getProjectionMatrix((float) ((GameRendererAccessor) minecraft.gameRenderer).figura$getFov(camera, minecraft.getDeltaTracker().getGameTimeDeltaPartialTick(false), true));
+        CameraRenderState cameraRenderState = new CameraRenderState();
+        camera.extractRenderState(cameraRenderState, minecraft.getDeltaTracker().getGameTimeDeltaPartialTick(false));
+        Matrix4f projMat = new Matrix4f(cameraRenderState.projectionMatrix);
         projMat.transform(projectiveCamSpace);
         float w = projectiveCamSpace.w();
 

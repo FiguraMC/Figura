@@ -1,6 +1,6 @@
 package org.figuramc.figura.gui.screens;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -22,7 +22,7 @@ import org.figuramc.figura.utils.ui.UIHelper;
 
 public class HelpScreen extends AbstractPanelScreen {
 
-    public static final Identifier ICONS = new FiguraIdentifier("textures/gui/help_icons.png");
+    public static final Identifier ICONS = FiguraIdentifier.of("textures/gui/help_icons.png");
     public static final String LUA_VERSION = "5.2 - Figura";
 
     private IconButton kofi;
@@ -67,7 +67,7 @@ public class HelpScreen extends AbstractPanelScreen {
                     addRenderableOnly(new ParticleWidget(x, y, ParticleTypes.HEART));
 
                     boolean purr = Math.random() < 0.95;
-                    minecraft.getSoundManager().play(SimpleSoundInstance.forUI(purr ? SoundEvents.CAT_PURR : SoundEvents.CAT_AMBIENT, 1f));
+                    minecraft.getSoundManager().play(SimpleSoundInstance.forUI(purr ? SoundEvents.CAT_PURR_BABY : SoundEvents.CAT_AMBIENT_BABY, 1f));
                     return false;
                 }
 
@@ -107,7 +107,7 @@ public class HelpScreen extends AbstractPanelScreen {
         }
 
         @Override
-        public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+        public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
             int x = getRawX();
             int y = getRawY();
 
@@ -124,7 +124,7 @@ public class HelpScreen extends AbstractPanelScreen {
             gui.fill(x0, y0, x1, y1, 0xFFFFFFFF);
 
             // text
-            super.render(gui, mouseX, mouseY, delta);
+            super.extractRenderState(gui, mouseX, mouseY, delta);
         }
     }
 }

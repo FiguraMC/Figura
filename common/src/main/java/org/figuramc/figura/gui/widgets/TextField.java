@@ -3,7 +3,7 @@ package org.figuramc.figura.gui.widgets;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 
 public class TextField extends AbstractContainerElement {
 
-    public static final Identifier BACKGROUND = new FiguraIdentifier("textures/gui/text_field.png");
+    public static final Identifier BACKGROUND = FiguraIdentifier.of("textures/gui/text_field.png");
     public static final int ENABLED_COLOR = ChatFormatting.WHITE.getColor();
     public static final int DISABLED_COLOR = ChatFormatting.DARK_GRAY.getColor();
 
@@ -46,7 +46,7 @@ public class TextField extends AbstractContainerElement {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         if (!isVisible()) return;
 
         // render background
@@ -61,12 +61,12 @@ public class TextField extends AbstractContainerElement {
             renderHint(gui);
 
         // children
-        super.render(gui, mouseX, mouseY, delta);
+        super.extractRenderState(gui, mouseX, mouseY, delta);
     }
 
-    protected void renderHint(GuiGraphics gui) {
+    protected void renderHint(GuiGraphicsExtractor gui) {
         Font font = Minecraft.getInstance().font;
-        gui.drawString(
+        gui.text(
                 font, hint.hint.copy().append(TextUtils.ELLIPSIS).withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC),
                 getX() + 4, getY() + (int) ((getHeight() - font.lineHeight + 1) / 2f), UIHelper.adjustColor(0xFFFFFF)
         );

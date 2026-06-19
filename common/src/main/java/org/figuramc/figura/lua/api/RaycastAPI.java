@@ -23,7 +23,6 @@ import org.luaj.vm2.LuaValue;
 
 import com.mojang.datafixers.util.Pair;
 
-import kroppeb.stareval.function.Type.Int;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;

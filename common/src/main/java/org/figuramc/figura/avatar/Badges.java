@@ -22,7 +22,7 @@ import java.util.UUID;
 
 public class Badges {
 
-    public static final Identifier FONT = new FiguraIdentifier("badges");
+    public static final Identifier FONT = FiguraIdentifier.of("badges");
 
     public static Component fetchBadges(UUID id) {
         if (PermissionManager.get(id).getCategory() == Permissions.Category.BLOCKED)

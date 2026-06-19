@@ -1,6 +1,6 @@
 package org.figuramc.figura.entries;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
+import org.figuramc.figura.entries.fabric.EntryPointManagerImpl;
 import org.figuramc.figura.gui.widgets.PanelSelectorWidget;
 import org.figuramc.figura.lua.FiguraAPIManager;
 import org.figuramc.figura.lua.api.event.EventsAPI;
@@ -29,8 +29,7 @@ public class EntryPointManager {
         PermissionManager.initEntryPoints(load("figura_permissions", FiguraPermissions.class));
     }
 
-    @ExpectPlatform
     private static <T> Set<T> load(String name, Class<T> clazz) {
-        throw new AssertionError();
+        return EntryPointManagerImpl.load(name, clazz);
     }
 }

@@ -2,7 +2,7 @@ package org.figuramc.figura.utils;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.*;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector4i;
@@ -27,14 +27,14 @@ public class ClickableTextHelper {
         dirty = true;
     }
 
-    public void renderDebug(GuiGraphics graphics, int x, int y, int mouseX, int mouseY) {
+    public void renderDebug(GuiGraphicsExtractor graphics, int x, int y, int mouseX, int mouseY) {
         for (Vector4i area : hoverText.keySet()) {
-            graphics.renderOutline(x + area.x, y + area.y, area.z - area.x, area.w - area.y, isPointWithinBounds(area, x, y, mouseX, mouseY) ? 0xFF00FF00 : 0xFFFF00FF);
+            graphics.outline(x + area.x, y + area.y, area.z - area.x, area.w - area.y, isPointWithinBounds(area, x, y, mouseX, mouseY) ? 0xFF00FF00 : 0xFFFF00FF);
         }
         for (Vector4i area : clickUrls.keySet()) {
-            graphics.renderOutline(x + area.x, y + area.y, area.z - area.x, area.w - area.y, isPointWithinBounds(area, x, y, mouseX, mouseY) ? 0xFF00FF00 : 0xFFFF00FF);
+            graphics.outline(x + area.x, y + area.y, area.z - area.x, area.w - area.y, isPointWithinBounds(area, x, y, mouseX, mouseY) ? 0xFF00FF00 : 0xFFFF00FF);
         }
-        graphics.renderOutline(mouseX-1, mouseY-1, 3, 3, 0xFF00FFFF);
+        graphics.outline(mouseX-1, mouseY-1, 3, 3, 0xFF00FFFF);
     }
 
     public void update(Font font, int lineWidth) {

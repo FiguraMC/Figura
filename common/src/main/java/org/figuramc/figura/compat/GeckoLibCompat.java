@@ -21,11 +21,11 @@ public class GeckoLibCompat {
 
     public static void init() {
         // Modern
-        GLRenderUtil = new ClassWrapper("software.bernie.geckolib.util.RenderUtil");
+        GLRenderUtil = new ClassWrapper("com.geckolib.util.RenderUtil");
         getGeoModelForArmor = GLRenderUtil.getMethod("getGeoModelForArmor", ItemStack.class, EquipmentSlot.class, EquipmentClientInfo.LayerType.class);
 
         // Legacy
-        GLGeoArmorRenderer = new ClassWrapper("software.bernie.geckolib3.renderers.geo.GeoArmorRenderer");
+        GLGeoArmorRenderer = new ClassWrapper("com.geckolib3.renderers.geo.GeoArmorRenderer");
         renderers = GLGeoArmorRenderer.getField("renderers");
     }
 

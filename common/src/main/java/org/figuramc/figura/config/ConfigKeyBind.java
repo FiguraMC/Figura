@@ -1,11 +1,11 @@
 package org.figuramc.figura.config;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.config.fabric.ConfigKeyBindImpl;
 
 public class ConfigKeyBind extends KeyMapping {
 
@@ -35,6 +35,7 @@ public class ConfigKeyBind extends KeyMapping {
         KeyMapping.resetMapping();
     }
 
-    @ExpectPlatform
-    public static void addKeyBind(ConfigKeyBind keyBind) {}
+    public static void addKeyBind(ConfigKeyBind keyBind) {
+        ConfigKeyBindImpl.addKeyBind(keyBind);
+    }
 }

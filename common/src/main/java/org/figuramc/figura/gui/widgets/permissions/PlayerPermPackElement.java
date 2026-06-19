@@ -4,7 +4,7 @@ import com.mojang.blaze3d.opengl.GlStateManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
@@ -34,8 +34,8 @@ import java.util.UUID;
 
 public class PlayerPermPackElement extends AbstractPermPackElement {
 
-    public static final Identifier UNKNOWN = new FiguraIdentifier("textures/gui/unknown_portrait.png");
-    private static final Identifier BACKGROUND = new FiguraIdentifier("textures/gui/player_permissions.png");
+    public static final Identifier UNKNOWN = FiguraIdentifier.of("textures/gui/unknown_portrait.png");
+    private static final Identifier BACKGROUND = FiguraIdentifier.of("textures/gui/player_permissions.png");
     private static final Component DC_TEXT = FiguraText.of("gui.permissions.disconnected").withStyle(ChatFormatting.RED);
 
     private final String name;
@@ -95,18 +95,18 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
         context.addTab(FiguraText.of("gui.context.set_permissions"), null, permissionsContext);
     }
 
-    public void renderDragged(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void renderDragged(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         int oX = getX();
         int oY = getY();
         setX(mouseX - (anchorX - oX));
         setY(mouseY - (anchorY - oY) + (initialY - oY));
-        super.render(gui, mouseX, mouseY, delta);
+        super.extractRenderState(gui, mouseX, mouseY, delta);
         setX(oX);
         setY(oY);
     }
 
     @Override
-    public void renderContents(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractContents(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         if (dragged) {
             UIHelper.fillRounded(gui, getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0x40FFFFFF);
         } else {
@@ -191,23 +191,23 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
             nameLabel.setX(x + 40);
             nameLabel.setY(y + 4);
             // nameLabel.setOutlineColor(ColorUtils.rgbToInt(ColorUtils.rainbow(2, 1, 0.5)) + ((int) (0.5f * 0xFF) << 24));
-            nameLabel.render(gui, mouseX, mouseY, delta);
+            nameLabel.extractRenderState(gui, mouseX, mouseY, delta);
 
             // status
             if (avatar != null && avatar.nbt != null) {
                 status.tick(); // yes I know
                 status.setX(x + 40);
                 status.setY(y + 6 + font.lineHeight);
-                status.render(gui, mouseX, mouseY, delta);
+                status.extractRenderState(gui, mouseX, mouseY, delta);
             }
 
             // category
             int textY = y + height - font.lineHeight - 4;
-            gui.drawString(font, pack.getCategoryName().append(pack.hasChanges() ? "*" : ""), x + 40, textY, UIHelper.adjustColor(0xFFFFFF));
+            gui.text(font, pack.getCategoryName().append(pack.hasChanges() ? "*" : ""), x + 40, textY, UIHelper.adjustColor(0xFFFFFF));
 
             // disconnected
             if (disconnected)
-                gui.drawString(font, DC_TEXT, x + width - font.width(DC_TEXT) - 4, textY, UIHelper.adjustColor(0xFFFFFF));
+                gui.text(font, DC_TEXT, x + width - font.width(DC_TEXT) - 4, textY, UIHelper.adjustColor(0xFFFFFF));
 
             pose.popMatrix();
         }

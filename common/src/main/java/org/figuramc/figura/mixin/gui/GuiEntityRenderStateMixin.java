@@ -1,7 +1,7 @@
 package org.figuramc.figura.mixin.gui;
 
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
-import net.minecraft.client.gui.render.state.pip.GuiEntityRenderState;
+import net.minecraft.client.renderer.state.gui.pip.GuiEntityRenderState;
 import net.minecraft.client.renderer.MultiBufferSource;
 import org.figuramc.figura.ducks.GuiEntityRenderStateExtension;
 import org.figuramc.figura.model.rendering.EntityRenderMode;
@@ -24,7 +24,7 @@ public abstract class GuiEntityRenderStateMixin implements GuiEntityRenderStateE
 
     @Override
     public void setXPos(double xPos) {
-        this.figura$yPos = xPos;
+        this.figura$xPos = xPos;
     }
 
     @Override

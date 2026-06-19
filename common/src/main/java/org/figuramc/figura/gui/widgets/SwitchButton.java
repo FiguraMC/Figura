@@ -1,7 +1,7 @@
 package org.figuramc.figura.gui.widgets;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -14,7 +14,7 @@ import org.figuramc.figura.utils.ui.UIHelper;
 
 public class SwitchButton extends Button {
 
-    public static final Identifier SWITCH_TEXTURE = new FiguraIdentifier("textures/gui/switch.png");
+    public static final Identifier SWITCH_TEXTURE = FiguraIdentifier.of("textures/gui/switch.png");
     public static final Component ON = FiguraText.of("gui.on");
     public static final Component OFF = FiguraText.of("gui.off");
 
@@ -48,7 +48,7 @@ public class SwitchButton extends Button {
     }
 
     @Override
-    protected void renderText(GuiGraphics gui, float delta) {
+    protected void renderText(GuiGraphicsExtractor gui, float delta) {
         // draw text
         Component text = this.toggled && underline ? getMessage().copy().withStyle(ChatFormatting.UNDERLINE) : getMessage();
         int x = getX() + 1;
@@ -63,7 +63,7 @@ public class SwitchButton extends Button {
     }
 
     @Override
-    protected void renderDefaultTexture(GuiGraphics gui, float delta) {
+    protected void renderDefaultTexture(GuiGraphicsExtractor gui, float delta) {
         if (!defaultTexture) {
             super.renderDefaultTexture(gui, delta);
             return;

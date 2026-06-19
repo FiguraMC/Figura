@@ -49,8 +49,8 @@ public class FiguraMod {
     public static Component splashText;
     public static boolean parseMessages = true;
     public static boolean processingKeybind;
-    public static KeyMapping.Category FIGURA_KEY_CATEGORY = new KeyMapping.Category(new FiguraIdentifier("keys"));
-    public static Identifier FIGURA_DEBUG_KEY = new Identifier(MOD_ID, "figura_debug_info");
+    public static KeyMapping.Category FIGURA_KEY_CATEGORY = new KeyMapping.Category(FiguraIdentifier.of("keys"));
+    public static Identifier FIGURA_DEBUG_KEY = Identifier.fromNamespaceAndPath(MOD_ID, "figura_debug_info");
 
     /* For some reason, the mod menu entrypoint (or something) is able to call this before the Config
     class can initialize, meaning Configs.DEBUG_MODE can be null when this is called.... Weird */
@@ -143,7 +143,7 @@ public class FiguraMod {
     public static void sendChatMessage(Component message) {
         if (Minecraft.getInstance().gui != null) {
             parseMessages = false;
-            Minecraft.getInstance().gui.getChat().addMessage(TextUtils.replaceTabs(message));
+            Minecraft.getInstance().gui.getChat().addClientSystemMessage(TextUtils.replaceTabs(message));
             parseMessages = true;
         } else {
             LOGGER.info(message.getString());
