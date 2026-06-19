@@ -1,6 +1,6 @@
 package org.figuramc.figura.gui.widgets;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -13,7 +13,7 @@ public class SliderWidget extends ScrollBarWidget {
 
     // -- fields -- // 
 
-    public static final Identifier SLIDER_TEXTURE = new FiguraIdentifier("textures/gui/slider.png");
+    public static final Identifier SLIDER_TEXTURE = FiguraIdentifier.of("textures/gui/slider.png");
 
     protected final int headHeight = 11;
     protected final int headWidth = 11;
@@ -78,7 +78,7 @@ public class SliderWidget extends ScrollBarWidget {
     }
 
     @Override
-    public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         // set hovered
         this.isHovered = this.isMouseOver(mouseX, mouseY);
 

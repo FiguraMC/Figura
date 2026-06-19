@@ -3,7 +3,7 @@ package org.figuramc.figura.mixin.fabric;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.entity.Entity;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -25,19 +25,19 @@ public class GuiMixin {
     @Shadow @Final private Minecraft minecraft;
     @Unique private FiguraVec2 crosshairOffset;
 
-    @Inject(at = @At("HEAD"), method = "render", cancellable = true)
-    private void onRender(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    @Inject(at = @At("HEAD"), method = "extractRenderState", cancellable = true)
+    private void onRender(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         FiguraGui.onRender(guiGraphics, deltaTracker.getGameTimeDeltaPartialTick(false), ci);
     }
 
-    @Inject(at = @At("RETURN"), method = "render")
-    private void afterRender(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    @Inject(at = @At("RETURN"), method = "extractRenderState")
+    private void afterRender(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (!AvatarManager.panic)
             FiguraGui.renderOverlays(guiGraphics);
     }
 
-    @Inject(at = @At("HEAD"), method = "renderCrosshair", cancellable = true)
-    private void renderCrosshair(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    @Inject(at = @At("HEAD"), method = "extractCrosshair", cancellable = true)
+    private void renderCrosshair(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         crosshairOffset = null;
 
         if (ActionWheel.isEnabled()) {
@@ -59,30 +59,30 @@ public class GuiMixin {
         crosshairOffset = renderer.crosshairOffset;
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIII)V"), method = "renderCrosshair")
-    private void blitRenderCrosshair(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIII)V"), method = "extractCrosshair")
+    private void blitRenderCrosshair(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (crosshairOffset != null) {
             guiGraphics.pose().pushMatrix();
             guiGraphics.pose().translate((float) crosshairOffset.x, (float) crosshairOffset.y);
         }
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIII)V", shift = At.Shift.AFTER), method = "renderCrosshair")
-    private void afterBlitRenderCrosshair(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIII)V", shift = At.Shift.AFTER), method = "extractCrosshair")
+    private void afterBlitRenderCrosshair(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (crosshairOffset != null)
             guiGraphics.pose().popMatrix();
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIIIIIII)V"), method = "renderCrosshair")
-    private void blitRenderCrosshairSliced(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIIIIIII)V"), method = "extractCrosshair")
+    private void blitRenderCrosshairSliced(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (crosshairOffset != null) {
             guiGraphics.pose().pushMatrix();
             guiGraphics.pose().translate((float) crosshairOffset.x, (float) crosshairOffset.y);
         }
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIIIIIII)V", shift = At.Shift.AFTER), method = "renderCrosshair")
-    private void afterBlitRenderCrosshairSliced(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIIIIIII)V", shift = At.Shift.AFTER), method = "extractCrosshair")
+    private void afterBlitRenderCrosshairSliced(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (crosshairOffset != null)
             guiGraphics.pose().popMatrix();
     }

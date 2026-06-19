@@ -7,7 +7,7 @@ import org.figuramc.figura.ducks.BakedGlyphAccessor;
 import org.figuramc.figura.font.EmojiContainer;
 import org.figuramc.figura.font.EmojiMetadata;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -46,8 +46,8 @@ public abstract class BakedSheetGlyphMixin implements BakedGlyphAccessor {
         }
     }
 
-    @Inject(method = "render(ZFFFLorg/joml/Matrix4f;Lcom/mojang/blaze3d/vertex/VertexConsumer;IZI)V", at = @At("HEAD"), cancellable = true)
-    public void render(boolean italic, float x, float y, float z, Matrix4f matrix, VertexConsumer vertexConsumer, int color, boolean bold, int light, CallbackInfo ci) {
+    @Inject(method = "render(ZFFFLorg/joml/Matrix4fc;Lcom/mojang/blaze3d/vertex/VertexConsumer;IZI)V", at = @At("HEAD"), cancellable = true)
+    public void render(boolean italic, float x, float y, float z, Matrix4fc matrix, VertexConsumer vertexConsumer, int color, boolean bold, int light, CallbackInfo ci) {
         if (figura$metadata == null) return;
 
         float h = this.up;

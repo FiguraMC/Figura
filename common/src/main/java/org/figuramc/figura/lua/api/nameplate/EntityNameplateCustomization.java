@@ -1,7 +1,7 @@
 package org.figuramc.figura.lua.api.nameplate;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.LightCoordsUtil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
@@ -178,7 +178,7 @@ public class EntityNameplateCustomization extends NameplateCustomization {
     @LuaWhitelist
     @LuaMethodDoc("nameplate_entity.get_light")
     public FiguraVec2 getLight() {
-        return light == null ? null : FiguraVec2.of(LightTexture.block(light), LightTexture.sky(light));
+        return light == null ? null : FiguraVec2.of(LightCoordsUtil.block(light), LightCoordsUtil.sky(light));
     }
 
     @LuaWhitelist
@@ -202,7 +202,7 @@ public class EntityNameplateCustomization extends NameplateCustomization {
         }
 
         FiguraVec2 lightVec = LuaUtils.parseVec2("setLight", light, skyLight);
-        this.light = LightTexture.pack((int) lightVec.x, (int) lightVec.y);
+        this.light = LightCoordsUtil.pack((int) lightVec.x, (int) lightVec.y);
         return this;
     }
 

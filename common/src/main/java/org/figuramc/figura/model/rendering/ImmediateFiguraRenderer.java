@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import org.figuramc.figura.FiguraMod;
@@ -310,7 +311,7 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
                 FiguraVec3 pos = part.savedPartToWorldMat.apply(0d, 0d, 0d);
                 int block = l.getBrightness(LightLayer.BLOCK, pos.asBlockPos());
                 int sky = l.getBrightness(LightLayer.SKY, pos.asBlockPos());
-                customizationStack.peek().light = LightTexture.pack(block, sky);
+                customizationStack.peek().light = LightCoordsUtil.pack(block, sky);
             }
 
             if (custom.alpha != null)
@@ -613,7 +614,7 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
         // get render type
         if (id != null) {
             if (translucent) {
-                ret.renderType = RenderTypes.itemEntityTranslucentCull(id);
+                ret.renderType = RenderTypes.entityTranslucentCullItemTarget(id);
                 return ret;
             }
             if (glowing) {
@@ -649,7 +650,7 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
         uvFixer.set(textureSet.getWidth(), textureSet.getHeight(), 1); // Dividing by this makes uv 0 to 1
 
         int overlay = customization.overlay;
-        int light = vertexData.fullBright ? LightTexture.FULL_BRIGHT : customization.light;
+        int light = vertexData.fullBright ? LightCoordsUtil.FULL_BRIGHT : customization.light;
 
         VERTEX_BUFFER.getBufferFor(vertexData.renderType, vertexData.primary, vertexConsumer -> {
             for (int i = 0; i < vertCount; i++) {

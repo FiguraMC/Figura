@@ -1,17 +1,12 @@
 plugins {
-	id "architectury-plugin" version "3.4-SNAPSHOT"
-	id "dev.architectury.loom" version "1.13-SNAPSHOT" apply false
-}
-
-architectury {
-	minecraft = rootProject.minecraft_version
+	id "net.fabricmc.fabric-loom" version "1.17.11" apply false
 }
 
 subprojects {
-	apply plugin: "dev.architectury.loom"
+	apply plugin: "net.fabricmc.fabric-loom"
 
 	loom {
-		silentMojangMappingsLicense()
+		enableTransitiveAccessWideners.set(false)
 	}
 
 	repositories {
@@ -36,11 +31,13 @@ subprojects {
 
 allprojects {
 	apply plugin: "java"
-	apply plugin: "architectury-plugin"
 	apply plugin: "maven-publish"
 
 	java_version = rootProject.java_version
-	archivesBaseName = rootProject.archives_base_name
+	ext.archivesBaseName = rootProject.archives_base_name
+	base {
+		archivesName = rootProject.archives_base_name
+	}
 	version = rootProject.mod_version + "+" + rootProject.minecraft_version
 	group = rootProject.maven_group
 	if (project.hasProperty("release")) {
@@ -64,8 +61,8 @@ allprojects {
 	}
 
 	java {
-		sourceCompatibility = JavaVersion.VERSION_17
-		targetCompatibility = JavaVersion.VERSION_17
+		sourceCompatibility = JavaVersion.toVersion(java_version)
+		targetCompatibility = JavaVersion.toVersion(java_version)
 		withSourcesJar()
 	}
 }

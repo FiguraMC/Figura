@@ -7,8 +7,8 @@ import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.CachedOrthoProjectionMatrixBuffer;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.ProjectionMatrixBuffer;
 import net.minecraft.world.entity.Entity;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
@@ -18,9 +18,9 @@ import org.joml.Matrix4fStack;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 public class FiguraGui {
-    private static final CachedOrthoProjectionMatrixBuffer guiProjectionMatrixBuffer = new CachedOrthoProjectionMatrixBuffer("gui", 1000.0F, 11000.0F, true);
+    private static final ProjectionMatrixBuffer guiProjectionMatrixBuffer = new ProjectionMatrixBuffer("gui");
 
-    public static void onRender(GuiGraphics guiGraphics, float tickDelta, CallbackInfo ci) {
+    public static void onRender(GuiGraphicsExtractor guiGraphics, float tickDelta, CallbackInfo ci) {
         if (AvatarManager.panic)
             return;
 
@@ -40,7 +40,7 @@ public class FiguraGui {
         ProjectionType previousProjectionType = RenderSystem.getProjectionType();
 
         RenderSystem.setProjectionMatrix(
-                guiProjectionMatrixBuffer.getBuffer((float)window.getWidth() / window.getGuiScale(), (float)window.getHeight() / window.getGuiScale()),
+                guiProjectionMatrixBuffer.getBuffer(new Matrix4f().setOrtho(0.0F, (float) window.getWidth() / window.getGuiScale(), (float) window.getHeight() / window.getGuiScale(), 0.0F, 1000.0F, 11000.0F)),
                 ProjectionType.ORTHOGRAPHIC
         );
 
@@ -71,7 +71,7 @@ public class FiguraGui {
         FiguraMod.popProfiler();
     }
 
-    public static void renderOverlays(GuiGraphics guiGraphics) {
+    public static void renderOverlays(GuiGraphicsExtractor guiGraphics) {
         FiguraMod.pushProfiler(FiguraMod.MOD_ID);
 
         // render paperdoll

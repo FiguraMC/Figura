@@ -288,7 +288,7 @@ public class WorldAPI {
         value = "world.get_time_of_day"
     )
     public static double getTimeOfDay(double delta) {
-        return getCurrentWorld().getDayTime() + delta;
+        return getCurrentWorld().getDefaultClockTime() + delta;
     }
 
     @LuaWhitelist
@@ -303,7 +303,7 @@ public class WorldAPI {
             value = "world.get_day_time"
     )
     public static double getDayTime(double delta) {
-        return (getCurrentWorld().getDayTime() + delta) % 24000;
+        return (getCurrentWorld().getDefaultClockTime() + delta) % 24000;
     }
 
     @LuaWhitelist
@@ -318,7 +318,7 @@ public class WorldAPI {
             value = "world.get_day"
     )
     public static double getDay(double delta) {
-        return Math.floor((getCurrentWorld().getDayTime() + delta) / 24000);
+        return Math.floor((getCurrentWorld().getDefaultClockTime() + delta) / 24000);
     }
 
     @LuaWhitelist

@@ -2,7 +2,7 @@ package org.figuramc.figura.gui.screens;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.input.KeyEvent;
@@ -81,8 +81,8 @@ public class PermissionsScreen extends AbstractPanelScreen {
         // permission slider and list
         slider = new SliderWidget(middle + 2, (int) (entityWidget.getY() + entityWidget.getHeight() + lineHeight * 1.5 + 20), listWidth, 11, 1d, 5, true) {
             @Override
-            public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-                super.renderWidget(gui, mouseX, mouseY, delta);
+            public void extractWidgetRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
+                super.extractWidgetRenderState(gui, mouseX, mouseY, delta);
 
                 PermissionPack selectedPack = playerList.selectedEntry.getPack();
                 MutableComponent text = selectedPack.getCategoryName();
@@ -110,7 +110,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
                 }
                 color = UIHelper.adjustColor(color);
 
-                gui.drawString(font, info, x, y, color);
+                gui.text(font, info, x, y, color);
             }
         };
         permissionsList = new PermissionsList(middle + 2, height, listWidth, height - 54);
@@ -141,7 +141,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
         addRenderableWidget(back = new Button(middle + 6 + bottomButtonsWidth, height - 24, bottomButtonsWidth, 20, FiguraText.of("gui.done"), null, bx -> onClose()));
 
         // expand button
-        addRenderableWidget(expandButton = new SwitchButton( middle + listWidth - 18, height - 24, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/expand_v.png"), 60, 40, FiguraText.of("gui.permissions.expand_permissions.tooltip"), btn -> {
+        addRenderableWidget(expandButton = new SwitchButton( middle + listWidth - 18, height - 24, 20, 20, 0, 0, 20, FiguraIdentifier.of("textures/gui/expand_v.png"), 60, 40, FiguraText.of("gui.permissions.expand_permissions.tooltip"), btn -> {
             expanded = expandButton.isToggled();
 
             // hide widgets
@@ -184,7 +184,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         // set entity to render
         AbstractPermPackElement entity = playerList.selectedEntry;
         Level world = Minecraft.getInstance().level;
@@ -207,11 +207,11 @@ public class PermissionsScreen extends AbstractPanelScreen {
         this.precisePermissions.setY((int) resetYPrecise);
 
         // render
-        super.render(gui, mouseX, mouseY, delta);
+        super.extractRenderState(gui, mouseX, mouseY, delta);
     }
 
     @Override
-    public void renderOverlays(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void renderOverlays(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         if (dragged != null && dragged.dragged)
             dragged.renderDragged(gui, mouseX, mouseY, delta);
 

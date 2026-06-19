@@ -1,6 +1,6 @@
 package org.figuramc.figura.mixin.render;
 
-import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.ducks.CameraRenderStateExtension;
 import org.spongepowered.asm.mixin.Mixin;

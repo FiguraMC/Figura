@@ -58,7 +58,7 @@ public class LocalAvatarLoader {
             String namespace = split[split.length - 2];
             String path = split[split.length - 1];
             // This is a 4 because .nbt has 4 characters
-            Identifier id = new Identifier(namespace, path.substring(0, path.length() - 4));
+            Identifier id = Identifier.fromNamespaceAndPath(namespace, path.substring(0, path.length() - 4));
 
             // nbt
             CompoundTag nbt;

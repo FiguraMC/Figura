@@ -1,10 +1,10 @@
 package org.figuramc.figura.lua.api.world;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.BlockModelPart;
-import net.minecraft.client.renderer.block.model.BlockStateModel;
+import net.minecraft.client.renderer.block.BlockStateModelSet;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.BlockPos;
@@ -135,7 +135,7 @@ public class BlockStateAPI {
     @LuaWhitelist
     @LuaMethodDoc("blockstate.get_opacity")
     public int getOpacity() {
-        return blockState.getLightBlock();
+        return blockState.getLightDampening();
     }
 
     @LuaWhitelist
@@ -284,7 +284,7 @@ public class BlockStateAPI {
     @LuaMethodDoc("blockstate.get_fluid_tags")
     public List<String> getFluidTags() {
         List<String> list = new ArrayList<>();
-        for (TagKey<Fluid> fluidTagKey : blockState.getFluidState().getTags().toList())
+        for (TagKey<Fluid> fluidTagKey : blockState.getFluidState().typeHolder().tags().toList())
             list.add(fluidTagKey.location().toString());
         return list;
     }
@@ -325,9 +325,9 @@ public class BlockStateAPI {
         RenderShape renderShape = blockState.getRenderShape();
 
         if (renderShape == RenderShape.MODEL) {
-            BlockRenderDispatcher blockRenderer = Minecraft.getInstance().getBlockRenderer();
+            BlockStateModelSet blockRenderer = Minecraft.getInstance().getModelManager().getBlockStateModelSet();
 
-            BlockStateModel bakedModel = blockRenderer.getBlockModel(blockState);
+            BlockStateModel bakedModel = blockRenderer.get(blockState);
             RandomSource randomSource = RandomSource.create();
             long seed = 42L;
 
@@ -335,7 +335,7 @@ public class BlockStateAPI {
                 map.put(direction.name(), getTexturesForFace(blockState, direction, randomSource, bakedModel, seed));
             map.put("NONE", getTexturesForFace(blockState, null, randomSource, bakedModel, seed));
 
-            TextureAtlasSprite particle = blockRenderer.getBlockModelShaper().getParticleIcon(blockState);
+            TextureAtlasSprite particle = blockRenderer.getParticleMaterial(blockState).sprite();
             map.put("PARTICLE", Set.of(getTextureName(particle)));
         }
         return map;
@@ -349,12 +349,13 @@ public class BlockStateAPI {
 
     private static Set<String> getTexturesForFace(BlockState blockState, Direction direction, RandomSource randomSource, BlockStateModel bakedModel, long seed) {
         randomSource.setSeed(seed);
-        List<BlockModelPart> blockModelParts = bakedModel.collectParts(randomSource);
+        List<BlockStateModelPart> blockModelParts = new ArrayList<>();
+        bakedModel.collectParts(randomSource, blockModelParts);
         Set<String> textures = new HashSet<>();
 
-        for (BlockModelPart part : blockModelParts) {
+        for (BlockStateModelPart part : blockModelParts) {
             for (BakedQuad quad : part.getQuads(direction)) {
-                textures.add(getTextureName(quad.sprite()));
+                textures.add(getTextureName(quad.materialInfo().sprite()));
             }
         }
 

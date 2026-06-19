@@ -1,36 +1,16 @@
-accessWidener v2 named
+accessWidener v2 official
 
 accessible class net/minecraft/world/level/biome/Biome$ClimateSettings
 accessible class net/minecraft/client/gui/font/providers/BitmapProvider$Glyph
 accessible class net/minecraft/client/gui/font/FontSet$SelectedGlyphs
 
-accessible method net/minecraft/client/renderer/rendertype/RenderType <init> (Ljava/lang/String;Lnet/minecraft/client/renderer/rendertype/RenderSetup;)V
-
-accessible class net/minecraft/client/gui/render/state/GuiTextRenderState
-extendable class net/minecraft/client/gui/render/state/GuiTextRenderState
-
-accessible class net/minecraft/client/gui/Font$PreparedTextBuilder
-accessible field net/minecraft/client/gui/Font$PreparedTextBuilder x F
-accessible field net/minecraft/client/gui/Font$PreparedTextBuilder y F
-
-accessible class net/minecraft/client/gui/GuiGraphics$ScissorStack
+accessible class net/minecraft/client/gui/GuiGraphicsExtractor$ScissorStack
 accessible class net/minecraft/client/StringSplitter$WidthLimitedCharSink
-
-accessible field net/minecraft/client/renderer/RenderPipelines GLOBALS_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/renderer/RenderPipelines MATRICES_FOG_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/renderer/RenderPipelines FOG_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/renderer/RenderPipelines LINES_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-
-accessible method net/minecraft/client/renderer/RenderPipelines register (Lcom/mojang/blaze3d/pipeline/RenderPipeline;)Lcom/mojang/blaze3d/pipeline/RenderPipeline;
 
 accessible class net/minecraft/util/datafix/fixes/ItemStackComponentizationFix$ItemStackData
 accessible method net/minecraft/util/datafix/fixes/ItemStackComponentizationFix fixItemStack (Lnet/minecraft/util/datafix/fixes/ItemStackComponentizationFix$ItemStackData;Lcom/mojang/serialization/Dynamic;)V
 accessible field net/minecraft/util/datafix/fixes/ItemStackComponentizationFix$ItemStackData tag Lcom/mojang/serialization/Dynamic;
 accessible method net/minecraft/client/gui/screens/Screen defaultHandleGameClickEvent (Lnet/minecraft/network/chat/ClickEvent;Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/gui/screens/Screen;)V
-
-accessible class net/minecraft/resources/Identifier
-extendable class net/minecraft/resources/Identifier
-accessible method net/minecraft/resources/Identifier <init> (Ljava/lang/String;Ljava/lang/String;)V
 
 accessible class net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer$LayerTextureKey
 accessible method net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer$LayerTextureKey <init> (Lnet/minecraft/client/resources/model/EquipmentClientInfo$LayerType;Lnet/minecraft/client/resources/model/EquipmentClientInfo$Layer;)V
@@ -40,4 +20,4 @@ accessible method net/minecraft/client/renderer/entity/layers/EquipmentLayerRend
 
 accessible class net/minecraft/client/gui/components/SubtitleOverlay$Subtitle
 accessible class net/minecraft/client/particle/ParticleResources$MutableSpriteSet
-accessible class net/minecraft/client/resources/model/AtlasManager$AtlasEntry
+accessible class net/minecraft/client/resources/model/sprite/AtlasManager$AtlasEntry

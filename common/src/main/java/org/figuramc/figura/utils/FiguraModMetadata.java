@@ -1,6 +1,6 @@
 package org.figuramc.figura.utils;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
+import org.figuramc.figura.utils.fabric.FiguraModMetadataImpl;
 
 public abstract class FiguraModMetadata {
     private final String modId;
@@ -18,8 +18,7 @@ public abstract class FiguraModMetadata {
     public String getModId() {
         return this.modId;
     }
-    @ExpectPlatform
     public static FiguraModMetadata getMetadataForMod(String modID) {
-        throw new AssertionError();
+        return FiguraModMetadataImpl.getMetadataForMod(modID);
     }
 }

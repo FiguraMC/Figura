@@ -1,7 +1,7 @@
 package org.figuramc.figura.model.rendertasks;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import org.figuramc.figura.avatar.Avatar;
@@ -97,7 +97,7 @@ public abstract class RenderTask {
     @LuaMethodDoc("render_task.get_light")
     public FiguraVec2 getLight() {
         Integer light = customization.light;
-        return light == null ? null : FiguraVec2.of(LightTexture.block(light), LightTexture.sky(light));
+        return light == null ? null : FiguraVec2.of(LightCoordsUtil.block(light), LightCoordsUtil.sky(light));
     }
 
     @LuaWhitelist
@@ -121,7 +121,7 @@ public abstract class RenderTask {
         }
 
         FiguraVec2 lightVec = LuaUtils.parseVec2("setLight", blockLight, skyLight);
-        customization.light = LightTexture.pack((int) lightVec.x, (int) lightVec.y);
+        customization.light = LightCoordsUtil.pack((int) lightVec.x, (int) lightVec.y);
         return this;
     }
 

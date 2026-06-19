@@ -1,7 +1,7 @@
 package org.figuramc.figura.utils;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.SharedConstants;
+import org.figuramc.figura.utils.fabric.PlatformUtilsImpl;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,29 +10,24 @@ import java.nio.file.Path;
 
 public class PlatformUtils {
 
-    @ExpectPlatform
     public static Path getGameDir() {
-        throw new AssertionError();
+        return PlatformUtilsImpl.getGameDir();
     }
 
-    @ExpectPlatform
     public static String getFiguraModVersionString(){
-        throw new AssertionError();
+        return PlatformUtilsImpl.getFiguraModVersionString();
     }
 
-    @ExpectPlatform
     public static Path getConfigDir() {
-        throw new AssertionError();
+        return PlatformUtilsImpl.getConfigDir();
     }
 
-    @ExpectPlatform
     public static boolean isModLoaded(String modId) {
-        throw new AssertionError();
+        return PlatformUtilsImpl.isModLoaded(modId);
     }
 
-    @ExpectPlatform
     public static String getModVersion(String modId) {
-        throw new AssertionError();
+        return PlatformUtilsImpl.getModVersion(modId);
     }
 
     public static int compareVersionTo(String v1, String v2) {
@@ -59,13 +54,11 @@ public class PlatformUtils {
         FABRIC
     }
 
-    @ExpectPlatform
     public static ModLoader getModLoader(){
-        throw new AssertionError();
+        return PlatformUtilsImpl.getModLoader();
     }
 
-    @ExpectPlatform
     public static InputStream loadFileFromRoot(String file) throws FileNotFoundException {
-        throw new AssertionError();
+        return PlatformUtilsImpl.loadFileFromRoot(file);
     }
 }

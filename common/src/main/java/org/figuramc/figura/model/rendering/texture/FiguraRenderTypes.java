@@ -26,12 +26,12 @@ import java.util.function.Function;
 public enum FiguraRenderTypes {
     NONE(null),
 
-    CUTOUT(RenderTypes::entityCutoutNoCull),
-    CUTOUT_CULL(RenderTypes::entityCutout),
+    CUTOUT(RenderTypes::entityCutout),
+    CUTOUT_CULL(RenderTypes::entityCutoutCull),
     CUTOUT_EMISSIVE_SOLID(resourceLocation -> FiguraRenderType.CUTOUT_EMISSIVE_SOLID.apply(resourceLocation, true)),
 
     TRANSLUCENT(RenderTypes::entityTranslucent),
-    TRANSLUCENT_CULL(RenderTypes::itemEntityTranslucentCull),
+    TRANSLUCENT_CULL(RenderTypes::entityTranslucentCullItemTarget),
 
     EMISSIVE(RenderTypes::eyes),
     EMISSIVE_SOLID(resourceLocation -> RenderTypes.beaconBeam(resourceLocation, false)),
@@ -47,7 +47,7 @@ public enum FiguraRenderTypes {
 
     LINES(t -> RenderTypes.lines(), false),
     LINES_STRIP(t -> RenderTypes.lines(), false),
-    SOLID(t -> FiguraRenderType.SOLID, false),
+    SOLID(RenderTypes::entitySolid),
 
     BLURRY(FiguraRenderType.BLURRY);
 
@@ -79,23 +79,10 @@ public enum FiguraRenderTypes {
         return id == null || func == null ? null : func.apply(id);
     }
 
-    private abstract static class FiguraRenderType extends RenderType {
-        public FiguraRenderType(String name, RenderSetup setup) {
-            super(name, setup);
-        }
-
-        public static final RenderType SOLID = create(
-                "figura_solid",
-                RenderSetup.builder(FiguraRenderPipelines.FIGURA_SOLID).bufferSize(256)
-                        .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
-                        .setOutputTarget(OutputTarget.ITEM_ENTITY_TARGET)
-                        .setOutline(RenderSetup.OutlineProperty.NONE)
-                        .createRenderSetup()
-        );
-
+    private static class FiguraRenderType {
         private static final BiFunction<Identifier, Boolean, RenderType> CUTOUT_EMISSIVE_SOLID = Util.memoize(
                 (texture, affectsOutline) ->
-                        create("figura_cutout_emissive_solid",
+                        FiguraRenderTypeFactory.create("figura_cutout_emissive_solid",
                                 RenderSetup.builder(RenderPipelines.BEACON_BEAM_TRANSLUCENT)
                                         .bufferSize(256)
                                         .withTexture("Sampler0", texture)
@@ -109,7 +96,7 @@ public enum FiguraRenderTypes {
 
 
         public static final Function<Identifier, RenderType> TEXTURED_PORTAL = Util.memoize(
-                texture -> create(
+                texture -> FiguraRenderTypeFactory.create(
                         "figura_textured_portal",
                         RenderSetup.builder(RenderPipelines.END_GATEWAY)
                                 .bufferSize(256)
@@ -121,7 +108,7 @@ public enum FiguraRenderTypes {
         );
 
         public static final Function<Identifier, RenderType> BLURRY = Util.memoize(
-                texture -> create(
+                texture -> FiguraRenderTypeFactory.create(
                         "figura_blurry",
                         RenderSetup.builder(RenderPipelines.ENTITY_TRANSLUCENT)
                                 .bufferSize(256)
@@ -132,7 +119,6 @@ public enum FiguraRenderTypes {
                                 .withTexture("Sampler0", texture, () -> {
                                     GpuDevice device = RenderSystem.getDevice();
                                     AbstractTexture abstractTexture = Minecraft.getInstance().getTextureManager().getTexture(texture);
-                                    // basically copy it the sampler the texture set to linear to blur it
                                     return device.createSampler(abstractTexture.getSampler().getAddressModeU(), abstractTexture.getSampler().getAddressModeV(),
                                             FilterMode.LINEAR, FilterMode.LINEAR, abstractTexture.getSampler().getMaxAnisotropy(), abstractTexture.getSampler().getMaxLod());
                                 })
@@ -142,7 +128,7 @@ public enum FiguraRenderTypes {
         );
 
         public static final Function<Identifier, RenderType> TEXTURED_GLINT = Util.memoize(
-                texture -> create(
+                texture -> FiguraRenderTypeFactory.create(
                         "figura_textured_glint_direct",
                         RenderSetup.builder(RenderPipelines.GLINT)
                                 .bufferSize(256)
@@ -153,9 +139,7 @@ public enum FiguraRenderTypes {
         );
     }
 
-    public static class FiguraRenderPipelines extends RenderPipelines {
-        protected static RenderPipeline.Snippet FIGURA_SOLID_SNIPPET = RenderPipeline.builder(MATRICES_FOG_SNIPPET, GLOBALS_SNIPPET).withVertexShader("core/rendertype_lines").withFragmentShader("core/rendertype_lines").withColorWrite(true).withDepthWrite(true).withBlend(BlendFunction.TRANSLUCENT).withCull(false).withVertexFormat(DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.QUADS).buildSnippet();
-
-        public static RenderPipeline FIGURA_SOLID = register(RenderPipeline.builder(FIGURA_SOLID_SNIPPET).withLocation(new FiguraIdentifier("pipeline/solid")).build());
+    public static class FiguraRenderPipelines {
+        public static final RenderPipeline FIGURA_SOLID = RenderPipelines.ENTITY_SOLID;
     }
 }

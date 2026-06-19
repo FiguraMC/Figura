@@ -284,7 +284,7 @@ public abstract class HumanoidArmorLayerMixinFabric<S extends HumanoidRenderStat
 
         List<EquipmentClientInfo.Layer> list = ((EquipmentLayerRendererAccessor)this.equipmentRenderer).figura$getAssetsManager().get(location.get()).getLayers(layerType);
 
-        int i = itemStack.is(ItemTags.DYEABLE) ? DyedItemColor.getOrDefault(itemStack, -6265536) : -1;
+        int i = DyedItemColor.getOrDefault(itemStack, -6265536);
         int order = 0;
 
         for(EquipmentClientInfo.Layer layer : list) {
@@ -311,7 +311,13 @@ public abstract class HumanoidArmorLayerMixinFabric<S extends HumanoidRenderStat
 
     @Unique
     protected void figura$setPartVisibility(A bipedModel, EquipmentSlot slot) {
-        bipedModel.setAllVisible(false);
+        bipedModel.head.visible = false;
+        bipedModel.hat.visible = false;
+        bipedModel.body.visible = false;
+        bipedModel.rightArm.visible = false;
+        bipedModel.leftArm.visible = false;
+        bipedModel.rightLeg.visible = false;
+        bipedModel.leftLeg.visible = false;
         switch (slot) {
             case HEAD:
                 bipedModel.head.visible = true;

@@ -12,7 +12,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.multiplayer.ServerData;
-import net.minecraft.client.resources.model.AtlasManager;
+import net.minecraft.client.resources.model.sprite.AtlasManager;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.core.Registry;
 import net.minecraft.core.UUIDUtil;
@@ -44,7 +44,6 @@ import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -83,6 +82,33 @@ public class ClientAPI {
         }
         catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException ignored) {}
         return false;
+    }
+
+    private static boolean isIrisShaderPackInUse() {
+        try {
+            Class<?> apiClass = Class.forName("net.irisshaders.iris.api.v0.IrisApi");
+            Object api = apiClass.getMethod("getInstance").invoke(null);
+            Object result = apiClass.getMethod("isShaderPackInUse").invoke(api);
+            return result instanceof Boolean && (Boolean) result;
+        } catch (ReflectiveOperationException ignored) {
+            return false;
+        }
+    }
+
+    private static String getIrisShaderPackName() {
+        try {
+            Method shaderNameField = Class.forName("net.coderbot.iris.Iris").getMethod("getCurrentPackName");
+            shaderNameField.setAccessible(true);
+            return shaderNameField.invoke(null).toString();
+        } catch (ReflectiveOperationException ignored) {
+            try {
+                Method shaderNameField = Class.forName("net.irisshaders.iris.Iris").getMethod("getCurrentPackName");
+                shaderNameField.setAccessible(true);
+                return shaderNameField.invoke(null).toString();
+            } catch (ReflectiveOperationException ignored1) {
+                return null;
+            }
+        }
     }
 
     @LuaWhitelist
@@ -175,7 +201,7 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.get_sound_statistics")
     public static String getSoundStatistics() {
-        return Minecraft.getInstance().getSoundManager().getDebugString();
+        return Minecraft.getInstance().getSoundManager().getChannelDebugString();
     }
 
     @LuaWhitelist
@@ -393,7 +419,7 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.has_shader_pack")
     public static boolean hasShaderPack() {
-        return HAS_IRIS && net.irisshaders.iris.api.v0.IrisApi.getInstance().isShaderPackInUse() || OPTIFINE_LOADED.get() && hasOptifineShader();
+        return HAS_IRIS && isIrisShaderPackInUse() || OPTIFINE_LOADED.get() && hasOptifineShader();
     }
 
     @LuaWhitelist
@@ -401,21 +427,16 @@ public class ClientAPI {
     public static String getShaderPackName() {
         try {
             if (HAS_IRIS) {
-                Method shaderNameField = Class.forName("net.coderbot.iris.Iris").getMethod("getCurrentPackName");
-                shaderNameField.setAccessible(true);
-                return shaderNameField.invoke(null).toString();
+                String shaderName = getIrisShaderPackName();
+                if (shaderName != null)
+                    return shaderName;
             } else if (OPTIFINE_LOADED.get()) {
                 Field shaderNameField = Class.forName("net.optifine.shaders.Shaders").getField("currentShaderName");
                 Class<?> shaderClass = shaderNameField.getType();
                 if (shaderClass == String.class)
                     return (String) shaderNameField.get(null);
             }
-        } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException |
-                 InvocationTargetException | NoSuchMethodException ignored) {
-           try {
-               return net.irisshaders.iris.Iris.getCurrentPackName();
-           }catch (Exception ignored1) {
-           }
+        } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException ignored) {
         }
         return "";
     }

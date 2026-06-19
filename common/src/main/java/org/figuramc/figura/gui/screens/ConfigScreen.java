@@ -1,7 +1,7 @@
 package org.figuramc.figura.gui.screens;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -90,7 +90,7 @@ public class ConfigScreen extends AbstractPanelScreen {
     }
 
     @Override
-    public void renderOverlays(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void renderOverlays(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         super.renderOverlays(gui, mouseX, mouseY, delta);
         if (renderPaperdoll)
             UIHelper.renderWithoutScissors(gui, g -> PaperDoll.render(g, true));

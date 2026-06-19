@@ -2,13 +2,15 @@ package org.figuramc.figura.utils;
 
 import net.minecraft.util.Util;
 import net.minecraft.resources.Identifier;
-import net.minecraft.resources.Identifier;
 import org.figuramc.figura.FiguraMod;
 
-public class FiguraIdentifier extends Identifier {
+public final class FiguraIdentifier {
 
-    public FiguraIdentifier(String string) {
-        super(FiguraMod.MOD_ID, string);
+    private FiguraIdentifier() {
+    }
+
+    public static Identifier of(String path) {
+        return Identifier.fromNamespaceAndPath(FiguraMod.MOD_ID, path);
     }
 
     public static String formatPath(String path) {

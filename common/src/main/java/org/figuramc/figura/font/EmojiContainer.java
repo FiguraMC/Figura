@@ -38,7 +38,7 @@ public class EmojiContainer {
 
     public EmojiContainer(String containerName, JsonObject data) {
         this.name = containerName;
-        this.font = new FiguraIdentifier("emoji_" + containerName);
+        this.font = FiguraIdentifier.of("emoji_" + containerName);
         this.blacklist = data.get("blacklist").getAsString();
 
         // key = emoji unicode, value = array of names

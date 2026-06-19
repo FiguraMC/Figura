@@ -52,6 +52,6 @@ public class KeyboardHandlerMixin {
     private void charTyped(long window, CharacterEvent characterEvent, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (avatar != null)
-            avatar.charTypedEvent(Character.toString(characterEvent.codepoint()), characterEvent.modifiers(), characterEvent.codepoint());
+            avatar.charTypedEvent(characterEvent.codepointAsString(), 0, characterEvent.codepoint());
     }
 }

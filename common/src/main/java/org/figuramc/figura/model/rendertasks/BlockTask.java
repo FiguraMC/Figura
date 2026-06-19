@@ -3,7 +3,11 @@ package org.figuramc.figura.model.rendertasks;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.BlockStateModel;
+import net.minecraft.client.renderer.block.BlockModelRenderState;
+import net.minecraft.client.renderer.block.BlockModelResolver;
+import net.minecraft.client.renderer.block.model.BlockDisplayContext;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
@@ -15,6 +19,9 @@ import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.model.FiguraModelPart;
 import org.figuramc.figura.utils.LuaUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -37,7 +44,10 @@ public class BlockTask extends RenderTask {
         int newLight = this.customization.light != null ? this.customization.light : light;
         int newOverlay = this.customization.overlay != null ? this.customization.overlay : overlay;
 
-        Minecraft.getInstance().getBlockRenderer().renderSingleBlock(block, poseStack, buffer, newLight, newOverlay);
+        Minecraft client = Minecraft.getInstance();
+        BlockModelRenderState renderState = new BlockModelRenderState();
+        new BlockModelResolver(client.getModelManager()).update(renderState, block, BlockDisplayContext.create());
+        renderState.submit(poseStack, client.gameRenderer.getFeatureRenderDispatcher().getSubmitNodeStorage(), newLight, newOverlay, 0);
     }
 
     @Override
@@ -71,12 +81,14 @@ public class BlockTask extends RenderTask {
     public BlockTask setBlock(Object block) {
         this.block = LuaUtils.parseBlockState("block", block);
         Minecraft client = Minecraft.getInstance();
-        RandomSource random = client.level != null ? client.level.random : RandomSource.create();
+        RandomSource random = client.level != null ? client.level.getRandom() : RandomSource.create();
 
-        BlockStateModel blockModel = client.getBlockRenderer().getBlockModel(this.block);
-        cachedComplexity = blockModel.collectParts(random).stream().mapToInt(p -> p.getQuads(null).size()).sum();
+        BlockStateModel blockModel = client.getModelManager().getBlockStateModelSet().get(this.block);
+        List<BlockStateModelPart> parts = new ArrayList<>();
+        blockModel.collectParts(random, parts);
+        cachedComplexity = parts.stream().mapToInt(p -> p.getQuads(null).size()).sum();
         for (Direction dir : Direction.values())
-            cachedComplexity += blockModel.collectParts(random).stream().mapToInt(p -> p.getQuads(dir).size()).sum();
+            cachedComplexity += parts.stream().mapToInt(p -> p.getQuads(dir).size()).sum();
 
         return this;
     }

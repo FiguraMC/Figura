@@ -3,7 +3,7 @@ package org.figuramc.figura.gui.widgets;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -77,7 +77,7 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         if (!visible) return;
 
         // prepare vars
@@ -106,7 +106,7 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
 
             Component title = TITLES.get(i);
             if (title != null)
-                gui.drawCenteredString(font, title, x, y, UIHelper.adjustColor(0xFFFFFF));
+                gui.centeredText(font, title, x, y, UIHelper.adjustColor(0xFFFFFF));
             y += height;
 
             // -- value -- // 
@@ -120,7 +120,7 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
             // default rendering
             if (i != 1) {
                 Component toRender = TextUtils.trimToWidthEllipsis(font, value, width - 10, ELLIPSIS);
-                gui.drawCenteredString(font, toRender, x, y, UIHelper.adjustColor(0xFFFFFF));
+                gui.centeredText(font, toRender, x, y, UIHelper.adjustColor(0xFFFFFF));
 
                 // tooltip
                 if (value != toRender && UIHelper.isMouseOver(this.x, y - height, width, height * 2 - 4, mouseX, mouseY))
@@ -143,7 +143,7 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
                 if (text != newText && UIHelper.isMouseOver(this.x, y, width, height, mouseX, mouseY))
                     UIHelper.setTooltip(text);
 
-                gui.drawCenteredString(font, newText, x, y, UIHelper.adjustColor(0xFFFFFF));
+                gui.centeredText(font, newText, x, y, UIHelper.adjustColor(0xFFFFFF));
                 y += height;
             }
         }

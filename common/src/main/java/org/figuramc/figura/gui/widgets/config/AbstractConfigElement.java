@@ -3,7 +3,7 @@ package org.figuramc.figura.gui.widgets.config;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import org.figuramc.figura.config.ConfigType;
@@ -40,7 +40,7 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         if (!this.isVisible()) return;
 
         // vars
@@ -49,17 +49,17 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
 
         // hovered arrow
         setHovered(isMouseOver(mouseX, mouseY));
-        if (isHovered()) gui.drawString(font, HOVERED_ARROW, (int) (getX() + 8 - font.width(HOVERED_ARROW) / 2f), textY, UIHelper.adjustColor(0xFFFFFF));
+        if (isHovered()) gui.text(font, HOVERED_ARROW, (int) (getX() + 8 - font.width(HOVERED_ARROW) / 2f), textY, UIHelper.adjustColor(0xFFFFFF));
 
         // render name
         renderTitle(gui, font, textY);
 
         // render children
-        super.render(gui, mouseX, mouseY, delta);
+        super.extractRenderState(gui, mouseX, mouseY, delta);
     }
 
-    public void renderTitle(GuiGraphics gui, Font font, int y) {
-        gui.drawString(font, config.name, getX() + 16, y, UIHelper.adjustColor((config.disabled ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor()));
+    public void renderTitle(GuiGraphicsExtractor gui, Font font, int y) {
+        gui.text(font, config.name, getX() + 16, y, UIHelper.adjustColor((config.disabled ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor()));
     }
 
     @Override

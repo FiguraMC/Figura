@@ -1,8 +1,8 @@
 package org.figuramc.figura.mixin.compat;
 
 import org.spongepowered.asm.mixin.*;
-import software.bernie.geckolib.renderer.base.GeoRenderState;
-import software.bernie.geckolib.renderer.base.GeoRenderer;
+import com.geckolib.renderer.base.GeoRenderState;
+import com.geckolib.renderer.base.GeoRenderer;
 
 //TODO :FIX THIS
 @Pseudo

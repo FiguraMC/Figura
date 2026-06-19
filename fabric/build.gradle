@@ -2,74 +2,88 @@ plugins {
     id "com.github.johnrengelman.shadow" version "8.1.1"
 }
 
-architectury {
-    platformSetupLoomIde()
-    fabric()
-}
-
 loom {
-    accessWidenerPath = project(":common").loom.accessWidenerPath
+    accessWidenerPath = file("../common/src/main/resources/figura.accesswidener")
+
+    mods {
+        "figura" {
+            sourceSet sourceSets.main
+        }
+    }
 }
 
 configurations {
-    common
-    shadowCommon // Don't use shadow from the shadow plugin since it *excludes* files.
-    compileClasspath.extendsFrom common
-    runtimeClasspath.extendsFrom common
-    developmentFabric.extendsFrom common
+    geckolibCompat
+}
+
+sourceSets {
+    main {
+        java.srcDir("../common/src/main/java")
+        resources.srcDir("../common/src/main/resources")
+    }
+}
+
+tasks.register("stripGeckoLibCompat", Zip) {
+    from({ zipTree(configurations.geckolibCompat.singleFile) }) {
+        exclude "fabric.mod.json"
+        exclude "*.accesswidener"
+        exclude "*.classtweaker"
+    }
+    archiveFileName = "geckolib-compat-${rootProject.geckolib_fabric}.jar"
+    destinationDirectory = layout.buildDirectory.dir("compat")
 }
 
 dependencies {
-    mappings loom.layered {
-        mappings("org.quiltmc:quilt-mappings:$minecraft_version+build.$mappings:intermediary-v2")
-        officialMojangMappings()
-    }
-
     // Libraries
     include(implementation("com.github.FiguraMC.luaj:luaj-core:$luaj-figura"))
     include(implementation("com.github.FiguraMC.luaj:luaj-jse:$luaj-figura"))
     include(implementation("com.neovisionaries:nv-websocket-client:$nv_websocket"))
     include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.3.6")))
 
+    geckolibCompat("maven.modrinth:geckolib:$geckolib_fabric") {
+        transitive = false
+    }
+    compileOnly files(tasks.named("stripGeckoLibCompat").flatMap { it.archiveFile })
+
     if(rootProject.run_on_quilt == "false") {
-        modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+        implementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
 
         // Fabric API
-        //modImplementation "net.fabricmc.fabric-api:fabric-api:$fabric_api"
-        include(modImplementation(fabricApi.module("fabric-api-base", rootProject.fabric_api)))
-        include(modImplementation(fabricApi.module("fabric-command-api-v2", rootProject.fabric_api)))
-        include(modImplementation(fabricApi.module("fabric-key-binding-api-v1", rootProject.fabric_api)))
-        include(modImplementation(fabricApi.module("fabric-resource-loader-v0", rootProject.fabric_api)))
+        //implementation "net.fabricmc.fabric-api:fabric-api:$fabric_api"
+        include(implementation(fabricApi.module("fabric-api-base", rootProject.fabric_api)))
+        include(implementation(fabricApi.module("fabric-command-api-v2", rootProject.fabric_api)))
+        include(implementation(fabricApi.module("fabric-key-mapping-api-v1", rootProject.fabric_api)))
+        include(implementation(fabricApi.module("fabric-resource-loader-v1", rootProject.fabric_api)))
     }
     else {
-        modImplementation "org.quiltmc:quilt-loader:${rootProject.quilt_loader_version}"
-        modApi "org.quiltmc.quilted-fabric-api:quilted-fabric-api:${rootProject.quilt_fabric_api_version}"
+        implementation "org.quiltmc:quilt-loader:${rootProject.quilt_loader_version}"
+        api "org.quiltmc.quilted-fabric-api:quilted-fabric-api:${rootProject.quilt_fabric_api_version}"
 
         //here for compile purposes
-        modCompileOnly "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+        compileOnly "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
 
-        include(modCompileOnly(fabricApi.module("fabric-api-base", rootProject.fabric_api)))
-        include(modCompileOnly(fabricApi.module("fabric-command-api-v2", rootProject.fabric_api)))
-        include(modCompileOnly(fabricApi.module("fabric-key-binding-api-v1", rootProject.fabric_api)))
-        include(modCompileOnly(fabricApi.module("fabric-resource-loader-v0", rootProject.fabric_api)))
+        include(compileOnly(fabricApi.module("fabric-api-base", rootProject.fabric_api)))
+        include(compileOnly(fabricApi.module("fabric-command-api-v2", rootProject.fabric_api)))
+        include(compileOnly(fabricApi.module("fabric-key-mapping-api-v1", rootProject.fabric_api)))
+        include(compileOnly(fabricApi.module("fabric-resource-loader-v1", rootProject.fabric_api)))
     }
     // Mods
     if (rootProject.run_with_modmenu == "true") {
-        modRuntimeOnly(fabricApi.module("fabric-screen-api-v1", rootProject.fabric_api))
-        modRuntimeOnly(fabricApi.module("fabric-lifecycle-events-v1", rootProject.fabric_api))
-        modImplementation("maven.modrinth:modmenu:$modmenu")
+        runtimeOnly(fabricApi.module("fabric-screen-api-v1", rootProject.fabric_api))
+        runtimeOnly(fabricApi.module("fabric-lifecycle-events-v1", rootProject.fabric_api))
+        implementation("maven.modrinth:modmenu:$modmenu")
     } else {
-        modCompileOnly("maven.modrinth:modmenu:$modmenu")
+        compileOnly("maven.modrinth:modmenu:$modmenu")
     }
     if (rootProject.run_with_geckolib == "true")
-        modRuntimeOnly("software.bernie.geckolib:geckolib-fabric-$geckolib_version")
+        runtimeOnly("maven.modrinth:geckolib:$geckolib_fabric")
 
 
-    common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 }
 
-
+tasks.withType(JavaCompile).configureEach {
+    dependsOn tasks.named("stripGeckoLibCompat")
+}
 
 processResources {
     Map<String, Object> properties = new HashMap<>()
@@ -77,6 +91,7 @@ processResources {
     properties.put("version", project.jarVersion)
     properties.put("java_version", rootProject.java_version)
     properties.put("minecraft_version", rootProject.minecraft_version)
+    properties.put("fabric_loader_version", rootProject.fabric_loader_version)
     properties.put("assets_version", rootProject.assets_version)
 
     properties.forEach((k, v) -> inputs.property(k, v.toString()))
@@ -85,30 +100,17 @@ processResources {
     }
 }
 
-shadowJar {
-    exclude "architectury.common.json"
-
-    configurations = [project.configurations.shadowCommon]
-    archiveClassifier.set "dev-shadow"
-}
-
-remapJar {
-    injectAccessWidener = true
-    input.set shadowJar.archiveFile
-    dependsOn shadowJar
-    archiveClassifier.set "fabric-mc"
-}
-
 jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    exclude "architectury.common.json"
+    archiveClassifier.set "fabric-mc"
+
     from("LICENSE") {
         rename { String.valueOf("$archives_base_name").toUpperCase() + "_${it}"}
     }
 }
 
 sourcesJar {
-    def commonSources = project(":common").sourcesJar
-    dependsOn commonSources
-    from commonSources.archiveFile.map { zipTree(it) }
 }
 
 components.java {
@@ -122,8 +124,8 @@ publishing {
         maven(MavenPublication) {
             artifactId = "${project.archivesBaseName}-${project.name}"
             version = project.version
-            artifact(remapJar) {
-                builtBy remapJar
+            artifact(jar) {
+                builtBy jar
                 classifier ''
             }
             artifact(sourcesJar) {

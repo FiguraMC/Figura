@@ -2,7 +2,7 @@ package org.figuramc.figura.gui.widgets;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -14,7 +14,7 @@ import org.figuramc.figura.utils.ui.UIHelper;
 public class Button extends net.minecraft.client.gui.components.Button implements FiguraWidget {
 
     // default textures
-    private static final Identifier TEXTURE = new FiguraIdentifier("textures/gui/button.png");
+    private static final Identifier TEXTURE = FiguraIdentifier.of("textures/gui/button.png");
 
     // texture data
     protected Integer u;
@@ -54,7 +54,7 @@ public class Button extends net.minecraft.client.gui.components.Button implement
     }
 
     @Override
-    public void renderContents(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractContents(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         if (!this.isVisible())
             return;
 
@@ -86,11 +86,11 @@ public class Button extends net.minecraft.client.gui.components.Button implement
         return over;
     }
 
-    protected void renderDefaultTexture(GuiGraphics gui, float delta) {
+    protected void renderDefaultTexture(GuiGraphicsExtractor gui, float delta) {
         UIHelper.blitSliced(gui, getX(), getY(), getWidth(), getHeight(), getU() * 16f, getV() * 16f, 16, 16, 48, 32, TEXTURE);
     }
 
-    protected void renderTexture(GuiGraphics gui, float delta) {
+    protected void renderTexture(GuiGraphicsExtractor gui, float delta) {
         // uv transforms
         int u = this.u + this.getU() * this.regionSize;
         int v = this.v + this.getV() * this.regionSize;
@@ -102,14 +102,14 @@ public class Button extends net.minecraft.client.gui.components.Button implement
         gui.blit(RenderPipelines.GUI_TEXTURED, this.texture, this.getX() + this.getWidth() / 2 - size / 2, this.getY() + this.getHeight() / 2 - size / 2, u, v, size, size, this.textureWidth, this.textureHeight);
     }
 
-    protected void renderText(GuiGraphics gui, float delta) {
+    protected void renderText(GuiGraphicsExtractor gui, float delta) {
         UIHelper.renderCenteredScrollingText(gui, getMessage(), getX() + 1, getY(), getWidth() - 2, getHeight(), getTextColor());
     }
 
-    protected void renderVanillaBackground(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    protected void renderVanillaBackground(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         Component message = getMessage();
         setMessage(Component.empty());
-        super.renderDefaultSprite(gui);
+        super.extractDefaultSprite(gui);
         setMessage(message);
     }
 

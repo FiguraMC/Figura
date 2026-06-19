@@ -1,6 +1,6 @@
 package org.figuramc.figura.gui.widgets;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -13,7 +13,7 @@ public class IconButton extends Button {
     }
 
     @Override
-    protected void renderTexture(GuiGraphics gui, float delta) {
+    protected void renderTexture(GuiGraphicsExtractor gui, float delta) {
         this.renderDefaultTexture(gui, delta);
 
         UIHelper.enableBlend();
@@ -22,7 +22,7 @@ public class IconButton extends Button {
     }
 
     @Override
-    protected void renderText(GuiGraphics gui, float delta) {
+    protected void renderText(GuiGraphicsExtractor gui, float delta) {
         int size = getTextureSize();
         UIHelper.renderCenteredScrollingText(gui, getMessage(), getX() + 4 + size, getY(), getWidth() - 6 - size, getHeight(), getTextColor());
     }

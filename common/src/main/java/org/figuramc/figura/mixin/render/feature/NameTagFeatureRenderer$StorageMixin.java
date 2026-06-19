@@ -9,7 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.SubmitNodeStorage;
 import net.minecraft.client.renderer.feature.NameTagFeatureRenderer;
-import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
 import org.figuramc.figura.FiguraMod;
@@ -184,7 +184,7 @@ public class NameTagFeatureRenderer$StorageMixin implements NameTagFeatureRender
 
         Font font = Minecraft.getInstance().font;
 
-        Matrix4f pose = submit.pose();
+        Matrix4f pose = new Matrix4f(submit.pose());
         int color = submit.color();
         boolean deadmau = submit.text().getString().equals("deadmau5");
         Matrix4f shadowMatrix = textMatrix.get() != null ? textMatrix.get() : pose;

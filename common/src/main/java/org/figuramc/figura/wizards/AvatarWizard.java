@@ -32,7 +32,7 @@ public class AvatarWizard {
     private static byte[] iconTexture;
 
     private static final BiFunction<ResourceManager, String, String> GET_TEXTURE_DATA = (manager, path) -> {
-        byte[] bytes = ResourceUtils.getResource(manager, new FiguraIdentifier(path));
+        byte[] bytes = ResourceUtils.getResource(manager, FiguraIdentifier.of(path));
         return bytes != null ? Base64.encodeBase64String(bytes) : "";
     };
 
@@ -40,7 +40,7 @@ public class AvatarWizard {
         playerTexture = GET_TEXTURE_DATA.apply(manager, "textures/avatar_wizard/texture.png");
         playerTextureSlim = GET_TEXTURE_DATA.apply(manager, "textures/avatar_wizard/texture_slim.png");
         capeTexture = GET_TEXTURE_DATA.apply(manager, "textures/avatar_wizard/cape.png");
-        iconTexture = ResourceUtils.getResource(manager, new FiguraIdentifier("textures/avatar_wizard/icon.png"));
+        iconTexture = ResourceUtils.getResource(manager, FiguraIdentifier.of("textures/avatar_wizard/icon.png"));
     });
 
     private final HashMap<WizardEntry, Object> map = new HashMap<>();

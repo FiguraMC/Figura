@@ -1,7 +1,6 @@
 package org.figuramc.figura.utils;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.Model;
@@ -33,6 +32,7 @@ import org.figuramc.figura.ducks.FiguraSubmitCallBackExtension;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.permissions.Permissions;
+import org.figuramc.figura.utils.fabric.RenderUtilsImpl;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.BitSet;
@@ -149,9 +149,8 @@ public class RenderUtils {
         return true;
     }
 
-    @ExpectPlatform
     public static Identifier getPlayerSkinTexture(WingsLayer<?, ?> wingsLayer, HumanoidRenderState renderState) {
-        throw new AssertionError();
+        return RenderUtilsImpl.getPlayerSkinTexture(wingsLayer, renderState);
     }
 
     static final ItemStackRenderState itemStackRenderState = new ItemStackRenderState();

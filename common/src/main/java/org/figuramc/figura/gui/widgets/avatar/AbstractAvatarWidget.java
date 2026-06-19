@@ -3,7 +3,7 @@ package org.figuramc.figura.gui.widgets.avatar;
 import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FontDescription;
@@ -67,11 +67,11 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         if (!isVisible() || !this.button.isVisible())
             return;
 
-        super.render(gui, mouseX, mouseY, delta);
+        super.extractRenderState(gui, mouseX, mouseY, delta);
 
         if (favourite) {
             Font font = Minecraft.getInstance().font;
@@ -79,7 +79,7 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
             int x = this.getX() + this.getWidth() - width;
             int y = this.getY() + 2;
 
-            gui.drawString(font, FAVOURITE, x, y, UIHelper.adjustColor(0xFFFFFF), false);
+            gui.text(font, FAVOURITE, x, y, UIHelper.adjustColor(0xFFFFFF), false);
 
             if (mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + font.lineHeight)
                 UIHelper.setTooltip(FiguraText.of("gui.favorited").append(" ").append(FAVOURITE));

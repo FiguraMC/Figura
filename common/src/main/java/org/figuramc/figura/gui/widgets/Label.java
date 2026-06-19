@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.TextAlignment;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
@@ -76,7 +76,7 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         hovered = null;
 
         if (!isVisible())
@@ -86,7 +86,7 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
         renderText(gui, mouseX, mouseY, delta);
     }
 
-    private void renderBackground(GuiGraphics gui) {
+    private void renderBackground(GuiGraphicsExtractor gui) {
         if (backgroundColor == null)
             return;
 
@@ -96,7 +96,7 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
         gui.fill(x, y, x + width, y + height, backgroundColor);
     }
 
-    private void renderText(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    private void renderText(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         Matrix3x2fStack pose = gui.pose();
         pose.pushMatrix();
         pose.translate(this.x, getY());
@@ -137,7 +137,7 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
             if (outlineColor != null) {
                 UIHelper.renderOutlineText(gui, font, text, x, y, 0xFFFFFF, outlineColor);
             } else {
-                gui.drawString(font, text, x, y, UIHelper.adjustColor(0xFFFFFF + (alphaPrecise << 24)));
+                gui.text(font, text, x, y, UIHelper.adjustColor(0xFFFFFF + (alphaPrecise << 24)));
             }
 
             y += height;

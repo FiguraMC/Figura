@@ -4,7 +4,7 @@ import com.mojang.blaze3d.audio.SoundBuffer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
@@ -48,7 +48,7 @@ public class SoundsList extends AbstractList {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         // background and scissors
         UIHelper.blitSliced(gui, getX(), getY(), getWidth(), getHeight(), UIHelper.OUTLINE_FILL);
         enableScissors(gui);
@@ -57,7 +57,7 @@ public class SoundsList extends AbstractList {
             updateEntries();
 
         // children
-        super.render(gui, mouseX, mouseY, delta);
+        super.extractRenderState(gui, mouseX, mouseY, delta);
 
         // reset scissor
         gui.disableScissor();
@@ -128,7 +128,7 @@ public class SoundsList extends AbstractList {
             this.size = Component.literal("(" + MathUtils.asFileSize(len) + ")").withStyle(ChatFormatting.GRAY);
 
             // play button
-            children.add(0, play = new ParentedButton(0, 0, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/play.png"), 60, 20, FiguraText.of("gui.sound.play"), this, button -> {}) {
+            children.add(0, play = new ParentedButton(0, 0, 20, 20, 0, 0, 20, FiguraIdentifier.of("textures/gui/play.png"), 60, 20, FiguraText.of("gui.sound.play"), this, button -> {}) {
                 @Override
                 public void playDownSound(SoundManager soundManager) {
                     Vec3 vec =  Minecraft.getInstance().player == null ? new Vec3(0, 0, 0) : Minecraft.getInstance().player.position();
@@ -137,13 +137,13 @@ public class SoundsList extends AbstractList {
             });
 
             // stop button
-            children.add(stop = new ParentedButton(0, 0, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/stop.png"), 60, 20, FiguraText.of("gui.sound.stop"), this,
+            children.add(stop = new ParentedButton(0, 0, 20, 20, 0, 0, 20, FiguraIdentifier.of("textures/gui/stop.png"), 60, 20, FiguraText.of("gui.sound.stop"), this,
                     button -> SoundAPI.getSoundEngine().figura$stopSound(owner.owner, name))
             );
         }
 
         @Override
-        public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+        public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
             if (!this.isVisible()) return;
 
             int x = getX();
@@ -161,16 +161,16 @@ public class SoundsList extends AbstractList {
 
             // hovered arrow
             setHovered(isMouseOver(mouseX, mouseY));
-            if (isHovered()) gui.drawString(font, HOVERED_ARROW, x + 4, textY, UIHelper.adjustColor(0xFFFFFF));
+            if (isHovered()) gui.text(font, HOVERED_ARROW, x + 4, textY, UIHelper.adjustColor(0xFFFFFF));
 
             // render name
-            gui.drawString(font, this.name, x + 16, textY, UIHelper.adjustColor(0xFFFFFF));
+            gui.text(font, this.name, x + 16, textY, UIHelper.adjustColor(0xFFFFFF));
 
             // render size
-            gui.drawString(font, size, x + width - 96 - font.width(size), textY, UIHelper.adjustColor(0xFFFFFF));
+            gui.text(font, size, x + width - 96 - font.width(size), textY, UIHelper.adjustColor(0xFFFFFF));
 
             // render children
-            super.render(gui, mouseX, mouseY, delta);
+            super.extractRenderState(gui, mouseX, mouseY, delta);
         }
 
         @Override

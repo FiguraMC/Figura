@@ -1,7 +1,7 @@
 package org.figuramc.figura.mixin.gui;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.screens.PauseScreen;
@@ -30,7 +30,7 @@ public class PauseScreenMixin extends Screen {
     }
 
     @Unique
-    private static final Identifier FIGURA_ICON = new FiguraIdentifier("textures/gui/icon.png");
+    private static final Identifier FIGURA_ICON = FiguraIdentifier.of("textures/gui/icon.png");
 
     @Unique
     private LayoutElement lanButton;
@@ -78,7 +78,7 @@ public class PauseScreenMixin extends Screen {
         if (config > 0) { // button
             addRenderableWidget(new Button(x, y, 64, 20, FiguraText.of(), null, btn -> this.minecraft.setScreen(new WardrobeScreen(this))) {
                 @Override
-                public void renderContents(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+                public void extractContents(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
                     ChatFormatting color;
                     if (this.isHoveredOrFocused()) {
                         color = ChatFormatting.AQUA;
@@ -90,18 +90,18 @@ public class PauseScreenMixin extends Screen {
                     setMessage(getMessage().copy().withStyle(color));
 
                     renderVanillaBackground(gui, mouseX, mouseY, delta);
-                    super.renderContents(gui, mouseX, mouseY, delta);
+                    super.extractContents(gui, mouseX, mouseY, delta);
                 }
 
                 @Override
-                protected void renderDefaultTexture(GuiGraphics gui, float delta) {}
+                protected void renderDefaultTexture(GuiGraphicsExtractor gui, float delta) {}
             });
         } else { // icon
             addRenderableWidget(new Button(x, y, 20, 20, 0, 0, 20, FIGURA_ICON, 60, 20, null, btn -> this.minecraft.setScreen(new WardrobeScreen(this))) {
                 @Override
-                public void renderContents(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+                public void extractContents(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
                     renderVanillaBackground(gui, mouseX, mouseY, delta);
-                    super.renderContents(gui, mouseX, mouseY, delta);
+                    super.extractContents(gui, mouseX, mouseY, delta);
                 }
 
                 @Override

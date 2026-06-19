@@ -1,7 +1,7 @@
 package org.figuramc.figura.gui.widgets.config;
 
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.ConfigKeyBind;
@@ -41,14 +41,14 @@ public class KeybindElement extends AbstractConfigElement {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         if (!this.isVisible()) return;
 
         // reset enabled
         helper.renderConflictBars(gui, button.getX() - 8, button.getY() + 2, 4, 16);
 
         // super render
-        super.render(gui, mouseX, mouseY, delta);
+        super.extractRenderState(gui, mouseX, mouseY, delta);
     }
 
     @Override

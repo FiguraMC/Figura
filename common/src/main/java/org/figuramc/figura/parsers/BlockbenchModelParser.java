@@ -6,7 +6,6 @@ import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.utils.IOUtils;
-import org.figuramc.figura.FiguraMod;
 
 import java.io.File;
 import java.io.IOException;
@@ -250,7 +249,7 @@ public class BlockbenchModelParser {
             CompoundTag nbt = new CompoundTag();
 
             //parse fields
-            nbt.putString("name", element.name);
+            nbt.putString("name", orEmpty(element.name));
 
             //parse transform data
             if (notZero(element.from))
@@ -483,8 +482,8 @@ public class BlockbenchModelParser {
 
             //animation metadata
             animNbt.putString("mdl", folders.isBlank() ? modelName : folders + modelName);
-            animNbt.putString("name", animation.name);
-            if (!animation.loop.equals("once"))
+            animNbt.putString("name", orEmpty(animation.name));
+            if (animation.loop != null && !animation.loop.equals("once"))
                 animNbt.putString("loop", animation.loop);
             if (animation.override != null && animation.override)
                 animNbt.putBoolean("ovr", true);
@@ -537,7 +536,7 @@ public class BlockbenchModelParser {
                         keyframeNbt.putString("src", keyFrame.data_points.get(0).getAsJsonObject().get("script").getAsString());
                         effectData.add(keyframeNbt);
                     } else {
-                        keyframeNbt.putString("int", keyFrame.interpolation);
+                        keyframeNbt.putString("int", orDefault(keyFrame.interpolation, "linear"));
 
                         //pre
                         JsonObject dataPoints = keyFrame.data_points.get(0).getAsJsonObject();
@@ -658,7 +657,7 @@ public class BlockbenchModelParser {
                 continue;
 
             //parse fields
-            groupNbt.putString("name", group.name);
+            groupNbt.putString("name", orEmpty(group.name));
 
             //visibility
             boolean thisVisibility = group.visibility == null || group.visibility;
@@ -745,6 +744,14 @@ public class BlockbenchModelParser {
         } catch (Exception ignored) {
             return fallback;
         }
+    }
+
+    private static String orEmpty(String input) {
+        return input == null ? "" : input;
+    }
+
+    private static String orDefault(String input, String fallback) {
+        return input == null ? fallback : input;
     }
 
     public static Object keyFrameData(String input, float fallback) {
