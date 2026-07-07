@@ -606,16 +606,21 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
                     )
             }
     )
-    public FiguraVec4 __div(@LuaNotNil Object rhs) {
-        if (rhs instanceof Number n) {
+    public static FiguraVec4 __div(@LuaNotNil Object lhs, @LuaNotNil Object rhs) {
+        if (lhs instanceof FiguraVec4 lvec) {
+            if (rhs instanceof FiguraVec4 rvec) return lvec.dividedBy(rvec);
+            if (rhs instanceof Number n) {
+                double d = n.doubleValue();
+                if (d == 0) throw new LuaError("Attempt to divide vector by 0");
+                return lvec.scaled(1 / d);
+            }
+        } else if (lhs instanceof Number n && rhs instanceof FiguraVec4 rvec) {
             double d = n.doubleValue();
-            if (d == 0)
-                throw new LuaError("Attempt to divide vector by 0");
-            return scaled(1 / d);
-        } else if (rhs instanceof FiguraVec4 vec) {
-            return dividedBy(vec);
+            return FiguraVec4.of(d / rvec.x, d / rvec.y, d / rvec.z, d / rvec.w);
         }
-        throw new LuaError("Invalid types to __div: " + getClass().getSimpleName() + ", " + rhs.getClass().getSimpleName());
+        throw new LuaError(
+                "Invalid types to __div: " + lhs.getClass().getSimpleName() + ", " + rhs.getClass().getSimpleName()
+        );
     }
 
     @LuaWhitelist

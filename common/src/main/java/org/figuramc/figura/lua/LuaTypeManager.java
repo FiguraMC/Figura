@@ -9,10 +9,10 @@ import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.VarArgFunction;
 
 import java.lang.reflect.*;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
+import static java.util.Map.entry;
+import static org.luaj.vm2.LuaValue.*;
 
 /**
  * One LuaTypeManager per LuaRuntime, so that people can be allowed to edit the metatables within.
@@ -153,9 +153,32 @@ public class LuaTypeManager {
                     } catch (LuaError e) {
                         String methodName = method.getName();
                         String targetType = getTypeName(clazz);
+                        if (OPERATORS.containsKey(methodName)) {
+                            String typeName;
+                            if (args.isuserdata(1)) {
+                                typeName = FiguraDocsManager.getNameFor(args.checkuserdata(1).getClass());
+                            } else typeName = args.arg1().typename();
+
+                            OperatorInfo operator = OPERATORS.get(methodName);
+                            if (operator.binary) throw new LuaError(String.format(
+                                    "Expected left-hand side of %s to be a %s; actually got %s",
+                                    operator.name,
+                                    targetType,
+                                    typeName
+                            ));
+                            else throw new LuaError(String.format(
+                                    "Expected subject of %s to be a %s; actually got %s",
+                                    operator.name,
+                                    targetType,
+                                    typeName
+                            ));
+                        }
                         throw new LuaError(String.format(
                                 "Use a colon (:) to call %s on a %s, instead of a dot.\nFor example, change .%s( to :%s(",
-                                methodName, targetType, methodName, methodName
+                                methodName,
+                                targetType,
+                                methodName,
+                                methodName
                         ));
                     }
                 }
@@ -354,4 +377,25 @@ public class LuaTypeManager {
         else
             return wrap(val);
     }
+
+    private record OperatorInfo(String name, boolean binary) {}
+
+    private static final Map<String, OperatorInfo> OPERATORS = Map.ofEntries(
+            entry(INDEX.tojstring(), new OperatorInfo("indexing", true)),
+            entry(NEWINDEX.tojstring(), new OperatorInfo("indexing", true)),
+            entry(CALL.tojstring(), new OperatorInfo("function call", false)),
+            entry(ADD.tojstring(), new OperatorInfo("+", true)),
+            entry(SUB.tojstring(), new OperatorInfo("-", true)),
+            entry(DIV.tojstring(), new OperatorInfo("/", true)),
+            entry(MUL.tojstring(), new OperatorInfo("*", true)),
+            entry(POW.tojstring(), new OperatorInfo("^", true)),
+            entry(MOD.tojstring(), new OperatorInfo("%", true)),
+            entry(UNM.tojstring(), new OperatorInfo("-", false)),
+            entry(LEN.tojstring(), new OperatorInfo("#", false)),
+            entry(EQ.tojstring(), new OperatorInfo("==", true)),
+            entry(LT.tojstring(), new OperatorInfo("<", true)),
+            entry(LE.tojstring(), new OperatorInfo("<=", true)),
+            entry(TOSTRING.tojstring(), new OperatorInfo("tostring", false)),
+            entry(CONCAT.tojstring(), new OperatorInfo("..", true))
+    );
 }
