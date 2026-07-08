@@ -53,7 +53,7 @@ public enum PartFilterScheme {
      * the function is not called again on the children.
      */
     @FunctionalInterface
-    private interface SchemeFunction {
+    public interface SchemeFunction {
         Boolean test(ParentType typeOfThis, boolean previousSucceeded);
 
         static SchemeFunction onlyThisSeparate(ParentType typeToAllow) {
