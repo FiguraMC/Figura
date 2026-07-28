@@ -35,6 +35,10 @@ dependencies {
         exclude group: "net.fabricmc"
     }
 
+    // Access to fsb-api provided by JiJ of full FSB on downstream projects
+    def fsbsuffix = fsb_snapshot == "true" ? "-SNAPSHOT" : ""
+    modImplementation("org.figuramc.fsb:fsb-common-intermediary:$fsb$fsbsuffix")
+
     implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.3.6"))
 
     // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies

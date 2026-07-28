@@ -27,6 +27,8 @@ rootProject.mod_projects.split(",").each { project(":$it") {
 			}
 		}
 		maven { url 'https://maven.maxhenkel.de/repository/public' }
+		mavenLocal()
+//		maven { url 'https://penguinencounter.github.io/mvn/snapshots' } // fsb2
 	}
 
 	dependencies {
