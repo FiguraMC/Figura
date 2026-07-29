@@ -53,6 +53,17 @@ dependencies {
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 
+    // FSB embedded
+    def suffix = fsb_snapshot == "true" ? "-SNAPSHOT" : ""
+    // Sum of parts in compile path
+    compileOnly("org.figuramc.fsb:fsb-api:$fsb$suffix") { transitive = false }
+    compileOnly("org.figuramc.fsb:fsb-server-api:$fsb$suffix") { transitive = false }
+    modCompileOnly("org.figuramc.fsb:fsb-common-intermediary:$fsb+$minecraft_version$suffix") { transitive = false }
+    compileOnly("org.figuramc.fsb:fsb-fabric-any:$fsb+fabric$suffix") { transitive = false }
+    modCompileOnly("org.figuramc.fsb:fsb-forge:$fsb+$minecraft_version-forge$suffix:component") { transitive = false }
+    // Fat jar at runtime
+    include(modRuntimeOnly("org.figuramc.fsb:fsb-forge:$fsb+$minecraft_version-forge$suffix"))
+
     common(project(path: ":server-common")) { transitive false }
     shadowCommon(project(path: ":server-common")) { transitive false }
 }
