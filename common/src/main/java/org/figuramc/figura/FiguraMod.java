@@ -10,7 +10,6 @@ import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.local.CacheAvatarLoader;
 import org.figuramc.figura.avatar.local.LocalAvatarFetcher;
 import org.figuramc.figura.avatar.local.LocalAvatarLoader;
-import org.figuramc.figura.backend2.FSB;
 import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.compat.GeckoLibCompat;
 import org.figuramc.figura.compat.SimpleVCCompat;
@@ -83,7 +82,6 @@ public class FiguraMod {
     public static void tick() {
         pushProfiler("network");
         NetworkStuff.tick();
-        FSB.instance().tick();
         popPushProfiler("files");
         LocalAvatarLoader.tick();
         LocalAvatarFetcher.tick();
@@ -165,7 +163,10 @@ public class FiguraMod {
 
     public static Style getAccentColor() {
         Avatar avatar = AvatarManager.getAvatarForPlayer(getLocalPlayerUUID());
-        int color = avatar != null ? ColorUtils.rgbToInt(ColorUtils.userInputHex(avatar.color, ColorUtils.Colors.AWESOME_BLUE.vec)) : ColorUtils.Colors.AWESOME_BLUE.hex;
+        int color = avatar != null ? ColorUtils.rgbToInt(ColorUtils.userInputHex(
+                avatar.color,
+                ColorUtils.Colors.AWESOME_BLUE.vec
+        )) : ColorUtils.Colors.AWESOME_BLUE.hex;
         return Style.EMPTY.withColor(color);
     }
 
@@ -176,7 +177,8 @@ public class FiguraMod {
     }
 
     public static void pushProfiler(Avatar avatar) {
-        Minecraft.getInstance().getProfiler().push(avatar.entityName.isBlank() ? avatar.owner.toString() : avatar.entityName);
+        Minecraft.getInstance().getProfiler()
+                .push(avatar.entityName.isBlank() ? avatar.owner.toString() : avatar.entityName);
     }
 
     public static void popPushProfiler(String name) {
@@ -196,6 +198,27 @@ public class FiguraMod {
         var profiler = Minecraft.getInstance().getProfiler();
         for (int i = 0; i < times; i++)
             profiler.pop();
+    }
+
+    /**
+     * autogenerates a warning message about stub method calls
+     */
+    public static void stub(String extra) {
+        StackWalker walk = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
+        StackWalker.StackFrame caller = walk.walk(
+                stream -> stream.filter(it -> {
+                    Class<?> cls = it.getDeclaringClass();
+                    return cls != FiguraMod.class && !cls.getName().startsWith("java.");
+                }).findFirst().orElse(null)
+        );
+        if (caller != null)
+            FiguraMod.LOGGER.warn("Stubbed method {} called: {}", caller.getMethodName(), extra);
+        else
+            FiguraMod.LOGGER.warn("Stubbed method (?) called: {}", extra);
+    }
+
+    public static void stub() {
+        stub("no additional info");
     }
 
     public enum Links {

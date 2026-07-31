@@ -1,19 +1,17 @@
 package org.figuramc.figura.lua.api;
 
 import net.minecraft.client.Minecraft;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
-import org.figuramc.figura.backend2.FSB;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.api.data.FiguraBuffer;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
-import org.figuramc.figura.server.packets.CustomFSBPacket;
 import org.luaj.vm2.LuaFunction;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -42,14 +40,7 @@ public class ServerPacketsAPI {
             value = "server_packets.send_packet"
     )
     public void sendPacket(@LuaNotNil String id, FiguraBuffer data) {
-        var fsb = FSB.instance();
-        if (!(isHost && fsb.connected())) return;
-        try {
-            byte[] bytes = data != null ? data.asInputStream().readAllBytes() : new byte[0];
-            fsb.sendPacket(new CustomFSBPacket(id.hashCode(), bytes));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        FiguraMod.stub();
     }
 
     @LuaWhitelist

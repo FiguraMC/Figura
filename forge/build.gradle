@@ -63,9 +63,6 @@ dependencies {
     modCompileOnly("org.figuramc.fsb:fsb-forge:$fsb+$minecraft_version-forge$suffix:component") { transitive = false }
     // Fat jar at runtime
     include(modRuntimeOnly("org.figuramc.fsb:fsb-forge:$fsb+$minecraft_version-forge$suffix"))
-
-    common(project(path: ":server-common")) { transitive false }
-    shadowCommon(project(path: ":server-common")) { transitive false }
 }
 
 processResources {

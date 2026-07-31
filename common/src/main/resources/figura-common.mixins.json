@@ -103,10 +103,6 @@
     "sound.OggAudioStreamMixin",
     "sound.OutputConcatAccessor"
   ],
-  "server": [
-    "network.server.PlayerListMixin",
-    "CommandSourceStackMixin"
-  ],
   "injectors": {
     "defaultRequire": 1
   }

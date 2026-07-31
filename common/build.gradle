@@ -49,9 +49,6 @@ dependencies {
 
     // Test compile only is used to mount sources on an IDE without overriding vanilla classes with Optifine's
     testCompileOnly fileTree(dir: "$rootProject.projectDir/libs", include: '*.jar')
-
-    common(project(path: ":server-common")) { transitive false }
-    shadowCommon(project(path: ":server-common")) { transitive false }
 }
 
 publishing {
