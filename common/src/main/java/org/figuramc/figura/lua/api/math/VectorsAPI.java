@@ -197,6 +197,120 @@ public class VectorsAPI {
                             argumentNames = {"r", "g", "b"}
                     )
             },
+            value = "vectors.rgb_to_oklab" // FIXME TODO
+    )
+    public static FiguraVec3 rgbToOklab(Object r, Double g, Double b) {
+        FiguraVec3 rgb = LuaUtils.parseVec3("rgbToOklab", r, g, b);
+        return ColorUtils.RGBToOklab(rgb);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "lab"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"l", "a", "b"}
+                    )
+            },
+            value = "vectors.oklab_to_rgb" // FIXME TODO
+    )
+    public static FiguraVec3 oklabToRGB(Object l, Double a, Double b) {
+        FiguraVec3 oklab = LuaUtils.parseVec3("oklabToRGB", l, a, b);
+        return ColorUtils.oklabToRGB(oklab);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "lab"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"l", "a", "b"}
+                    )
+            },
+            value = "vectors.oklab_to_oklch" // FIXME TODO
+    )
+    public static FiguraVec3 oklabToOklch(Object l, Double a, Double b) {
+        FiguraVec3 oklab = LuaUtils.parseVec3("oklabToOklch", l, a, b);
+        return ColorUtils.oklabToOklch(oklab);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "lch"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"l", "c", "h"}
+                    )
+            },
+            value = "vectors.oklch_to_oklab" // FIXME TODO
+    )
+    public static FiguraVec3 oklchToOklab(Object l, Double c, Double h) {
+        FiguraVec3 oklch = LuaUtils.parseVec3("oklchToOklab", l, c, h);
+        return ColorUtils.oklchToOklab(oklch);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "rgb"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"r", "g", "b"}
+                    )
+            },
+            value = "vectors.rgb_to_linear" // FIXME TODO
+    )
+    public static FiguraVec3 rgbToLinear(Object r, Double g, Double b) {
+        FiguraVec3 rgb = LuaUtils.parseVec3("rgbToLinear", r, g, b);
+        return rgb.copy().applyFunc(ColorUtils::RGBtoLinear);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "rgb"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"r", "g", "b"}
+                    )
+            },
+            value = "vectors.linear_to_rgb" // FIXME TODO
+    )
+    public static FiguraVec3 linearToRGB(Object r, Double g, Double b) {
+        FiguraVec3 linear = LuaUtils.parseVec3("linearToRGB", r, g, b);
+        return linear.copy().applyFunc(ColorUtils::linearToRGB);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "rgb"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"r", "g", "b"}
+                    )
+            },
             value = "vectors.rgb_to_hex"
     )
     public static String rgbToHex(Object r, Double g, Double b) {
