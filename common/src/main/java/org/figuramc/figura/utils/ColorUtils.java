@@ -204,6 +204,7 @@ public class ColorUtils {
     /**
      * Convert a sRGB color to Oklab (a perceptual color space.)
      * Based on <a href="https://bottosson.github.io/posts/oklab/">public domain code.</a>
+     *
      * @param rgb sRGB (non-linear)
      * @return oklab equivalent
      */
@@ -226,9 +227,9 @@ public class ColorUtils {
         double l_ = oklab.x + 0.3963377774 * oklab.y + 0.2158037573 * oklab.z;
         double m_ = oklab.x - 0.1055613458 * oklab.y - 0.0638541728 * oklab.z;
         double s_ = oklab.x - 0.0894841775 * oklab.y - 1.2914855480 * oklab.z;
-        double l = l_*l_*l_;
-        double m = m_*m_*m_;
-        double s = s_*s_*s_;
+        double l = l_ * l_ * l_;
+        double m = m_ * m_ * m_;
+        double s = s_ * s_ * s_;
         return FiguraVec3.of(
                 +4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
                 -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
