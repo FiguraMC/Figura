@@ -7,13 +7,14 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceLocation;
 import org.figuramc.fsb2.api.FSBConstants;
+import org.figuramc.fsb2.api.PlayerSession;
 import org.figuramc.fsb2.api.ProtocolSession;
+import org.figuramc.fsb2.api.except.FSBArgumentException;
 import org.figuramc.fsb2.api.except.FSBStateException;
 import org.figuramc.fsb2.api.packets.Packet;
 import org.figuramc.fsb2.api.utils.FSBLogger;
 import org.figuramc.fsb2.api.utils.LoggingProxy;
 import org.figuramc.fsb2.server.versioned.ServerPacketImpl;
-import org.jetbrains.annotations.CheckReturnValue;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,20 +27,27 @@ public class FSBClient {
     private static final Logger LOG_BACKEND = LoggerFactory.getLogger(FSBClient.class);
     public static final FSBLogger FSB_LOGGER = new LoggingProxy(LOG_BACKEND);
 
-    public static final ResourceLocation PACKET_ID = new ResourceLocation(FSBConstants.MOD_NAMESPACE, FSBConstants.FSB_PACKET_PATH);
+    public static final ResourceLocation PACKET_ID = new ResourceLocation(
+            FSBConstants.MOD_NAMESPACE,
+            FSBConstants.FSB_PACKET_PATH
+    );
 
-    @CheckReturnValue
-    public static synchronized boolean newSession() {
-        if (clientSession != null) return false;
-        clientSession = new ProtocolSession(FSB_LOGGER, Minecraft.getInstance(), true);
-        return true;
+    public static synchronized void newSession(ClientPacketListener relation) {
+        if (clientSession != null) terminateSession(relation);
+        FSB_LOGGER.info("Created new client FSB session @ {}", relation);
+        clientSession = new ClientSession(FSB_LOGGER, relation);
+        try {
+            clientSession.relate(relation, PlayerSession.SERVER);
+        } catch (FSBArgumentException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public static synchronized boolean terminateSession() {
-        if (clientSession == null) return false;
-        clientSession.unrelate(Minecraft.getInstance());
+    public static synchronized void terminateSession(ClientPacketListener relation) {
+        if (clientSession == null) return;
+        FSB_LOGGER.info("Terminated client FSB session @ {}", relation);
+        clientSession.unrelate(relation);
         clientSession = null;
-        return true;
     }
 
     public static synchronized @Nullable ProtocolSession clientSession() {
@@ -47,24 +55,21 @@ public class FSBClient {
     }
 
     public sealed interface NetworkingInterface {
+        /**
+         * Format & send a {@code packet} through the {@code connection}.
+         */
         void sendTo(ClientPacketListener connection, Packet<?> packet);
 
         /**
-         * Send a packet to the connected server.
+         * Format & send a {@code packet} to the currently connected server.
+         *
          * @throws FSBStateException when not connected to anything
          */
         void send(Packet<?> packet) throws FSBStateException;
+    }
 
-        /**
-         * {@link #send} but it blows up in your face if there's no connection
-         */
-        default void assertSend(Packet<?> packet) {
-            try {
-                send(packet);
-            } catch (FSBStateException e) {
-                throw new IllegalStateException(e);
-            }
-        }
+    public void handleConnectionPolicy(FSBClientEvents.ServerID event) {
+
     }
 
     public static final NetworkingInterface networking = new NetworkingInterfaceImpl();
@@ -73,6 +78,7 @@ public class FSBClient {
         @Override
         public void sendTo(ClientPacketListener connection, Packet<?> packet) {
             ServerPacketImpl.Buf bufW = new ServerPacketImpl.Buf(new FriendlyByteBuf(Unpooled.buffer()));
+            bufW.writeByteArray(packet.identify().netID);
             packet.write(bufW);
             connection.send(new ServerboundCustomPayloadPacket(PACKET_ID, bufW.actual()));
         }

@@ -13,7 +13,10 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
@@ -345,6 +348,68 @@ public final class UIHelper {
         tessellator.end();
     }
 
+    /// stretch-based nine-slice renderer with more traditional parameters.
+    ///
+    /// - `scale` is how many display units per pixel on the texture. you probably want `1`
+    /// - `top`, `right`, `bottom`, `left` define the slice area
+    /// - `texW/H` define the texture width / height, used for calculating UVs in pixels
+    /// - `regU/V/W/H` define the source region box in pixels
+    /// - `z` is the draw order
+    @SuppressWarnings("DuplicatedCode")
+    public static void blitSlicedAlt(
+            GuiGraphics gui,
+            int x, int y, int w, int h, float scale,
+            ResourceLocation texture,
+            int top, int right, int bottom, int left,
+            int texW, int texH,
+            int regU, int regV, int regW, int regH,
+            float z
+    ) {
+        prepareTexture(texture);
+
+        Matrix4f pose = gui.pose().last().pose();
+        Tesselator tessellator = Tesselator.getInstance();
+        BufferBuilder buffer = tessellator.getBuilder();
+        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+
+        float texWf = (float) texW, texHf = (float) texH;
+
+        // Horizontal texture BreakPoints
+        float hbp0 = regU / texWf, hbp1 = (regU + left) / texWf;
+        float hbp2 = (regU + regW - right) / texWf, hbp3 = (regU + regW) / texWf;
+
+        // Vertical texture BreakPoints
+        float vbp0 = regV / texHf, vbp1 = (regV + top) / texHf;
+        float vbp2 = (regV + regH - bottom) / texHf, vbp3 = (regV + regH) / texHf;
+
+        // UI Horizontal measurements
+        //noinspection UnnecessaryLocalVariable
+        float uih0 = x, uih1 = x + left * scale;
+        float uih2 = x + w - right * scale, uih3 = x + w;
+
+        // UI Vertical measurements
+        //noinspection UnnecessaryLocalVariable
+        float uiv0 = y, uiv1 = y + top * scale;
+        float uiv2 = y + h - bottom * scale, uiv3 = y + h;
+
+        // top-left, top-center, top-right
+        quadManual(buffer, pose, uih0, uih1, uiv0, uiv1, z, hbp0, hbp1, vbp0, vbp1);
+        quadManual(buffer, pose, uih1, uih2, uiv0, uiv1, z, hbp1, hbp2, vbp0, vbp1);
+        quadManual(buffer, pose, uih2, uih3, uiv0, uiv1, z, hbp2, hbp3, vbp0, vbp1);
+
+        // center-left, center-center, center-right
+        quadManual(buffer, pose, uih0, uih1, uiv1, uiv2, z, hbp0, hbp1, vbp1, vbp2);
+        quadManual(buffer, pose, uih1, uih2, uiv1, uiv2, z, hbp1, hbp2, vbp1, vbp2);
+        quadManual(buffer, pose, uih2, uih3, uiv1, uiv2, z, hbp2, hbp3, vbp1, vbp2);
+
+        // bottom-left, bottom-center, bottom-right
+        quadManual(buffer, pose, uih0, uih1, uiv2, uiv3, z, hbp0, hbp1, vbp2, vbp3);
+        quadManual(buffer, pose, uih1, uih2, uiv2, uiv3, z, hbp1, hbp2, vbp2, vbp3);
+        quadManual(buffer, pose, uih2, uih3, uiv2, uiv3, z, hbp2, hbp3, vbp2, vbp3);
+
+        tessellator.end();
+    }
+
     public static void renderHalfTexture(GuiGraphics gui, int x, int y, int width, int height, int textureWidth, ResourceLocation texture) {
         renderHalfTexture(gui, x, y, width, height, 0f, 0f, textureWidth, 1, textureWidth, 1, texture);
     }
@@ -381,10 +446,14 @@ public final class UIHelper {
     private static void quad(BufferBuilder bufferBuilder, Matrix4f pose, float x, float y, float width, float height, float z, float u0, float u1, float v0, float v1) {
         float x1 = x + width;
         float y1 = y + height;
-        bufferBuilder.vertex(pose, x, y1, z).uv(u0, v1).endVertex();
+        quadManual(bufferBuilder, pose, x, x1, y, y1, z, u0, u1, v0, v1);
+    }
+
+    private static void quadManual(BufferBuilder bufferBuilder, Matrix4f pose, float x0, float x1, float y0, float y1, float z, float u0, float u1, float v0, float v1) {
+        bufferBuilder.vertex(pose, x0, y1, z).uv(u0, v1).endVertex();
         bufferBuilder.vertex(pose, x1, y1, z).uv(u1, v1).endVertex();
-        bufferBuilder.vertex(pose, x1, y, z).uv(u1, v0).endVertex();
-        bufferBuilder.vertex(pose, x, y, z).uv(u0, v0).endVertex();
+        bufferBuilder.vertex(pose, x1, y0, z).uv(u1, v0).endVertex();
+        bufferBuilder.vertex(pose, x0, y0, z).uv(u0, v0).endVertex();
     }
 
     public static void renderWithoutScissors(GuiGraphics gui, Consumer<GuiGraphics> toRun) {

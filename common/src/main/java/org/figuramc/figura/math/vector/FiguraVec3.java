@@ -13,6 +13,8 @@ import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
 
+import java.util.function.UnaryOperator;
+
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Vector3",
@@ -434,6 +436,13 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
         x = function.call(LuaValue.valueOf(x), LuaValue.valueOf(1)).todouble();
         y = function.call(LuaValue.valueOf(y), LuaValue.valueOf(2)).todouble();
         z = function.call(LuaValue.valueOf(z), LuaValue.valueOf(3)).todouble();
+        return this;
+    }
+
+    public FiguraVec3 applyFunc(UnaryOperator<Double> function) {
+        x = function.apply(x);
+        y = function.apply(y);
+        z = function.apply(z);
         return this;
     }
 
