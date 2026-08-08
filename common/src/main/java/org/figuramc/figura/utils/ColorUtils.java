@@ -2,7 +2,6 @@ package org.figuramc.figura.utils;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Style;
-import org.figuramc.figura.lua.api.data.FiguraFuture;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.math.vector.FiguraVec4;
 
@@ -208,7 +207,7 @@ public class ColorUtils {
      * @param rgb sRGB (non-linear)
      * @return oklab equivalent
      */
-    public static FiguraVec3 RGBToOklab(FiguraVec3 rgb) {
+    public static FiguraVec3 RGBtoOklab(FiguraVec3 rgb) {
         double r = RGBtoLinear(rgb.x);
         double g = RGBtoLinear(rgb.y);
         double b = RGBtoLinear(rgb.z);

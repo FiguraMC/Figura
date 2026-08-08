@@ -4,6 +4,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import org.figuramc.figura.gui.screens.FSBScreen;
 import org.figuramc.figura.gui.widgets.fsb_pages.PageButton;
+import org.figuramc.figura.utils.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,8 +42,6 @@ public class FSBPageList extends AbstractList {
     public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         int x = getX(), y = getY(), width = getWidth(), height = getHeight();
 
-        gui.fill(x + width - 1, y, x + width, y + height, 0xFF404040);
-
 //        enableScissors(gui);
         int totalHeight = 2;
 
@@ -64,6 +63,8 @@ public class FSBPageList extends AbstractList {
             totalHeight += 1;
             i++;
         }
+
+        gui.fill(x + width - 1, y, x + width, y + height, 0xFF404040);
 
 //        gui.disableScissor();
 

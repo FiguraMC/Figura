@@ -201,7 +201,7 @@ public class VectorsAPI {
     )
     public static FiguraVec3 rgbToOklab(Object r, Double g, Double b) {
         FiguraVec3 rgb = LuaUtils.parseVec3("rgbToOklab", r, g, b);
-        return ColorUtils.RGBToOklab(rgb);
+        return ColorUtils.RGBtoOklab(rgb);
     }
 
     @LuaWhitelist
