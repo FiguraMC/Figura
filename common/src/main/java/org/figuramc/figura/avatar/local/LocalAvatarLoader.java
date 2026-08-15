@@ -336,7 +336,7 @@ public class LocalAvatarLoader {
                 Path path = entry.getKey().resolve((Path) event.context());
                 String name = IOUtils.getFileNameOrEmpty(path);
 
-                if (IOUtils.isHiddenAvatarResource(path) || !(Files.isDirectory(path) || name.matches("(.*(\\.lua|\\.bbmodel|\\.ogg|\\.png)$|avatar\\.json)")))
+                if (IOUtils.isHiddenResource(path, entry.getKey()) || !(Files.isDirectory(path) || name.matches("(.*(\\.lua|\\.bbmodel|\\.ogg|\\.png)$|avatar\\.json)")))
                     continue;
 
                 if (kind == StandardWatchEventKinds.ENTRY_CREATE && !IS_WINDOWS)
@@ -382,13 +382,26 @@ public class LocalAvatarLoader {
             WatchKey key = IS_WINDOWS ? path.register(watcher, events, com.sun.nio.file.ExtendedWatchEventModifier.FILE_TREE) : path.register(watcher, events);
 
             consumer.accept(path, key);
+            if (IS_WINDOWS) {
+                Files.walk(path)
+                        .filter(Files::isSymbolicLink)
+                        .filter(Files::isDirectory)
+                        .forEach(symlink -> {
+                            try {
+                                symlink = symlink.toRealPath();
+                                addWatchKey(symlink, consumer);
+                            } catch (IOException e) {
+                                FiguraMod.LOGGER.error("Failed to register symbolic watcher for " + symlink, e);
+                            }
+                        });
+            } else {
+                List<Path> children = IOUtils.listPaths(path);
+                if (children == null)
+                    return;
 
-            List<Path> children = IOUtils.listPaths(path);
-            if (children == null || IS_WINDOWS)
-                return;
-
-            for (Path child : children)
-                addWatchKey(child, consumer);
+                for (Path child : children)
+                    addWatchKey(child, consumer);
+            }
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to register watcher for " + path, e);
         }
