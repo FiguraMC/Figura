@@ -4,7 +4,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import org.figuramc.figura.gui.screens.FSBScreen;
 import org.figuramc.figura.gui.widgets.fsb_pages.PageButton;
-import org.figuramc.figura.utils.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,10 +19,10 @@ public class FSBPageList extends AbstractList {
         super(x, y, width, height);
         this.parent = parent;
         relayout();
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < 5; i++) {
             PageButton btn = PageButton.of(
                     Component.literal("hi!"), null, q -> {
-                    }, 0xffb080ff
+                    }, 0
             );
             btn.setHeight(16);
             buttons.add(btn);
@@ -51,7 +50,7 @@ public class FSBPageList extends AbstractList {
             boolean active = i == currentPageButton;
             int selectedOffset = active ? 0 : 4;
             int widthOffset = active ? 0 : 1;
-            button.isActivePage = active;
+            button.isCurrentPage = active;
             button.setBox(
                     x + 18 + selectedOffset,
                     y + totalHeight,

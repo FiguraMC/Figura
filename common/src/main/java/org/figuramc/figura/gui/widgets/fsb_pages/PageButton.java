@@ -5,21 +5,35 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.gui.widgets.Button;
+import org.figuramc.figura.math.vector.FiguraVec3;
+import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.ui.UIHelper;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector4f;
 
 public class PageButton extends Button {
-    private static final ResourceLocation TEXTURE = new FiguraIdentifier("textures/gui/button.png");
+    // TODO: add additional resource for theming these if someone wants that (corners & stuff)
+    //       we need one for the #FFFFFF edges anyway
+    private static final ResourceLocation TEXTURE = new FiguraIdentifier("textures/gui/button_tintable.png");
+    private final FiguraVec3 disabledColor; // self-explanatory
+    private final FiguraVec3 defaultColor;  // self-explanatory
+    private final FiguraVec3 selectedColor; // the current page
+    private final FiguraVec3 hoveredColor;  // cursor hover / keyboard focus
 
-    public boolean isActivePage;
+    public boolean isCurrentPage;
 
     public PageButton(
             int x, int y, int width, int height,
             Component text, Component tooltip, OnPress pressAction,
-            int color
+            int hue
     ) {
         super(x, y, width, height, text, tooltip, pressAction);
+        ColorUtils.ColorTheme theme = new ColorUtils.ColorTheme(hue);
+        disabledColor = theme.stop(1);
+        defaultColor = theme.stop(3);
+        selectedColor = theme.stop(6);
+        hoveredColor = theme.stop(9);
     }
 
     public static PageButton of(Component name, @Nullable Component tooltip, OnPress pressAction, int color) {
@@ -31,18 +45,33 @@ public class PageButton extends Button {
         super.relayout();
     }
 
+    private FiguraVec3 getDrawingColor() {
+        if (isActive()) {
+            if (isHoveredOrFocused()) {
+                return hoveredColor;
+            } else if (isCurrentPage) {
+                return selectedColor;
+            } else {
+                return defaultColor;
+            }
+        } else {
+            return disabledColor;
+        }
+    }
+
     @Override
     public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-        int u = (isActive() ? isHoveredOrFocused() ? 2 : 1 : 0) * 16;
+        FiguraVec3 color = getDrawingColor();
+
         // Just chop off the right side of the button texture xd
         UIHelper.blitSlicedAlt(
                 gui,
                 getX(), getY(), getWidth(), getHeight(),
                 1.0f, TEXTURE,
                 1, 0, 1, 1,
-                48, 32,
-                u, 0, 15, 16,
-                1.0f
+                16, 16,
+                0, 0, 15, 16,
+                1.0f, new Vector4f(color.asVec3f(), 1f)
         );
 
         PoseStack pose = gui.pose();
