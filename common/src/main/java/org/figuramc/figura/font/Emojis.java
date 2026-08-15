@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import org.figuramc.figura.FiguraMod;
@@ -15,6 +16,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Emojis {
 
@@ -23,6 +26,7 @@ public class Emojis {
 
     public static final char DELIMITER = ':';
     public static final char ESCAPE = '\\';
+    public static final Pattern HEX_SUFFIX = Pattern.compile("^(.*?)(#[0-9a-fA-F]{6})$");
 
     // listener to load emojis from the resource pack
     public static final FiguraResourceListener RESOURCE_LISTENER = FiguraResourceListener.createResourceListener("emojis", manager -> {
@@ -169,6 +173,7 @@ public class Emojis {
 
             // even: append text
             if (i % 2 == 0) {
+
                 // Find all emoji shortcuts in string
                 List<String> shortcuts = SHORTCUT_LOOKUP.keySet().stream().filter(s::contains).toList();
 
@@ -197,17 +202,28 @@ public class Emojis {
             }
             // odd: format and append emoji
             else {
-                appendEmoji(result, s, style);
+                TextColor color = null;
+
+                // Check if the emoji string has a hex code suffix at the end
+                Matcher matcher = HEX_SUFFIX.matcher(s);
+                if (matcher.matches()) {
+                    s = matcher.group(1);
+                    color = TextColor.parseColor(matcher.group(2));
+                }
+                appendEmoji(result, s, style, color);
             }
         }
 
         return result;
     }
 
-    private static void appendEmoji(MutableComponent result, String alias, Style style) {
+    private static void appendEmoji(MutableComponent result, String alias, Style style, TextColor color) {
         MutableComponent emoji = Emojis.getEmoji(alias, style);
         
         if (emoji != null) {
+            if (color != null)
+                emoji.setStyle(emoji.getStyle().withColor(color));
+
             result.append(emoji);
         } else {
             result.append(DELIMITER + alias + DELIMITER);
