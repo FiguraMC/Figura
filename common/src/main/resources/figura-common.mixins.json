@@ -30,6 +30,7 @@
     "font.BakedGlyphMixin",
     "font.BitmapGlyphMixin",
     "font.FontSetMixin",
+    "gui.BossHealthOverlayAccessor",
     "gui.ChatComponentAccessor",
     "gui.ChatComponentMixin",
     "gui.ChatScreenAccessor",
@@ -52,7 +53,6 @@
     "gui.SuggestionsListMixin",
     "gui.books.BookViewScreenMixin",
     "gui.books.LineInfoMixin",
-    "gui.BossHealthOverlayAccessor",
     "input.InputConstantsTypeMixin",
     "input.KeyboardHandlerMixin",
     "input.KeyMappingAccessor",
@@ -69,12 +69,12 @@
     "render.MissingTextureAtlasSpriteAccessor",
     "render.ModelManagerAccessor",
     "render.PlayerModelMixin",
+    "render.PoseStackAccessor",
     "render.TextureAtlasAccessor",
     "render.TextureManagerAccessor",
     "render.layers.CapeLayerMixin",
     "render.layers.CustomHeadLayerMixin",
     "render.layers.HumanoidArmorLayerAccessor",
-    "render.layers.HumanoidArmorLayerMixin",
     "render.layers.ParrotOnShoulderLayerMixin",
     "render.layers.elytra.ElytraLayerAccessor",
     "render.layers.elytra.ElytraLayerMixin",
@@ -85,9 +85,9 @@
     "render.renderers.BlockEntityWithoutLevelRendererMixin",
     "render.renderers.EntityRendererMixin",
     "render.renderers.HandRenderSelectionAccessor",
+    "render.renderers.ItemEntityRendererMixin",
     "render.renderers.ItemInHandRendererMixin",
     "render.renderers.ItemRendererMixin",
-    "render.renderers.ItemEntityRendererMixin",
     "render.renderers.LivingEntityRendererMixin",
     "render.renderers.PlayerRendererMixin",
     "render.renderers.ScreenEffectRendererMixin",
@@ -95,17 +95,16 @@
     "render.renderers.SkullBlockRendererMixin",
     "render.renderers.StuckArrowsFeatureRendererMixin",
     "render.renderers.TridentRendererMixin",
-    "render.PoseStackAccessor",
     "sound.ChannelHandleMixin",
+    "sound.OggAudioStreamMixin",
+    "sound.OutputConcatAccessor",
     "sound.SoundEngineMixin",
     "sound.SoundManagerAccessor",
-    "sound.SubtitleOverlayMixin",
-    "sound.OggAudioStreamMixin",
-    "sound.OutputConcatAccessor"
+    "sound.SubtitleOverlayMixin"
   ],
   "server": [
-    "network.server.PlayerListMixin",
-    "CommandSourceStackMixin"
+    "CommandSourceStackMixin",
+    "network.server.PlayerListMixin"
   ],
   "injectors": {
     "defaultRequire": 1
