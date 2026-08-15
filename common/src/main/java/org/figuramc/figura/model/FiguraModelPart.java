@@ -1029,8 +1029,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart>, MutablePart
 
         this.customization.uvMatrix.reset();
         FiguraVec2 uv = LuaUtils.parseVec2("setUVPixels", x, y);
-        uv.divide(this.textureWidth, this.textureHeight);
-        this.customization.uvMatrix.translate(uv.x, uv.y);
+        this.customization.uvMatrix.translate(uv.x / this.textureWidth, uv.y / this.textureHeight);
 
         return this;
     }

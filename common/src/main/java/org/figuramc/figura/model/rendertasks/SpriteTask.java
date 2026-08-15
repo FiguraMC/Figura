@@ -372,8 +372,7 @@ public class SpriteTask extends RenderTask {
             throw new LuaError("Cannot call setUVPixels before defining the texture dimensions!");
 
         FiguraVec2 uv = LuaUtils.parseVec2("setUVPixels", u, v);
-        uv.divide(this.textureW, this.textureH);
-        setUV(uv.x, uv.y);
+        setUV(uv.x / this.textureW, uv.y / this.textureH);
 
         return this;
     }
