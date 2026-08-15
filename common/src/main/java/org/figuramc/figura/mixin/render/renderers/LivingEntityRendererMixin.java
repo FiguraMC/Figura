@@ -146,7 +146,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     private void shouldShowName(T livingEntity, CallbackInfoReturnable<Boolean> cir) {
         if (UIHelper.paperdoll)
             cir.setReturnValue(Configs.PREVIEW_NAMEPLATE.value);
-        else if (!Minecraft.renderNames() || livingEntity.getUUID().equals(PopupMenu.getEntityId()))
+        else if (!Minecraft.renderNames() || (livingEntity.getUUID().equals(PopupMenu.getEntityId()) && !PopupMenu.isSkull()))
             cir.setReturnValue(false);
         else if (!AvatarManager.panic) {
             if (Configs.SELF_NAMEPLATE.value && livingEntity == Minecraft.getInstance().player)

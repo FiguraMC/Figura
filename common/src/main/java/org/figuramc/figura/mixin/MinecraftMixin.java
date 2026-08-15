@@ -6,8 +6,14 @@ import net.minecraft.client.Options;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.SkullBlockEntity;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -19,6 +25,7 @@ import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.gui.PopupMenu;
 import org.figuramc.figura.gui.screens.WardrobeScreen;
 import org.figuramc.figura.lua.FiguraLuaPrinter;
+import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.utils.FiguraText;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -87,10 +94,19 @@ public abstract class MinecraftMixin {
 
             if (!PopupMenu.hasEntity()) {
                 Entity target = FiguraMod.extendedPickEntity;
+                HitResult result = this.cameraEntity.pick(20d, 1f, false);
+
                 if (this.player != null && target instanceof Player && !target.isInvisibleTo(this.player)) {
                     PopupMenu.setEntity(target);
                 } else if (!this.options.getCameraType().isFirstPerson()) {
                     PopupMenu.setEntity(this.cameraEntity);
+                } else if (result instanceof BlockHitResult blockHit) {
+                    BlockPos pos = blockHit.getBlockPos();
+                    BlockEntity block = this.cameraEntity.level().getBlockEntity(pos);
+
+                    if (block instanceof SkullBlockEntity skull) {
+                        PopupMenu.setEntity(skull);
+                    }
                 }
             }
         } else if (PopupMenu.isEnabled()) {
