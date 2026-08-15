@@ -44,7 +44,21 @@ public class FiguraInputStream extends InputStream {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("input_stream.read_async")
+    @LuaMethodDoc(
+            value = "input_stream.read_async",
+            overloads = {
+                @LuaMethodOverload(
+                        argumentNames = {},
+                        argumentTypes = {},
+                        returnType = FiguraFuture.class
+                ),
+                @LuaMethodOverload(
+                        argumentNames = "limit",
+                        argumentTypes = Integer.class,
+                        returnType = FiguraFuture.class
+                )
+            }
+    )
     public FiguraFuture<LuaString> readAsync(Integer limit) {
         final int finalLimit = limit != null ? limit : available();
         // Future handle that will be returned
