@@ -39,7 +39,7 @@ public class SpriteTask extends RenderTask {
     private ResourceLocation texture;
     private int textureW = -1, textureH = -1;
     private int width, height;
-    private int regionW, regionH;
+    private float regionW, regionH;
     private float u = 0f, v = 0f;
     private int r = 0xFF, g = 0xFF, b = 0xFF, a = 0xFF;
     private RenderTypes renderType = RenderTypes.TRANSLUCENT;
@@ -163,8 +163,10 @@ public class SpriteTask extends RenderTask {
         if (dimensions != null && (dimensions.x <= 0 || dimensions.y <= 0))
                 throw new LuaError("Invalid texture size: " + width + "x" + height);
         if (dimensions != null) {
-            this.textureW = this.regionW = this.width = (int) Math.round(dimensions.x);
-            this.textureH = this.regionH = this.height = (int) Math.round(dimensions.y);
+            this.textureW = this.width = (int) Math.round(dimensions.x);
+            this.textureH = this.height = (int) Math.round(dimensions.y);
+            this.regionW = Math.round(dimensions.x);
+            this.regionH = Math.round(dimensions.y);
         }
         recalculateVertices();
         return this;
@@ -268,8 +270,8 @@ public class SpriteTask extends RenderTask {
     )
     public SpriteTask setRegion(Object w, Double h) {
         FiguraVec2 vec = LuaUtils.parseVec2("setRegion", w, h);
-        this.regionW = (int) Math.round(vec.x);
-        this.regionH = (int) Math.round(vec.y);
+        this.regionW = (float) vec.x;
+        this.regionH = (float) vec.y;
         recalculateVertices();
         return this;
     }
