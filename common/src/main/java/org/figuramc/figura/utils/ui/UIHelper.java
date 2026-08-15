@@ -38,12 +38,11 @@ import org.figuramc.figura.model.rendering.EntityRenderMode;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.RenderUtils;
 import org.figuramc.figura.utils.TextUtils;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
+import org.joml.*;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 
+import java.lang.Math;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -348,13 +347,15 @@ public final class UIHelper {
         tessellator.end();
     }
 
-    /// stretch-based nine-slice renderer with more traditional parameters.
+    /// stretch-based nine-slice renderer with more traditional parameters. and also more knobs than you will ever need
     ///
     /// - `scale` is how many display units per pixel on the texture. you probably want `1`
     /// - `top`, `right`, `bottom`, `left` define the slice area
     /// - `texW/H` define the texture width / height, used for calculating UVs in pixels
     /// - `regU/V/W/H` define the source region box in pixels
     /// - `z` is the draw order
+    /// - `post` is any other operations you might want to apply to the vertices (ex. colors, normals ...)
+    ///    - use `NOP_VERT_POST` to apply no changes
     @SuppressWarnings("DuplicatedCode")
     public static void blitSlicedAlt(
             GuiGraphics gui,
@@ -363,14 +364,14 @@ public final class UIHelper {
             int top, int right, int bottom, int left,
             int texW, int texH,
             int regU, int regV, int regW, int regH,
-            float z
+            float z, Vector4fc color
     ) {
         prepareTexture(texture);
 
         Matrix4f pose = gui.pose().last().pose();
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder buffer = tessellator.getBuilder();
-        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
 
         float texWf = (float) texW, texHf = (float) texH;
 
@@ -393,19 +394,19 @@ public final class UIHelper {
         float uiv2 = y + h - bottom * scale, uiv3 = y + h;
 
         // top-left, top-center, top-right
-        quadManual(buffer, pose, uih0, uih1, uiv0, uiv1, z, hbp0, hbp1, vbp0, vbp1);
-        quadManual(buffer, pose, uih1, uih2, uiv0, uiv1, z, hbp1, hbp2, vbp0, vbp1);
-        quadManual(buffer, pose, uih2, uih3, uiv0, uiv1, z, hbp2, hbp3, vbp0, vbp1);
+        quadManual(buffer, pose, uih0, uih1, uiv0, uiv1, z, hbp0, hbp1, vbp0, vbp1, color);
+        quadManual(buffer, pose, uih1, uih2, uiv0, uiv1, z, hbp1, hbp2, vbp0, vbp1, color);
+        quadManual(buffer, pose, uih2, uih3, uiv0, uiv1, z, hbp2, hbp3, vbp0, vbp1, color);
 
         // center-left, center-center, center-right
-        quadManual(buffer, pose, uih0, uih1, uiv1, uiv2, z, hbp0, hbp1, vbp1, vbp2);
-        quadManual(buffer, pose, uih1, uih2, uiv1, uiv2, z, hbp1, hbp2, vbp1, vbp2);
-        quadManual(buffer, pose, uih2, uih3, uiv1, uiv2, z, hbp2, hbp3, vbp1, vbp2);
+        quadManual(buffer, pose, uih0, uih1, uiv1, uiv2, z, hbp0, hbp1, vbp1, vbp2, color);
+        quadManual(buffer, pose, uih1, uih2, uiv1, uiv2, z, hbp1, hbp2, vbp1, vbp2, color);
+        quadManual(buffer, pose, uih2, uih3, uiv1, uiv2, z, hbp2, hbp3, vbp1, vbp2, color);
 
         // bottom-left, bottom-center, bottom-right
-        quadManual(buffer, pose, uih0, uih1, uiv2, uiv3, z, hbp0, hbp1, vbp2, vbp3);
-        quadManual(buffer, pose, uih1, uih2, uiv2, uiv3, z, hbp1, hbp2, vbp2, vbp3);
-        quadManual(buffer, pose, uih2, uih3, uiv2, uiv3, z, hbp2, hbp3, vbp2, vbp3);
+        quadManual(buffer, pose, uih0, uih1, uiv2, uiv3, z, hbp0, hbp1, vbp2, vbp3, color);
+        quadManual(buffer, pose, uih1, uih2, uiv2, uiv3, z, hbp1, hbp2, vbp2, vbp3, color);
+        quadManual(buffer, pose, uih2, uih3, uiv2, uiv3, z, hbp2, hbp3, vbp2, vbp3, color);
 
         tessellator.end();
     }
@@ -446,14 +447,30 @@ public final class UIHelper {
     private static void quad(BufferBuilder bufferBuilder, Matrix4f pose, float x, float y, float width, float height, float z, float u0, float u1, float v0, float v1) {
         float x1 = x + width;
         float y1 = y + height;
-        quadManual(bufferBuilder, pose, x, x1, y, y1, z, u0, u1, v0, v1);
+        quadManual(bufferBuilder, pose, x, x1, y, y1, z, u0, u1, v0, v1, WHITE);
     }
 
-    private static void quadManual(BufferBuilder bufferBuilder, Matrix4f pose, float x0, float x1, float y0, float y1, float z, float u0, float u1, float v0, float v1) {
-        bufferBuilder.vertex(pose, x0, y1, z).uv(u0, v1).endVertex();
-        bufferBuilder.vertex(pose, x1, y1, z).uv(u1, v1).endVertex();
-        bufferBuilder.vertex(pose, x1, y0, z).uv(u1, v0).endVertex();
-        bufferBuilder.vertex(pose, x0, y0, z).uv(u0, v0).endVertex();
+    public static final Vector4fc WHITE = new Vector4f(1f, 1f, 1f, 1f);
+
+    public static void quadManual(
+            BufferBuilder bufferBuilder,
+            Matrix4f pose,
+            float x0, float x1, float y0, float y1,
+            float z,
+            float u0, float u1, float v0, float v1,
+            Vector4fc color
+    ) {
+        // Smart JVM can loop unroll it. probably. right??
+        for (int i = 0; i < 4; i++) {
+            VertexConsumer q = switch (i) {
+                case 0 -> bufferBuilder.vertex(pose, x0, y1, z).uv(u0, v1);
+                case 1 -> bufferBuilder.vertex(pose, x1, y1, z).uv(u1, v1);
+                case 2 -> bufferBuilder.vertex(pose, x1, y0, z).uv(u1, v0);
+                case 3 -> bufferBuilder.vertex(pose, x0, y0, z).uv(u0, v0);
+                default -> throw new AssertionError();
+            };
+            q.color(color.x(), color.y(), color.z(), color.w()).endVertex();
+        }
     }
 
     public static void renderWithoutScissors(GuiGraphics gui, Consumer<GuiGraphics> toRun) {
