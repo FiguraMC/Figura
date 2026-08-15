@@ -1529,26 +1529,16 @@ public class FiguraModelPart implements Comparable<FiguraModelPart>, MutablePart
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                @LuaMethodOverload(
-                    argumentTypes = String.class,
-                    argumentNames = "name"
-                ),
-                @LuaMethodOverload(
-                        argumentTypes = {String.class, Boolean.class},
-                        argumentNames = {"name", "deepCopy"}
-                ),
-                @LuaMethodOverload(
-                        argumentTypes = {Boolean.class},
-                        argumentNames = {"deepCopy"}
-                )
+                    @LuaMethodOverload(
+                            argumentTypes = String.class,
+                            argumentNames = "name"
+                    ),
+                    @LuaMethodOverload()
             },
             value = "model_part.copy"
     )
-    public FiguraModelPart copy(Object obj, Boolean deepP) {
-        String name = obj instanceof String ? (String) obj : null;
-        Boolean deep = obj instanceof Boolean ? (Boolean) obj : deepP;
-        if (deep != null && deep) return deepCopy(name);
-		if (name == null) name = this.name;
+    public FiguraModelPart copy(String name) {
+        if (name == null) name = this.name;
         PartCustomization customization = new PartCustomization();
         this.customization.copyTo(customization);
         String derivedUUID = uuid != null
@@ -1581,10 +1571,13 @@ public class FiguraModelPart implements Comparable<FiguraModelPart>, MutablePart
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaMethodOverload(
-                    argumentTypes = String.class,
-                    argumentNames = "name"
-            ),
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = String.class,
+                            argumentNames = "name"
+                    ),
+                    @LuaMethodOverload()
+            },
             value = "model_part.deep_copy"
     )
     public FiguraModelPart deepCopy(String name) {
