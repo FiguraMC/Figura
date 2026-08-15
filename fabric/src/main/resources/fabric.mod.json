@@ -19,7 +19,7 @@
   "license": "Polyform-Noncommercial-1.0.0",
   "icon": "assets/figura/icon.png",
 
-  "environment": "client",
+  "environment": "*",
   "entrypoints": {
     "client": [
       "org.figuramc.figura.fabric.FiguraModFabric"

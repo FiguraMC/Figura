@@ -7,7 +7,7 @@ architectury {
 	minecraft = rootProject.minecraft_version
 }
 
-subprojects {
+rootProject.mod_projects.split(",").each { project(":$it") {
 	apply plugin: "dev.architectury.loom"
 
 	loom {
@@ -26,8 +26,9 @@ subprojects {
 				includeGroup("com.eliotlash.mclib")
 			}
 		}
-		maven { url 'https://maven.maxhenkel.de/repository/public' }
-	}
+        maven { url 'https://maven.maxhenkel.de/repository/public' }
+        mavenLocal()
+    }
 
 	dependencies {
 		minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
@@ -40,7 +41,7 @@ subprojects {
 		implementation("org.chenliang.oggus:oggus:1.2.0")
 		implementation("org.concentus:Concentus:1.0-SNAPSHOT")
 	}
-}
+}}
 
 allprojects {
 	apply plugin: "java"
