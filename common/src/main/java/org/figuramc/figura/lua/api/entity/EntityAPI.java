@@ -18,15 +18,17 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
+import org.figuramc.figura.lua.FiguraLuaRuntime;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.NbtToLua;
-import org.figuramc.figura.lua.ReadOnlyLuaTable;
+import org.figuramc.figura.lua.transfer.AvatarVarsTransformer;
 import org.figuramc.figura.lua.api.world.ItemStackAPI;
 import org.figuramc.figura.lua.docs.LuaMetamethodDoc;
 import org.figuramc.figura.lua.docs.LuaMetamethodDoc.LuaMetamethodOverload;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
+import org.figuramc.figura.lua.transfer.TransformerLuaTable;
 import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.mixin.EntityAccessor;
@@ -539,9 +541,14 @@ public class EntityAPI<T extends Entity> {
     )
     public LuaValue getVariable(String key) {
         checkEntity();
+        Avatar caller = FiguraLuaRuntime.contextStack.get().peek();
+        if (caller == null) return LuaValue.NIL;
         Avatar a = AvatarManager.getAvatar(entity);
         LuaTable table = a == null || a.luaRuntime == null ? new LuaTable() : a.luaRuntime.avatar_meta.storedStuff;
-        table = new ReadOnlyLuaTable(table);
+        if (a != null) {
+            AvatarVarsTransformer transform = new AvatarVarsTransformer(a, caller);
+            table = TransformerLuaTable.make(table, transform);
+        }
         return key == null ? table : table.get(key);
     }
 

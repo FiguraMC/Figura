@@ -1,9 +1,11 @@
 package org.figuramc.figura.math.matrix;
 
+import org.figuramc.figura.lua.transfer.DeepCopyInto;
 import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.math.vector.FiguraVector;
 
-public abstract class FiguraMatrix<T extends FiguraMatrix<T, V>, V extends FiguraVector<V, T>> {
+public abstract class FiguraMatrix<T extends FiguraMatrix<T, V>, V extends FiguraVector<V, T>>
+        implements DeepCopyInto<T> {
 
     protected T cachedInverse = null;
     protected double cachedDeterminant = Double.NaN;

@@ -7,6 +7,7 @@ import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.api.*;
 import org.figuramc.figura.lua.api.action_wheel.ActionWheelAPI;
+import org.figuramc.figura.lua.api.data.DeepCopyTransformer;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
 import org.figuramc.figura.lua.api.entity.NullEntity;
 import org.figuramc.figura.lua.api.event.EventsAPI;
@@ -15,9 +16,11 @@ import org.figuramc.figura.lua.api.keybind.KeybindAPI;
 import org.figuramc.figura.lua.api.nameplate.NameplateAPI;
 import org.figuramc.figura.lua.api.ping.PingAPI;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaModelAPI;
+import org.figuramc.figura.lua.transfer.ReadOnlyLuaTable;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.PathUtils;
 import net.minecraft.nbt.ByteArrayTag;
+import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.*;
 import org.luaj.vm2.compiler.LuaC;
 import org.luaj.vm2.lib.*;
@@ -31,6 +34,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Stack;
 import java.util.function.Function;
@@ -119,6 +123,25 @@ public class FiguraLuaRuntime {
 
     public Entity getUser() {
         return entityAPI != null && entityAPI.isLoaded() ? entityAPI.getEntity() : null;
+    }
+
+    // context //
+    public static final ThreadLocal<LinkedList<Avatar>> contextStack = ThreadLocal.withInitial(LinkedList::new);
+
+    @FunctionalInterface
+    public interface AvatarContext extends AutoCloseable {
+        @Override
+        void close(); // note: no 'throws'
+    }
+
+    public static AvatarContext context(Avatar avatar) {
+        contextStack.get().push(avatar);
+        return () -> {
+            Avatar last = contextStack.get().pop();
+            if (last != avatar) throw new IllegalStateException(
+                    "Context stack state is corrupt (expected " + avatar + " on top, was actually " + last + ")"
+            );
+        };
     }
 
     // init runtime //
@@ -228,6 +251,10 @@ public class FiguraLuaRuntime {
                 return typename() + ": ipairs";
             }
         });
+
+        // inject into table
+        LuaTable table = userGlobals.get("table").checktable();
+        table.set("deepcopy", deepcopy);
     }
 
     private final VarArgFunction require = new VarArgFunction() {
@@ -280,6 +307,36 @@ public class FiguraLuaRuntime {
             }
 
             return table;
+        }
+    };
+
+    private final VarArgFunction deepcopy = new VarArgFunction() {
+        @Override
+        public Varargs invoke(Varargs args) {
+            LuaValue input = args.arg(1);
+            LuaValue metatablesV = args.arg(2);
+            final @Nullable String metatables;
+            if (metatablesV.isnil())
+                metatables = null;
+            else if (metatablesV.isstring())
+                metatables = metatablesV.tojstring();
+            else
+                throw new LuaError("argument #2 to deepcopy: expected string or nil, but got " + metatablesV.typename());
+            LuaValue copyExtraV = args.arg(3);
+            final boolean copyExtra;
+            if (copyExtraV.isboolean()) copyExtra = copyExtraV.checkboolean();
+            else if (copyExtraV.isnil()) copyExtra = false;
+            else throw new LuaError("argument #3 to deepcopy: expected boolean or nil, but got " + copyExtraV.typename());
+
+            DeepCopyTransformer.MetatableRule meta = metatables != null
+                    ? DeepCopyTransformer.MetatableRule.getFor(metatables)
+                    : DeepCopyTransformer.MetatableRule.LINK_SOFT;
+            DeepCopyTransformer transformer = new DeepCopyTransformer(
+                    typeManager,
+                    meta,
+                    copyExtra
+            );
+            return transformer.visit(input);
         }
     };
     
@@ -456,7 +513,13 @@ public class FiguraLuaRuntime {
         // load
         String directory = PathUtils.computeSafeString(path.getParent());
         String fileName = PathUtils.computeSafeString(path.getFileName());
-        Varargs value = userGlobals.load(src, name).invoke(LuaValue.varargsOf(LuaValue.valueOf(directory), LuaValue.valueOf(fileName)));
+
+        Varargs value;
+        try (AvatarContext ignored = context(owner)) {
+            value = userGlobals.load(src, name)
+                    .invoke(LuaValue.varargsOf(LuaValue.valueOf(directory), LuaValue.valueOf(fileName)));
+        }
+        
         if (value == LuaValue.NIL)
             value = LuaValue.TRUE;
 
@@ -464,7 +527,7 @@ public class FiguraLuaRuntime {
         loadedScripts.put(name, value);
         loadingScripts.pop();
         return value;
-    };
+    }
 
     public boolean init(ListTag autoScripts) {
         if (scripts.isEmpty())
@@ -548,7 +611,7 @@ public class FiguraLuaRuntime {
         setInstructionLimit(limit.remaining);
 
         // get and call event
-        try {
+        try (AvatarContext ignored = context(owner)){
             Varargs ret;
             if (toRun instanceof LuaEvent event)
                 ret = event.call(val);

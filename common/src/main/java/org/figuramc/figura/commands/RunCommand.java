@@ -24,7 +24,7 @@ class RunCommand {
         if (luaRuntime == null)
             return 0;
 
-        try {
+        try (FiguraLuaRuntime.AvatarContext ignored = FiguraLuaRuntime.context(luaRuntime.owner)) {
             luaRuntime.load("runCommand", lua).call();
             return 1;
         } catch (Exception | StackOverflowError e) {

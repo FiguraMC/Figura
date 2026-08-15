@@ -1,4 +1,4 @@
-package org.figuramc.figura.lua;
+package org.figuramc.figura.lua.transfer;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -6,7 +6,7 @@ import org.luaj.vm2.Varargs;
 
 public class ReadOnlyLuaTable extends LuaTable {
     public ReadOnlyLuaTable(LuaValue table) {
-        presize(table.length(), 0);
+        presize(table.rawlen(), 0);
         for (Varargs n = table.next(LuaValue.NIL); !n.arg1().isnil(); n = table
                 .next(n.arg1())) {
             LuaValue key = n.arg1();

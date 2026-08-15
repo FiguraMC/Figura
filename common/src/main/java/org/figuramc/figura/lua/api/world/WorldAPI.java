@@ -18,17 +18,18 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.saveddata.maps.MapDecoration;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraft.world.phys.AABB;
-import org.apache.commons.lang3.ArrayUtils;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
+import org.figuramc.figura.lua.FiguraLuaRuntime;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
-import org.figuramc.figura.lua.ReadOnlyLuaTable;
+import org.figuramc.figura.lua.transfer.AvatarVarsTransformer;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
 import org.figuramc.figura.lua.api.entity.PlayerAPI;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
+import org.figuramc.figura.lua.transfer.TransformerLuaTable;
 import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.utils.EntityUtils;
@@ -525,9 +526,12 @@ public class WorldAPI {
     @LuaMethodDoc("world.avatar_vars")
     public static Map<String, LuaTable> avatarVars() {
         HashMap<String, LuaTable> varList = new HashMap<>();
+        Avatar caller = FiguraLuaRuntime.contextStack.get().peek();
+        if (caller == null) return null;
         for (Avatar avatar : AvatarManager.getLoadedAvatars()) {
+            AvatarVarsTransformer transform = new AvatarVarsTransformer(avatar, caller);
             LuaTable tbl = avatar.luaRuntime == null ? new LuaTable() : avatar.luaRuntime.avatar_meta.storedStuff;
-            varList.put(avatar.owner.toString(), new ReadOnlyLuaTable(tbl));
+            varList.put(avatar.owner.toString(), TransformerLuaTable.make(tbl, transform));
         }
         return varList;
     }

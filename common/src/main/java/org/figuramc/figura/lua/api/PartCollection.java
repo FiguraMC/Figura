@@ -11,10 +11,8 @@ import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.model.FiguraModelPart;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
-import org.luaj.vm2.LuaUserdata;
 
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 @LuaWhitelist

@@ -115,6 +115,7 @@ public class LuaTypeManager {
     }
 
     private final Map<Class<?>, String> namesCache = new HashMap<>();
+
     public String getTypeName(Class<?> clazz) {
         return namesCache.computeIfAbsent(clazz, someClass -> {
             if (someClass.isAnnotationPresent(LuaTypeDoc.class))
@@ -247,7 +248,7 @@ public class LuaTypeManager {
         };
     }
 
-    private LuaValue wrap(Object instance) {
+    public LuaValue wrap(Object instance) {
         Class<?> clazz = instance.getClass();
         LuaTable metatable = metatables.get(clazz);
         while (metatable == null) {
@@ -342,7 +343,6 @@ public class LuaTypeManager {
         else
             return null;
     }
-
     public Varargs javaToLua(Object val) {
         if (val == null)
             return LuaValue.NIL;
