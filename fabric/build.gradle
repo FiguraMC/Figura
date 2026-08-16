@@ -34,7 +34,7 @@ dependencies {
     include(implementation("org.chenliang.oggus:oggus:1.2.0"))
     include(implementation("org.concentus:Concentus:1.0-SNAPSHOT"))
 
-    include(modImplementation('me.lucko:fabric-permissions-api:0.3.1'))
+    include(modImplementation('me.lucko:fabric-permissions-api:0.3.1') { transitive = false })
 
     if(rootProject.run_on_quilt == "false") {
         modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
