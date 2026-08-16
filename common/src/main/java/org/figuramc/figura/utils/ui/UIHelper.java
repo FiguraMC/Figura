@@ -13,10 +13,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
@@ -364,14 +361,14 @@ public final class UIHelper {
             int top, int right, int bottom, int left,
             int texW, int texH,
             int regU, int regV, int regW, int regH,
-            float z, Vector4fc color
+            float z
     ) {
         prepareTexture(texture);
 
         Matrix4f pose = gui.pose().last().pose();
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder buffer = tessellator.getBuilder();
-        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 
         float texWf = (float) texW, texHf = (float) texH;
 
@@ -394,19 +391,19 @@ public final class UIHelper {
         float uiv2 = y + h - bottom * scale, uiv3 = y + h;
 
         // top-left, top-center, top-right
-        quadManual(buffer, pose, uih0, uih1, uiv0, uiv1, z, hbp0, hbp1, vbp0, vbp1, color);
-        quadManual(buffer, pose, uih1, uih2, uiv0, uiv1, z, hbp1, hbp2, vbp0, vbp1, color);
-        quadManual(buffer, pose, uih2, uih3, uiv0, uiv1, z, hbp2, hbp3, vbp0, vbp1, color);
+        quadManual(buffer, pose, uih0, uih1, uiv0, uiv1, z, hbp0, hbp1, vbp0, vbp1);
+        quadManual(buffer, pose, uih1, uih2, uiv0, uiv1, z, hbp1, hbp2, vbp0, vbp1);
+        quadManual(buffer, pose, uih2, uih3, uiv0, uiv1, z, hbp2, hbp3, vbp0, vbp1);
 
         // center-left, center-center, center-right
-        quadManual(buffer, pose, uih0, uih1, uiv1, uiv2, z, hbp0, hbp1, vbp1, vbp2, color);
-        quadManual(buffer, pose, uih1, uih2, uiv1, uiv2, z, hbp1, hbp2, vbp1, vbp2, color);
-        quadManual(buffer, pose, uih2, uih3, uiv1, uiv2, z, hbp2, hbp3, vbp1, vbp2, color);
+        quadManual(buffer, pose, uih0, uih1, uiv1, uiv2, z, hbp0, hbp1, vbp1, vbp2);
+        quadManual(buffer, pose, uih1, uih2, uiv1, uiv2, z, hbp1, hbp2, vbp1, vbp2);
+        quadManual(buffer, pose, uih2, uih3, uiv1, uiv2, z, hbp2, hbp3, vbp1, vbp2);
 
         // bottom-left, bottom-center, bottom-right
-        quadManual(buffer, pose, uih0, uih1, uiv2, uiv3, z, hbp0, hbp1, vbp2, vbp3, color);
-        quadManual(buffer, pose, uih1, uih2, uiv2, uiv3, z, hbp1, hbp2, vbp2, vbp3, color);
-        quadManual(buffer, pose, uih2, uih3, uiv2, uiv3, z, hbp2, hbp3, vbp2, vbp3, color);
+        quadManual(buffer, pose, uih0, uih1, uiv2, uiv3, z, hbp0, hbp1, vbp2, vbp3);
+        quadManual(buffer, pose, uih1, uih2, uiv2, uiv3, z, hbp1, hbp2, vbp2, vbp3);
+        quadManual(buffer, pose, uih2, uih3, uiv2, uiv3, z, hbp2, hbp3, vbp2, vbp3);
 
         tessellator.end();
     }
@@ -447,7 +444,7 @@ public final class UIHelper {
     private static void quad(BufferBuilder bufferBuilder, Matrix4f pose, float x, float y, float width, float height, float z, float u0, float u1, float v0, float v1) {
         float x1 = x + width;
         float y1 = y + height;
-        quadManual(bufferBuilder, pose, x, x1, y, y1, z, u0, u1, v0, v1, WHITE);
+        quadManual(bufferBuilder, pose, x, x1, y, y1, z, u0, u1, v0, v1);
     }
 
     public static final Vector4fc WHITE = new Vector4f(1f, 1f, 1f, 1f);
@@ -457,20 +454,12 @@ public final class UIHelper {
             Matrix4f pose,
             float x0, float x1, float y0, float y1,
             float z,
-            float u0, float u1, float v0, float v1,
-            Vector4fc color
+            float u0, float u1, float v0, float v1
     ) {
-        // Smart JVM can loop unroll it. probably. right??
-        for (int i = 0; i < 4; i++) {
-            VertexConsumer q = switch (i) {
-                case 0 -> bufferBuilder.vertex(pose, x0, y1, z).uv(u0, v1);
-                case 1 -> bufferBuilder.vertex(pose, x1, y1, z).uv(u1, v1);
-                case 2 -> bufferBuilder.vertex(pose, x1, y0, z).uv(u1, v0);
-                case 3 -> bufferBuilder.vertex(pose, x0, y0, z).uv(u0, v0);
-                default -> throw new AssertionError();
-            };
-            q.color(color.x(), color.y(), color.z(), color.w()).endVertex();
-        }
+        bufferBuilder.vertex(pose, x0, y1, z).uv(u0, v1).endVertex();
+        bufferBuilder.vertex(pose, x1, y1, z).uv(u1, v1).endVertex();
+        bufferBuilder.vertex(pose, x1, y0, z).uv(u1, v0).endVertex();
+        bufferBuilder.vertex(pose, x0, y0, z).uv(u0, v0).endVertex();
     }
 
     public static void renderWithoutScissors(GuiGraphics gui, Consumer<GuiGraphics> toRun) {
