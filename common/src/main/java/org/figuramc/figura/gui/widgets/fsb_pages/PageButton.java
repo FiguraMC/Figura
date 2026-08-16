@@ -20,6 +20,7 @@ public class PageButton extends Button {
     private final FiguraVec3 defaultColor;  // self-explanatory
     private final FiguraVec3 selectedColor; // the current page
     private final FiguraVec3 hoveredColor;  // cursor hover / keyboard focus
+    private final FiguraVec3 textColor;     // text color
 
     public boolean isCurrentPage;
 
@@ -32,8 +33,13 @@ public class PageButton extends Button {
         ColorUtils.ColorTheme theme = new ColorUtils.ColorTheme(hue);
         disabledColor = theme.stop(1);
         defaultColor = theme.stop(3);
-        selectedColor = theme.stop(6);
-        hoveredColor = theme.stop(9);
+        selectedColor = theme.stop(5);
+        hoveredColor = theme.stop(6);
+        textColor = theme.stop(9);
+    }
+
+    public FiguraVec3 getSelectedColor() {
+        return selectedColor.copy();
     }
 
     public static PageButton of(Component name, @Nullable Component tooltip, OnPress pressAction, int color) {
@@ -63,6 +69,7 @@ public class PageButton extends Button {
     public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         FiguraVec3 color = getDrawingColor();
 
+        gui.setColor((float) color.x, (float) color.y, (float) color.z, 1f);
         // Just chop off the right side of the button texture xd
         UIHelper.blitSlicedAlt(
                 gui,
@@ -71,15 +78,17 @@ public class PageButton extends Button {
                 1, 0, 1, 1,
                 16, 16,
                 0, 0, 15, 16,
-                1.0f, new Vector4f(color.asVec3f(), 1f)
+                1.0f
         );
 
         PoseStack pose = gui.pose();
         pose.pushPose();
         pose.translate(0, 0, 3.0f);
+        gui.setColor((float) textColor.x, (float) textColor.y, (float) textColor.z, 1f);
         UIHelper.renderScrollingText(
                 gui, getMessage(), getX() + 4, getY() + 4, getWidth() - 2, getTextColor()
         );
         pose.popPose();
+        gui.setColor(1f, 1f, 1f, 1f);
     }
 }
