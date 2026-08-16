@@ -43,6 +43,7 @@ dependencies {
         include(modImplementation(fabricApi.module("fabric-command-api-v2", rootProject.fabric_api)))
         include(modImplementation(fabricApi.module("fabric-key-binding-api-v1", rootProject.fabric_api)))
         include(modImplementation(fabricApi.module("fabric-resource-loader-v0", rootProject.fabric_api)))
+        include(modImplementation(fabricApi.module("fabric-networking-api-v1", rootProject.fabric_api)))
     }
     else {
         modImplementation "org.quiltmc:quilt-loader:${rootProject.quilt_loader_version}"
@@ -55,6 +56,7 @@ dependencies {
         include(modCompileOnly(fabricApi.module("fabric-command-api-v2", rootProject.fabric_api)))
         include(modCompileOnly(fabricApi.module("fabric-key-binding-api-v1", rootProject.fabric_api)))
         include(modCompileOnly(fabricApi.module("fabric-resource-loader-v0", rootProject.fabric_api)))
+        include(modCompileOnly(fabricApi.module("fabric-networking-api-v1", rootProject.fabric_api)))
     }
     // Mods
     if (rootProject.run_with_modmenu == "true") {
