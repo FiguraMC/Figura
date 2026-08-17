@@ -2,16 +2,23 @@ package org.figuramc.figura.gui.screens;
 
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import org.figuramc.figura.gui.widgets.fsb_pages.AbstractFSBPage;
-import org.figuramc.figura.gui.widgets.fsb_pages.DebugFSBPage;
-import org.figuramc.figura.gui.widgets.fsb_pages.PageCtor;
+import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.gui.widgets.FiguraWidget;
+import org.figuramc.figura.gui.widgets.fsb_pages.*;
 import org.figuramc.figura.gui.widgets.lists.FSBPageList;
 import org.figuramc.figura.utils.FiguraText;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class FSBScreen extends AbstractPanelScreen {
+
+    // Hues for sidebar sections
+    public static final int SECTION_CLIENT = 235;
+    public static final int SECTION_LAN = 160;
+    public static final int SECTION_REMOTE = 55;
+    public static final int SECTION_EXIT = 0;
 
     public static final int TOP_MARGIN = 28 - 4; // height of top tabs
     public static final int LEFT_PANEL_MIN = 150;
@@ -23,26 +30,19 @@ public class FSBScreen extends AbstractPanelScreen {
     private FSBPageList pageList = null;
     private AbstractFSBPage page = null;
 
-    public record Page(String id, Component text, PageCtor<AbstractFSBPage> ctor) {}
-
-    private Page currentPage;
-    private final List<Page> pages = new ArrayList<>();
+    private AbstractFSBPage currentPage;
 
     public FSBScreen(Screen parentScreen) {
         super(parentScreen, FiguraText.of("gui.panels.title.fsb"));
 
-        pages.add(currentPage = new Page(
-                "debug",
-                Component.literal("debug page"),
-                DebugFSBPage::new
-        ));
+        currentPage = make(ConnectionList::new);
     }
 
-    public void switchTo(Page target) {
+    public void switchTo(AbstractFSBPage target) {
         if (page != null) {
             this.removeWidget(page);
         }
-        page = target.ctor.auto(this);
+        page = target;
         this.addRenderableWidget(page);
         relayout();
     }
@@ -122,12 +122,54 @@ public class FSBScreen extends AbstractPanelScreen {
         page.relayout();
     }
 
+    private <T extends AbstractFSBPage> T make(PageCtor<T> ctor) {
+        return ctor.auto(this);
+    }
+
+    private void connectionsPage() {
+        FiguraMod.LOGGER.info("conneectionfrwjriw page");
+        switchTo(make(ConnectionList::new));
+    }
+    private void clientSettingsPage() {
+        FiguraMod.LOGGER.info("settignwejrowej page");
+        switchTo(make(DebugFSBPage::new));
+    }
+
+    private int pageListHash = -1;
+
+    private int computePageListHash() {
+        return Objects.hash();
+    }
+
+    @Override
+    public void tick() {
+        int newContentH = computePageListHash();
+        if (newContentH != pageListHash) {
+            pageList.updateContent(this::updatePageList);
+            pageListHash = newContentH;
+        }
+
+        super.tick();
+    }
+
+    private void updatePageList(List<FiguraWidget> target) {
+        target.clear();
+
+        // Always present
+        // TODO: TRANS (RIGHTS) (i mean I18N)
+        target.add(PageButton.of(Component.literal("Connections"), null, 16, q -> connectionsPage(), SECTION_CLIENT));
+        target.add(PageButton.of(Component.literal("Client Settings"), null, 16, q -> clientSettingsPage(), SECTION_CLIENT));
+    }
+
     @Override
     public void init() {
         super.init();
 
         // List of sub-pages
-        pageList = new FSBPageList(16, 16, 150, 150, this);
+        pageListHash = computePageListHash();
+        ArrayList<FiguraWidget> listContent = new ArrayList<>(8);
+        updatePageList(listContent);
+        pageList = new FSBPageList(16, 16, 150, 150, listContent);
         addRenderableWidget(pageList);
 
         switchTo(currentPage);
@@ -139,4 +181,6 @@ public class FSBScreen extends AbstractPanelScreen {
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
+
+
 }
