@@ -1,50 +1,42 @@
 package org.figuramc.figura.gui.widgets.lists;
 
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
-import org.figuramc.figura.gui.screens.FSBScreen;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import org.figuramc.figura.gui.widgets.FiguraWidget;
-import org.figuramc.figura.gui.widgets.SpacerWidget;
 import org.figuramc.figura.gui.widgets.fsb_pages.PageButton;
 import org.figuramc.figura.utils.ColorUtils;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class FSBPageList extends AbstractList {
 
-    private final List<FiguraWidget> content = new ArrayList<>();
+    private final List<FiguraWidget> content;
     int currentPageButton = 0;
 
-    private final FSBScreen parent;
-
-    private void page(Component label, int color) {
-        PageButton btn = PageButton.of(
-                label, null, q -> {}, color
-        );
-        btn.setHeight(16);
-        content.add(btn);
+    /**
+     * stream of {@link #content} elements that extend {@link GuiEventListener}.
+     */
+    private Stream<GuiEventListener> contentWithListeners() {
+        return content.stream().filter(it -> it instanceof GuiEventListener).map(it -> (GuiEventListener) it);
     }
 
-    public FSBPageList(int x, int y, int width, int height, FSBScreen parent) {
+    public FSBPageList(int x, int y, int width, int height, List<FiguraWidget> content) {
         super(x, y, width, height);
-        this.parent = parent;
         relayout();
-        page(Component.literal("Connections"), 235);
-        page(Component.literal("Client Options"), 235);
-        content.add(SpacerWidget.of(0, 8));
-        page(Component.literal("FSB for LAN Servers"), 160);
-        page(Component.literal("Configuration"), 160);
-        page(Component.literal("Players"), 160);
-        page(Component.literal("Content"), 160);
-        content.add(SpacerWidget.of(0, 8));
-        page(Component.literal("server name"), 55);
-        page(Component.literal("Configuration"), 55);
-        page(Component.literal("Players"), 55);
-        page(Component.literal("Content"), 55);
-        content.add(SpacerWidget.of(0, 8));
-        page(Component.literal("Done"), 0);
+        this.content = content;
+        this.children.addAll(contentWithListeners().toList());
         updateScissors(1, 1, -1, -2);
+    }
+
+    public void updateContent(Consumer<List<FiguraWidget>> updater) {
+        this.children.removeAll(contentWithListeners().toList());
+        updater.accept(content);
+        this.children.addAll(contentWithListeners().toList());
     }
 
     @Override

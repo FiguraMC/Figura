@@ -30,7 +30,7 @@ public class PageButton extends Button {
             int hue
     ) {
         super(x, y, width, height, text, tooltip, pressAction);
-        ColorUtils.ColorTheme theme = new ColorUtils.ColorTheme(hue);
+        ColorUtils.ColorTheme theme = ColorUtils.ColorTheme.of(hue);
         disabledColor = theme.stop(1);
         defaultColor = theme.stop(3);
         selectedColor = theme.stop(5);
@@ -42,8 +42,8 @@ public class PageButton extends Button {
         return selectedColor.copy();
     }
 
-    public static PageButton of(Component name, @Nullable Component tooltip, OnPress pressAction, int color) {
-        return new PageButton(0, 0, 100, 20, name, tooltip, pressAction, color);
+    public static PageButton of(Component name, @Nullable Component tooltip, int height, OnPress pressAction, int color) {
+        return new PageButton(0, 0, 100, height, name, tooltip, pressAction, color);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package org.figuramc.figura.utils;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Style;
 import org.figuramc.figura.math.vector.FiguraVec3;
@@ -8,6 +10,7 @@ import org.jetbrains.annotations.Range;
 
 import java.awt.*;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 public class ColorUtils {
 
@@ -318,7 +321,6 @@ public class ColorUtils {
         return FiguraVec4.of(rgb[3] / 255f, rgb[0] / 255f, rgb[1] / 255f, rgb[2] / 255f);
     }
 
-    @SuppressWarnings("ClassCanBeRecord")
     public static class ColorTheme {
         private static final int N_STOPS = 11;
         // stop 0 is black & stop 10 is white
@@ -328,6 +330,9 @@ public class ColorUtils {
         private static final double[] L = {.0, .2, .25, .3, .4, .5, .6, .7, .8, .9, 1.};
         //                                 0   .2    .25    .3    .4    .5    .6    .7    .8  .9    1.
         private static final double[] C = {.0, .034, .0425, .051, .068, .085, .102, .119, .1, .048, .0};
+        private static final Cache<Double, ColorTheme> cache = CacheBuilder.newBuilder().maximumSize(64).build();
+
+        private final FiguraVec3[] slots = new FiguraVec3[N_STOPS];
 
         static {
             //noinspection ConstantValue
@@ -338,8 +343,26 @@ public class ColorUtils {
 
         public final double hue;
 
-        public ColorTheme(double hue) {
+        private ColorTheme(double hue) {
             this.hue = hue;
+            for (int i = 0; i < N_STOPS; i++) slots[i] = generate(i);
+        }
+
+        public static ColorTheme of(double hue) {
+            try {
+                return cache.get(hue, () -> new ColorTheme(hue));
+            } catch (ExecutionException e) {
+                // This can't happen.
+                throw new AssertionError(e);
+            }
+        }
+
+        private FiguraVec3 generate(@Range(from = 0, to = N_STOPS - 1) int idx) {
+            return MathUtils.clamp(
+                    ColorUtils.oklabToRGB(ColorUtils.oklchToOklab(FiguraVec3.of(L[idx], C[idx], hue))),
+                    0d,
+                    1d
+            );
         }
 
         /**
@@ -348,12 +371,8 @@ public class ColorUtils {
          * @param idx index of color stop to generate
          * @return RGB
          */
-        public FiguraVec3 stop(@Range(from = 0, to = N_STOPS) int idx) {
-            return MathUtils.clamp(
-                    ColorUtils.oklabToRGB(ColorUtils.oklchToOklab(FiguraVec3.of(L[idx], C[idx], hue))),
-                    0d,
-                    1d
-            );
+        public FiguraVec3 stop(@Range(from = 0, to = N_STOPS - 1) int idx) {
+            return slots[idx];
         }
     }
 
