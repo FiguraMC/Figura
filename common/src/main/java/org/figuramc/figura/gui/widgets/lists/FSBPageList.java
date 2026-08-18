@@ -6,17 +6,14 @@ import org.figuramc.figura.gui.widgets.FiguraWidget;
 import org.figuramc.figura.gui.widgets.fsb_pages.PageButton;
 import org.figuramc.figura.utils.ColorUtils;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class FSBPageList extends AbstractList {
 
     private final List<FiguraWidget> content;
-    int currentPageButton = 0;
+    String currentPageButton = "";
 
     /**
      * stream of {@link #content} elements that extend {@link GuiEventListener}.
@@ -53,15 +50,17 @@ public class FSBPageList extends AbstractList {
 //        enableScissors(gui);
         int totalHeight = 2;
 
-        int i = 0;
         PageButton current = null;
         for (FiguraWidget widget : content) {
             int widgetH = widget.getHeight();
             if (widget instanceof PageButton btn) {
-                boolean active = i == currentPageButton;
+                boolean active = btn.identifier.equals(currentPageButton);
+
                 if (active) current = btn;
+
                 int selectedOffset = active ? 0 : 4;
                 int widthOffset = active ? 0 : 1;
+
                 btn.isCurrentPage = active;
                 btn.setBox(
                         x + 18 + selectedOffset,
@@ -70,7 +69,6 @@ public class FSBPageList extends AbstractList {
                         widgetH
                 );
                 btn.render(gui, mouseX, mouseY, delta);
-                i++;
             }
             totalHeight += widgetH;
             totalHeight += 1;
@@ -82,5 +80,9 @@ public class FSBPageList extends AbstractList {
 //        gui.disableScissor();
 
         super.render(gui, mouseX, mouseY, delta);
+    }
+
+    public void setActiveButton(String identifier) {
+        currentPageButton = identifier;
     }
 }

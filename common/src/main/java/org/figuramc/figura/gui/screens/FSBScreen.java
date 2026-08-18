@@ -4,6 +4,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.gui.widgets.FiguraWidget;
+import org.figuramc.figura.gui.widgets.SpacerWidget;
 import org.figuramc.figura.gui.widgets.fsb_pages.*;
 import org.figuramc.figura.gui.widgets.lists.FSBPageList;
 import org.figuramc.figura.utils.FiguraText;
@@ -20,6 +21,19 @@ public class FSBScreen extends AbstractPanelScreen {
     public static final int SECTION_REMOTE = 55;
     public static final int SECTION_EXIT = 0;
 
+    // Page button identifiers
+    public static final String CONNECTIONS = "connections";
+    public static final String CLIENT_CONFIG = "client_options";
+    public static final String LAN_INFO = "lan";
+    public static final String LAN_CONFIG = "lan_config";
+    public static final String LAN_PLAYERS = "lan_players";
+    public static final String LAN_CONTENT = "lan_content";
+    public static final String REMOTE_INFO = "remote";
+    public static final String REMOTE_CONFIG = "remote_config";
+    public static final String REMOTE_PLAYERS = "remote_players";
+    public static final String REMOTE_CONTENT = "remote_content";
+    public static final String EXIT = "exit";
+
     public static final int TOP_MARGIN = 28 - 4; // height of top tabs
     public static final int LEFT_PANEL_MIN = 150;
     public static final int LEFT_PANEL_MAX = 250;
@@ -30,20 +44,19 @@ public class FSBScreen extends AbstractPanelScreen {
     private FSBPageList pageList = null;
     private AbstractFSBPage page = null;
 
-    private AbstractFSBPage currentPage;
-
     public FSBScreen(Screen parentScreen) {
         super(parentScreen, FiguraText.of("gui.panels.title.fsb"));
 
-        currentPage = make(ConnectionList::new);
+        page = make(ConnectionList::new);
     }
 
-    public void switchTo(AbstractFSBPage target) {
+    public void switchTo(String identifier, AbstractFSBPage target) {
         if (page != null) {
             this.removeWidget(page);
         }
         page = target;
         this.addRenderableWidget(page);
+        if (pageList != null) pageList.setActiveButton(identifier);
         relayout();
     }
 
@@ -128,11 +141,12 @@ public class FSBScreen extends AbstractPanelScreen {
 
     private void connectionsPage() {
         FiguraMod.LOGGER.info("conneectionfrwjriw page");
-        switchTo(make(ConnectionList::new));
+        switchTo(CONNECTIONS, make(ConnectionList::new));
     }
-    private void clientSettingsPage() {
+
+    private void clientConfigPage() {
         FiguraMod.LOGGER.info("settignwejrowej page");
-        switchTo(make(DebugFSBPage::new));
+        switchTo(CLIENT_CONFIG, make(DebugFSBPage::new));
     }
 
     private int pageListHash = -1;
@@ -157,8 +171,83 @@ public class FSBScreen extends AbstractPanelScreen {
 
         // Always present
         // TODO: TRANS (RIGHTS) (i mean I18N)
-        target.add(PageButton.of(Component.literal("Connections"), null, 16, q -> connectionsPage(), SECTION_CLIENT));
-        target.add(PageButton.of(Component.literal("Client Settings"), null, 16, q -> clientSettingsPage(), SECTION_CLIENT));
+        target.add(PageButton.of(
+                CONNECTIONS,
+                Component.literal("Connections"), null,
+                16, SECTION_CLIENT,
+                q -> connectionsPage()
+        ));
+        target.add(PageButton.of(
+                CLIENT_CONFIG,
+                Component.literal("Client Settings"), null,
+                16, SECTION_CLIENT,
+                q -> clientConfigPage()
+        ));
+
+        target.add(SpacerWidget.of(0, 8));
+        target.add(OverviewPageButton.of(
+                LAN_INFO,
+                Component.literal("FSB for LAN Servers"), Component.literal("enabled"), null,
+                26, SECTION_LAN,
+                q -> clientConfigPage()
+        ));
+        //noinspection ConstantValue
+        if (true /* check if LAN server is running? */) {
+            target.add(PageButton.of(
+                    LAN_CONFIG,
+                    Component.literal("Configuration"), null,
+                    16, SECTION_LAN,
+                    q -> clientConfigPage()
+            ));
+            target.add(PageButton.of(
+                    LAN_PLAYERS,
+                    Component.literal("Players"), null,
+                    16, SECTION_LAN,
+                    q -> clientConfigPage()
+            ));
+            target.add(PageButton.of(
+                    LAN_CONTENT,
+                    Component.literal("Content"), null,
+                    16, SECTION_LAN,
+                    q -> clientConfigPage()
+            ));
+        }
+        //noinspection ConstantValue
+        if (true /* check if remote server available? */ ) {
+            target.add(SpacerWidget.of(0, 8));
+            target.add(OverviewPageButton.of(
+                    REMOTE_INFO,
+                    Component.literal("pqt's abode"), Component.literal("not connected"), null,
+                    26, SECTION_REMOTE,
+                    q -> clientConfigPage()
+            ));
+            // check permissions
+            target.add(PageButton.of(
+                    REMOTE_CONFIG,
+                    Component.literal("Configuration"), null,
+                    16, SECTION_REMOTE,
+                    q -> clientConfigPage()
+            ));
+            target.add(PageButton.of(
+                    REMOTE_PLAYERS,
+                    Component.literal("Players"), null,
+                    16, SECTION_REMOTE,
+                    q -> clientConfigPage()
+            ));
+            target.add(PageButton.of(
+                    REMOTE_CONTENT,
+                    Component.literal("Content"), null,
+                    16, SECTION_REMOTE,
+                    q -> clientConfigPage()
+            ));
+        }
+        target.add(SpacerWidget.of(0, 8));
+        target.add(PageButton.of(
+                EXIT,
+                Component.literal("Done"), null,
+                16, SECTION_EXIT,
+                q -> onClose()
+        ));
     }
 
     @Override
@@ -172,7 +261,7 @@ public class FSBScreen extends AbstractPanelScreen {
         pageList = new FSBPageList(16, 16, 150, 150, listContent);
         addRenderableWidget(pageList);
 
-        switchTo(currentPage);
+        switchTo(CONNECTIONS, page);
 
         relayout();
     }

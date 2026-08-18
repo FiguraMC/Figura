@@ -9,12 +9,10 @@ import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.ui.UIHelper;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector4f;
 
 public class PageButton extends Button {
-    // TODO: add additional resource for theming these if someone wants that (corners & stuff)
-    //       we need one for the #FFFFFF edges anyway
     private static final ResourceLocation TEXTURE = new FiguraIdentifier("textures/gui/button_tintable.png");
     private final FiguraVec3 disabledColor; // self-explanatory
     private final FiguraVec3 defaultColor;  // self-explanatory
@@ -23,13 +21,15 @@ public class PageButton extends Button {
     private final FiguraVec3 textColor;     // text color
 
     public boolean isCurrentPage;
+    public final String identifier;
 
     public PageButton(
             int x, int y, int width, int height,
             Component text, Component tooltip, OnPress pressAction,
-            int hue
+            int hue, String identifier
     ) {
         super(x, y, width, height, text, tooltip, pressAction);
+        this.identifier = identifier;
         ColorUtils.ColorTheme theme = ColorUtils.ColorTheme.of(hue);
         disabledColor = theme.stop(1);
         defaultColor = theme.stop(3);
@@ -42,8 +42,11 @@ public class PageButton extends Button {
         return selectedColor.copy();
     }
 
-    public static PageButton of(Component name, @Nullable Component tooltip, int height, OnPress pressAction, int color) {
-        return new PageButton(0, 0, 100, height, name, tooltip, pressAction, color);
+    public static PageButton of(
+            String identifier, Component name, @Nullable Component tooltip,
+            int height, int color, OnPress pressAction
+    ) {
+        return new PageButton(0, 0, 100, height, name, tooltip, pressAction, color, identifier);
     }
 
     @Override
@@ -64,6 +67,9 @@ public class PageButton extends Button {
             return disabledColor;
         }
     }
+
+    @SuppressWarnings("unused")
+    protected void renderAdditionalContent(GuiGraphics gui, int mouseX, int mouseY, float delta) {}
 
     @Override
     public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
@@ -88,6 +94,7 @@ public class PageButton extends Button {
         UIHelper.renderScrollingText(
                 gui, getMessage(), getX() + 4, getY() + 4, getWidth() - 2, getTextColor()
         );
+        renderAdditionalContent(gui, mouseX, mouseY, delta);
         pose.popPose();
         gui.setColor(1f, 1f, 1f, 1f);
     }
