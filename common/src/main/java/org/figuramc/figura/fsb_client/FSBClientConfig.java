@@ -10,7 +10,7 @@ public class FSBClientConfig {
     /**
      * Default connection policy to apply to servers we haven't seen before.
      */
-    public ClientSession.ConnectionPolicy defaultPolicy;
+    public ConnectionPolicyManager.ConnectionPolicy defaultPolicy;
 
     /**
      * If enabled, forces the connection prompt on screen instead of waiting for the player to open the Figura menu.
@@ -21,5 +21,5 @@ public class FSBClientConfig {
      * Map of server IP to policy.
      * TODO: {@link net.minecraft.client.multiplayer.ServerData} ????
      */
-    public HashMap<String, ClientSession.ConnectionPolicy> policies;
+    public HashMap<String, ConnectionPolicyManager.ConnectionPolicy> policies;
 }
