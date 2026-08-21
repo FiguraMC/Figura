@@ -23,6 +23,6 @@ public class FSBClientEvents extends EventSystem {
         }
     }
 
-    public ReturnableEventBus<ServerID, ClientSession.ConnectionPolicy> SERVER_CONNECTED = new ReturnableEventBus<>();
+    public ReturnableEventBus<ServerID, ConnectionPolicyManager.ConnectionPolicy> SERVER_CONNECTED = new ReturnableEventBus<>();
     public EventBus<ServerID> SERVER_RECONFIGURED = new EventBus<>();
 }

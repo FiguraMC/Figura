@@ -49,14 +49,14 @@ public class ClientSession extends ProtocolSession {
                 .thenAccept(policy -> {
                     if (policy == null) {
                         logger.warn("SERVER_CONNECTED event dispatch resulted in no result. defaulting to PENDING, but one or more of your addons is broken");
-                        policy = ConnectionPolicy.PENDING;
+                        policy = ConnectionPolicyManager.ConnectionPolicy.ASK;
                     }
                     state = switch (policy) {
                         case CONNECT -> StateMachine.CONNECTED;
                         case IGNORE -> StateMachine.INVISIBLE;
-                        case PENDING -> StateMachine.USER_REQUIRED;
+                        case ASK -> StateMachine.USER_REQUIRED;
                     };
-                    if (policy == ConnectionPolicy.CONNECT) {
+                    if (policy == ConnectionPolicyManager.ConnectionPolicy.CONNECT) {
                         logger.info("Connection approved");
                         FSBClient.networking.sendTo(connection, new C2SHelloPacket());
                     }
@@ -71,24 +71,6 @@ public class ClientSession extends ProtocolSession {
 
     public ServerIdentification getServerData() {
         return serverData;
-    }
-
-    /**
-     * Event result: How do we respond to the server connecting?
-     */
-    public enum ConnectionPolicy {
-        /**
-         * move to {@link StateMachine#CONNECTED}
-         */
-        CONNECT,
-        /**
-         * move to {@link StateMachine#INVISIBLE}
-         */
-        IGNORE,
-        /**
-         * move to {@link StateMachine#USER_REQUIRED}
-         */
-        PENDING
     }
 
     public enum StateMachine {
