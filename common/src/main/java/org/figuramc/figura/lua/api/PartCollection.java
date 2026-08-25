@@ -5,10 +5,12 @@ import com.google.common.collect.Sets;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaTypeManager;
 import org.figuramc.figura.lua.LuaWhitelist;
+import org.figuramc.figura.lua.docs.LuaFieldDoc;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.model.FiguraModelPart;
+import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaUserdata;
@@ -20,18 +22,47 @@ import java.util.function.Supplier;
 @LuaWhitelist
 @LuaTypeDoc(name = "PartCollection", value = "models.collection")
 public class PartCollection implements MutablePart<PartCollection> {
+    public final String name;
+    public final @Nullable FiguraModelPart owner;
     private Supplier<LuaTypeManager> manager;
     public final Set<FiguraModelPart> parts;
 
-    public PartCollection(Supplier<LuaTypeManager> manager, Set<FiguraModelPart> parts) {
+    /** Create a part collection with the given name, owner and parts. */
+    public PartCollection(String name, @Nullable FiguraModelPart owner, Supplier<LuaTypeManager> manager, Set<FiguraModelPart> parts) {
+        this.name = name;
+        this.owner = owner;
         this.manager = manager;
         this.parts = parts;
+    }
+    /** Create a part collection with the given name and parts. If {@code owner == owner2}, use it as the owner, otherwise, the owner is null. */
+    public PartCollection(String name, @Nullable FiguraModelPart owner, @Nullable FiguraModelPart owner2, Supplier<LuaTypeManager> manager, Set<FiguraModelPart> parts) {
+        this(name, owner == owner2 ? owner : null, manager, parts);
+    }
+    /** Create a part collection with a new set of parts and the name and owner of the given collection. */
+    public PartCollection(PartCollection old, Set<FiguraModelPart> parts) {
+        this(old.name, old.owner, old.manager, parts);
+    }
+    /** Create a part collection with a new set of parts and {@code left}'s name. If {@code left} and {@code right} share an owner, it is the new owner; otherwise, the owner is null. */
+    public PartCollection(PartCollection left, PartCollection right, Set<FiguraModelPart> parts) {
+        this(left.name, left.owner, right.owner, left.manager, parts);
     }
 
     @LuaWhitelist
     @LuaMethodDoc("models.collection.get_parts")
     public Set<FiguraModelPart> getParts() {
         return parts;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("models.collection.get_name")
+    public String getName() {
+        return name;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("models.collection.get_owner")
+    public @Nullable FiguraModelPart getOwner() {
+        return owner;
     }
 
     @LuaWhitelist
@@ -51,9 +82,9 @@ public class PartCollection implements MutablePart<PartCollection> {
     )
     public PartCollection union(Object parts) {
         if (parts instanceof PartCollection c) {
-            return new PartCollection(manager, Sets.union(this.parts, c.parts));
+            return new PartCollection(this, Sets.union(this.parts, c.parts));
         } else if (parts instanceof FiguraModelPart p) {
-            return new PartCollection(manager, Sets.union(this.parts, Set.of(p)));
+            return new PartCollection(this, Sets.union(this.parts, Set.of(p)));
         } else {
             throw new LuaError("Expected argument of either modelpart or collection for 'PartCollection:union'");
         }
@@ -76,9 +107,9 @@ public class PartCollection implements MutablePart<PartCollection> {
     )
     public PartCollection subtract(Object parts) {
         if (parts instanceof PartCollection c) {
-            return new PartCollection(manager, Sets.difference(this.parts, c.parts));
+            return new PartCollection(this, c, Sets.difference(this.parts, c.parts));
         } else if (parts instanceof FiguraModelPart p) {
-            return new PartCollection(manager, Sets.difference(this.parts, Set.of(p)));
+            return new PartCollection(this, Sets.difference(this.parts, Set.of(p)));
         } else {
             throw new LuaError("Expected argument of either modelpart or collection for 'PartCollection:subtract'");
         }
@@ -101,9 +132,9 @@ public class PartCollection implements MutablePart<PartCollection> {
     )
     public PartCollection intersect(Object parts) {
         if (parts instanceof PartCollection c) {
-            return new PartCollection(manager, Sets.intersection(this.parts, c.parts));
+            return new PartCollection(this, c, Sets.intersection(this.parts, c.parts));
         } else if (parts instanceof FiguraModelPart p) {
-            return new PartCollection(manager, Sets.intersection(this.parts, Set.of(p)));
+            return new PartCollection(this, Sets.intersection(this.parts, Set.of(p)));
         } else {
             throw new LuaError("Expected argument of either modelpart or collection for 'PartCollection:intersect'");
         }
@@ -147,7 +178,13 @@ public class PartCollection implements MutablePart<PartCollection> {
         for (var part: iter)
 			if (arg.invoke(manager.get().javaToLua(part)).toboolean(1))
 				builder.add(part);
-        return new PartCollection(manager, builder.build());
+        return new PartCollection(this, builder.build());
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("models.collection.named")
+    public PartCollection named(@LuaNotNil String name) {
+        return new PartCollection(name, owner, manager, parts);
     }
 
     @Override

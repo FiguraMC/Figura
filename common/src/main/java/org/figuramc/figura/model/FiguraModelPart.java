@@ -5,6 +5,7 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.LuaNotNil;
+import org.figuramc.figura.lua.LuaTypeManager;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.api.MutablePart;
 import org.figuramc.figura.lua.api.PartCollection;
@@ -26,6 +27,7 @@ import org.figuramc.figura.utils.LuaUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
 import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.*;
+import org.luaj.vm2.lib.VarArgFunction;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -118,9 +120,9 @@ public class FiguraModelPart implements Comparable<FiguraModelPart>, MutablePart
         if (collections != null) {
             this.collections = new HashMap<>();
             Map<String, ImmutableSet.Builder<FiguraModelPart>> builder = new HashMap<>();
-            for (String n: collections) builder.put(n, new ImmutableSet.Builder<FiguraModelPart>());
+            for (String n: collections) builder.put(n, new ImmutableSet.Builder<>());
             walkCollections(builder, collections);
-            builder.forEach((key, parts) -> this.collections.put(key, new PartCollection(() -> owner.luaRuntime.typeManager, parts.build())));
+            builder.forEach((key, parts) -> this.collections.put(key, new PartCollection(key, this, () -> owner.luaRuntime.typeManager, parts.build())));
         } else {
             this.collections = null;
         }
@@ -1671,6 +1673,34 @@ public class FiguraModelPart implements Comparable<FiguraModelPart>, MutablePart
         return newer;
     }
 
+    @LuaMethodDoc(
+        value = "model_part.collect",
+        overloads = @LuaMethodOverload(
+            argumentNames = {"name", "parts..."},
+            argumentTypes = {String.class, FiguraModelPart.class}
+        )
+    )
+    public PartCollection collect(String name, FiguraModelPart... parts) {
+        return new PartCollection(name, this, () -> owner.luaRuntime.typeManager, ImmutableSet.copyOf(parts));
+    }
+
+    private final LuaValue _collectFunc = new VarArgFunction() {
+        @Override
+        public Varargs invoke(Varargs args) {
+            LuaTypeManager manager = owner.luaRuntime.typeManager;
+            String name = args.checkjstring(2);
+            // I'm sorry
+            var parts = new FiguraModelPart[args.narg() - 2];
+            for (int i = 2; i < args.narg(); i++) {
+                if (args.arg(i+1) instanceof LuaUserdata user && user.m_instance instanceof FiguraModelPart part) {
+                    parts[i-2] = part;
+                } else {
+                    throw new LuaError("ModelPart.collect expects varargs of ModelPart but got %s at index %d".formatted(args.arg(i + 1).typename(), i));
+                }
+            }
+            return manager.javaToLua(collect(name, parts));
+        }
+    };
     // -- METAMETHODS --// 
     @LuaWhitelist
     public Object __index(String key) {
@@ -1691,6 +1721,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart>, MutablePart
             case "preRender" -> preRender;
             case "midRender" -> midRender;
             case "postRender" -> postRender;
+            case "collect" -> _collectFunc;
             default -> null;
         };
     }
