@@ -16,6 +16,7 @@ import org.figuramc.figura.compat.SimpleVCCompat;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.entries.EntryPointManager;
 import org.figuramc.figura.font.Emojis;
+import org.figuramc.figura.fsb_client.FSBClient;
 import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.lua.docs.FiguraDocsManager;
 import org.figuramc.figura.mixin.SkullBlockEntityAccessor;
@@ -64,6 +65,7 @@ public class FiguraMod {
         CacheAvatarLoader.init();
         FiguraDocsManager.init();
         FiguraRuntimeResources.init();
+        FSBClient.init();
 
         GeckoLibCompat.init();
         SimpleVCCompat.init();

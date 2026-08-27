@@ -25,6 +25,16 @@ public class ConnectionPolicyManager {
     private @NotNull ConnectionPolicy fallback = ConnectionPolicy.CONNECT;
     private final List<Matcher> matchers = new ArrayList<>();
 
+    private static ConnectionPolicyManager INSTANCE;
+
+    /**
+     * Get the policy manager attached to the default cache location.
+     */
+    public static ConnectionPolicyManager get() {
+        if (INSTANCE == null) INSTANCE = new ConnectionPolicyManager();
+        return INSTANCE;
+    }
+
     public ConnectionPolicyManager() {
         this(CACHE_FILE_NAME);
     }

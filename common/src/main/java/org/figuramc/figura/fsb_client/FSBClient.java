@@ -19,6 +19,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 public class FSBClient {
     /**
      * FSB session information.
@@ -31,6 +33,11 @@ public class FSBClient {
             FSBConstants.MOD_NAMESPACE,
             FSBConstants.FSB_PACKET_PATH
     );
+
+    public static synchronized void init() {
+        // Handlers
+        FSBClientEvents.INSTANCE.SERVER_CONNECTED.register(FSBClient::handleInitialConnection, 0);
+    }
 
     public static synchronized void newSession(ClientPacketListener relation) {
         if (clientSession != null) terminateSession(relation);
@@ -68,8 +75,10 @@ public class FSBClient {
         void send(Packet<?> packet) throws FSBStateException;
     }
 
-    public void handleConnectionPolicy(FSBClientEvents.ServerID event) {
-
+    public static void handleInitialConnection(FSBClientEvents.ServerID event, AtomicReference<ConnectionPolicyManager.ConnectionPolicy> out) {
+        // AtomicRef is only being used as a box here, so threading issues do not apply.
+        if (out.get() == null)
+            out.set(ConnectionPolicyManager.get().query(event.ip));
     }
 
     public static final NetworkingInterface networking = new NetworkingInterfaceImpl();

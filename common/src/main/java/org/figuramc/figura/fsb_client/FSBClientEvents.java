@@ -17,9 +17,13 @@ public class FSBClientEvents extends EventSystem {
 
     public static class ServerID extends Event {
         public final ServerIdentification ident;
+        public final String ip;
+        public final String displayName;
 
-        public ServerID(ServerIdentification ident) {
+        public ServerID(ServerIdentification ident, String ip, String displayName) {
             this.ident = ident;
+            this.ip = ip;
+            this.displayName = displayName;
         }
     }
 
