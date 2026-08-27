@@ -14,7 +14,11 @@ import org.figuramc.fsb2.api.utils.FSBLogger;
 import org.jetbrains.annotations.NotNull;
 
 public class ClientSession extends ProtocolSession {
+    public static final String INTEGRATED_SERVER_IP = "<local>";
+
     private final ClientPacketListener connection;
+    private final String srvIP;
+    private final String srvName;
 
     private volatile StateMachine state = StateMachine.HANDSHAKE;
     private volatile ServerIdentification serverData = null;
@@ -22,6 +26,13 @@ public class ClientSession extends ProtocolSession {
     public ClientSession(@NotNull FSBLogger logger, ClientPacketListener connection) {
         super(logger, connection, true);
         this.connection = connection;
+        if (connection.getServerData() != null) {
+            this.srvIP = connection.getServerData().ip;
+            this.srvName = connection.getServerData().name;
+        } else {
+            this.srvIP = INTEGRATED_SERVER_IP;
+            this.srvName = "integrated server";
+        }
         this.configureEventHandlers();
     }
 
@@ -44,13 +55,14 @@ public class ClientSession extends ProtocolSession {
     private void onHello(S2CHelloPacket packet, Object ignored) {
         if (state != StateMachine.HANDSHAKE) return;
         serverData = packet.serverId;
-        // TODO: Raise event & prompt user
-        FSBClientEvents.INSTANCE.SERVER_CONNECTED.dispatch(new ServerID(serverData))
+        // TODO: Prompt user
+        FSBClientEvents.INSTANCE.SERVER_CONNECTED.dispatch(new ServerID(serverData, srvIP, srvName))
                 .thenAccept(policy -> {
                     if (policy == null) {
-                        logger.warn("SERVER_CONNECTED event dispatch resulted in no result. defaulting to PENDING, but one or more of your addons is broken");
+                        logger.warn("SERVER_CONNECTED event dispatch resulted in no result. defaulting to ASK, but one or more of your addons is broken");
                         policy = ConnectionPolicyManager.ConnectionPolicy.ASK;
                     }
+                    logger.info("target policy for {} (named '{}') is {}", srvIP, srvName, policy);
                     state = switch (policy) {
                         case CONNECT -> StateMachine.CONNECTED;
                         case IGNORE -> StateMachine.INVISIBLE;
@@ -66,7 +78,7 @@ public class ClientSession extends ProtocolSession {
     private void onReconfigure(S2CReconfigurePacket packet, Object ignored) {
         // We accept this packet in all states in order to display up-to-date information in the UI
         serverData = packet.serverId;
-        FSBClientEvents.INSTANCE.SERVER_RECONFIGURED.dispatch(new ServerID(serverData));
+        FSBClientEvents.INSTANCE.SERVER_RECONFIGURED.dispatch(new ServerID(serverData, srvIP, srvName));
     }
 
     public ServerIdentification getServerData() {
