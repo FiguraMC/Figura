@@ -37,6 +37,7 @@ public class FSBClient {
     public static synchronized void init() {
         // Handlers
         FSBClientEvents.INSTANCE.SERVER_CONNECTED.register(FSBClient::handleInitialConnection, 0);
+        FSBClientEvents.INSTANCE.SERVER_RECONFIGURED.register(FSBClient::handleReconfigure, 0);
     }
 
     public static synchronized void newSession(ClientPacketListener relation) {
@@ -79,6 +80,10 @@ public class FSBClient {
         // AtomicRef is only being used as a box here, so threading issues do not apply.
         if (out.get() == null)
             out.set(ConnectionPolicyManager.get().query(event.ip));
+    }
+
+    public static void handleReconfigure(FSBClientEvents.ServerID event) {
+        FSB_LOGGER.info("New configuration for '{}': {}", event.displayName, event.ident);
     }
 
     public static final NetworkingInterface networking = new NetworkingInterfaceImpl();

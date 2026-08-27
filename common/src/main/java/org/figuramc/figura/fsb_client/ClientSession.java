@@ -62,14 +62,15 @@ public class ClientSession extends ProtocolSession {
                         logger.warn("SERVER_CONNECTED event dispatch resulted in no result. defaulting to ASK, but one or more of your addons is broken");
                         policy = ConnectionPolicyManager.ConnectionPolicy.ASK;
                     }
-                    logger.info("target policy for {} (named '{}') is {}", srvIP, srvName, policy);
+                    logger.info("target policy for '{}' is {}", srvName, policy);
                     state = switch (policy) {
                         case CONNECT -> StateMachine.CONNECTED;
                         case IGNORE -> StateMachine.INVISIBLE;
                         case ASK -> StateMachine.USER_REQUIRED;
                     };
                     if (policy == ConnectionPolicyManager.ConnectionPolicy.CONNECT) {
-                        logger.info("Connection approved");
+                        logger.info("connecting now ...");
+                        // TODO: Factor out into func for handling user-initiated connections as well
                         FSBClient.networking.sendTo(connection, new C2SHelloPacket());
                     }
                 });
