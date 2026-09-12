@@ -8,7 +8,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.entries.FiguraScreen;
 import org.figuramc.figura.gui.screens.*;
 import org.figuramc.figura.utils.FiguraIdentifier;
@@ -24,16 +23,16 @@ public class PanelSelectorWidget extends AbstractContainerElement {
     public static final ResourceLocation BACKGROUND = new FiguraIdentifier("textures/gui/panels_background.png");
 
     private static final List<Function<Screen, Pair<Screen, PanelIcon>>> PANELS = new ArrayList<>() {{
-                add(s -> Pair.of(new ProfileScreen(s), PanelIcon.PROFILE));
-                add(s -> Pair.of(new BrowserScreen(s), PanelIcon.BROWSER));
-                add(s -> Pair.of(new WardrobeScreen(s), PanelIcon.WARDROBE));
-                add(s -> Pair.of(new PermissionsScreen(s), PanelIcon.PERMISSIONS));
-                add(s -> Pair.of(new ConfigScreen(s), PanelIcon.SETTINGS));
-                add(s -> Pair.of(new HelpScreen(s), PanelIcon.HELP));
+        add(s -> Pair.of(new ProfileScreen(s), PanelIcon.PROFILE));
+        add(s -> Pair.of(new WardrobeScreen(s), PanelIcon.WARDROBE));
+        add(s -> Pair.of(new PermissionsScreen(s), PanelIcon.PERMISSIONS));
+        add(s -> Pair.of(new ConfigScreen(s), PanelIcon.SETTINGS));
+        add(s -> Pair.of(new FSBScreen(s), PanelIcon.FSB));
+        add(s -> Pair.of(new HelpScreen(s), PanelIcon.HELP));
     }};
 
     // TODO - remove this when we actually implement those panels
-    private static final List<Integer> PANELS_BLACKLIST = List.of(0, 1);
+    private static final List<Integer> PANELS_BLACKLIST = List.of(0);
 
     private final List<PanelButton> buttons = new ArrayList<>();
 
@@ -130,7 +129,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
 
     public enum PanelIcon {
         PROFILE(0),
-        BROWSER(1),
+        FSB(1),
         WARDROBE(2),
         PERMISSIONS(3),
         SETTINGS(4),

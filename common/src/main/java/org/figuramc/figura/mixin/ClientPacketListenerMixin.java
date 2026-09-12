@@ -2,17 +2,12 @@ package org.figuramc.figura.mixin;
 
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.game.ClientboundEntityEventPacket;
 import net.minecraft.world.level.Level;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.permissions.Permissions;
-import org.figuramc.figura.server.packets.Packet;
-import org.figuramc.figura.server.packets.handlers.s2c.Handlers;
-import org.figuramc.figura.server.packets.handlers.s2c.S2CPacketHandler;
-import org.figuramc.figura.utils.FriendlyByteBufWrapper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;

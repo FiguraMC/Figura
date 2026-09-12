@@ -28,7 +28,6 @@ import net.minecraft.world.scores.Score;
 import net.minecraft.world.scores.Scoreboard;
 
 import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.backend2.FSB;
 import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.ducks.GameRendererAccessor;
@@ -41,7 +40,6 @@ import org.figuramc.figura.lua.docs.FiguraListDocs;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
-import org.figuramc.figura.math.matrix.FiguraMat4;
 import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.mixin.gui.BossHealthOverlayAccessor;
@@ -49,17 +47,13 @@ import org.figuramc.figura.mixin.gui.GuiAccessor;
 import org.figuramc.figura.mixin.gui.PlayerTabOverlayAccessor;
 import org.figuramc.figura.mixin.render.ModelManagerAccessor;
 import org.figuramc.figura.utils.*;
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.glfw.GLFW;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.FloatBuffer;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Supplier;
@@ -835,7 +829,8 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.fsb_connected")
     public static boolean fsbConnected() {
-        return FSB.instance().connected();
+        FiguraMod.stub();
+        return false;
     }
 
     @LuaWhitelist

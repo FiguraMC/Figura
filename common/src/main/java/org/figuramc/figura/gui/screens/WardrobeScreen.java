@@ -1,6 +1,5 @@
 package org.figuramc.figura.gui.screens;
 
-import com.mojang.blaze3d.platform.Window;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -10,7 +9,6 @@ import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.local.LocalAvatarFetcher;
 import org.figuramc.figura.avatar.local.LocalAvatarLoader;
-import org.figuramc.figura.backend2.FSB;
 import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.gui.FiguraToast;
@@ -80,8 +78,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
         // upload
         addRenderableWidget(upload = new Button(buttX - 48, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/upload.png"), 72, 24, FiguraText.of("gui.wardrobe.upload.tooltip"), button -> {
-            if (FSB.instance().connected()) showUploadContext();
-            else uploadAvatar(NetworkStuff.Destination.FSB_OR_BACKEND);
+            uploadAvatar(NetworkStuff.Destination.FSB_OR_BACKEND);
         }));
         upload.setActive(false);
         generateUploadContext();
@@ -99,8 +96,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
         // delete
         addRenderableWidget(delete = new Button(buttX + 24, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/delete.png"), 72, 24, FiguraText.of("gui.wardrobe.delete.tooltip"), button -> {
-            if (FSB.instance().connected()) showDeleteContext();
-            else deleteAvatar(NetworkStuff.Destination.FSB_OR_BACKEND);
+            deleteAvatar(NetworkStuff.Destination.FSB_OR_BACKEND);
         }));
         delete.setActive(false);
         generateDeleteContext();
@@ -211,30 +207,8 @@ public class WardrobeScreen extends AbstractPanelScreen {
         AvatarList.selectedEntry = null;
     }
 
-    private void showUploadContext() {
-        if (!FSB.instance().connected()) return;
-        Window window = minecraft.getWindow();
-        double mouseX = minecraft.mouseHandler.xpos() * window.getGuiScaledWidth() / window.getScreenWidth();
-        double mouseY = minecraft.mouseHandler.ypos() * window.getGuiScaledHeight() / window.getScreenHeight();
-        uploadContext.setX((int) mouseX);
-        uploadContext.setY((int) mouseY);
-        uploadContext.setVisible(true);
-        UIHelper.setContext(uploadContext);
-    }
-
     private void deleteAvatar(NetworkStuff.Destination destination) {
         NetworkStuff.deleteAvatar(null, destination);
-    }
-
-    private void showDeleteContext() {
-        if (!FSB.instance().connected()) return;
-        Window window = minecraft.getWindow();
-        double mouseX = minecraft.mouseHandler.xpos() * window.getGuiScaledWidth() / window.getScreenWidth();
-        double mouseY = minecraft.mouseHandler.ypos() * window.getGuiScaledHeight() / window.getScreenHeight();
-        deleteContext.setX((int) mouseX);
-        deleteContext.setY((int) mouseY);
-        deleteContext.setVisible(true);
-        UIHelper.setContext(deleteContext);
     }
 
     private void generateUploadContext() {
@@ -324,7 +298,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
                         ? FiguraText.of("gui.wardrobe.upload.errored", avatar.errorText).withStyle(ChatFormatting.RED)
                         : FiguraText.of("gui.wardrobe.upload.tooltip")
         );
-        delete.setActive((FSB.instance().connected() || NetworkStuff.isConnected()) && AvatarManager.localUploaded);
+        delete.setActive(NetworkStuff.isConnected() && AvatarManager.localUploaded);
 
         updateMotdWidget();
     }

@@ -13,4 +13,13 @@ public interface FiguraWidget extends Renderable {
     void setWidth(int width);
     int getHeight();
     void setHeight(int height);
+
+    default void relayout() {}
+
+    default void setBox(int x, int y, int w, int h) {
+        setX(x);
+        setY(y);
+        setWidth(w);
+        setHeight(h);
+    }
 }

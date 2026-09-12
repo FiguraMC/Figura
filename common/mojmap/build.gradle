@@ -23,8 +23,6 @@ task mojmapJar(type: RemapJarTask) {
 	inputFile = project(':common').remapJar.archiveFile
 	sourceNamespace = 'intermediary'
 	targetNamespace = 'named'
-	
-	remapperIsolation = true
 }
 
 task mojmapSourcesJar(type: RemapSourcesJarTask) {
@@ -36,8 +34,6 @@ task mojmapSourcesJar(type: RemapSourcesJarTask) {
 	inputFile = project(':common').sourcesJar.archiveFile
 	sourceNamespace = 'intermediary'
 	targetNamespace = 'named'
-	
-	remapperIsolation = true
 }
 
 build.dependsOn mojmapJar
