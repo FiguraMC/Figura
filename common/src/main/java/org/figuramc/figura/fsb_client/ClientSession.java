@@ -106,7 +106,7 @@ public class ClientSession extends ProtocolSession {
     private void onReconfigure(S2CReconfigurePacket packet, Object ignored) {
         // We accept this packet in all states in order to display up-to-date information in the UI
         serverData = packet.serverId;
-        FSBClientEvents.INSTANCE.SERVER_RECONFIGURED.dispatch(new ServerID(serverData, srvIP, srvName));
+        FSBClientEvents.INSTANCE.SERVER_RECONFIGURED.dispatch(new ServerID(serverData, srvIP, srvName), this);
     }
 
     public ServerIdentification getServerData() {

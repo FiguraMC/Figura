@@ -76,13 +76,13 @@ public class FSBClient {
         void send(Packet<?> packet) throws FSBStateException;
     }
 
-    public static void handleInitialConnection(FSBClientEvents.ServerID event, AtomicReference<ConnectionPolicyManager.ConnectionPolicy> out) {
+    public static void handleInitialConnection(FSBClientEvents.ServerID event, ClientSession context, AtomicReference<ConnectionPolicyManager.ConnectionPolicy> out) {
         // AtomicRef is only being used as a box here, so threading issues do not apply.
         if (out.get() == null)
             out.set(ConnectionPolicyManager.get().query(event.ip));
     }
 
-    public static void handleReconfigure(FSBClientEvents.ServerID event) {
+    public static void handleReconfigure(FSBClientEvents.ServerID event, ClientSession context) {
         FSB_LOGGER.info("New configuration for '{}': {}", event.displayName, event.ident);
     }
 
