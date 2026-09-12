@@ -43,12 +43,13 @@ public class FSBClient {
     public static synchronized void newSession(ClientPacketListener relation) {
         if (clientSession != null) terminateSession(relation);
         FSB_LOGGER.info("Created new client FSB session @ {}", relation);
-        clientSession = new ClientSession(FSB_LOGGER, relation);
+        ClientSession clientSession = new ClientSession(FSB_LOGGER, relation);
         try {
             clientSession.relate(relation, PlayerSession.SERVER);
         } catch (FSBArgumentException e) {
             throw new RuntimeException(e);
         }
+        FSBClient.clientSession = clientSession;
     }
 
     public static synchronized void terminateSession(ClientPacketListener relation) {
@@ -77,7 +78,6 @@ public class FSBClient {
     }
 
     public static void handleInitialConnection(FSBClientEvents.ServerID event, ClientSession context, AtomicReference<ConnectionPolicyManager.ConnectionPolicy> out) {
-        // AtomicRef is only being used as a box here, so threading issues do not apply.
         if (out.get() == null)
             out.set(ConnectionPolicyManager.get().query(event.ip));
     }
