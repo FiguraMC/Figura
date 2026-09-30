@@ -226,8 +226,10 @@ public class BlockbenchParser2 {
                         }
                     }
 
-                    if (!Files.exists(p))
-                        throw new FileNotFoundException("Could not locate texture '" + texture.name + "'");
+                    if (!Files.exists(p)) {
+                        FiguraMod.LOGGER.warn("Could not locate {} at {}, falling back to embedded texture", name, p);
+                        throw new Exception("Could not locate texture '" + texture.name + "' (you shouldn't see this...)");
+                    }
 
                     if ((avatarRoot.getNameCount() > 1 && !p.startsWith(avatarRoot)) || p.getFileSystem() != avatarRoot.getFileSystem()) {
                         throw new IllegalStateException("Texture '" + texture.name + "' is a reference outside the avatar folder");
