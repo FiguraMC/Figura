@@ -21,7 +21,6 @@ configurations {
 
 dependencies {
     mappings loom.layered {
-        mappings("org.quiltmc:quilt-mappings:$minecraft_version+build.$mappings:intermediary-v2")
         officialMojangMappings()
     }
 
