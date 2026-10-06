@@ -51,7 +51,6 @@ public abstract class PlayerHeadSpecialRendererMixin {
                 }
             }
         }
-        Avatar avatar = ((PlayerHeadRenderInfoExtension)(Object)playerHeadRenderInfo).figura$getAvatar();
         SkullBlockRendererHelper.setAvatar(avatar);
         SkullBlockRendererAccessor.setRenderMode(switch (itemDisplayContext) {
             case FIRST_PERSON_LEFT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.FIRST_PERSON_LEFT_HAND;

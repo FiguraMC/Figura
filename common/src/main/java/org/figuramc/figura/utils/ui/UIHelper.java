@@ -277,7 +277,6 @@ public final class UIHelper {
         EntityRenderer<? super LivingEntity, LivingEntityRenderState> entityRenderer = (EntityRenderer<? super LivingEntity, LivingEntityRenderState>) entityRenderDispatcher.getRenderer(entity);
         LivingEntityRenderState entityRenderState = entityRenderer.createRenderState();
         entityRenderer.extractRenderState(entity, entityRenderState,1.0F);
-        entityRenderState.hitboxesRenderState = null;
 
         GuiEntityRenderState state = new GuiEntityRenderState(entityRenderState, offset, quaternion, quaternion3, x1, y1, x2, y2, scale/entity.getScale(), ((GuiGraphicsAccessor)gui).figura$getScissorStack().peek());
         ((GuiEntityRenderStateExtension)(Object)state).setRenderMode(renderMode);

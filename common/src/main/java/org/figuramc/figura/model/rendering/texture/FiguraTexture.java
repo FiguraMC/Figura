@@ -101,12 +101,6 @@ public class FiguraTexture extends SimpleTexture {
     }
 
     @Override
-    public void setUseMipmaps(boolean bl) {
-        if (texture != null)
-            super.setUseMipmaps(bl);
-    }
-
-    @Override
     public @NotNull TextureContents loadContents(ResourceManager resourceManager) throws IOException {
         return new TextureContents(copy(), new TextureMetadataSection(false, false, MipmapStrategy.AUTO, 0));
     }
@@ -114,10 +108,6 @@ public class FiguraTexture extends SimpleTexture {
     @Override
     public void apply(TextureContents textureContents) {
         uploadIfDirty(false, false);
-    }
-
-    public void closeFromRenderThread() {
-        Minecraft.getInstance().execute(this::close);
     }
 
     public void closeFromRenderThread() {

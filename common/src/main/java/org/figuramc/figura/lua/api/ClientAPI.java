@@ -113,7 +113,7 @@ public class ClientAPI {
                 fps,
                 maxFps == 260 ? "inf" : maxFps,
                 Minecraft.getInstance().options.enableVsync().get() ? " vsync " : " ",
-                Minecraft.getInstance().options.grahicsPreset().get(),
+                Minecraft.getInstance().options.graphicsPreset().get(),
                 Minecraft.getInstance().options.cloudStatus().get() == CloudStatus.OFF ? "" :
                         (Minecraft.getInstance().options.cloudStatus().get() == CloudStatus.FAST ? " fast-clouds" : " fancy-clouds"),
                 Minecraft.getInstance().options.biomeBlendRadius().get(),
@@ -241,7 +241,7 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.is_debug_overlay_enabled")
     public static boolean isDebugOverlayEnabled() {
-        return Minecraft.getInstance().debugEntries.isF3Visible();
+        return Minecraft.getInstance().debugEntries.isOverlayVisible();
     }
 
     @LuaWhitelist

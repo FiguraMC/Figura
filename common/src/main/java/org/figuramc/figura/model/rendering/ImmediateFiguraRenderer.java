@@ -8,6 +8,7 @@ import net.minecraft.client.gui.components.debug.DebugScreenEntries;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
@@ -459,54 +460,6 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
         return !breakRender;
     }
 
-
-    protected boolean getPartComplexity(FiguraModelPart part, int[] remainingComplexity, boolean prevPredicate) {
-        PartCustomization custom = part.customization;
-
-        // test the current filter scheme
-        Boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, prevPredicate);
-        if (thisPassedPredicate == null || (!custom.visible)) {
-            return true;
-        }
-
-        // visibility
-        if (!ignoreVanillaVisibility && custom.vanillaVisible != null && !custom.vanillaVisible) {
-            return true;
-        }
-
-        // calculate this part's complexity
-        FiguraMod.popPushProfiler("pushVertices");
-        boolean breakRender = thisPassedPredicate && !part.calculateComplexity(remainingComplexity);
-
-        // calculate extras
-        if (!breakRender && thisPassedPredicate) {
-            boolean renderTasks = !part.renderTasks.isEmpty();
-            // add tasks
-            if (renderTasks) {
-
-                for (RenderTask task : part.renderTasks.values()) {
-                    if (!task.shouldRender())
-                        continue;
-                    int neededComplexity = task.getComplexity();
-                    if (neededComplexity > remainingComplexity[0])
-                        break;
-                    FiguraMod.pushProfiler(task.getName());
-                    remainingComplexity[0] -= neededComplexity;
-                    FiguraMod.popProfiler();
-                }
-            }
-        }
-
-        // calculate children
-        for (FiguraModelPart child : List.copyOf(part.children)) {
-            if (!getPartComplexity(child, remainingComplexity, thisPassedPredicate)) {
-                breakRender = true;
-                break;
-            }
-        }
-        return !breakRender;
-    }
-
     protected void renderPivot(FiguraModelPart part, PartCustomization customization) {
         boolean group = part.customization.partType == PartCustomization.PartType.GROUP;
         FiguraVec3 color = group ? ColorUtils.Colors.FIGURA_BLUE.vec : ColorUtils.Colors.AWESOME_BLUE.vec;
@@ -521,7 +474,7 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
                 (float) color.x, (float) color.y, (float) color.z, 1f);
 
         if (bufferSource instanceof MultiBufferSource.BufferSource bs) {
-            bs.endBatch(RenderType.lines());
+            bs.endBatch(RenderTypes.lines());
         }
     }
 
@@ -769,7 +722,7 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
                     consumer.accept(vertexConsumer);
 
                 if (bufferSource instanceof MultiBufferSource.BufferSource bs) {
-                    if (renderType == RenderType.lines() || renderType == RenderType.lineStrip() || renderType == RenderTypes.FiguraRenderType.SOLID) {
+                    if (renderType == RenderTypes.lines() || renderType == RenderTypes.linesTranslucent() || renderType == FiguraRenderTypes.FiguraRenderType.SOLID) {
                         bs.endBatch(renderType);
                     }
                 }

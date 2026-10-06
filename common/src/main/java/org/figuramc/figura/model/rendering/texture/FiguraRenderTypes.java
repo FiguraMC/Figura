@@ -79,7 +79,7 @@ public enum FiguraRenderTypes {
         return id == null || func == null ? null : func.apply(id);
     }
 
-    private abstract static class FiguraRenderType extends RenderType {
+    public abstract static class FiguraRenderType extends RenderType {
         public FiguraRenderType(String name, RenderSetup setup) {
             super(name, setup);
         }

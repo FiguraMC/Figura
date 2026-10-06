@@ -18,7 +18,6 @@ import org.figuramc.figura.math.vector.FiguraVec4;
 import org.figuramc.figura.model.rendering.Vertex;
 import org.figuramc.figura.model.rendering.texture.FiguraRenderTypes;
 import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
-import org.figuramc.figura.model.rendering.texture.RenderTypes;
 import org.figuramc.figura.parsers.BlockbenchCommonTypes;
 import org.figuramc.figura.utils.MathUtils;
 

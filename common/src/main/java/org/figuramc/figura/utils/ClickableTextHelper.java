@@ -29,12 +29,12 @@ public class ClickableTextHelper {
 
     public void renderDebug(GuiGraphics graphics, int x, int y, int mouseX, int mouseY) {
         for (Vector4i area : hoverText.keySet()) {
-            graphics.submitOutline(x + area.x, y + area.y, area.z - area.x, area.w - area.y, isPointWithinBounds(area, x, y, mouseX, mouseY) ? 0xFF00FF00 : 0xFFFF00FF);
+            graphics.renderOutline(x + area.x, y + area.y, area.z - area.x, area.w - area.y, isPointWithinBounds(area, x, y, mouseX, mouseY) ? 0xFF00FF00 : 0xFFFF00FF);
         }
         for (Vector4i area : clickUrls.keySet()) {
-            graphics.submitOutline(x + area.x, y + area.y, area.z - area.x, area.w - area.y, isPointWithinBounds(area, x, y, mouseX, mouseY) ? 0xFF00FF00 : 0xFFFF00FF);
+            graphics.renderOutline(x + area.x, y + area.y, area.z - area.x, area.w - area.y, isPointWithinBounds(area, x, y, mouseX, mouseY) ? 0xFF00FF00 : 0xFFFF00FF);
         }
-        graphics.submitOutline(mouseX-1, mouseY-1, 3, 3, 0xFF00FFFF);
+        graphics.renderOutline(mouseX-1, mouseY-1, 3, 3, 0xFF00FFFF);
     }
 
     public void update(Font font, int lineWidth) {
