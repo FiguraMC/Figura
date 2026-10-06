@@ -23,6 +23,7 @@ import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.Badges;
 import org.figuramc.figura.config.Configs;
+import org.figuramc.figura.ducks.CameraRenderStateExtension;
 import org.figuramc.figura.ducks.EntityRendererAccessor;
 import org.figuramc.figura.ducks.FiguraSubmitCallBackExtension;
 import org.figuramc.figura.ducks.NodeCollectorExtension;
@@ -115,6 +116,44 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         text = TextUtils.replaceInText(text, "\\b" + Pattern.quote(player.nameTag.getString()) + "\\b", replacement);
 
         return text;
+    }
+
+    @ModifyArg(method = "submitNameTag(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitNameTag(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/phys/Vec3;ILnet/minecraft/network/chat/Component;ZIDLnet/minecraft/client/renderer/state/CameraRenderState;)V", ordinal = 1), index = 7)
+    private CameraRenderState setAvatarForPlayerNameSubmission(CameraRenderState cameraRenderState, @Local(argsOnly = true) AvatarRenderState playerRenderState) {
+        Avatar figura$avatar = AvatarManager.getAvatar(playerRenderState);
+
+        if (figura$avatar != null) {
+            CameraRenderState replacement = new CameraRenderState();
+            replacement.pos = cameraRenderState.pos;
+            replacement.blockPos = cameraRenderState.blockPos;
+            replacement.entityPos = cameraRenderState.entityPos;
+            replacement.initialized = cameraRenderState.initialized;
+            replacement.orientation = cameraRenderState.orientation;
+
+            ((CameraRenderStateExtension)replacement).figura$setAvatar(figura$avatar);
+            ((CameraRenderStateExtension)replacement).figura$setRenderingNameTag(true);
+            return replacement;
+        }
+        return cameraRenderState;
+    }
+
+    @ModifyArg(method = "submitNameTag(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitNameTag(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/phys/Vec3;ILnet/minecraft/network/chat/Component;ZIDLnet/minecraft/client/renderer/state/CameraRenderState;)V", ordinal = 0), index = 7)
+    private CameraRenderState setAvatarForPlayerScoreSubmission(CameraRenderState cameraRenderState, @Local(argsOnly = true) AvatarRenderState playerRenderState) {
+        Avatar figura$avatar = AvatarManager.getAvatar(playerRenderState);
+
+        if (figura$avatar != null) {
+            CameraRenderState replacement = new CameraRenderState();
+            replacement.pos = cameraRenderState.pos;
+            replacement.blockPos = cameraRenderState.blockPos;
+            replacement.entityPos = cameraRenderState.entityPos;
+            replacement.initialized = cameraRenderState.initialized;
+            replacement.orientation = cameraRenderState.orientation;
+
+            ((CameraRenderStateExtension)replacement).figura$setAvatar(figura$avatar);
+            ((CameraRenderStateExtension)replacement).figura$setRenderingNameTag(false);
+            return replacement;
+        }
+        return cameraRenderState;
     }
 
     // Push for scoreboard rendering
