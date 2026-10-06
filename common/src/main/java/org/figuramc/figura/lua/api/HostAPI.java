@@ -1,7 +1,5 @@
 package org.figuramc.figura.lua.api;
 
-import com.mojang.blaze3d.buffers.BufferType;
-import com.mojang.blaze3d.buffers.BufferUsage;
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.NativeImage;
@@ -519,10 +517,10 @@ public class HostAPI {
         int height = renderTarget.height;
         NativeImage nativeImage = new NativeImage(width, height, false);
         GpuBuffer gpuBuffer = RenderSystem.getDevice()
-                .createBuffer(() -> "Figura Screenshot buffer", BufferType.PIXEL_PACK, BufferUsage.STATIC_READ, width * height * gpuTexture.getFormat().pixelSize());
+                .createBuffer(() -> "Figura Screenshot buffer", 9, width * height * gpuTexture.getFormat().pixelSize());
         CommandEncoder commandEncoder = RenderSystem.getDevice().createCommandEncoder();
         RenderSystem.getDevice().createCommandEncoder().copyTextureToBuffer(gpuTexture, gpuBuffer, 0, () -> {
-            try (GpuBuffer.ReadView readView = commandEncoder.readBuffer(gpuBuffer)) {
+            try (GpuBuffer.MappedView readView = commandEncoder.mapBuffer(gpuBuffer, true, false)) {
                 for (int k = 0; k < height; k++) {
                     for (int l = 0; l < width; l++) {
                         int m = readView.data().getInt((l + k * width) * gpuTexture.getFormat().pixelSize());

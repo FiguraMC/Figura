@@ -14,7 +14,7 @@ import java.util.UUID;
 public class PlayerSocialManagerMixin {
     @Inject(method = "addPlayer", at = @At("HEAD"))
     private void onPlayerJoin(PlayerInfo player, CallbackInfo ci) {
-        UUID id = player.getProfile().getId();
+        UUID id = player.getProfile().id();
         AvatarManager.clearAvatars(id);
     }
 }

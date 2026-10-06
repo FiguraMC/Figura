@@ -45,7 +45,7 @@ public class FiguraModelPartReader {
             Byte inheritedFormatVersion
     ) {
         // if not present, assume v4
-        byte formatVersion = partCompound.contains("_v") ? partCompound.getByte("_v") :
+        byte formatVersion = partCompound.contains("_v") ? partCompound.getByte("_v").orElse((byte)0) :
                 inheritedFormatVersion == null ? BlockbenchCommonTypes.FORMAT_V4 : inheritedFormatVersion;
 
         // Read name
