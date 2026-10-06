@@ -189,6 +189,10 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
             VERTEX_BUFFER.consume(false, bufferSource);
             FiguraMod.popProfiler(2);
 
+            if (bufferSource instanceof MultiBufferSource.BufferSource bs) {
+                bs.endLastBatch();
+            }
+
             // finish rendering
             checkEmpty();
         }
@@ -462,10 +466,14 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
 
         PoseStack stack = customization.copyIntoGlobalPoseStack();
 
-        ShapeRenderer.renderLineBox(stack.last(), bufferSource.getBuffer(RenderType.LINES),
+        ShapeRenderer.renderLineBox(stack.last(), bufferSource.getBuffer(RenderType.lines()),
                 -boxSize, -boxSize, -boxSize,
                 boxSize, boxSize, boxSize,
                 (float) color.x, (float) color.y, (float) color.z, 1f);
+
+        if (bufferSource instanceof MultiBufferSource.BufferSource bs) {
+            bs.endBatch(RenderType.lines());
+        }
     }
 
     protected void savePivotTransform(ParentType parentType, PartCustomization customization) {
@@ -672,10 +680,17 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
         public void consume(boolean primary, MultiBufferSource bufferSource) {
             HashMap<RenderType, List<Consumer<VertexConsumer>>> map = primary ? primaryBuffers : secondaryBuffers;
             for (Map.Entry<RenderType, List<Consumer<VertexConsumer>>> entry : map.entrySet()) {
-                VertexConsumer vertexConsumer = bufferSource.getBuffer(entry.getKey());
+                RenderType renderType = entry.getKey();
+                VertexConsumer vertexConsumer = bufferSource.getBuffer(renderType);
                 List<Consumer<VertexConsumer>> consumers = entry.getValue();
                 for (Consumer<VertexConsumer> consumer : consumers)
                     consumer.accept(vertexConsumer);
+
+                if (bufferSource instanceof MultiBufferSource.BufferSource bs) {
+                    if (renderType == RenderType.lines() || renderType == RenderType.lineStrip() || renderType == RenderTypes.FiguraRenderType.SOLID) {
+                        bs.endBatch(renderType);
+                    }
+                }
             }
             map.clear();
         }

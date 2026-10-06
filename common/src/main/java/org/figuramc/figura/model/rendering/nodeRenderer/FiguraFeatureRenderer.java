@@ -15,7 +15,8 @@ public class FiguraFeatureRenderer {
     public void render(SubmitNodeCollection submitNodeCollection, MultiBufferSource.BufferSource bufferSource) {
         List<FiguraSubmission> figuraSubmissions = ((NodeCollectorExtension) submitNodeCollection).getFiguraSubmissions();
 
-        for (FiguraSubmission figuraSubmission : figuraSubmissions) {
+        for (int i = 0; i < figuraSubmissions.size(); i++) {
+            FiguraSubmission figuraSubmission = figuraSubmissions.get(i);
             if (figuraSubmission.avatar() == null)
                 continue;
 
