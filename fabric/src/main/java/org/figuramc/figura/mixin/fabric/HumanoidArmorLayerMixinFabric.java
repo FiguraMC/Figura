@@ -110,9 +110,12 @@ public abstract class HumanoidArmorLayerMixinFabric<S extends HumanoidRenderStat
     }
 
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;usesInnerModel(Lnet/minecraft/world/entity/EquipmentSlot;)Z", shift = At.Shift.AFTER), method = "renderArmorPiece")
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;usesInnerModel(Lnet/minecraft/world/entity/EquipmentSlot;)Z", shift = At.Shift.AFTER), method = "renderArmorPiece", cancellable = true)
     public void renderArmorPieceHijack(PoseStack matrices, SubmitNodeCollector submitNodeCollector, ItemStack stack, EquipmentSlot armorSlot, int light, S state, CallbackInfo ci, @Local A humanoidModel) {
-        if (figura$avatar != null && figura$renderingVanillaArmor) {
+        if (figura$avatar == null) return;
+
+        if (!figura$renderingVanillaArmor) {
+            ci.cancel();
             return;
         }
         figura$setPartVisibility(humanoidModel, armorSlot);
@@ -283,7 +286,7 @@ public abstract class HumanoidArmorLayerMixinFabric<S extends HumanoidRenderStat
 
         List<EquipmentClientInfo.Layer> list = ((EquipmentLayerRendererAccessor)this.equipmentRenderer).figura$getAssetsManager().get(location.get()).getLayers(layerType);
 
-        int i = itemStack.is(ItemTags.DYEABLE) ? DyedItemColor.getOrDefault(itemStack, -6265536) : -1;
+        int i = DyedItemColor.getOrDefault(itemStack, 0);
         int order = 0;
 
         for(EquipmentClientInfo.Layer layer : list) {
@@ -291,9 +294,9 @@ public abstract class HumanoidArmorLayerMixinFabric<S extends HumanoidRenderStat
 
             if (k != 0) {
                 ResourceLocation normalArmorResource = ((EquipmentLayerRendererAccessor)this.equipmentRenderer).layerTextureLookup().apply(new EquipmentLayerRenderer.LayerTextureKey(layerType, layer));
-                nodeCollector.order(order++).submitModelPart(modelPart, poseStack, RenderType.armorCutoutNoCull(normalArmorResource), light, OverlayTexture.NO_OVERLAY, null, 0, null);
+                nodeCollector.order(order++).submitModelPart(modelPart, poseStack, RenderType.armorCutoutNoCull(normalArmorResource), light, OverlayTexture.NO_OVERLAY, null, k, null);
                 if (hasGlint)
-                    nodeCollector.order(order++).submitModelPart(modelPart, poseStack, RenderType.armorEntityGlint(), light, OverlayTexture.NO_OVERLAY, null, 0, null);
+                    nodeCollector.order(order++).submitModelPart(modelPart, poseStack, RenderType.armorEntityGlint(), light, OverlayTexture.NO_OVERLAY, null, -1, null);
                 hasGlint = false;
             }
         }
