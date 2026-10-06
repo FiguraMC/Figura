@@ -70,7 +70,8 @@ public class SpriteTask extends RenderTask {
                     .setUv(v.u, v.v)
                     .setOverlay(newOverlay)
                     .setLight(newLight)
-                    .setNormal(poseStack.last(), v.nx, v.ny, v.nz);
+                    .setNormal(poseStack.last(), v.nx, v.ny, v.nz)
+                    .setLineWidth(1.0F);
         }
     }
 
