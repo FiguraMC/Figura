@@ -116,7 +116,7 @@
     "render.renderers.AbstractSignRendererMixin",
     "render.renderers.ArrowRendererMixin",
     "render.renderers.ArrowRenderStateMixin",
-    "render.renderers.BlockEntityWithoutLevelRendererMixin",
+    "render.renderers.SkullBlockRenderStateMixin",
     "render.renderers.EntityRendererMixin",
     "render.renderers.EntityRenderStateMixin",
     "render.renderers.HandRenderSelectionAccessor",

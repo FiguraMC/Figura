@@ -120,6 +120,7 @@ public abstract class ItemInHandRendererMixin {
             @Local(argsOnly = true) ItemDisplayContext itemDisplayContext
     ) {
         if (stack.getItem() instanceof BlockItem bl && bl.getBlock() instanceof AbstractSkullBlock) {
+            SkullBlockRendererAccessor.setItem(stack);
             SkullBlockRendererAccessor.setEntity(entity);
             SkullBlockRendererAccessor.setRenderMode(switch (itemDisplayContext) {
                 case FIRST_PERSON_LEFT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.FIRST_PERSON_LEFT_HAND;
