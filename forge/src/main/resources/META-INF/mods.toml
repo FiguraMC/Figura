@@ -31,3 +31,13 @@ mandatory = true
 versionRange = "[${minecraft_version},)"
 ordering = "NONE"
 side = "CLIENT"
+
+# this addon is a port of features already included, so we want to trigger
+# a "friendly" dependency conflict instead of running into a mixin error
+[[dependencies.figura]]
+modId = "figurav5addon"
+mandatory = false
+# why is this something you're allowed to do
+versionRange = "[NONE - §cincompatible§r\\nThis addon's features are included in this Figura version!]"
+ordering = "NONE"
+side = "BOTH"

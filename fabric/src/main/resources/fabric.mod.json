@@ -42,6 +42,9 @@
     "canvas": "*",
     "immediatelyfast":  "*"
   },
+  "breaks": {
+    "figurav5addon": "*"
+  },
   "custom": {
     "assets_version": "${assets_version}",
     "modmenu": {

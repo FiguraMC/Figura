@@ -243,6 +243,8 @@ public class AvatarWizard {
             model.setResolution(64, 64);
         else if (hasCapeOrElytra)
             model.setResolution(64, 32);
+        else
+            model.setResolution(16, 16);
 
         //base bones
         Group root = model.addGroup("root", FiguraVec3.of());

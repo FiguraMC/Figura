@@ -95,7 +95,7 @@ public class TextUtils {
         try {
             // check if its valid json text
             JsonElement object = JsonParser.parseString(text);
-            
+
             // this is to account for click and hover events being reworked in 1.21.5, they say every mod devolves into
             // some form of via version eventually, the rumors were true...
             if (object.isJsonObject()) {
@@ -113,7 +113,7 @@ public class TextUtils {
                     obj.add("hover_event", replacement);
                 }
             }
-            
+
             // attempt to parse json
             finalText = ComponentSerialization.CODEC.decode(OPS, object).getOrThrow().getFirst();
 

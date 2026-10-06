@@ -37,6 +37,7 @@ public class NetworkingAPI {
     private static final String NETWORKING_DISABLED_ERROR_TEXT = "Networking is disabled in config";
     private static final String NO_PERMISSION_ERROR_TEXT = "This avatar doesn't have networking permissions";
     private static final String NETWORKING_DISALLOWED_FOR_LINK_ERROR = "Networking whitelist/blacklist does not allow access to link: %s";
+    private static final String MALFORMED_LINK_ERROR = "Link is malformed: %s (%s)";
     final Avatar owner;
     @LuaWhitelist
     @LuaFieldDoc("net.http")
@@ -100,7 +101,7 @@ public class NetworkingAPI {
             };
         }
         catch (MalformedURLException e) {
-            throw new LinkNotAllowedException(NETWORKING_DISALLOWED_FOR_LINK_ERROR.formatted(link));
+            throw new LuaError(MALFORMED_LINK_ERROR.formatted(link, e.getMessage()));
         }
     }
 

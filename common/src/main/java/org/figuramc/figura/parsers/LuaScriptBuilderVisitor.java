@@ -1,7 +1,6 @@
 package org.figuramc.figura.parsers;
 
 import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.config.Configs;
 import org.luaj.vm2.Lua;
 import org.luaj.vm2.LuaString;
 import org.luaj.vm2.LuaValue;

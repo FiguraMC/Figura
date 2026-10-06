@@ -226,8 +226,8 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
         double det = det();
         return set(
                 v22 / det,
-                v12 / det,
-                v21 / det,
+                -v21 / det,
+                -v12 / det,
                 v11 / det
         );
     }

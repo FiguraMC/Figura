@@ -27,6 +27,14 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
+import net.minecraft.client.renderer.block.model.ItemTransform;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
+import org.figuramc.figura.ducks.FiguraItemStackRenderStateExtension;
+import org.figuramc.figura.lua.api.world.ItemStackAPI;
+import org.figuramc.figura.math.vector.FiguraVec3;
 
 import java.util.BitSet;
 
@@ -100,9 +108,21 @@ public abstract class ItemInHandRendererMixin {
         }
     }
 
-    @Inject(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/item/ItemStackRenderState;submit(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;III)V"))
-    private void renderItem(LivingEntity entity, ItemStack stack, ItemDisplayContext itemDisplayContext, PoseStack matrices, SubmitNodeCollector submitNodeCollector, int light, CallbackInfo ci) {
+    @WrapOperation(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/item/ItemStackRenderState;submit(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;III)V"))
+    private void renderItemSubmit(
+            ItemStackRenderState instance,
+            PoseStack matrices,
+            SubmitNodeCollector submitNodeCollector,
+            int light,
+            int overlay,
+            int outlineColor,
+            Operation<Void> original,
+            @Local(argsOnly = true) LivingEntity entity,
+            @Local(argsOnly = true) ItemStack stack,
+            @Local(argsOnly = true) ItemDisplayContext itemDisplayContext
+    ) {
         if (stack.getItem() instanceof BlockItem bl && bl.getBlock() instanceof AbstractSkullBlock) {
+            SkullBlockRendererAccessor.setItem(stack);
             SkullBlockRendererAccessor.setEntity(entity);
             SkullBlockRendererAccessor.setRenderMode(switch (itemDisplayContext) {
                 case FIRST_PERSON_LEFT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.FIRST_PERSON_LEFT_HAND;
@@ -112,6 +132,27 @@ public abstract class ItemInHandRendererMixin {
                 default -> itemDisplayContext.leftHand() ? SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_LEFT_HAND // should never happen
                         : SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_RIGHT_HAND; 
             });
+        }
+
+        Avatar av = AvatarManager.getAvatar(entity);
+        if (av == null)
+            av = this.avatar;
+
+        ItemTransform transform = ((FiguraItemStackRenderStateExtension) instance).figura$getItemTransform();
+
+        if (av == null || !av.itemRenderEvent(
+                ItemStackAPI.verify(stack),
+                itemDisplayContext.name(),
+                FiguraVec3.fromVec3f(transform.translation()),
+                FiguraVec3.of(transform.rotation().z(), transform.rotation().y(), transform.rotation().x()),
+                FiguraVec3.fromVec3f(transform.scale()),
+                itemDisplayContext.leftHand(),
+                matrices,
+                submitNodeCollector,
+                light,
+                overlay
+        )) {
+            original.call(instance, matrices, submitNodeCollector, light, overlay, outlineColor);
         }
     }
 }

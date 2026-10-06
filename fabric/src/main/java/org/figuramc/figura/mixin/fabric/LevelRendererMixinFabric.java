@@ -46,10 +46,6 @@ public class LevelRendererMixinFabric {
     @Final
     private SubmitNodeStorage submitNodeStorage;
 
-    @Shadow
-    @Final
-    private FeatureRenderDispatcher featureRenderDispatcher;
-
     @Inject(method = {"method_62214"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;checkPoseStack(Lcom/mojang/blaze3d/vertex/PoseStack;)V", ordinal = 0))
     private void renderLevelFirstPerson(GpuBufferSlice gpuBufferSlice, LevelRenderState levelRenderState, ProfilerFiller profiler, Matrix4f matrix4f, ResourceHandle resourceHandle, ResourceHandle resourceHandle2, boolean bl, ResourceHandle resourceHandle3, ResourceHandle resourceHandle4, CallbackInfo ci, @Local PoseStack stack
     ) {
@@ -91,12 +87,11 @@ public class LevelRendererMixinFabric {
             do {
                 stack.popPose();
             } while(((PoseStackAccessor)stack).getLastIndex() > lastIndex);
+
+            Avatar.firstPerson = false;
         }
 
-        featureRenderDispatcher.renderAllFeatures();
         bufferSource.endLastBatch(); // do a vanilla hand and render the hand/parts immediately
-
-        Avatar.firstPerson = false;
     }
 
     @Inject(method =  {"method_62214"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderBuffers;bufferSource()Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;"))

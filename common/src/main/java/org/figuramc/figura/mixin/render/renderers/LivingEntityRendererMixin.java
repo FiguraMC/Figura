@@ -104,6 +104,20 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
         Avatar localAvatar = currentAvatar;
         M model = getModel();
 
+        if (Avatar.firstPerson) {
+            model.setupAnim(livingEntityRenderState);
+            figura$transformParts(localAvatar, model);
+            localAvatar.updateMatrices(model, poseStack);
+            if (localAvatar.luaRuntime != null)
+                localAvatar.luaRuntime.vanilla_model.PLAYER.restore(model);
+
+            currentAvatar = null;
+            lastPose = null;
+            poseStack.popPose();
+            ci.cancel();
+            return;
+        }
+
         // so basically set the figura callbacks up before the model is submitted
         FiguraSubmitCallBackExtension submitCallBackExtension = (FiguraSubmitCallBackExtension) model;
         submitCallBackExtension.figura$addPreRenderingCallback((bufferSource, pose) -> {
@@ -130,9 +144,13 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
         Avatar localAvatar = currentAvatar;
 
         M model = getModel();
-        
+
+        figura$transformParts(localAvatar, model);
+        localAvatar.updateMatrices(model, poseStack);
+        if (localAvatar.luaRuntime != null)
+            localAvatar.luaRuntime.vanilla_model.PLAYER.restore(model);
+
         if (Avatar.firstPerson) {
-            localAvatar.updateMatrices(model, poseStack);
             currentAvatar = null;
             lastPose = null;
             poseStack.popPose();
@@ -204,6 +222,9 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
     private void nullifyAvatar(S livingEntityRenderState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, CallbackInfo ci) {
         if (currentAvatar == null)
             return;
+
+        if (currentAvatar.luaRuntime != null)
+            currentAvatar.luaRuntime.vanilla_model.PLAYER.restore(getModel());
 
         currentAvatar = null;
         lastPose = null;

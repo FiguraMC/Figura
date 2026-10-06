@@ -3,7 +3,7 @@ package org.figuramc.figura.mixin.render.renderers;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.object.skull.SkullModelBase;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
@@ -15,6 +15,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ResolvableProfile;
+import net.minecraft.world.level.block.AbstractSkullBlock;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
@@ -36,23 +37,17 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(SkullBlockRenderer.class)
 public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<SkullBlockEntity, SkullBlockRenderState>, PlayerHeadRenderInfoExtension {
 
     @Unique
-    private static Avatar avatar;
-    @Unique
     private static SkullBlockRenderState block;
 
     @Inject(at = @At("HEAD"), method = "submitSkull", cancellable = true)
     private static void renderSkull(Direction direction, float yaw, float animationProgress, PoseStack stack, SubmitNodeCollector submitNodeCollector, int light, SkullModelBase model, RenderType renderLayer, int outlineColor, ModelFeatureRenderer.CrumblingOverlay crumblingOverlay, CallbackInfo ci) {
-        // parse block and items first, so we can yeet them in case of a missed event
-        if (avatar == null) {
-            avatar = SkullBlockRendererHelper.getAvatar();
-            SkullBlockRendererHelper.setAvatar(null);
-        }
+        Avatar localAvatar = SkullBlockRendererHelper.getAvatar();
+        SkullBlockRendererHelper.setAvatar(null);
 
         SkullBlockRenderState localBlock = block;
         block = null;
@@ -66,23 +61,23 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
         SkullBlockRendererAccessor.SkullRenderMode localMode = SkullBlockRendererAccessor.getRenderMode();
         SkullBlockRendererAccessor.setRenderMode(SkullBlockRendererAccessor.SkullRenderMode.OTHER);
 
-        // avatar pointer incase avatar variable is set during render. (unlikely)
-        Avatar localAvatar = avatar;
-        avatar = null;
-
         if (localAvatar == null || localAvatar.permissions.get(Permissions.CUSTOM_SKULL) == 0)
             return;
 
-        float tickDelta = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);
+        PoseStack copy = new PoseStack();
+        copy.pushPose();
+        copy.last().set(stack.last());
 
-        FiguraSubmitCallBackExtension modelExtension = (FiguraSubmitCallBackExtension) model;
-        modelExtension.figura$addPreRenderingCallback((bufferSource, poseStack) -> {
+        // the Figura pass runs before the vanilla model pass, so this flag is ready by then
+        java.util.concurrent.atomic.AtomicBoolean figuraHandled = new java.util.concurrent.atomic.AtomicBoolean(false);
 
+        ((NodeCollectorExtension) submitNodeCollector).submitFiguraModel(localAvatar, null, (av, state, bufferSource) -> {
             FiguraMod.pushProfiler(FiguraMod.MOD_ID);
             FiguraMod.pushProfiler(localAvatar);
             FiguraMod.pushProfiler("skullRender");
 
-            // event
+            try {
+                float tickDelta = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);// event
             BlockStateAPI b = localBlock == null ? null : new BlockStateAPI(localBlock.blockState, localBlock.blockPos);
             ItemStackAPI i = localItem != null ? ItemStackAPI.verify(localItem) : null;
             EntityAPI<?> e = localEntity != null ? EntityAPI.wrap(localEntity) : null;
@@ -91,38 +86,42 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
             FiguraMod.pushProfiler(localBlock != null ? localBlock.blockPos.toString() : String.valueOf(i));
 
             FiguraMod.pushProfiler("event");
-            boolean bool = localAvatar.skullRenderEvent(tickDelta, b, i, e, m);
+            boolean cancelled = localAvatar.skullRenderEvent(tickDelta, b, i, e, m);
 
-            // render skull :3
-            FiguraMod.popPushProfiler("render");
-            if (bool || localAvatar.skullRender(stack, bufferSource, light, direction, yaw))
-                return false;
+                // render skull :3
+                FiguraMod.popPushProfiler("render");
+                boolean rendered = localAvatar.skullRender(copy, bufferSource, light, direction, yaw);
 
-            FiguraMod.popProfiler(5);
-            return true;
+                figuraHandled.set(cancelled || rendered);
+            } finally {
+                FiguraMod.popProfiler(5);
+            }
+            return null;
         });
+
+        // vanilla model is dropped only when Figura took over
+        ((FiguraSubmitCallBackExtension) model).figura$addPreRenderingCallback((bufferSource, poseStack) -> !figuraHandled.get());
+    }
+
+    @Inject(at = @At("HEAD"), method = "extractRenderState(Lnet/minecraft/world/level/block/entity/SkullBlockEntity;Lnet/minecraft/client/renderer/blockentity/state/SkullBlockRenderState;FLnet/minecraft/world/phys/Vec3;Lnet/minecraft/client/renderer/feature/ModelFeatureRenderer$CrumblingOverlay;)V")
+    public void extractRenderState(SkullBlockEntity skullBlockEntity, SkullBlockRenderState skullBlockRenderState, float f, Vec3 vec3, ModelFeatureRenderer.CrumblingOverlay crumblingOverlay, CallbackInfo ci) {
+        if (skullBlockEntity.getBlockState().getBlock() instanceof AbstractSkullBlock skullBlock && skullBlock.getType() == SkullBlock.Types.PLAYER) {
+            Avatar av = SkullBlockRendererHelper.resolveAvatar(skullBlockEntity.getOwnerProfile());
+            ((SkullBlockRenderStateExtension) skullBlockRenderState).figura$setAvatar(av);
+        }
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/blockentity/SkullBlockRenderer;submitSkull(Lnet/minecraft/core/Direction;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;ILnet/minecraft/client/model/object/skull/SkullModelBase;Lnet/minecraft/client/renderer/rendertype/RenderType;ILnet/minecraft/client/renderer/feature/ModelFeatureRenderer$CrumblingOverlay;)V"), method = "submit(Lnet/minecraft/client/renderer/blockentity/state/SkullBlockRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V")
     public void render(SkullBlockRenderState skullBlockRenderState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, CallbackInfo ci) {
+        Avatar av = ((SkullBlockRenderStateExtension) skullBlockRenderState).figura$getAvatar();
+        SkullBlockRendererHelper.setAvatar(av);
         block = skullBlockRenderState;
         SkullBlockRendererAccessor.setRenderMode(SkullBlockRendererAccessor.SkullRenderMode.BLOCK);
     }
 
     @Override
     public boolean shouldRenderOffScreen() {
-        Avatar localAvatar = avatar; // avatar pointer incase avatar variable is set during render.
+        Avatar localAvatar = SkullBlockRendererHelper.getAvatar();
         return localAvatar == null || localAvatar.permissions == null ? BlockEntityRenderer.super.shouldRenderOffScreen() : localAvatar.permissions.get(Permissions.OFFSCREEN_RENDERING) == 1;
-    }
-
-    @Inject(at = @At("HEAD"), method = "resolveSkullRenderType")
-    private static void getRenderType(SkullBlock.Type type, SkullBlockEntity skullBlockEntity, CallbackInfoReturnable<RenderType> cir) {
-        if (type == SkullBlock.Types.PLAYER) {
-            ResolvableProfile profile = skullBlockEntity.getOwnerProfile();
-            if (profile != null) {
-                avatar = AvatarManager.getAvatarForPlayer(profile.partialProfile().id());
-            }
-        }
-
     }
 }

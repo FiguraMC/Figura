@@ -250,11 +250,11 @@ public class Configs {
             LOG_PINGS = new ConfigType.EnumConfig("log_pings", DEV, 0, 3);
     public static final ConfigType.BoolConfig
             SYNC_PINGS = new ConfigType.BoolConfig("sync_pings", DEV, false) {{
-        String tooltip = "config.sync_pings.tooltip.";
-        this.tooltip = FiguraText.of(tooltip + "1")
-                .append("\n")
-                .append(FiguraText.of(tooltip + "2").withStyle(ChatFormatting.RED));
-    }},
+                String tooltip = "config.sync_pings.tooltip.";
+                this.tooltip = FiguraText.of(tooltip + "1")
+                        .append("\n")
+                        .append(FiguraText.of(tooltip + "2").withStyle(ChatFormatting.RED));
+            }},
             CHAT_MESSAGES = new ConfigType.BoolConfig("chat_messages", DEV, false) {{
                 this.name = this.name.copy().withStyle(ChatFormatting.RED);
                 String tooltip = "config.chat_messages.tooltip.";
@@ -263,7 +263,9 @@ public class Configs {
                         .append(FiguraText.of(tooltip + "2").withStyle(ChatFormatting.RED))
                         .append("\n\n")
                         .append(FiguraText.of(tooltip + "3").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
-            }};
+            }},
+            ALLOW_UPLOADING_ERRORED_AVATARS = new ConfigType.BoolConfig("allow_uploading_errored_avatars", DEV, false);
+
     public static final ConfigType.FolderConfig
             MAIN_DIR = new ConfigType.FolderConfig("main_dir", DEV, "") {
         @Override

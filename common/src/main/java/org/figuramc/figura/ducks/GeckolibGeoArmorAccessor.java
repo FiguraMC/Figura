@@ -14,7 +14,7 @@ public interface GeckolibGeoArmorAccessor {
     float figura$getScaleWidth();
     float figura$getScaleHeight();
 
-    
+
     GeoBone figura$getHeadBone();
     GeoBone figura$getLeftLegBone();
     GeoBone figura$getRightLegBone();

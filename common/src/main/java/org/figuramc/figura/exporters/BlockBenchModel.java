@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public class BlockBenchModel {
 
-    private static final String VERSION = "4.9";
+    private static final String VERSION = "4.10";
 
     private final JsonObject root = new JsonObject();
     private final ArrayList<Cube> elements = new ArrayList<>();
@@ -176,6 +176,7 @@ public class BlockBenchModel {
             cube.add("to", vec3ToJson(position.plus(size)));
             cube.addProperty("inflate", inflate);
             cube.add("faces", faces);
+            cube.addProperty("type", "cube");
             return cube;
         }
 

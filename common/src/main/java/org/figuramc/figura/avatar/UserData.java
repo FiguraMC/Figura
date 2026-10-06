@@ -34,10 +34,11 @@ public class UserData {
     }
 
     public void loadAvatar(CompoundTag nbt) {
+        FiguraMod.debug("--- avatar loading: " + id + " ---");
         Avatar avatar = new Avatar(id);
         this.avatars.add(avatar);
         avatar.load(nbt);
-        FiguraMod.debug("Loaded avatar for " + id);
+        FiguraMod.debug("--- loaded " + id + " ---");
     }
 
     public void loadBadges(Pair<BitSet, BitSet> pair) {

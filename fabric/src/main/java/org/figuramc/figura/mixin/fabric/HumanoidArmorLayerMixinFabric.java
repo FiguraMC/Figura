@@ -107,13 +107,17 @@ public abstract class HumanoidArmorLayerMixinFabric<S extends HumanoidRenderStat
             VanillaPart part = RenderUtils.partFromSlot(localAvatar, equipmentSlot);
             if (part != null)
                 part.restore(humanoidModel);
+            });
+            return true;
         });
     }
 
-
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;usesInnerModel(Lnet/minecraft/world/entity/EquipmentSlot;)Z", shift = At.Shift.AFTER), method = "renderArmorPiece")
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;usesInnerModel(Lnet/minecraft/world/entity/EquipmentSlot;)Z", shift = At.Shift.AFTER), method = "renderArmorPiece", cancellable = true)
     public void renderArmorPieceHijack(PoseStack matrices, SubmitNodeCollector submitNodeCollector, ItemStack stack, EquipmentSlot armorSlot, int light, S state, CallbackInfo ci, @Local A humanoidModel) {
-        if (figura$avatar != null && figura$renderingVanillaArmor) {
+        if (figura$avatar == null) return;
+
+        if (!figura$renderingVanillaArmor) {
+            ci.cancel();
             return;
         }
         figura$setPartVisibility(humanoidModel, armorSlot);
@@ -284,7 +288,8 @@ public abstract class HumanoidArmorLayerMixinFabric<S extends HumanoidRenderStat
 
         List<EquipmentClientInfo.Layer> list = ((EquipmentLayerRendererAccessor)this.equipmentRenderer).figura$getAssetsManager().get(location.get()).getLayers(layerType);
 
-        int i = itemStack.is(ItemTags.DYEABLE) ? DyedItemColor.getOrDefault(itemStack, -6265536) : -1;
+        int i = DyedItemColor.getOrDefault(itemStack, 0);
+        int order = 0;
         int order = 0;
 
         for(EquipmentClientInfo.Layer layer : list) {

@@ -373,9 +373,11 @@ public class AvatarManager {
             }
 
             if (LOADED_USERS.get(targetUUID) != null) {
+                if (FiguraMod.isLocal(targetUUID)) {
+                    context.getSource().figura$sendError(Component.literal("Cannot set your own avatar this way; use '/figura load' instead"));
+                    return 0;
+                }
                 setAvatar(targetUUID, avatar.nbt);
-                if (FiguraMod.isLocal(targetUUID))
-                    localUploaded = true;
                 context.getSource().figura$sendFeedback(Component.literal("Set avatar for " + t));
                 return 1;
             }

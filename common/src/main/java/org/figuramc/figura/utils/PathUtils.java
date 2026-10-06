@@ -7,16 +7,16 @@ import org.luaj.vm2.LuaValue;
 
 public class PathUtils {
 
-    public static Path getPath (String path) {
-        if (path.isEmpty()) return Path.of("/");
+    public static Path getPath(String path) {
+        if (path.isEmpty()) return PermissivePath.ROOT;
         if (!path.startsWith(".")) path = "/" + path;
-        return Path.of(path
+        return new PermissivePath(path
             .replaceAll("\\\\", "/")
-            .replaceAll("[\\.]([^\\./])", "/$1")
-            .replaceAll("\\/\\/", "/"));
+            .replaceAll("[.]([^./])", "/$1")
+            .replaceAll("//", "/"));
     }
 
-    public static Path getPath (LuaValue path) {
+    public static Path getPath(LuaValue path) {
         String str = path.isnil() ? "/" : path.checkjstring();
         return getPath(str);
     }
@@ -32,15 +32,15 @@ public class PathUtils {
             file = stack.get("source").checkjstring();
         } while (file.equals("=[Java]"));
 
-        Path path = Path.of("/" + file);
-        return path.getNameCount() > 1 ? path.resolve("../").normalize() : Path.of("/");
+        Path path = new PermissivePath("/" + file);
+        return path.getNameCount() > 1 ? path.resolve("../").normalize() : PermissivePath.ROOT;
     }
 
     public static String computeSafeString(Path path) {
         String str = path == null ? "" : path.normalize().toString();
         return str
             .replaceAll("\\\\", "/")
-            .replaceAll("^\\/+", "");
+            .replaceAll("^/+", "");
     }
 
     public static String computeSafeString(String path) {

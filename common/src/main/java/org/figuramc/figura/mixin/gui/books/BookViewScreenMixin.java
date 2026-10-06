@@ -11,13 +11,13 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(value = BookViewScreen.class, priority = 1100)
 public class BookViewScreenMixin {
-    @ModifyArg(method = "visitText", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/ActiveTextCollector;accept(IILnet/minecraft/util/FormattedCharSequence;)V"))
-    public FormattedCharSequence render(FormattedCharSequence formattedCharSequence) {
-        return Emojis.applyEmojis(TextUtils.charSequenceToText(formattedCharSequence)).getVisualOrderText();
+    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/util/FormattedCharSequence;IIIZ)V"))
+    public void render(GuiGraphics graphics, Font font, FormattedCharSequence formattedCharSequence, int x, int y, int color, boolean shadowed) {
+        graphics.drawString(font, Emojis.applyEmojis(TextUtils.charSequenceToText(formattedCharSequence)), x, y, color, shadowed);
     }
 
-    @ModifyArg(method = "visitText", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/ActiveTextCollector;accept(Lnet/minecraft/client/gui/TextAlignment;IILnet/minecraft/network/chat/Component;)V"), index = 3)
-    public Component render(Component component) {
-        return Emojis.applyEmojis(component);
+    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIIZ)V"))
+    public void render(GuiGraphics graphics, Font font, Component component, int x, int y, int color, boolean shadowed) {
+        graphics.drawString(font, Emojis.applyEmojis(component), x, y, color, shadowed);
     }
 }

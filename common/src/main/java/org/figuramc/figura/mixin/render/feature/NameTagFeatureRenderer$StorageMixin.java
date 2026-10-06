@@ -69,7 +69,7 @@ public class NameTagFeatureRenderer$StorageMixin implements NameTagFeatureRender
         figura$hasCustomNameplate = figura$custom != null && figura$avatar.permissions.get(Permissions.NAMEPLATE_EDIT) == 1;
         figura$enabled =  Configs.ENTITY_NAMEPLATE.value > 0 && !AvatarManager.panic && figura$hasCustomNameplate;
 
-        figura$textList = TextUtils.splitText(component, "\n");
+        figura$textList = TextUtils.splitText(component, "\\r?\\n");
     }
 
     @Inject(at = @At(value = "TAIL"), method = "add")
@@ -138,9 +138,10 @@ public class NameTagFeatureRenderer$StorageMixin implements NameTagFeatureRender
 
 
     @WrapOperation(method = "add",
-            at = @At(value = "INVOKE", target =
-                    "Ljava/util/List;add(Ljava/lang/Object;)Z"
-            , ordinal = 1))
+            at = {
+                    @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", ordinal = 1),
+                    @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", ordinal = 2)
+            })
     private <E> boolean drawWithColor(List<E> instance, E e, Operation<Boolean> original) {
         SubmitNodeStorage.NameTagSubmit submit = (SubmitNodeStorage.NameTagSubmit) e;
 

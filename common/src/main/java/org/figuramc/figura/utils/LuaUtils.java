@@ -442,6 +442,8 @@ public class LuaUtils {
             Identifier resourceLocation = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(typedDataComponent.type());
             // apparently sometimes the game will not return a string, go figure
             String op = optional.map(tag -> tag.asString().orElse(tag.toString().isEmpty() ? "" : tag.toString())).orElse("");
+            // apparently sometimes the game will not return a string, go figure
+            String op = optional.map(tag -> tag.asString().orElse(tag.toString().isEmpty() ? "" : tag.toString())).orElse("");
             if (typedDataComponent.type() == DataComponents.ITEM_NAME && optional.isPresent() && op.contains("translate"))
                 continue;
 

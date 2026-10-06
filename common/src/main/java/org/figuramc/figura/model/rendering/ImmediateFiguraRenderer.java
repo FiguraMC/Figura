@@ -190,6 +190,10 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
             VERTEX_BUFFER.consume(false, bufferSource);
             FiguraMod.popProfiler(2);
 
+            if (bufferSource instanceof MultiBufferSource.BufferSource bs) {
+                bs.endLastBatch();
+            }
+
             // finish rendering
             checkEmpty();
         }
@@ -337,6 +341,11 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
             boolean renderPivotParts = part.parentType.isPivot && allowPivotParts;
 
             if (renderPivot || renderTasks || renderPivotParts) {
+                // fix light and overlay
+                PartCustomization parent = customizationStack.peek();
+                int light = parent.light != null ? parent.light : LightTexture.FULL_BRIGHT;
+                int overlay = parent.overlay != null ? parent.overlay : OverlayTexture.NO_OVERLAY;
+
                 // fix pivots
                 FiguraMod.pushProfiler("fixMatricesPivot");
 
@@ -356,8 +365,6 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
                 // render tasks
                 if (renderTasks) {
                     FiguraMod.popPushProfiler("renderTasks");
-                    int light = peek.light;
-                    int overlay = peek.overlay;
                     interceptRendersIntoFigura = false;
                     for (RenderTask task : part.renderTasks.values()) {
                         if (!task.shouldRender())
@@ -371,12 +378,6 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
                         FiguraMod.popProfiler();
                     }
                     interceptRendersIntoFigura = true;
-                }
-
-                // render pivot parts
-                if (renderPivotParts && part.parentType.isPivot) {
-                    FiguraMod.popPushProfiler("savePivotParts");
-                    savePivotTransform(part.parentType, peek);
                 }
 
                 customizationStack.pop();
@@ -458,6 +459,54 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
         return !breakRender;
     }
 
+
+    protected boolean getPartComplexity(FiguraModelPart part, int[] remainingComplexity, boolean prevPredicate) {
+        PartCustomization custom = part.customization;
+
+        // test the current filter scheme
+        Boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, prevPredicate);
+        if (thisPassedPredicate == null || (!custom.visible)) {
+            return true;
+        }
+
+        // visibility
+        if (!ignoreVanillaVisibility && custom.vanillaVisible != null && !custom.vanillaVisible) {
+            return true;
+        }
+
+        // calculate this part's complexity
+        FiguraMod.popPushProfiler("pushVertices");
+        boolean breakRender = thisPassedPredicate && !part.calculateComplexity(remainingComplexity);
+
+        // calculate extras
+        if (!breakRender && thisPassedPredicate) {
+            boolean renderTasks = !part.renderTasks.isEmpty();
+            // add tasks
+            if (renderTasks) {
+
+                for (RenderTask task : part.renderTasks.values()) {
+                    if (!task.shouldRender())
+                        continue;
+                    int neededComplexity = task.getComplexity();
+                    if (neededComplexity > remainingComplexity[0])
+                        break;
+                    FiguraMod.pushProfiler(task.getName());
+                    remainingComplexity[0] -= neededComplexity;
+                    FiguraMod.popProfiler();
+                }
+            }
+        }
+
+        // calculate children
+        for (FiguraModelPart child : List.copyOf(part.children)) {
+            if (!getPartComplexity(child, remainingComplexity, thisPassedPredicate)) {
+                breakRender = true;
+                break;
+            }
+        }
+        return !breakRender;
+    }
+
     protected void renderPivot(FiguraModelPart part, PartCustomization customization) {
         boolean group = part.customization.partType == PartCustomization.PartType.GROUP;
         FiguraVec3 color = group ? ColorUtils.Colors.FIGURA_BLUE.vec : ColorUtils.Colors.AWESOME_BLUE.vec;
@@ -466,10 +515,14 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
 
         PoseStack stack = customization.copyIntoGlobalPoseStack();
 
-        renderLineBox(stack.last(), bufferSource.getBuffer(RenderTypes.LINES),
+        renderLineBox(stack.last(), bufferSource.getBuffer(RenderTypes.lines()),
                 -boxSize, -boxSize, -boxSize,
                 boxSize, boxSize, boxSize,
                 (float) color.x, (float) color.y, (float) color.z, 1f);
+
+        if (bufferSource instanceof MultiBufferSource.BufferSource bs) {
+            bs.endBatch(RenderType.lines());
+        }
     }
 
     public static void renderLineBox(PoseStack.Pose pose, VertexConsumer vertices, double x1, double y1, double z1, double x2, double y2, double z2, float r, float g, float b, float a) {
@@ -557,6 +610,19 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
             FiguraMod.popPushProfiler("worldMatrices");
             FiguraMat4 mat = partToWorldMatrices(custom);
             part.savedPartToWorldMat.set(mat);
+
+            // pivot parts
+            if (allowPivotParts && part.parentType.isPivot) {
+                FiguraMod.popPushProfiler("savePivotParts");
+                FiguraVec3 pivot = custom.getPivot().copy().add(custom.getOffsetPivot());
+                pivotOffsetter.setPos(pivot);
+                pivotOffsetter.recalculate();
+                customizationStack.push(pivotOffsetter);
+
+                savePivotTransform(part.parentType, customizationStack.peek());
+
+                customizationStack.pop();
+            }
         }
 
         // render children
@@ -696,10 +762,17 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
         public void consume(boolean primary, MultiBufferSource bufferSource) {
             HashMap<RenderType, List<Consumer<VertexConsumer>>> map = primary ? primaryBuffers : secondaryBuffers;
             for (Map.Entry<RenderType, List<Consumer<VertexConsumer>>> entry : map.entrySet()) {
-                VertexConsumer vertexConsumer = bufferSource.getBuffer(entry.getKey());
+                RenderType renderType = entry.getKey();
+                VertexConsumer vertexConsumer = bufferSource.getBuffer(renderType);
                 List<Consumer<VertexConsumer>> consumers = entry.getValue();
                 for (Consumer<VertexConsumer> consumer : consumers)
                     consumer.accept(vertexConsumer);
+
+                if (bufferSource instanceof MultiBufferSource.BufferSource bs) {
+                    if (renderType == RenderType.lines() || renderType == RenderType.lineStrip() || renderType == RenderTypes.FiguraRenderType.SOLID) {
+                        bs.endBatch(renderType);
+                    }
+                }
             }
             map.clear();
         }

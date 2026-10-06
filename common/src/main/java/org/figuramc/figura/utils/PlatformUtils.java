@@ -1,9 +1,7 @@
 package org.figuramc.figura.utils;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
-import net.minecraft.SharedConstants;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.file.Path;

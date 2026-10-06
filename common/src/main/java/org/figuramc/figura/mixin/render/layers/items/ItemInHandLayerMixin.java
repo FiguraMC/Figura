@@ -66,6 +66,7 @@ public abstract class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M e
             // Must do this bs manually
             if (((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getItemStack().getItem() instanceof BlockItem bl && bl.getBlock() instanceof AbstractSkullBlock) {
                 Entity entity = AvatarManager.getEntity(state);
+                SkullBlockRendererAccessor.setItem(((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getItemStack());
                 SkullBlockRendererAccessor.setEntity(entity);
                 SkullBlockRendererAccessor.setRenderMode(switch (((FiguraItemStackRenderStateExtension) itemStackRenderState).figura$getDisplayContext()) {
                     case FIRST_PERSON_LEFT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.FIRST_PERSON_LEFT_HAND;
@@ -96,6 +97,7 @@ public abstract class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M e
         ItemStack stack = ((FiguraItemStackRenderStateExtension)instance).figura$getItemStack();
         Entity entity = AvatarManager.getEntity(armedState);
         if (av != null && stack != null && entity != null && stack.getItem() instanceof BlockItem bl && bl.getBlock() instanceof AbstractSkullBlock sk) {
+            SkullBlockRendererAccessor.setItem(stack);
             SkullBlockRendererAccessor.setEntity(entity);
             SkullBlockRendererAccessor.setRenderMode(switch (((FiguraItemStackRenderStateExtension) instance).figura$getDisplayContext()) {
                 case FIRST_PERSON_LEFT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.FIRST_PERSON_LEFT_HAND;

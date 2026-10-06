@@ -4,15 +4,29 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemTransform;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.figuramc.figura.ducks.FiguraItemStackRenderStateExtension;
 import org.figuramc.figura.ducks.FiguraSubmitCallBackExtension;
+import org.figuramc.figura.ducks.FiguraSubmitCallBackExtension;
+import org.figuramc.figura.ducks.SkullBlockRendererAccessor;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiFunction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,5 +100,22 @@ public class ItemStackRenderStateMixin implements FiguraItemStackRenderStateExte
     @Override
     public List<BiFunction<MultiBufferSource, PoseStack, Boolean>> figura$getPreRenderingCallbacks() {
         return figura$preRenderingCallback;
+    }
+
+    @Inject(method = "submit", at = @At("HEAD"))
+    private void figura$preSubmit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int i, int j, int k, CallbackInfo ci) {
+        if (this.figura$itemStack != null) {
+            SkullBlockRendererAccessor.setItem(this.figura$itemStack);
+        }
+    }
+
+    @Inject(method = "submit", at = @At("TAIL"))
+    private void figura$postSubmit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int i, int j, int k, CallbackInfo ci) {
+        SkullBlockRendererAccessor.setItem(null);
+    }
+
+    @Inject(method = "clear", at = @At("HEAD"))
+    private void figura$clear(CallbackInfo ci) {
+        this.figura$itemStack = null;
     }
 }
