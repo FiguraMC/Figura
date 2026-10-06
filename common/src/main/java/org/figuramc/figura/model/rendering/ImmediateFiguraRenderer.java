@@ -375,12 +375,6 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
                     interceptRendersIntoFigura = true;
                 }
 
-                // render pivot parts
-                if (renderPivotParts && part.parentType.isPivot) {
-                    FiguraMod.popPushProfiler("savePivotParts");
-                    savePivotTransform(part.parentType, peek);
-                }
-
                 customizationStack.pop();
                 FiguraMod.popProfiler();
             }
@@ -526,6 +520,19 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
             FiguraMod.popPushProfiler("worldMatrices");
             FiguraMat4 mat = partToWorldMatrices(custom);
             part.savedPartToWorldMat.set(mat);
+
+            // pivot parts
+            if (allowPivotParts && part.parentType.isPivot) {
+                FiguraMod.popPushProfiler("savePivotParts");
+                FiguraVec3 pivot = custom.getPivot().copy().add(custom.getOffsetPivot());
+                pivotOffsetter.setPos(pivot);
+                pivotOffsetter.recalculate();
+                customizationStack.push(pivotOffsetter);
+
+                savePivotTransform(part.parentType, customizationStack.peek());
+
+                customizationStack.pop();
+            }
         }
 
         // render children
