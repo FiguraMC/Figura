@@ -241,7 +241,7 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.is_debug_overlay_enabled")
     public static boolean isDebugOverlayEnabled() {
-        return Minecraft.getInstance().getDebugOverlay().showDebugScreen();
+        return Minecraft.getInstance().debugEntries.isF3Visible();
     }
 
     @LuaWhitelist
