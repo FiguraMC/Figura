@@ -104,6 +104,20 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
         Avatar localAvatar = currentAvatar;
         M model = getModel();
 
+        if (Avatar.firstPerson) {
+            model.setupAnim(livingEntityRenderState);
+            figura$transformParts(localAvatar, model);
+            localAvatar.updateMatrices(model, poseStack);
+            if (localAvatar.luaRuntime != null)
+                localAvatar.luaRuntime.vanilla_model.PLAYER.restore(model);
+
+            currentAvatar = null;
+            lastPose = null;
+            poseStack.popPose();
+            ci.cancel();
+            return;
+        }
+
         // so basically set the figura callbacks up before the model is submitted
         FiguraSubmitCallBackExtension submitCallBackExtension = (FiguraSubmitCallBackExtension) model;
         submitCallBackExtension.figura$addPreRenderingCallback((bufferSource, pose) -> {
