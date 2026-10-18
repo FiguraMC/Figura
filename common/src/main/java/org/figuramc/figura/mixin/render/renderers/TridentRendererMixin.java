@@ -3,13 +3,13 @@ package org.figuramc.figura.mixin.render.renderers;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.object.projectile.TridentModel;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.ThrownTridentRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.state.ThrownTridentRenderState;
-import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.arrow.ThrownTrident;
@@ -39,7 +39,7 @@ public abstract class TridentRendererMixin<T extends ThrownTrident, S extends Th
         super(ctx);
     }
 
-    @Inject(at = @At(value = "INVOKE", shift = At.Shift.BEFORE, target = "Lnet/minecraft/client/renderer/OrderedSubmitNodeCollector;submitModel(Lnet/minecraft/client/model/Model;Ljava/lang/Object;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/rendertype/RenderType;IIILnet/minecraft/client/renderer/texture/TextureAtlasSprite;ILnet/minecraft/client/renderer/feature/ModelFeatureRenderer$CrumblingOverlay;)V"), method = "submit(Lnet/minecraft/client/renderer/entity/state/ThrownTridentRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V", cancellable = true)
+    @Inject(at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V", shift = At.Shift.AFTER), method = "submit(Lnet/minecraft/client/renderer/entity/state/ThrownTridentRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V")
     private void render(ThrownTridentRenderState thrownTridentRenderState, PoseStack pose, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, CallbackInfo ci) {
         Integer id = ((FiguraEntityRenderStateExtension)thrownTridentRenderState).figura$getEntityId();
         if (id == null)
@@ -67,16 +67,13 @@ public abstract class TridentRendererMixin<T extends ThrownTrident, S extends Th
             FiguraMod.pushProfiler("tridentRender");
 
             FiguraMod.pushProfiler("event");
-            boolean bool = avatar.tridentRenderEvent(tickDelta, EntityAPI.wrap(trident));
-
-            FiguraMod.popPushProfiler("render");
-            if (bool || avatar.renderTrident(poseStack, bufferSource, tickDelta, thrownTridentRenderState.lightCoords)) {
-                poseStack.popPose();
-                return false;
+            try {
+                boolean cancelled = avatar.tridentRenderEvent(tickDelta, EntityAPI.wrap(trident));
+                FiguraMod.popPushProfiler("render");
+                return !(cancelled || avatar.renderTrident(poseStack, bufferSource, tickDelta, thrownTridentRenderState.lightCoords));
+            } finally {
+                FiguraMod.popProfiler(4);
             }
-
-            FiguraMod.popProfiler(4);
-            return true;
         });
     }
 

@@ -1,9 +1,13 @@
 package org.figuramc.figura.mixin.render;
 
 import net.minecraft.client.Camera;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import com.mojang.math.Axis;
+import org.figuramc.figura.math.matrix.FiguraMat4;
+import org.joml.Matrix4f;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.math.vector.FiguraVec3;
@@ -23,20 +27,22 @@ public abstract class CameraMixin {
 
     @Shadow private float xRot;
     @Shadow private float yRot;
+    @Shadow private Entity entity;
+    @Shadow private float fovModifier;
 
     @Unique private Avatar avatar;
 
     @Shadow protected abstract void setRotation(float yaw, float pitch);
     @Shadow protected abstract void move(float x, float y, float z);
 
-    @Inject(method = "setup", at = @At(value = "HEAD"))
-    private void setupAvatarVar(Level level, Entity focusedEntity, boolean bl, boolean bl2, float f, CallbackInfo ci) {
-        avatar = AvatarManager.getAvatar(focusedEntity);
+    @Inject(method = "alignWithEntity", at = @At(value = "HEAD"))
+    private void setupAvatarVar(float partialTicks, CallbackInfo ci) {
+        avatar = AvatarManager.getAvatar(entity);
     }
 
     // Neo adds roll in addition to pitch and yaw
-    @Inject(method = "setup", at = {@At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setRotation(FF)V", shift = At.Shift.AFTER), @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setRotation(FF)V", shift = At.Shift.AFTER)}, require = 1)
-    private void setupRot(Level level, Entity entity, boolean bl, boolean bl2, float f, CallbackInfo ci) {
+    @Inject(method = "alignWithEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setRotation(FF)V", shift = At.Shift.AFTER), require = 1)
+    private void setupRot(float partialTicks, CallbackInfo ci) {
         if (!RenderUtils.vanillaModelAndScript(avatar)) {
             avatar = null;
             return;
@@ -60,7 +66,7 @@ public abstract class CameraMixin {
         setRotation(y, x);
     }
 
-    @ModifyArg(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setPosition(DDD)V"), index = 0)
+    @ModifyArg(method = "alignWithEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setPosition(DDD)V"), index = 0)
     private double setupPivotX(double originalX) {
         if (RenderUtils.vanillaModelAndScript(avatar)) {
             double x = originalX;
@@ -79,7 +85,7 @@ public abstract class CameraMixin {
         return originalX;
     }
 
-    @ModifyArg(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setPosition(DDD)V"), index = 1)
+    @ModifyArg(method = "alignWithEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setPosition(DDD)V"), index = 1)
     private double setupPivotY(double originalY) {
         if (RenderUtils.vanillaModelAndScript(avatar)) {
             double y = originalY;
@@ -98,7 +104,7 @@ public abstract class CameraMixin {
         return originalY;
     }
 
-    @ModifyArg(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setPosition(DDD)V"), index = 2)
+    @ModifyArg(method = "alignWithEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setPosition(DDD)V"), index = 2)
     private double setupPivotZ(double originalZ) {
         if (RenderUtils.vanillaModelAndScript(avatar)) {
             double z = originalZ;
@@ -118,8 +124,12 @@ public abstract class CameraMixin {
     }
 
 
-    @Inject(method = "setup", at = @At(value = "RETURN"))
-    private void setupPos(Level level, Entity entity, boolean bl, boolean bl2, float f, CallbackInfo ci) {
+    @ModifyArg(method = "alignWithEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setPosition(Lnet/minecraft/world/phys/Vec3;)V"), index = 0)
+    private Vec3 setupMinecartPivot(Vec3 position) {
+        return new Vec3(setupPivotX(position.x), setupPivotY(position.y), setupPivotZ(position.z));
+    }
+    @Inject(method = "alignWithEntity", at = @At(value = "RETURN"))
+    private void setupPos(float partialTicks, CallbackInfo ci) {
         if (RenderUtils.vanillaModelAndScript(avatar)) {
             FiguraVec3 pos = avatar.luaRuntime.renderer.cameraPos;
             if (pos != null && pos.notNaN())
@@ -129,6 +139,38 @@ public abstract class CameraMixin {
         }
     }
 
+    @Inject(method = "tickFov", at = @At("RETURN"))
+    private void tickFov(CallbackInfo ci) {
+        Avatar avatar = AvatarManager.getAvatar(entity);
+        if (RenderUtils.vanillaModelAndScript(avatar)) {
+            Float fov = avatar.luaRuntime.renderer.fov;
+            if (fov != null) this.fovModifier = fov;
+        }
+    }
+
+    @Inject(method = "extractRenderState", at = @At("RETURN"))
+    private void extractRenderState(CameraRenderState cameraRenderState, DeltaTracker deltaTracker, CallbackInfo ci) {
+        Avatar avatar = AvatarManager.getAvatar(entity);
+        if (!RenderUtils.vanillaModelAndScript(avatar))
+            return;
+
+        Matrix4f vanillaViewRotation = new Matrix4f(cameraRenderState.viewRotationMatrix);
+        FiguraMat4 mat = avatar.luaRuntime.renderer.cameraMat;
+        if (mat != null) {
+            cameraRenderState.viewRotationMatrix.set(mat.toMatrix4f()).mul(vanillaViewRotation);
+            return;
+        }
+
+        float z = 0f;
+        FiguraVec3 rot = avatar.luaRuntime.renderer.cameraRot;
+        if (rot != null && rot.notNaN())
+            z = (float) rot.z;
+        FiguraVec3 offset = avatar.luaRuntime.renderer.cameraOffsetRot;
+        if (offset != null && offset.notNaN())
+            z += (float) offset.z;
+        if (z != 0f)
+            cameraRenderState.viewRotationMatrix.rotation(Axis.ZP.rotationDegrees(z)).mul(vanillaViewRotation);
+    }
     @Inject(method = "xRot", at = @At("HEAD"), cancellable = true)
     private void xRot(CallbackInfoReturnable<Float> cir) {
         if (UIHelper.paperdoll)

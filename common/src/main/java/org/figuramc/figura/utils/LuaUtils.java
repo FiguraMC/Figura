@@ -249,7 +249,7 @@ public class LuaUtils {
                         ItemStackComponentizationFix.ItemStackData data = optionalItemStackData.get();
                         ItemStackComponentizationFix.fixItemStack(data, data.tag);
 
-                        ItemStack stack = parse(level.registryAccess(), data.write().cast(NbtOps.INSTANCE)).orElse(ItemArgument.item(CommandBuildContext.simple(level.registryAccess(), level.enabledFeatures())).parse(new StringReader(string)).createItemStack(1, false));
+                        ItemStack stack = parse(level.registryAccess(), data.write().cast(NbtOps.INSTANCE)).orElse(ItemArgument.item(CommandBuildContext.simple(level.registryAccess(), level.enabledFeatures())).parse(new StringReader(string)).createItemStack(1));
                         LuaTable table = new LuaTable();
                         for (String key : nbtItem.keySet())
                             table.set(key, NbtToLua.convert(nbtItem.get(key)));
@@ -261,7 +261,7 @@ public class LuaUtils {
                         return new ItemStackAPI(stack, table);
                     }
                 }
-                return new ItemStackAPI(ItemArgument.item(CommandBuildContext.simple(level.registryAccess(), level.enabledFeatures())).parse(new StringReader(string)).createItemStack(1, false));
+                return new ItemStackAPI(ItemArgument.item(CommandBuildContext.simple(level.registryAccess(), level.enabledFeatures())).parse(new StringReader(string)).createItemStack(1));
             } catch (Exception e) {
                 throw new LuaError("Could not parse item stack from string: " + string);
             }

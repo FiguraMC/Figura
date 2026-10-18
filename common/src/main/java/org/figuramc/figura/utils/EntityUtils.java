@@ -86,7 +86,7 @@ public class EntityUtils {
     }
 
     public static List<PlayerInfo> getTabList() {
-        return ((PlayerTabOverlayAccessor) Minecraft.getInstance().gui.getTabList()).getThePlayerInfos();
+        return ((PlayerTabOverlayAccessor) Minecraft.getInstance().gui.hud.getTabList()).getThePlayerInfos();
     }
 
     public static boolean checkInvalidPlayer(UUID id) {

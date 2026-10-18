@@ -59,7 +59,7 @@ public class KeybindScreen extends AbstractPanelScreen {
 
     @Override
     public void onClose() {
-        this.minecraft.setScreen(sourcePanel);
+        this.minecraft.gui.setScreen(sourcePanel);
     }
 
     @Override
@@ -69,6 +69,6 @@ public class KeybindScreen extends AbstractPanelScreen {
 
     @Override
     public boolean keyPressed(KeyEvent keyEvent) {
-        return list.updateKey(keyEvent.key() == 256 ? InputConstants.UNKNOWN : InputConstants.getKey(keyEvent)) || super.keyPressed(keyEvent);
+        return list.updateKey(keyEvent.key() == InputConstants.KEY_ESCAPE ? InputConstants.UNKNOWN : InputConstants.getKey(keyEvent)) || super.keyPressed(keyEvent);
     }
 }

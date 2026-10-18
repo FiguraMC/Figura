@@ -3,7 +3,7 @@ package org.figuramc.figura.gui.widgets;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FontDescription;
@@ -33,16 +33,16 @@ public class SearchBar extends TextField {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         clearButton.setVisible(!getField().getValue().isEmpty());
-        super.render(gui, mouseX, mouseY, delta);
+        super.extractRenderState(gui, mouseX, mouseY, delta);
     }
 
     @Override
-    protected void renderHint(GuiGraphics gui) {
+    protected void renderHint(GuiGraphicsExtractor gui) {
         super.renderHint(gui);
         Font font = Minecraft.getInstance().font;
-        gui.drawString(font, SEARCH_ICON, getX() + getWidth() - font.width(SEARCH_ICON) - 4, getY() + (int) ((getHeight() - font.lineHeight + 1) / 2f), UIHelper.adjustColor(0xFFFFFF));
+        gui.text(font, SEARCH_ICON, getX() + getWidth() - font.width(SEARCH_ICON) - 4, getY() + (int) ((getHeight() - font.lineHeight + 1) / 2f), UIHelper.adjustColor(0xFFFFFF));
     }
 
     @Override

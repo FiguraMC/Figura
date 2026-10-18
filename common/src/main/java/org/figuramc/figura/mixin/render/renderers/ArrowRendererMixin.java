@@ -35,7 +35,7 @@ public abstract class ArrowRendererMixin<T extends AbstractArrow, S extends Arro
         super(ctx);
     }
 
-    @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitModel(Lnet/minecraft/client/model/Model;Ljava/lang/Object;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/rendertype/RenderType;IIILnet/minecraft/client/renderer/feature/ModelFeatureRenderer$CrumblingOverlay;)V", ordinal = 0), method = "submit(Lnet/minecraft/client/renderer/entity/state/ArrowRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V")
+    @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitModel(Lnet/minecraft/client/model/Model;Ljava/lang/Object;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/resources/Identifier;III)V", ordinal = 0), method = "submit(Lnet/minecraft/client/renderer/entity/state/ArrowRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V")
     private Model<S> render(Model<S> par1, @Local(argsOnly = true) S arrowRenderState) {
         Integer id = ((FiguraEntityRenderStateExtension)arrowRenderState).figura$getEntityId();
         if (id == null)
@@ -58,17 +58,13 @@ public abstract class ArrowRendererMixin<T extends AbstractArrow, S extends Arro
             FiguraMod.pushProfiler("arrowRender");
 
             FiguraMod.pushProfiler("event");
-            boolean bool = avatar.arrowRenderEvent(tickDelta, EntityAPI.wrap(arrow));
-
-            FiguraMod.popPushProfiler("render");
-            if (bool || avatar.renderArrow(poseStack, multiBufferSource, tickDelta, arrowRenderState.lightCoords)) {
-                poseStack.popPose();
-                // this will skip the original render call
-                return false;
+            try {
+                boolean cancelled = avatar.arrowRenderEvent(tickDelta, EntityAPI.wrap(arrow));
+                FiguraMod.popPushProfiler("render");
+                return !(cancelled || avatar.renderArrow(poseStack, multiBufferSource, tickDelta, arrowRenderState.lightCoords));
+            } finally {
+                FiguraMod.popProfiler(4);
             }
-
-            FiguraMod.popProfiler(4);
-            return true;
         } );
         return par1;
 

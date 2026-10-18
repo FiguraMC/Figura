@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.client.gui.components.debug.DebugScreenEntries;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -191,10 +192,6 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
             VERTEX_BUFFER.consume(false, bufferSource);
             FiguraMod.popProfiler(2);
 
-            if (bufferSource instanceof MultiBufferSource.BufferSource bs) {
-                bs.endLastBatch();
-            }
-
             // finish rendering
             checkEmpty();
         }
@@ -315,7 +312,7 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
                 FiguraVec3 pos = part.savedPartToWorldMat.apply(0d, 0d, 0d);
                 int block = l.getBrightness(LightLayer.BLOCK, pos.asBlockPos());
                 int sky = l.getBrightness(LightLayer.SKY, pos.asBlockPos());
-                customizationStack.peek().light = LightTexture.pack(block, sky);
+                customizationStack.peek().light = LightCoordsUtil.pack(block, sky);
             }
 
             if (custom.alpha != null)
@@ -344,7 +341,7 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
             if (renderPivot || renderTasks || renderPivotParts) {
                 // fix light and overlay
                 PartCustomization parent = customizationStack.peek();
-                int light = parent.light != null ? parent.light : LightTexture.FULL_BRIGHT;
+                int light = parent.light != null ? parent.light : LightCoordsUtil.FULL_BRIGHT;
                 int overlay = parent.overlay != null ? parent.overlay : OverlayTexture.NO_OVERLAY;
 
                 // fix pivots
@@ -463,19 +460,15 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
     protected void renderPivot(FiguraModelPart part, PartCustomization customization) {
         boolean group = part.customization.partType == PartCustomization.PartType.GROUP;
         FiguraVec3 color = group ? ColorUtils.Colors.FIGURA_BLUE.vec : ColorUtils.Colors.AWESOME_BLUE.vec;
-        double boxSize = group ? 1 / 16d : 1 / 32d;
-        boxSize /= Math.max(Math.cbrt(part.savedPartToWorldMat.det()), 0.02);
+        double boxSize = (group ? 1 / 16d : 1 / 32d)
+                / Math.max(Math.cbrt(part.savedPartToWorldMat.det()), 0.02);
 
         PoseStack stack = customization.copyIntoGlobalPoseStack();
 
-        renderLineBox(stack.last(), bufferSource.getBuffer(RenderTypes.lines()),
+        bufferSource.submitCustomGeometry(stack, RenderTypes.lines(), (pose, consumer) -> renderLineBox(pose, consumer,
                 -boxSize, -boxSize, -boxSize,
                 boxSize, boxSize, boxSize,
-                (float) color.x, (float) color.y, (float) color.z, 1f);
-
-        if (bufferSource instanceof MultiBufferSource.BufferSource bs) {
-            bs.endBatch(RenderTypes.lines());
-        }
+                (float) color.x, (float) color.y, (float) color.z, 1f));
     }
 
     public static void renderLineBox(PoseStack.Pose pose, VertexConsumer vertices, double x1, double y1, double z1, double x2, double y2, double z2, float r, float g, float b, float a) {
@@ -636,7 +629,7 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
         // get render type
         if (id != null) {
             if (translucent) {
-                ret.renderType = RenderTypes.itemEntityTranslucentCull(id);
+                ret.renderType = RenderTypes.entityTranslucentCull(id);
                 return ret;
             }
             if (glowing) {
@@ -666,35 +659,46 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
     private static final FiguraVec3 normal = FiguraVec3.of();
     private static final FiguraVec3 uv = FiguraVec3.of(0, 0, 1);
     private void pushToBuffer(int faceCount, VertexData vertexData, PartCustomization customization, FiguraTextureSet textureSet, List<Vertex> vertices) {
+        PartCustomization snapshot = new PartCustomization();
+        customization.copyTo(snapshot);
+        FiguraVec3 color = vertexData.color.copy();
+        List<Vertex> vertexSnapshot = vertices.stream().map(Vertex::copy).toList();
         int vertCount = faceCount * 4;
 
         FiguraVec3 uvFixer = FiguraVec3.of();
         uvFixer.set(textureSet.getWidth(), textureSet.getHeight(), 1); // Dividing by this makes uv 0 to 1
 
         int overlay = customization.overlay;
-        int light = vertexData.fullBright ? LightTexture.FULL_BRIGHT : customization.light;
+        int light = vertexData.fullBright ? LightCoordsUtil.FULL_BRIGHT : customization.light;
+        int outline = outlineColor;
+        if (org.figuramc.figura.utils.RenderUtils.vanillaModelAndScript(avatar)
+                && avatar.luaRuntime.renderer.outlineColor != null)
+            outline = 0xFF000000 | ColorUtils.rgbToInt(avatar.luaRuntime.renderer.outlineColor);
+        int capturedOutline = outline;
 
         VERTEX_BUFFER.getBufferFor(vertexData.renderType, vertexData.primary, vertexConsumer -> {
             for (int i = 0; i < vertCount; i++) {
-                Vertex vertex = vertices.get(i);
+                Vertex vertex = vertexSnapshot.get(i);
 
                 pos.set(vertex.x, vertex.y, vertex.z, 1);
-                pos.transform(customization.positionMatrix);
+                pos.transform(snapshot.positionMatrix);
                 pos.add(pos.normalized().scale(vertexData.vertexOffset));
                 normal.set(vertex.nx, vertex.ny, vertex.nz);
-                normal.transform(customization.normalMatrix);
+                normal.transform(snapshot.normalMatrix);
                 uv.set(vertex.u, vertex.v, 1);
                 uv.divide(uvFixer);
-                uv.transform(customization.uvMatrix);
+                uv.transform(snapshot.uvMatrix);
 
                 vertexConsumer
                         .addVertex((float) pos.x, (float) pos.y, (float) pos.z)
-                        .setColor((float) vertexData.color.x, (float) vertexData.color.y, (float) vertexData.color.z, customization.alpha)
+                        .setColor((float) color.x, (float) color.y, (float) color.z, snapshot.alpha)
                         .setUv((float) uv.x, (float) uv.y)
                         .setOverlay(overlay)
                         .setLight(light)
                         .setNormal((float) normal.x, (float) normal.y, (float) normal.z)
                         .setLineWidth(1.0F);
+                if (vertexData.renderType.isOutline())
+                    vertexConsumer.setColor(capturedOutline);
             }
         });
     }
@@ -717,20 +721,16 @@ public class ImmediateFiguraRenderer extends FiguraRenderer {
             list.add(consumer);
         }
 
-        public void consume(boolean primary, MultiBufferSource bufferSource) {
+        public void consume(boolean primary, SubmitNodeCollector bufferSource) {
             HashMap<RenderType, List<Consumer<VertexConsumer>>> map = primary ? primaryBuffers : secondaryBuffers;
             for (Map.Entry<RenderType, List<Consumer<VertexConsumer>>> entry : map.entrySet()) {
                 RenderType renderType = entry.getKey();
-                VertexConsumer vertexConsumer = bufferSource.getBuffer(renderType);
-                List<Consumer<VertexConsumer>> consumers = entry.getValue();
-                for (Consumer<VertexConsumer> consumer : consumers)
-                    consumer.accept(vertexConsumer);
-
-                if (bufferSource instanceof MultiBufferSource.BufferSource bs) {
-                    if (renderType == RenderTypes.lines() || renderType == RenderTypes.linesTranslucent() || renderType == FiguraRenderTypes.FiguraRenderType.SOLID) {
-                        bs.endBatch(renderType);
-                    }
-                }
+                List<Consumer<VertexConsumer>> consumers = List.copyOf(entry.getValue());
+                // Faces already carry their complete transform; vanilla snapshots this identity pose.
+                bufferSource.submitCustomGeometry(new PoseStack(), renderType, (pose, vertexConsumer) -> {
+                    for (Consumer<VertexConsumer> consumer : consumers)
+                        consumer.accept(vertexConsumer);
+                });
             }
             map.clear();
         }

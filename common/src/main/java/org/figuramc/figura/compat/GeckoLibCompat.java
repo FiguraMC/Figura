@@ -12,7 +12,7 @@ public class GeckoLibCompat {
 
     // For newer versions of GeckoLib
     private static ClassWrapper GLRenderUtil;
-    private static MethodWrapper getGeoModelForArmor;
+    private static MethodWrapper getGeckoLibArmorRenderer;
 
     // For older versions of GeckoLib
     private static ClassWrapper GLGeoArmorRenderer;
@@ -21,8 +21,8 @@ public class GeckoLibCompat {
 
     public static void init() {
         // Modern
-        GLRenderUtil = new ClassWrapper("software.bernie.geckolib.util.RenderUtil");
-        getGeoModelForArmor = GLRenderUtil.getMethod("getGeoModelForArmor", ItemStack.class, EquipmentSlot.class, EquipmentClientInfo.LayerType.class);
+        GLRenderUtil = new ClassWrapper("com.geckolib.util.RenderUtil");
+        getGeckoLibArmorRenderer = GLRenderUtil.getMethod("getGeckoLibArmorRenderer", ItemStack.class, EquipmentSlot.class);
 
         // Legacy
         GLGeoArmorRenderer = new ClassWrapper("software.bernie.geckolib3.renderers.geo.GeoArmorRenderer");
@@ -31,8 +31,8 @@ public class GeckoLibCompat {
 
     public static boolean armorHasCustomModel(ItemStack stack, EquipmentSlot slot, EquipmentClientInfo.LayerType layerType) {
         if (GLRenderUtil.isLoaded) {
-            if (getGeoModelForArmor.exists()) {
-                return getGeoModelForArmor.invoke(null, stack, slot, layerType) != null;
+            if (getGeckoLibArmorRenderer.exists()) {
+                return getGeckoLibArmorRenderer.invoke(null, stack, slot) != null;
             }
             return false;
         }

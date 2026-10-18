@@ -1,5 +1,5 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "8.1.1"
+    id "com.gradleup.shadow" version "9.2.2"
 }
 
 architectury {
@@ -20,10 +20,6 @@ configurations {
 }
 
 dependencies {
-    mappings loom.layered {
-        officialMojangMappings()
-    }
-
     // Libraries
     include(forgeRuntimeLibrary("com.github.FiguraMC.luaj:luaj-core:$luaj-figura"))
     include(forgeRuntimeLibrary("com.github.FiguraMC.luaj:luaj-jse:$luaj-figura"))
@@ -32,11 +28,10 @@ dependencies {
     neoForge "net.neoforged:neoforge:${rootProject.neoforge_version}"
 
     if (rootProject.run_with_geckolib == "true") {
-        modRuntimeOnly("software.bernie.geckolib:geckolib-neoforge-$geckolib_version")
-        forgeRuntimeLibrary(group: 'com.eliotlash.mclib', name: 'mclib', version: "${mclib_version}")
+        runtimeOnly("com.geckolib:geckolib-neoforge-$geckolib_version")
     }
 
-    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    common(project(":common")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive false }
 }
 
@@ -59,15 +54,14 @@ shadowJar {
     exclude "architectury.common.json"
 
     configurations = [project.configurations.shadowCommon]
-    archiveClassifier.set "dev-shadow"
-}
-
-remapJar {
-    atAccessWideners.add(loom.accessWidenerPath.get().asFile.name)
-    input.set shadowJar.archiveFile
-    dependsOn shadowJar
     archiveClassifier.set "neoforge-mc"
 }
+
+net.fabricmc.loom.configuration.IncludeConfigurations.nestJars(
+    project, tasks.named("shadowJar", Jar), configurations.named("include")
+)
+
+loom.getNeoForge().convertAccessWideners(tasks.named("shadowJar", Jar), "figura.accesswidener")
 
 jar {
     archiveClassifier.set "dev"
@@ -90,8 +84,8 @@ publishing {
         maven(MavenPublication) {
             artifactId = "${project.archivesBaseName}-${project.name}"
             version = project.version
-            artifact(remapJar) {
-                builtBy remapJar
+            artifact(shadowJar) {
+                builtBy shadowJar
                 classifier ''
             }
             artifact(sourcesJar) {

@@ -9,7 +9,7 @@ import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.SubmitNodeStorage;
@@ -152,51 +152,6 @@ public class RenderUtils {
     @ExpectPlatform
     public static Identifier getPlayerSkinTexture(WingsLayer<?, ?> wingsLayer, HumanoidRenderState renderState) {
         throw new AssertionError();
-    }
-
-    static final ItemStackRenderState itemStackRenderState = new ItemStackRenderState();
-    public static void renderStatic(LivingEntity entity, ItemStack item, ItemDisplayContext displayMode, PoseStack poseStack, int newLight, int newOverlay) {
-        Minecraft client = Minecraft.getInstance();
-        FeatureRenderDispatcher featureRenderDispatcher = client.gameRenderer.getFeatureRenderDispatcher();
-        SubmitNodeStorage submitNodeStorage = featureRenderDispatcher.getSubmitNodeStorage();
-        if (entity != null)
-            client.getItemModelResolver().updateForLiving(itemStackRenderState, item, displayMode, entity);
-        else
-            client.getItemModelResolver().updateForTopItem(itemStackRenderState, item, displayMode, client.level, null, 0);
-        itemStackRenderState.submit(poseStack, submitNodeStorage, newLight, newOverlay, 0);
-    }
-
-
-
-    static PoseStack dummyPoseStack = new PoseStack();
-    public static void createDummySubmission(BitSet selection, SubmitNodeCollector submitNodeStorage, BiFunction<MultiBufferSource, PoseStack, Boolean> preRender, Runnable postRender) {
-        // otherwise something is very wrong and this will cause out of bounds exceptions and other bad things
-        assert (selection.size() >= 3);
-
-
-        AvatarRenderer<AbstractClientPlayer> avatarRenderer = Minecraft.getInstance().getEntityRenderDispatcher().getPlayerRenderer(Minecraft.getInstance().player);
-
-        if (selection.get(1)) {
-            PlayerModel playerModel = avatarRenderer.getModel();
-            ((FiguraSubmitCallBackExtension) playerModel).figura$addPreRenderingCallback(preRender);
-            ((FiguraSubmitCallBackExtension) playerModel).figura$addPostRenderingCallback(postRender);
-            submitNodeStorage.submitModel(playerModel, null, dummyPoseStack, RenderTypes.LINES, 0, 0, 0, null);
-        }
-
-        if (selection.get(2)) {
-            ModelPart modelPart = avatarRenderer.getModel().leftArm;
-            ((FiguraSubmitCallBackExtension) (Object)modelPart).figura$addPreRenderingCallback(preRender);
-            ((FiguraSubmitCallBackExtension) (Object)modelPart).figura$addPostRenderingCallback(postRender);
-            submitNodeStorage.submitModelPart(modelPart, dummyPoseStack, RenderTypes.LINES, 0, 0, null);
-        }
-
-        if (selection.get(3)) {
-            // TODO ITEM SUBMISSION
-            //  submitNodeStorage.submitItem(dummyStack, ItemDisplayContext.FIXED, 0, 0, 0, dummyArr, List.of(), RenderType.LINES, ItemStackRenderState.FoilType.NONE);
-        }
-
-
-
     }
 
     public static <M extends Model<?>> Map<ModelPart, PartPose> captureModelState(M model) {

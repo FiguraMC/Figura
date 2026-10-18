@@ -1,6 +1,6 @@
 package org.figuramc.figura.utils.ui;
 
-import com.mojang.blaze3d.opengl.GlStateManager;
+import com.mojang.renderpearl.backend.opengl.GlStateManager;
 import org.lwjgl.opengl.GL11;
 
 // not used atm so i won't bother porting it lol

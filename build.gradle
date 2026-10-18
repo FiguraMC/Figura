@@ -1,6 +1,6 @@
 plugins {
-	id "architectury-plugin" version "3.4-SNAPSHOT"
-	id "dev.architectury.loom" version "1.13-SNAPSHOT" apply false
+	id "architectury-plugin" version "3.5-SNAPSHOT"
+	id "dev.architectury.loom-no-remap" version "1.17.493" apply false
 }
 
 architectury {
@@ -8,11 +8,7 @@ architectury {
 }
 
 subprojects {
-	apply plugin: "dev.architectury.loom"
-
-	loom {
-		silentMojangMappingsLicense()
-	}
+	apply plugin: "dev.architectury.loom-no-remap"
 
 	repositories {
 		maven { url 'https://maven.terraformersmc.com/releases/' }
@@ -24,6 +20,7 @@ subprojects {
 			url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
 			content {
 				includeGroupByRegex("software\\.bernie.*")
+				includeGroup("com.geckolib")
 				includeGroup("com.eliotlash.mclib")
 			}
 		}
@@ -40,7 +37,10 @@ allprojects {
 	apply plugin: "maven-publish"
 
 	java_version = rootProject.java_version
-	archivesBaseName = rootProject.archives_base_name
+	ext.archivesBaseName = rootProject.archives_base_name
+	base {
+		archivesName = rootProject.archives_base_name
+	}
 	version = rootProject.mod_version + "+" + rootProject.minecraft_version
 	group = rootProject.maven_group
 	if (project.hasProperty("release")) {
@@ -64,8 +64,8 @@ allprojects {
 	}
 
 	java {
-		sourceCompatibility = JavaVersion.VERSION_17
-		targetCompatibility = JavaVersion.VERSION_17
+		sourceCompatibility = JavaVersion.toVersion(java_version)
+		targetCompatibility = JavaVersion.toVersion(java_version)
 		withSourcesJar()
 	}
 }

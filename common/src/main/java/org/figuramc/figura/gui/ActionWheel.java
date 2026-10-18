@@ -7,7 +7,7 @@ import com.mojang.math.Axis;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -51,7 +51,7 @@ public class ActionWheel {
     private static int x, y;
     private static double mouseX, mouseY;
 
-    public static void render(GuiGraphics gui) {
+    public static void extractRenderState(GuiGraphicsExtractor gui) {
         if (!isEnabled()) return;
 
         minecraft = Minecraft.getInstance();
@@ -119,11 +119,11 @@ public class ActionWheel {
         return Math.toRadians(angle);
     }
 
-    private static void renderEmpty(GuiGraphics gui, boolean avatar) {
+    private static void renderEmpty(GuiGraphicsExtractor gui, boolean avatar) {
         // render empty wheel
         TextureData data = OverlayTexture.values()[0].data[0];
-        data.render(gui, null, false);
-        data.render(gui, null, true);
+        data.extractRenderState(gui, null, false);
+        data.extractRenderState(gui, null, true);
 
         gui.pose().popMatrix(); // previous stack
 
@@ -155,7 +155,7 @@ public class ActionWheel {
             selected = (int) Math.floor((leftSlots / 180d) * (angle - 180)) + rightSlots;
     }
 
-    private static void renderTextures(GuiGraphics gui, Page page) {
+    private static void renderTextures(GuiGraphicsExtractor gui, Page page) {
         for (int i = 0; i < slots; i++) {
             Action action = page.slots()[i];
             boolean left = i >= rightSlots;
@@ -166,7 +166,7 @@ public class ActionWheel {
             FiguraVec3 color = action == null ? null : action.getColor(selected == i);
 
             // render background texture
-            OverlayTexture.values()[type - 1].data[relativeIndex].render(gui, color, left);
+            OverlayTexture.values()[type - 1].data[relativeIndex].extractRenderState(gui, color, left);
 
             // no icon for null action
             if (action == null)
@@ -178,7 +178,6 @@ public class ActionWheel {
             double y = Math.sin(angle) * 15 - 4;
 
             // render icon
-            UIHelper.enableBlend();
 
             // Color is now implemented through vertex colors rather than the color modulator
             int tintColor = color != null ? ColorUtils.rgbaToIntARGB(FiguraVec4.of(color.x, color.y, color.z, 1.0f)) : -1;
@@ -193,7 +192,7 @@ public class ActionWheel {
         }
     }
 
-    private static void renderItemsAndIcons(GuiGraphics gui, Page page) {
+    private static void renderItemsAndIcons(GuiGraphicsExtractor gui, Page page) {
         for (int i = 0; i < slots; i++) {
             Action action = page.slots()[i];
             if (action == null)
@@ -209,7 +208,6 @@ public class ActionWheel {
             // texture
             Action.TextureData texture = action.getTexture(isSelected);
             if (texture != null) {
-                UIHelper.enableBlend();
                 gui.blit(RenderPipelines.GUI_TEXTURED, texture.texture.getLocation(),
                         (int) Math.round(xOff - texture.width * texture.scale / 2d),
                         (int) Math.round(yOff - texture.height * texture.scale / 2d),
@@ -225,13 +223,13 @@ public class ActionWheel {
                 continue;
 
             // render
-            gui.renderItem(item, (int) Math.round(xOff - 8), (int) Math.round(yOff - 8));
+            gui.item(item, (int) Math.round(xOff - 8), (int) Math.round(yOff - 8));
             if (Configs.ACTION_WHEEL_DECORATIONS.value)
-                gui.renderItemDecorations(minecraft.font, item, (int) Math.round(xOff - 8), (int) Math.round(yOff - 8));
+                gui.itemDecorations(minecraft.font, item, (int) Math.round(xOff - 8), (int) Math.round(yOff - 8));
         }
     }
 
-    private static void renderTexts(GuiGraphics gui, Page page) {
+    private static void renderTexts(GuiGraphicsExtractor gui, Page page) {
         Font font = minecraft.font;
         int titlePosition = Configs.ACTION_WHEEL_TITLE.value;
         int indicatorPosition = Configs.ACTION_WHEEL_SLOTS_INDICATOR.value;
@@ -271,7 +269,7 @@ public class ActionWheel {
             }
 
             // draw
-            gui.drawString(font, indicator, x - (int) ((font.width(indicator) - extraWidth) / 2f), (int) Position.index(indicatorPosition).apply(font.lineHeight), UIHelper.adjustColor(0xFFFFFF));
+            gui.text(font, indicator, x - (int) ((font.width(indicator) - extraWidth) / 2f), (int) Position.index(indicatorPosition).apply(font.lineHeight), UIHelper.adjustColor(0xFFFFFF));
             pose.popMatrix();
         }
 
@@ -312,7 +310,7 @@ public class ActionWheel {
                     textX -= textWidth;
                 }
 
-                gui.drawString(font, text, textX, textY, UIHelper.adjustColor(0xFFFFFF));
+                gui.text(font, text, textX, textY, UIHelper.adjustColor(0xFFFFFF));
             }
             pose.popMatrix();
             return;
@@ -337,7 +335,7 @@ public class ActionWheel {
             int y = (int) Position.index(titlePosition - 2).apply(height);
             for (int i = 0; i < list.size(); i++) {
                 Component component = list.get(i);
-                gui.drawString(font, component, x - (int) (font.width(component) / 2f), y + font.lineHeight * i, UIHelper.adjustColor(0xFFFFFF));
+                gui.text(font, component, x - (int) (font.width(component) / 2f), y + font.lineHeight * i, UIHelper.adjustColor(0xFFFFFF));
             }
 
             pose.popMatrix();
@@ -468,12 +466,11 @@ public class ActionWheel {
             this(u, v, 0);
         }
 
-        public void render(GuiGraphics gui, FiguraVec3 color, boolean left) {
+        public void extractRenderState(GuiGraphicsExtractor gui, FiguraVec3 color, boolean left) {
             Matrix3x2fStack pose = gui.pose();
             pose.pushMatrix();
             pose.rotate((rotation + (left ? 180 : 0)) * (float) (Math.PI / 180.0));
 
-            UIHelper.enableBlend();
             // we now use vertex colors
             int tintColor = color != null ? ColorUtils.rgbaToIntARGB(FiguraVec4.of(color.x, color.y, color.z, 1.0f)) : -1;
             gui.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, y,  u, color == null ? v : v + 128, 64, h,64, rh, 256, 256, tintColor);

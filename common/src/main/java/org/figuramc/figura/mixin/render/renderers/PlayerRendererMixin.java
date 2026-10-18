@@ -1,29 +1,24 @@
 package org.figuramc.figura.mixin.render.renderers;
 
-import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.client.renderer.state.CameraRenderState;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
-import org.figuramc.figura.avatar.Badges;
 import org.figuramc.figura.config.Configs;
-import org.figuramc.figura.ducks.CameraRenderStateExtension;
 import org.figuramc.figura.ducks.EntityRendererAccessor;
 import org.figuramc.figura.ducks.FiguraSubmitCallBackExtension;
 import org.figuramc.figura.ducks.NodeCollectorExtension;
@@ -31,17 +26,15 @@ import org.figuramc.figura.lua.api.nameplate.EntityNameplateCustomization;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.RenderUtils;
-import org.figuramc.figura.utils.TextUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.regex.Pattern;
 
 @Mixin(AvatarRenderer.class)
 public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractClientPlayer, AvatarRenderState, PlayerModel> implements EntityRendererAccessor {
@@ -53,124 +46,18 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
     @Unique
     private Avatar avatar;
 
-    @Unique
-    boolean isNameRendering, hasScore;
+    @Unique private boolean figura$profileNameplate;
 
-    @Inject(method = "submitNameTag(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitNameTag(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/phys/Vec3;ILnet/minecraft/network/chat/Component;ZIDLnet/minecraft/client/renderer/state/CameraRenderState;)V", ordinal = 1))
-    private void enableModifyPlayerName(AvatarRenderState avatarRenderState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, CallbackInfo ci) {
-        // render name
-        FiguraMod.popPushProfiler("name");
-        isNameRendering = true;
-    }
-
-    @Override
-    public boolean figura$isRenderingName() {
-        return isNameRendering;
-    }
-
-    @Inject(method = "submitNameTag(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V", at = @At(value = "TAIL"))
-    private void disableModifyPlayerName(AvatarRenderState avatarRenderState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, CallbackInfo ci) {
-        isNameRendering = false;
-    }
-
-
-    @Inject(method = "submitNameTag(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitNameTag(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/phys/Vec3;ILnet/minecraft/network/chat/Component;ZIDLnet/minecraft/client/renderer/state/CameraRenderState;)V", ordinal = 0))
-    private void setHasScore(AvatarRenderState playerRenderState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, CallbackInfo ci) {
-        hasScore = playerRenderState.scoreText != null;
-    }
-
-
-    @Override
-    public boolean figura$hasScore() {
-        return hasScore;
-    }
-
-    @ModifyArg(method = "submitNameTag(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitNameTag(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/phys/Vec3;ILnet/minecraft/network/chat/Component;ZIDLnet/minecraft/client/renderer/state/CameraRenderState;)V", ordinal = 1))
-    private Component modifyPlayerNameText(Component text, @Local(argsOnly = true) AvatarRenderState player) {
-        int config = Configs.ENTITY_NAMEPLATE.value;
-        if (config == 0 || AvatarManager.panic)
-            return text;
-
-        // text
-        Avatar avatar = AvatarManager.getAvatar(player);
-        EntityNameplateCustomization custom = avatar == null || avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.ENTITY;
-
-        // customization boolean, which also is the permission check
-        boolean hasCustom = custom != null && avatar.permissions.get(Permissions.NAMEPLATE_EDIT) == 1;
-
-        Component name = player.nameTag;
-        FiguraMod.popPushProfiler("text");
-
-        Component replacement = hasCustom && custom.getJson() != null ? custom.getJson().copy() : name;
-
-        // name
-        replacement = TextUtils.replaceInText(replacement, "\\$\\{name\\}", name);
-
-        // badges
-        FiguraMod.popPushProfiler("badges");
-        if (Minecraft.getInstance().level.getEntity(player.id) != null) { // null while dead
-			replacement = Badges.appendBadges(replacement, Minecraft.getInstance().level.getEntity(player.id).getUUID(), config > 1);
-		}
-
-        FiguraMod.popPushProfiler("applyName");
-        text = TextUtils.replaceInText(text, "\\b" + Pattern.quote(player.nameTag.getString()) + "\\b", replacement);
-
-        return text;
-    }
-
-    @ModifyArg(method = "submitNameTag(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitNameTag(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/phys/Vec3;ILnet/minecraft/network/chat/Component;ZIDLnet/minecraft/client/renderer/state/CameraRenderState;)V", ordinal = 1), index = 7)
-    private CameraRenderState setAvatarForPlayerNameSubmission(CameraRenderState cameraRenderState, @Local(argsOnly = true) AvatarRenderState playerRenderState) {
-        Avatar figura$avatar = AvatarManager.getAvatar(playerRenderState);
-
-        if (figura$avatar != null) {
-            CameraRenderState replacement = new CameraRenderState();
-            replacement.pos = cameraRenderState.pos;
-            replacement.blockPos = cameraRenderState.blockPos;
-            replacement.entityPos = cameraRenderState.entityPos;
-            replacement.initialized = cameraRenderState.initialized;
-            replacement.orientation = cameraRenderState.orientation;
-
-            ((CameraRenderStateExtension)replacement).figura$setAvatar(figura$avatar);
-            ((CameraRenderStateExtension)replacement).figura$setRenderingNameTag(true);
-            return replacement;
+    @Inject(method = "submitNameDisplay(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V", at = @At("TAIL"))
+    private void popProfiler(AvatarRenderState state, PoseStack stack, SubmitNodeCollector collector, CameraRenderState camera, CallbackInfo ci) {
+        if (figura$profileNameplate) {
+            FiguraMod.popProfiler(3);
+            figura$profileNameplate = false;
         }
-        return cameraRenderState;
     }
-
-    @ModifyArg(method = "submitNameTag(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitNameTag(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/phys/Vec3;ILnet/minecraft/network/chat/Component;ZIDLnet/minecraft/client/renderer/state/CameraRenderState;)V", ordinal = 0), index = 7)
-    private CameraRenderState setAvatarForPlayerScoreSubmission(CameraRenderState cameraRenderState, @Local(argsOnly = true) AvatarRenderState playerRenderState) {
-        Avatar figura$avatar = AvatarManager.getAvatar(playerRenderState);
-
-        if (figura$avatar != null) {
-            CameraRenderState replacement = new CameraRenderState();
-            replacement.pos = cameraRenderState.pos;
-            replacement.blockPos = cameraRenderState.blockPos;
-            replacement.entityPos = cameraRenderState.entityPos;
-            replacement.initialized = cameraRenderState.initialized;
-            replacement.orientation = cameraRenderState.orientation;
-
-            ((CameraRenderStateExtension)replacement).figura$setAvatar(figura$avatar);
-            ((CameraRenderStateExtension)replacement).figura$setRenderingNameTag(false);
-            return replacement;
-        }
-        return cameraRenderState;
-    }
-
-    // Push for scoreboard rendering
-    @Inject(method = "submitNameTag(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V"))
-    private void pushProfilerForRender(AvatarRenderState avatarRenderState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, CallbackInfo ci) {
-        FiguraMod.popPushProfiler("render");
-        FiguraMod.pushProfiler("scoreboard");
-    }
-
-    // Pop the profiler after everything's done
-    @Inject(method = "submitNameTag(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V", at = @At(value = "TAIL"))
-    private void popProfiler(AvatarRenderState avatarRenderState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, CallbackInfo ci) {
-        FiguraMod.popProfiler(5);
-    }
-
-    @Inject(method = "submitNameTag(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "submitNameDisplay(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V", at = @At("HEAD"), cancellable = true)
     private void renderNameTag(AvatarRenderState playerRenderState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, CallbackInfo ci) {
+        figura$profileNameplate = false;
         // return on config or high entity distance
         int config = Configs.ENTITY_NAMEPLATE.value;
         Entity entity = Minecraft.getInstance().level.getEntity(playerRenderState.id);
@@ -198,6 +85,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
         // If the user has an avatar equipped, figura nameplate rendering will be enabled so the profiler is pushed
         if (hasCustom) {
+            figura$profileNameplate = true;
             FiguraMod.pushProfiler(FiguraMod.MOD_ID);
             FiguraMod.pushProfiler(player.getName().getString());
             FiguraMod.pushProfiler("nameplate");
@@ -206,7 +94,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
 
 
-    @Inject(at = @At(value = "INVOKE", shift = At.Shift.BEFORE, target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitModelPart(Lnet/minecraft/client/model/geom/ModelPart;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/rendertype/RenderType;IILnet/minecraft/client/renderer/texture/TextureAtlasSprite;)V"), method = "renderHand")
+    @Inject(at = @At(value = "INVOKE", shift = At.Shift.BEFORE, target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitModelPart(Lnet/minecraft/client/model/geom/ModelPart;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/rendertype/RenderType;IILnet/minecraft/client/renderer/texture/UvMapping;)V"), method = "renderHand")
     private void onRenderHand(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int i, Identifier resourceLocation, ModelPart modelPart, boolean bl, CallbackInfo ci) {
         avatar = AvatarManager.getAvatarForPlayer(Minecraft.getInstance().player.getUUID());
 
@@ -215,7 +103,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         Map<ModelPart, PartPose> modelState = RenderUtils.captureModelState(model);
 
         Avatar localAvatar = avatar;
-        BiFunction<MultiBufferSource, PoseStack, Boolean> lambda = (bufferSource, stack) -> {
+        BiFunction<SubmitNodeCollector, PoseStack, Boolean> lambda = (bufferSource, stack) -> {
             if (localAvatar != null && localAvatar.luaRuntime != null) {
                 VanillaPart part = localAvatar.luaRuntime.vanilla_model.PLAYER;
                 RenderUtils.restoreModelPoseState(model, modelState);
@@ -282,6 +170,15 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         avatar = null;
     }
 
+    @Inject(method = "isEntityUpsideDown(Lnet/minecraft/world/entity/Avatar;)Z", at = @At("HEAD"), cancellable = true)
+    private void figura$overrideUpsideDown(net.minecraft.world.entity.Avatar entity, CallbackInfoReturnable<Boolean> cir) {
+        Avatar avatar = AvatarManager.getAvatar(entity);
+        if (RenderUtils.vanillaModelAndScript(avatar)) {
+            Boolean upsideDown = avatar.luaRuntime.renderer.upsideDown;
+            if (upsideDown != null)
+                cir.setReturnValue(upsideDown);
+        }
+    }
     @Inject(method = "setupRotations(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;FF)V", at = @At("HEAD"), cancellable = true)
     private void setupRotations(AvatarRenderState playerRenderState, PoseStack matrices, float f, float g, CallbackInfo cir) {
         Avatar avatar = AvatarManager.getAvatar(playerRenderState);

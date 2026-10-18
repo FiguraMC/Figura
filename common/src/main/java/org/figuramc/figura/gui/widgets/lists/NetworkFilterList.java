@@ -1,6 +1,6 @@
 package org.figuramc.figura.gui.widgets.lists;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import net.minecraft.resources.Identifier;
 import org.figuramc.figura.config.ConfigType;
@@ -73,7 +73,7 @@ public class NetworkFilterList extends AbstractList {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         int x = getX();
         int y = getY();
         int width = getWidth();
@@ -82,14 +82,14 @@ public class NetworkFilterList extends AbstractList {
         // background and scissors
         UIHelper.blitSliced(gui, x, y, width, height, UIHelper.OUTLINE_FILL);
 
-        super.render(gui, mouseX, mouseY, delta);
+        super.extractRenderState(gui, mouseX, mouseY, delta);
 
         updateScissors(4,28, -18, -56);
         enableScissors(gui);
         for (NetworkFilterEntry entry :
                 contents()) {
             if (!entry.isVisible()) continue;
-            entry.render(gui, mouseX, mouseY, delta);
+            entry.extractRenderState(gui, mouseX, mouseY, delta);
         }
         gui.disableScissor();
     }
@@ -210,8 +210,8 @@ public class NetworkFilterList extends AbstractList {
         }
 
         @Override
-        public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-            super.render(gui, mouseX, mouseY, delta);
+        public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
+            super.extractRenderState(gui, mouseX, mouseY, delta);
         }
 
         @Override

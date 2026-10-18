@@ -2,11 +2,11 @@ package org.figuramc.figura.model.rendering.texture;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
-import com.mojang.blaze3d.systems.GpuDevice;
+import com.mojang.renderpearl.api.device.GpuDevice;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.AddressMode;
-import com.mojang.blaze3d.textures.FilterMode;
-import com.mojang.blaze3d.textures.TextureFormat;
+import com.mojang.renderpearl.api.textures.AddressMode;
+import com.mojang.renderpearl.api.textures.FilterMode;
+import com.mojang.renderpearl.api.GpuFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.MipmapStrategy;
 import net.minecraft.client.renderer.texture.SimpleTexture;
@@ -26,7 +26,6 @@ import org.figuramc.figura.math.matrix.FiguraMat4;
 import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.math.vector.FiguraVec4;
-import org.figuramc.figura.mixin.render.TextureManagerAccessor;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.LuaUtils;
@@ -107,11 +106,16 @@ public class FiguraTexture extends SimpleTexture {
 
     @Override
     public void apply(TextureContents textureContents) {
-        uploadIfDirty(false, false);
+        try (textureContents) {
+            uploadIfDirty(false, false);
+        }
     }
 
     public void closeFromRenderThread() {
-        Minecraft.getInstance().execute(this::close);
+        Minecraft.getInstance().execute(() -> {
+            Minecraft.getInstance().getTextureManager().release(getLocation());
+            close(); // Unregistered textures still own their native image.
+        });
     }
 
     @Override
@@ -128,10 +132,12 @@ public class FiguraTexture extends SimpleTexture {
             backup.close();
 
         super.close();
-        ((TextureManagerAccessor) Minecraft.getInstance().getTextureManager()).getByPath().remove(this.getLocation());
     }
 
     public void uploadIfDirty(boolean clamp, boolean blur) {
+        if (isClosed)
+            return;
+
         if (!registered) {
             Minecraft.getInstance().getTextureManager().register(this.getLocation(), this);
             registered = true;
@@ -151,7 +157,8 @@ public class FiguraTexture extends SimpleTexture {
     @Override
     protected void doLoad(NativeImage nativeImage) {
         GpuDevice gpuDevice = RenderSystem.getDevice();
-        this.texture = gpuDevice.createTexture(this.resourceId()::toString, 5, TextureFormat.RGBA8, nativeImage.getWidth(), nativeImage.getHeight(), 1, 1);
+        releaseTextures();
+        this.texture = gpuDevice.createTexture(this.resourceId()::toString, 5, GpuFormat.RGBA8_UNORM, nativeImage.getWidth(), nativeImage.getHeight(), 1, 1);
         this.textureView = gpuDevice.createTextureView(this.texture);
         gpuDevice.createCommandEncoder().writeToTexture(this.texture, nativeImage);
     }

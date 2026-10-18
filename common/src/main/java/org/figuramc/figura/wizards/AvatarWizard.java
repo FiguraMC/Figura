@@ -119,7 +119,7 @@ public class AvatarWizard {
                 .write("avatar.png", iconTexture);
 
         //open file manager
-        Util.getPlatform().openUri(folder.toUri());
+        com.mojang.blaze3d.Blaze3D.openUri(folder.toUri());
     }
 
     private byte[] buildMetadata(String name) {

@@ -11,6 +11,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
@@ -19,12 +20,15 @@ import org.figuramc.figura.config.ConfigManager;
 import org.figuramc.figura.config.neoforge.ModConfig;
 import org.figuramc.figura.gui.neoforge.GuiOverlay;
 import org.figuramc.figura.gui.neoforge.GuiUnderlay;
+import org.figuramc.figura.gui.FiguraGui;
+import org.figuramc.figura.gui.FiguraPortraitRenderer;
+import org.figuramc.figura.gui.FiguraPortraitRenderState;
 import org.figuramc.figura.utils.neoforge.FiguraResourceListenerImpl;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@EventBusSubscriber(modid = FiguraMod.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = FiguraMod.MOD_ID, value = Dist.CLIENT)
 public class FiguraModClientNeoForge extends FiguraMod {
     // keybinds stored here
     public static List<KeyMapping> KEYBINDS = new ArrayList<>();
@@ -37,13 +41,19 @@ public class FiguraModClientNeoForge extends FiguraMod {
 
     @SubscribeEvent
     public static void registerResourceListener(AddClientReloadListenersEvent event) {
-        getResourceListeners().forEach(figuraResourceListener -> event.addListener(new Identifier(FiguraMod.MOD_ID, figuraResourceListener.id()), (FiguraResourceListenerImpl)figuraResourceListener));
+        getResourceListeners().forEach(figuraResourceListener -> event.addListener(Identifier.fromNamespaceAndPath(FiguraMod.MOD_ID, figuraResourceListener.id()), (FiguraResourceListenerImpl)figuraResourceListener));
     }
 
     @SubscribeEvent
     public static void registerOverlays(RegisterGuiLayersEvent event) {
-        event.registerAboveAll(new Identifier(FiguraMod.MOD_ID, "figura_overlay"), new GuiOverlay());
-        event.registerBelowAll(new Identifier(FiguraMod.MOD_ID, "figura_underlay"), new GuiUnderlay());
+        event.registerAboveAll(Identifier.fromNamespaceAndPath(FiguraMod.MOD_ID, "figura_overlay"), new GuiOverlay());
+        event.registerBelowAll(Identifier.fromNamespaceAndPath(FiguraMod.MOD_ID, "figura_underlay"), new GuiUnderlay());
+    }
+
+    @SubscribeEvent
+    public static void registerPictureInPictureRenderers(RegisterPictureInPictureRenderersEvent event) {
+        event.register(FiguraPortraitRenderState.class, FiguraPortraitRenderer::new);
+        event.register(FiguraGui.HudRenderState.class, FiguraGui.HudRenderer::new);
     }
 
     private static final List<Identifier> vanillaOverlays = new ArrayList<>();

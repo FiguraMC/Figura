@@ -1,8 +1,9 @@
 package org.figuramc.figura.gui.screens;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
@@ -81,15 +82,15 @@ public abstract class AbstractPanelScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         // setup figura framebuffer
         // UIHelper.useFiguraGuiFramebuffer();
 
         // render background
-        this.renderBackground(gui, delta);
+        this.extractBackground(gui, delta);
 
         // render contents
-        super.render(gui, mouseX, mouseY, delta);
+        super.extractRenderState(gui, mouseX, mouseY, delta);
 
         // render overlays
         this.renderOverlays(gui, mouseX, mouseY, delta);
@@ -98,7 +99,7 @@ public abstract class AbstractPanelScreen extends Screen {
         // UIHelper.useVanillaFramebuffer();
     }
 
-    public void renderBackground(GuiGraphics gui, float delta) {
+    public void extractBackground(GuiGraphicsExtractor gui, float delta) {
         // render
         float speed = Configs.BACKGROUND_SCROLL_SPEED.tempValue * 0.125f;
         for (Identifier background : BACKGROUNDS) {
@@ -108,10 +109,10 @@ public abstract class AbstractPanelScreen extends Screen {
         gui.nextStratum();
     }
 
-    public void renderOverlays(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void renderOverlays(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         // fps
         if (Configs.GUI_FPS.value)
-            gui.drawString(Minecraft.getInstance().font, ClientAPI.getFPS() + " fps", 1, 1, UIHelper.adjustColor(0xFFFFFF));
+            gui.text(Minecraft.getInstance().font, ClientAPI.getFPS() + " fps", 1, 1, UIHelper.adjustColor(0xFFFFFF));
 
         // render context
         if (contextMenu != null && contextMenu.isVisible()) {
@@ -120,7 +121,7 @@ public abstract class AbstractPanelScreen extends Screen {
             pose.pushMatrix();
 //            pose.translate(0f, 0f, 500f);
             gui.nextStratum();
-            contextMenu.render(gui, mouseX, mouseY, delta);
+            contextMenu.extractRenderState(gui, mouseX, mouseY, delta);
             pose.popMatrix();
         }
 
@@ -133,7 +134,7 @@ public abstract class AbstractPanelScreen extends Screen {
 
     @Override
     public void onClose() {
-        this.minecraft.setScreen(parentScreen);
+        this.minecraft.gui.setScreen(parentScreen);
     }
 
     @Override
@@ -156,7 +157,7 @@ public abstract class AbstractPanelScreen extends Screen {
             setFocused(widget);
 
         if (widget != null) {
-            if (mouseButtonEvent.button() == 0) this.setDragging(true);
+            if (mouseButtonEvent.button() == InputConstants.MOUSE_BUTTON_LEFT) this.setDragging(true);
             return true;
         }
 
@@ -218,17 +219,17 @@ public abstract class AbstractPanelScreen extends Screen {
 
     @Override
     public boolean keyPressed(KeyEvent keyEvent) {
-        egg += (char) keyEvent.key();
+        egg += (char) keyEvent.keycode();
         egg = egg.substring(1);
         if (EGG.equals(egg)) {
-            Minecraft.getInstance().setScreen(new GameScreen(this));
+            Minecraft.getInstance().gui.setScreen(new GameScreen(this));
             return true;
         }
 
         if (children().contains(panels) && panels.cycleTab(keyEvent.key()))
             return true;
 
-        if (keyEvent.key() == 256 && contextMenu != null && contextMenu.isVisible()) {
+        if (keyEvent.key() == InputConstants.KEY_ESCAPE && contextMenu != null && contextMenu.isVisible()) {
             contextMenu.setVisible(false);
             return true;
         }
@@ -238,7 +239,7 @@ public abstract class AbstractPanelScreen extends Screen {
 
     // No blur in our screens!
     @Override
-    protected void renderBlurredBackground(GuiGraphics guiGraphics) {
+    protected void extractBlurredBackground(GuiGraphicsExtractor guiGraphics) {
 
     }
 }

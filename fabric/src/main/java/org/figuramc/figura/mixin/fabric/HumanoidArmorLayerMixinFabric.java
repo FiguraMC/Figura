@@ -76,7 +76,7 @@ public abstract class HumanoidArmorLayerMixinFabric<S extends HumanoidRenderStat
         figura$avatar = AvatarManager.getAvatar(humanoidRenderState);
     }
 
-    @Inject(at = @At(value = "INVOKE", shift = At.Shift.AFTER, ordinal = 3, target = "Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;renderArmorPiece(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/EquipmentSlot;ILnet/minecraft/client/renderer/entity/state/HumanoidRenderState;)V"), method = "submit(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;ILnet/minecraft/client/renderer/entity/state/HumanoidRenderState;FF)V")
+    @Inject(at = @At("TAIL"), method = "submit(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;ILnet/minecraft/client/renderer/entity/state/HumanoidRenderState;FF)V")
     public void onRenderEnd(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int i, S humanoidRenderState, float f, float g, CallbackInfo ci) {
         if (figura$avatar == null) return;
 
@@ -86,8 +86,8 @@ public abstract class HumanoidArmorLayerMixinFabric<S extends HumanoidRenderStat
         figura$tryRenderArmorPart(EquipmentSlot.FEET,  this::figura$bootsRenderer, poseStack, humanoidRenderState, submitNodeCollector, i, ParentType.LeftBootPivot, ParentType.RightBootPivot);
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;usesInnerModel(Lnet/minecraft/world/entity/EquipmentSlot;)Z"), method = "renderArmorPiece")
-    public void addFiguraCallbacks(PoseStack matrices, SubmitNodeCollector submitNodeCollector, ItemStack stack, EquipmentSlot equipmentSlot, int light, S state, CallbackInfo ci) {
+    @Unique
+    private void addFiguraCallbacks(PoseStack matrices, SubmitNodeCollector submitNodeCollector, ItemStack stack, EquipmentSlot equipmentSlot, int light, S state, CallbackInfo ci) {
         if (figura$avatar == null) return;
         Avatar localAvatar = figura$avatar;
         A humanoidModel = this.getArmorModel(state, equipmentSlot);
@@ -111,7 +111,7 @@ public abstract class HumanoidArmorLayerMixinFabric<S extends HumanoidRenderStat
     }
 
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;usesInnerModel(Lnet/minecraft/world/entity/EquipmentSlot;)Z", shift = At.Shift.AFTER), method = "renderArmorPiece", cancellable = true)
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer;renderLayers(Lnet/minecraft/client/resources/model/EquipmentClientInfo$LayerType;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/client/model/Model;Ljava/lang/Object;Lnet/minecraft/world/item/ItemStack;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;II)V"), method = "renderArmorPiece", cancellable = true)
     public void renderArmorPieceHijack(PoseStack matrices, SubmitNodeCollector submitNodeCollector, ItemStack stack, EquipmentSlot armorSlot, int light, S state, CallbackInfo ci, @Local A humanoidModel) {
         if (figura$avatar == null) return;
 
@@ -120,8 +120,19 @@ public abstract class HumanoidArmorLayerMixinFabric<S extends HumanoidRenderStat
             return;
         }
         figura$setPartVisibility(humanoidModel, armorSlot);
+        addFiguraCallbacks(matrices, submitNodeCollector, stack, armorSlot, light, state, ci);
     }
 
+    @com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation(method = "renderArmorPiece",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer;renderLayers(Lnet/minecraft/client/resources/model/EquipmentClientInfo$LayerType;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/client/model/Model;Ljava/lang/Object;Lnet/minecraft/world/item/ItemStack;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;II)V"))
+    private <R> void figura$snapshotArmorLayers(EquipmentLayerRenderer renderer, EquipmentClientInfo.LayerType type,
+            ResourceKey<EquipmentAsset> asset, net.minecraft.client.model.Model<? super R> model, R state,
+            ItemStack item, PoseStack pose, SubmitNodeCollector collector, int light, int outline,
+            com.llamalad7.mixinextras.injector.wrapoperation.Operation<Void> original) {
+        org.figuramc.figura.model.rendering.nodeRenderer.FiguraFeatureRenderer.withModelCallbacks(
+                model, state, collector, pose,
+                () -> original.call(renderer, type, asset, model, state, item, pose, collector, light, outline));
+    }
     @Unique
     private void figura$tryRenderArmorPart(EquipmentSlot slot, FiguraArmorPartRenderer<S, A> renderer, PoseStack vanillaPoseStack, S state, SubmitNodeCollector submitNodeCollector, int light, ParentType... parentTypes) {
         if (slot == null) return; // ?
@@ -190,8 +201,8 @@ public abstract class HumanoidArmorLayerMixinFabric<S extends HumanoidRenderStat
     @Unique
     private void figura$prepareArmorRender(PoseStack stack) {
         stack.scale(16, 16, 16);
-        stack.mulPose(Axis.XP.rotationDegrees(180f));
-        stack.mulPose(Axis.YP.rotationDegrees(180f));
+        stack.rotate(Axis.XP.rotationDegrees(180f));
+        stack.rotate(Axis.YP.rotationDegrees(180f));
     }
 
     @Unique
@@ -275,7 +286,7 @@ public abstract class HumanoidArmorLayerMixinFabric<S extends HumanoidRenderStat
         modelPart.xRot = 0;
         modelPart.yRot = 0;
         modelPart.zRot = 0;
-        EquipmentClientInfo.LayerType layerType = this.usesInnerModel(armorSlot) ? EquipmentClientInfo.LayerType.HUMANOID_LEGGINGS : EquipmentClientInfo.LayerType.HUMANOID;
+        EquipmentClientInfo.LayerType layerType = this.figura$usesInnerModel(armorSlot) ? EquipmentClientInfo.LayerType.HUMANOID_LEGGINGS : EquipmentClientInfo.LayerType.HUMANOID;
         Equippable equippable = itemStack.get(DataComponents.EQUIPPABLE);
 
         if (equippable == null)
@@ -291,30 +302,43 @@ public abstract class HumanoidArmorLayerMixinFabric<S extends HumanoidRenderStat
         int order = 0;
 
         for(EquipmentClientInfo.Layer layer : list) {
-            int k = EquipmentLayerRendererAccessor.getColorForLayer(layer, i);
+            int k = EquipmentLayerRendererAccessor.figura$getColorForLayer(layer, i);
 
             if (k != 0) {
                 Identifier normalArmorResource = ((EquipmentLayerRendererAccessor)this.equipmentRenderer).layerTextureLookup().apply(new EquipmentLayerRenderer.LayerTextureKey(layerType, layer));
-                nodeCollector.order(order++).submitModelPart(modelPart, poseStack, RenderTypes.armorCutoutNoCull(normalArmorResource), light, OverlayTexture.NO_OVERLAY, null, k, null);
-                if (hasGlint)
-                    nodeCollector.order(order++).submitModelPart(modelPart, poseStack, RenderTypes.armorEntityGlint(), light, OverlayTexture.NO_OVERLAY, null, k, null);
+                ((FiguraSubmitCallBackExtension) (Object) modelPart).figura$addPreRenderingCallback((collector, pose) -> true);
+                RenderType armorType = hasGlint ? RenderTypes.armorCutoutNoCullGlint(normalArmorResource)
+                        : RenderTypes.armorCutoutNoCull(normalArmorResource);
+                nodeCollector.order(order++).submitModelPart(modelPart, poseStack, armorType, light, OverlayTexture.NO_OVERLAY, null, k, 0);
                 hasGlint = false;
             }
         }
 
         ArmorTrim trim = itemStack.get(DataComponents.TRIM);
         if (trim != null) {
-            TextureAtlasSprite textureAtlasSprite = ((EquipmentLayerRendererAccessor)equipmentRenderer).trimSpriteLookup()
-                    .apply(new EquipmentLayerRenderer.TrimSpriteKey(trim, layerType, location.get()));
+            net.minecraft.client.resources.palette.PalettedTextureManager.Handle textureAtlasSprite = ((EquipmentLayerRendererAccessor)equipmentRenderer).trimTextureLookup()
+                    .apply(new EquipmentLayerRenderer.TrimTextureKey(trim, layerType, ((EquipmentLayerRendererAccessor)equipmentRenderer).figura$getAssetsManager().get(location.get())));
 
-            RenderType renderType = Sheets.armorTrimsSheet(trim.pattern().value().decal());
-            nodeCollector.order(order).submitModelPart(modelPart, poseStack, renderType, light, OverlayTexture.NO_OVERLAY, textureAtlasSprite, -1, null);
+            RenderType renderType = RenderTypes.armorTrim(textureAtlasSprite.textureLocation(), trim.pattern().value().decal());
+            ((FiguraSubmitCallBackExtension) (Object) modelPart).figura$addPreRenderingCallback((collector, pose) -> true);
+            nodeCollector.order(order++).submitModelPart(modelPart, poseStack, renderType, light, OverlayTexture.NO_OVERLAY, textureAtlasSprite, -1, 0);
+            if (itemStack.hasFoil()) {
+                ((FiguraSubmitCallBackExtension) (Object) modelPart).figura$addPreRenderingCallback((collector, pose) -> true);
+                nodeCollector.order(order).submitModelPart(modelPart, poseStack, RenderTypes.trimmedArmorGlint(),
+                        light, OverlayTexture.NO_OVERLAY, null, -1, 0);
+            }
         }
     }
 
     @Unique
     protected void figura$setPartVisibility(A bipedModel, EquipmentSlot slot) {
-        bipedModel.setAllVisible(false);
+        bipedModel.head.visible = false;
+        bipedModel.hat.visible = false;
+        bipedModel.body.visible = false;
+        bipedModel.leftArm.visible = false;
+        bipedModel.rightArm.visible = false;
+        bipedModel.leftLeg.visible = false;
+        bipedModel.rightLeg.visible = false;
         switch (slot) {
             case HEAD:
                 bipedModel.head.visible = true;

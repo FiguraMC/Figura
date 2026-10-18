@@ -7,7 +7,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.authlib.GameProfile;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.special.PlayerHeadSpecialRenderer;
 import net.minecraft.core.component.DataComponents;
@@ -39,8 +39,8 @@ public abstract class PlayerHeadSpecialRendererMixin {
         return original;
     }
 
-    @Inject(method = "submit(Lnet/minecraft/client/renderer/PlayerSkinRenderCache$RenderInfo;Lnet/minecraft/world/item/ItemDisplayContext;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;IIZI)V", at = @At("HEAD"))
-    private void captureAvatar(PlayerSkinRenderCache.RenderInfo playerHeadRenderInfo, ItemDisplayContext itemDisplayContext, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int i, int j, boolean bl, int k, CallbackInfo ci) {
+    @Inject(method = "submit(Lnet/minecraft/client/renderer/PlayerSkinRenderCache$RenderInfo;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;IIZI)V", at = @At("HEAD"))
+    private void captureAvatar(PlayerSkinRenderCache.RenderInfo playerHeadRenderInfo, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int i, int j, boolean bl, int k, CallbackInfo ci) {
         Avatar avatar = null;
         if (playerHeadRenderInfo != null) {
             avatar = ((PlayerHeadRenderInfoExtension)(Object)playerHeadRenderInfo).figura$getAvatar();
@@ -52,13 +52,6 @@ public abstract class PlayerHeadSpecialRendererMixin {
             }
         }
         SkullBlockRendererHelper.setAvatar(avatar);
-        SkullBlockRendererAccessor.setRenderMode(switch (itemDisplayContext) {
-            case FIRST_PERSON_LEFT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.FIRST_PERSON_LEFT_HAND;
-            case FIRST_PERSON_RIGHT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.FIRST_PERSON_RIGHT_HAND;
-            case THIRD_PERSON_LEFT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_LEFT_HAND;
-            case THIRD_PERSON_RIGHT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_RIGHT_HAND;
-            case HEAD -> SkullBlockRendererAccessor.SkullRenderMode.HEAD;
-            default -> SkullBlockRendererAccessor.SkullRenderMode.OTHER;
-        });
+
     }
 }

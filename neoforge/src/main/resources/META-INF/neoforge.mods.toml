@@ -8,7 +8,7 @@ displayURL = "https://github.com/FiguraMC/Figura"
 modId = "figura"
 version = "${version}"
 displayName = "Figura"
-logoFile="icon.png"
+iconFile="assets/figura/icon.png"
 authors = "skyrina, lumelia, UnlikePaladin, omoflop"
 credits = "TooManyLimits, Lexize, KitCat962, Manuel-3, superpowers04, auriafoxgirl, applejuiceyy"
 description = '''
@@ -20,15 +20,15 @@ assets_version="${assets_version}"
 
 [[dependencies.figura]]
 modId = "neoforge"
-mandatory = true
-versionRange = "[21.3,)"
+type = "required"
+versionRange = "[26.3.0.92,)"
 ordering = "NONE"
 side = "CLIENT"
 
 [[dependencies.figura]]
 modId = "minecraft"
-mandatory = true
-versionRange = "[${minecraft_version},)"
+type = "required"
+versionRange = "[${minecraft_version},26.4)"
 ordering = "NONE"
 side = "CLIENT"
 

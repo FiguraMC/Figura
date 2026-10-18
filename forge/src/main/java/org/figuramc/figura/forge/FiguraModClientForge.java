@@ -4,7 +4,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.figuramc.figura.FiguraMod;
@@ -15,7 +15,7 @@ import org.figuramc.figura.utils.forge.FiguraResourceListenerImpl;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = FiguraMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = FiguraMod.MOD_ID, value = Dist.CLIENT)
 public class FiguraModClientForge extends FiguraMod {
     // keybinds stored here
     public static List<KeyMapping> KEYBINDS = new ArrayList<>();

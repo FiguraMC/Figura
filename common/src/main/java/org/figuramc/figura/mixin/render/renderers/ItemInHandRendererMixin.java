@@ -1,17 +1,17 @@
 package org.figuramc.figura.mixin.render.renderers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.ItemInHandRenderer;
+import net.minecraft.client.renderer.state.level.PlayerRenderState;
+import net.minecraft.client.renderer.state.level.FirstPersonHandsAndItemsRenderState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.client.renderer.FirstPersonHandsAndItemsRenderer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.AbstractSkullBlock;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
@@ -20,7 +20,6 @@ import org.figuramc.figura.ducks.SkullBlockRendererAccessor;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaModelPart;
 import org.figuramc.figura.math.matrix.FiguraMat4;
 import org.figuramc.figura.model.rendering.EntityRenderMode;
-import org.figuramc.figura.utils.RenderUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -30,28 +29,24 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import net.minecraft.client.renderer.block.model.ItemTransform;
+import net.minecraft.client.resources.model.cuboid.ItemTransform;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import org.figuramc.figura.ducks.FiguraItemStackRenderStateExtension;
 import org.figuramc.figura.lua.api.world.ItemStackAPI;
 import org.figuramc.figura.math.vector.FiguraVec3;
 
-import java.util.BitSet;
 
-@Mixin(ItemInHandRenderer.class)
+@Mixin(FirstPersonHandsAndItemsRenderer.class)
 public abstract class ItemInHandRendererMixin {
 
-    @Shadow private ItemStack mainHandItem;
-
     @Shadow
-    protected abstract void renderPlayerArm(PoseStack matrices, SubmitNodeCollector submitNodeCollector, int light, float equipProgress, float swingProgress, HumanoidArm arm);
+    protected abstract void renderPlayerArm(PoseStack matrices, SubmitNodeCollector submitNodeCollector, int light, float equipProgress, float swingProgress, HumanoidArm arm, PlayerRenderState playerState);
 
     @Unique Avatar avatar;
 
-    // apparently hands are basically still immediate mode, wow thanks game...
-    @Inject(method = "renderHandsWithItems", at = @At("HEAD"))
-    private void onRenderHandsWithItems(float tickDelta, PoseStack matrices, SubmitNodeCollector submitNodeCollector, LocalPlayer player, int light, CallbackInfo ci) {
-        avatar = AvatarManager.getAvatarForPlayer(player.getUUID());
+    @Inject(method = "submitHandsWithItems", at = @At("HEAD"))
+    private void onRenderHandsWithItems(float tickDelta, PoseStack matrices, SubmitNodeCollector submitNodeCollector, PlayerRenderState playerState, FirstPersonHandsAndItemsRenderState handsState, CallbackInfo ci) {
+        avatar = AvatarManager.getAvatar(playerState.avatarRenderState);
         if (avatar == null)
             return;
 
@@ -63,8 +58,8 @@ public abstract class ItemInHandRendererMixin {
         FiguraMod.popProfiler(3);
     }
 
-    @Inject(method = "renderHandsWithItems", at = @At(value = "RETURN"))
-    private void afterRenderHandsWithItems(float tickDelta, PoseStack matrices, SubmitNodeCollector submitNodeCollector, LocalPlayer player, int light, CallbackInfo ci) {
+    @Inject(method = "submitHandsWithItems", at = @At(value = "RETURN"))
+    private void afterRenderHandsWithItems(float tickDelta, PoseStack matrices, SubmitNodeCollector submitNodeCollector, PlayerRenderState playerState, FirstPersonHandsAndItemsRenderState handsState, CallbackInfo ci) {
         if (avatar == null)
             return;
 
@@ -77,17 +72,17 @@ public abstract class ItemInHandRendererMixin {
 
     }
 
-    @Inject(method = "renderArmWithItem", at = @At("HEAD"), cancellable = true)
-    private void renderArmWithItem(AbstractClientPlayer player, float tickDelta, float pitch, InteractionHand hand, float swingProgress, ItemStack item, float equipProgress, PoseStack matrices, SubmitNodeCollector submitNodeCollector, int light, CallbackInfo ci) {
-        if (player.isScoping() || avatar == null || avatar.luaRuntime == null)
+    @Inject(method = "submitArmWithItem", at = @At("HEAD"), cancellable = true)
+    private void renderArmWithItem(PlayerRenderState playerState, FirstPersonHandsAndItemsRenderState handsState, float tickDelta, float pitch, InteractionHand hand, float swingProgress, ItemStack item, float equipProgress, PoseStack matrices, SubmitNodeCollector submitNodeCollector, int light, CallbackInfo ci) {
+        if (handsState.isScoping || playerState.avatarRenderState == null || avatar == null || avatar.luaRuntime == null)
             return;
 
         boolean main = hand ==InteractionHand.MAIN_HAND;
-        HumanoidArm arm = main ? player.getMainArm() : player.getMainArm().getOpposite();
+        HumanoidArm arm = main ? playerState.avatarRenderState.mainArm : playerState.avatarRenderState.mainArm.getOpposite();
         Boolean armVisible = arm == HumanoidArm.LEFT ? avatar.luaRuntime.renderer.renderLeftArm : avatar.luaRuntime.renderer.renderRightArm;
 
         boolean willRenderItem = !item.isEmpty();
-        boolean willRenderArm = (!willRenderItem && main) || item.is(Items.FILLED_MAP) || (!willRenderItem && this.mainHandItem.is(Items.FILLED_MAP));
+        boolean willRenderArm = (!willRenderItem && main) || item.has(DataComponents.MAP_ID) || (!willRenderItem && handsState.mainHandItem.has(DataComponents.MAP_ID));
 
         // hide arm
         if (willRenderArm && !willRenderItem && armVisible != null && !armVisible) {
@@ -95,9 +90,9 @@ public abstract class ItemInHandRendererMixin {
             return;
         }
         // render arm
-        if (!willRenderArm && !player.isInvisible() && armVisible != null && armVisible) {
+        if (!willRenderArm && !playerState.avatarRenderState.isInvisible && armVisible != null && armVisible) {
             matrices.pushPose();
-            this.renderPlayerArm(matrices, submitNodeCollector, light, equipProgress, swingProgress, arm);
+            this.renderPlayerArm(matrices, submitNodeCollector, light, equipProgress, swingProgress, arm, playerState);
             matrices.popPose();
         }
 
@@ -108,7 +103,15 @@ public abstract class ItemInHandRendererMixin {
         }
     }
 
-    @WrapOperation(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/item/ItemStackRenderState;submit(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;III)V"))
+    @Inject(method = "renderPlayerHand", at = @At("HEAD"), cancellable = true)
+    private void hidePlayerHand(PoseStack matrices, SubmitNodeCollector collector, int light, HumanoidArm arm, PlayerRenderState playerState, CallbackInfo ci) {
+        if (avatar == null || avatar.luaRuntime == null)
+            return;
+        Boolean visible = arm == HumanoidArm.LEFT ? avatar.luaRuntime.renderer.renderLeftArm : avatar.luaRuntime.renderer.renderRightArm;
+        if (Boolean.FALSE.equals(visible))
+            ci.cancel();
+    }
+    @WrapOperation(method = "submitArmWithItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/item/ItemStackRenderState;submit(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;III)V"))
     private void renderItemSubmit(
             ItemStackRenderState instance,
             PoseStack matrices,
@@ -117,10 +120,11 @@ public abstract class ItemInHandRendererMixin {
             int overlay,
             int outlineColor,
             Operation<Void> original,
-            @Local(argsOnly = true) LivingEntity entity,
-            @Local(argsOnly = true) ItemStack stack,
-            @Local(argsOnly = true) ItemDisplayContext itemDisplayContext
+            @Local(argsOnly = true) PlayerRenderState playerState,
+            @Local(argsOnly = true) ItemStack stack
     ) {
+        Entity entity = AvatarManager.getEntity(playerState.avatarRenderState);
+        ItemDisplayContext itemDisplayContext = ((FiguraItemStackRenderStateExtension) instance).figura$getDisplayContext();
         if (stack.getItem() instanceof BlockItem bl && bl.getBlock() instanceof AbstractSkullBlock) {
             SkullBlockRendererAccessor.setItem(stack);
             SkullBlockRendererAccessor.setEntity(entity);

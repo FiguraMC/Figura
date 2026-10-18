@@ -12,5 +12,5 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface HumanoidArmorLayerAccessor<S extends HumanoidRenderState, M extends HumanoidModel<S>, A extends HumanoidModel<S>> {
     @Intrinsic
     @Invoker("usesInnerModel")
-    boolean usesInnerModel(EquipmentSlot armorSlot);
+    boolean figura$usesInnerModel(EquipmentSlot armorSlot);
 }

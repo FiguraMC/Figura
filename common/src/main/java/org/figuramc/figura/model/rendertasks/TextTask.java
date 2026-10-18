@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.network.chat.Component;
 import org.figuramc.figura.FiguraMod;
@@ -52,7 +52,7 @@ public class TextTask extends RenderTask {
     }
 
     @Override
-    public void render(PoseStack poseStack, MultiBufferSource buffer, int light, int overlay) {
+    public void render(PoseStack poseStack, SubmitNodeCollector buffer, int light, int overlay) {
         if (opacity == 0) return; // lol
 
         // prepare matrices
@@ -68,30 +68,17 @@ public class TextTask extends RenderTask {
         Font.DisplayMode displayMode = seeThrough ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.POLYGON_OFFSET;
         float vertexOffset = outline ? FiguraMod.VERTEX_OFFSET : 0f;
 
-        // background
+        // Prepare glyphs now; custom geometry keeps the glyph render type and captured pose.
         if (bg != 0) {
             int offset = alignment.apply(cacheWidth);
-            float x1 = -1 - offset;
-            float x2 = cacheWidth - offset;
-            VertexConsumer vertexConsumer = buffer.getBuffer(seeThrough ? RenderTypes.textBackgroundSeeThrough() : RenderTypes.textBackground());
-            vertexConsumer.addVertex(matrix, x1, -1f, vertexOffset).setColor(bg).setLight(l);
-            vertexConsumer.addVertex(matrix, x1, cacheHeight, vertexOffset).setColor(bg).setLight(l);
-            vertexConsumer.addVertex(matrix, x2, cacheHeight, vertexOffset).setColor(bg).setLight(l);
-            vertexConsumer.addVertex(matrix, x2, -1f, vertexOffset).setColor(bg).setLight(l);
+            buffer.submitTextBackground(poseStack, -1 - offset, -1, cacheWidth - offset,
+                    cacheHeight, bg, displayMode, l);
         }
-
-        // text
-        for (int i = 0, j = 0; i < text.size(); i++, j += (font.lineHeight + 1)) {
-            Component text = this.text.get(i);
-            int x = -alignment.apply(font, text);
-
-            if (outline) {
-                font.drawInBatch8xOutline(text.getVisualOrderText(), x, j, -1, out, matrix, buffer, l);
-                if (seeThrough)
-                    font.drawInBatch(text, x, j, op, shadow, matrix, buffer, displayMode, 0, l);
-            } else {
-                font.drawInBatch(text, x, j, op, shadow, matrix, buffer, displayMode, 0, l);
-            }
+        for (int i = 0, y = 0; i < text.size(); i++, y += font.lineHeight + 1) {
+            Component line = text.get(i);
+            int x = -alignment.apply(font, line);
+            buffer.submitText(poseStack, x, y, line.getVisualOrderText(), shadow, displayMode,
+                    l, op, 0, outline ? out : 0);
         }
     }
 

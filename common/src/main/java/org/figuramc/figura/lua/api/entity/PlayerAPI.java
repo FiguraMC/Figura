@@ -189,7 +189,7 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
 
         map.put("name", team.getName());
         map.put("display_name", team.getDisplayName().getString());
-        map.put("color", team.getColor().getName());
+        map.put("color", team.getColor().map(net.minecraft.world.scores.TeamColor::getSerializedName).orElse("reset"));
         map.put("prefix", team.getPlayerPrefix().getString());
         map.put("suffix", team.getPlayerSuffix().getString());
         map.put("friendly_fire", team.isAllowFriendlyFire());

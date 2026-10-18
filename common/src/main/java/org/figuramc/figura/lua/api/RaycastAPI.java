@@ -102,7 +102,7 @@ public class RaycastAPI {
             throw new LuaError("Invalid fluidRaycastType provided");
         }
 
-        BlockHitResult result = WorldAPI.getCurrentWorld().clip(new ClipContext(start.asVec3(), end.asVec3(), blockContext, fluidContext, new Marker(EntityType.MARKER, WorldAPI.getCurrentWorld())));
+        BlockHitResult result = WorldAPI.getCurrentWorld().clip(new ClipContext(start.asVec3(), end.asVec3(), blockContext, fluidContext, new Marker(net.minecraft.world.entity.EntityTypes.MARKER, WorldAPI.getCurrentWorld())));
         return LuaUtils.parseBlockHitResult(result);
     }
 
@@ -150,7 +150,7 @@ public class RaycastAPI {
             return true;
         };
 
-        EntityHitResult result = ProjectileUtil.getEntityHitResult(new Marker(EntityType.MARKER, WorldAPI.getCurrentWorld()), start.asVec3(), end.asVec3(), new AABB(start.asVec3(), end.asVec3()), entityPredicate, Double.MAX_VALUE);
+        EntityHitResult result = ProjectileUtil.getEntityHitResult(new Marker(net.minecraft.world.entity.EntityTypes.MARKER, WorldAPI.getCurrentWorld()), start.asVec3(), end.asVec3(), new AABB(start.asVec3(), end.asVec3()), entityPredicate, Double.MAX_VALUE);
 
         if (result != null)
             return new Object[]{EntityAPI.wrap(result.getEntity()), FiguraVec3.fromVec3(result.getLocation())};
@@ -263,7 +263,7 @@ public class RaycastAPI {
         double d = max.x - min.x;
         double e = max.y - min.y;
         double f = max.z - min.z;
-        Direction direction = AABBInvoker.getDirection(aabb, min, ds, (Direction)null, d, e, f);
+        Direction direction = AABBInvoker.figura$getDirection(aabb, min, ds, (Direction)null, d, e, f);
         if (direction == null) {
            return Optional.empty();
         } else {

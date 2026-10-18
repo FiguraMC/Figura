@@ -71,7 +71,7 @@ public class FiguraTextureSet {
                     yield null;
 
                 yield switch (type) {
-                    case CAPE -> info.getSkin().cape().texturePath();
+                    case CAPE -> info.getSkin().cape() == null ? null : info.getSkin().cape().texturePath();
                     case ELYTRA -> info.getSkin().elytra() == null ? Identifier.withDefaultNamespace("elytra") : info.getSkin().elytra().texturePath();
                     default -> info.getSkin().body().texturePath();
                 };

@@ -144,28 +144,28 @@ public class LivingEntityAPI<T extends LivingEntity> extends EntityAPI<T> {
     @LuaMethodDoc("living_entity.get_swing_time")
     public int getSwingTime() {
       checkEntity();
-      return entity.swingTime;
+      return entity.isSwinging() ? ((LivingEntityAccessor.SwingStateAccessor) ((LivingEntityAccessor) entity).figura$getSwingState()).figura$getTicks() : 0;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("living_entity.is_swinging_arm")
     public boolean isSwingingArm() {
       checkEntity();
-      return entity.swinging;
+      return entity.isSwinging();
     }
 
     @LuaWhitelist
     @LuaMethodDoc("living_entity.get_swing_arm")
     public String getSwingArm() {
       checkEntity();
-      return entity.swinging ? entity.swingingArm.name() : null;
+      return entity.isSwinging() ? entity.getCurrentSwing().hand().name() : null;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("living_entity.get_swing_duration")
     public int getSwingDuration() {
       checkEntity();
-      return ((LivingEntityAccessor) entity).getSwingDuration();
+      return entity.isSwinging() ? entity.getCurrentSwing().durationTicks() : ((LivingEntityAccessor) entity).getSwingDuration(net.minecraft.world.item.component.SwingAnimation.DEFAULT);
     }
 
     @LuaWhitelist
@@ -188,13 +188,13 @@ public class LivingEntityAPI<T extends LivingEntity> extends EntityAPI<T> {
         checkEntity();
 
         EntityType<?> mobType = entity.getType(); // why it is not an enum
-        if (mobType.is(EntityTypeTags.ARTHROPOD))
+        if (mobType.builtInRegistryHolder().is(EntityTypeTags.ARTHROPOD))
             return "ARTHROPOD";
-        if (mobType.is(EntityTypeTags.UNDEAD))
+        if (mobType.builtInRegistryHolder().is(EntityTypeTags.UNDEAD))
             return "UNDEAD";
-        if (mobType.is(EntityTypeTags.AQUATIC))
+        if (mobType.builtInRegistryHolder().is(EntityTypeTags.AQUATIC))
             return "WATER";
-        if (mobType.is(EntityTypeTags.ILLAGER))
+        if (mobType.builtInRegistryHolder().is(EntityTypeTags.ILLAGER))
             return "ILLAGER";
 
         return "UNDEFINED";

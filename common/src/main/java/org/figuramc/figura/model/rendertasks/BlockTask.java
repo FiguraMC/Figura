@@ -2,8 +2,8 @@ package org.figuramc.figura.model.rendertasks;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.BlockStateModel;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
@@ -31,13 +31,16 @@ public class BlockTask extends RenderTask {
     }
 
     @Override
-    public void render(PoseStack poseStack, MultiBufferSource buffer, int light, int overlay) {
+    public void render(PoseStack poseStack, SubmitNodeCollector buffer, int light, int overlay) {
         poseStack.scale(16, 16, 16);
 
         int newLight = this.customization.light != null ? this.customization.light : light;
         int newOverlay = this.customization.overlay != null ? this.customization.overlay : overlay;
 
-        Minecraft.getInstance().getBlockRenderer().renderSingleBlock(block, poseStack, buffer, newLight, newOverlay);
+        var state = new net.minecraft.client.renderer.block.BlockModelRenderState();
+        Minecraft.getInstance().getModelManager().getBlockModelSet().get(block).update(
+                state, block, net.minecraft.client.renderer.block.model.BlockDisplayContext.create(), 0L);
+        state.submit(poseStack, buffer, newLight, newOverlay, 0);
     }
 
     @Override
@@ -71,12 +74,14 @@ public class BlockTask extends RenderTask {
     public BlockTask setBlock(Object block) {
         this.block = LuaUtils.parseBlockState("block", block);
         Minecraft client = Minecraft.getInstance();
-        RandomSource random = client.level != null ? client.level.random : RandomSource.create();
+        RandomSource random = client.level != null ? client.level.getRandom() : RandomSource.create();
 
-        BlockStateModel blockModel = client.getBlockRenderer().getBlockModel(this.block);
-        cachedComplexity = blockModel.collectParts(random).stream().mapToInt(p -> p.getQuads(null).size()).sum();
+        BlockStateModel blockModel = client.getModelManager().getBlockStateModelSet().get(this.block);
+        var parts = new java.util.ArrayList<net.minecraft.client.renderer.block.dispatch.BlockStateModelPart>();
+        blockModel.collectParts(random, parts);
+        cachedComplexity = parts.stream().mapToInt(p -> p.getQuads(null).size()).sum();
         for (Direction dir : Direction.values())
-            cachedComplexity += blockModel.collectParts(random).stream().mapToInt(p -> p.getQuads(dir).size()).sum();
+            cachedComplexity += parts.stream().mapToInt(p -> p.getQuads(dir).size()).sum();
 
         return this;
     }

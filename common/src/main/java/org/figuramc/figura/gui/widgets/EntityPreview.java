@@ -1,8 +1,9 @@
 package org.figuramc.figura.gui.widgets;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -69,15 +70,15 @@ public class EntityPreview extends AbstractContainerElement {
                 FiguraText.of("gui.expand"),
                 bx -> {
                     if (button.isToggled()) {
-                        Minecraft.getInstance().setScreen(new AvatarScreen(scale, pitch, yaw, this.entity, parentScreen));
+                        Minecraft.getInstance().gui.setScreen(new AvatarScreen(scale, pitch, yaw, this.entity, parentScreen));
                     } else {
-                        Minecraft.getInstance().setScreen(parentScreen);
+                        Minecraft.getInstance().gui.setScreen(parentScreen);
                     }
                 }));
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         if (!this.isVisible())
             return;
 
@@ -106,13 +107,12 @@ public class EntityPreview extends AbstractContainerElement {
         } else {
             // draw
             int s = Math.min(width, height) * 2 / 3;
-            UIHelper.enableBlend();
             gui.blit(RenderPipelines.GUI_TEXTURED, UNKNOWN, x + (width - s) / 2, y + (height - s) / 2, 0f, 64 * ((int) (FiguraMod.ticks / 3f) % 8), s, s,64, 64, 64, 512);
         }
 
         gui.disableScissor();
 
-        super.render(gui, mouseX, mouseY, delta);
+        super.extractRenderState(gui, mouseX, mouseY, delta);
     }
 
     @Override
@@ -129,7 +129,7 @@ public class EntityPreview extends AbstractContainerElement {
 
         switch (button) {
             // left click - rotate
-            case 0 -> {
+            case InputConstants.MOUSE_BUTTON_LEFT -> {
                 // set anchor rotation
 
                 // get starter mouse pos
@@ -145,7 +145,7 @@ public class EntityPreview extends AbstractContainerElement {
             }
 
             // right click - move
-            case 1 -> {
+            case InputConstants.MOUSE_BUTTON_RIGHT -> {
                 // get starter mouse pos
                 dragDeltaX = (float) mouseX;
                 dragDeltaY = (float) mouseY;
@@ -159,7 +159,7 @@ public class EntityPreview extends AbstractContainerElement {
             }
 
             // middle click - reset pos
-            case 2 -> {
+            case InputConstants.MOUSE_BUTTON_MIDDLE -> {
                 isRotating = false;
                 isDragging = false;
                 anchorX = 0f;
@@ -183,13 +183,13 @@ public class EntityPreview extends AbstractContainerElement {
     public boolean mouseReleased(MouseButtonEvent mouseButtonEvent) {
         int button = mouseButtonEvent.button();
         // left click - stop rotating
-        if (button == 0) {
+        if (button == InputConstants.MOUSE_BUTTON_LEFT) {
             isRotating = false;
             return true;
         }
 
         // right click - stop dragging
-        else if (button == 1) {
+        else if (button == InputConstants.MOUSE_BUTTON_RIGHT) {
             isDragging = false;
             return true;
         }

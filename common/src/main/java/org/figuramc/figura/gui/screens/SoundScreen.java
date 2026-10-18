@@ -1,5 +1,6 @@
 package org.figuramc.figura.gui.screens;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import org.figuramc.figura.FiguraMod;
@@ -46,12 +47,12 @@ public class SoundScreen extends AbstractPanelScreen {
 
     @Override
     public void onClose() {
-        this.minecraft.setScreen(sourcePanel);
+        this.minecraft.gui.setScreen(sourcePanel);
     }
 
     @Override
     public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
-        piano.pressed = mouseButtonEvent.button() == 0;
+        piano.pressed = mouseButtonEvent.button() == InputConstants.MOUSE_BUTTON_LEFT;
         return super.mouseClicked(mouseButtonEvent, bl);
     }
 

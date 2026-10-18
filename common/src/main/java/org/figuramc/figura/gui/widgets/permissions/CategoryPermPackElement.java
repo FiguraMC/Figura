@@ -3,7 +3,7 @@ package org.figuramc.figura.gui.widgets.permissions;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
@@ -25,7 +25,7 @@ public class CategoryPermPackElement extends AbstractPermPackElement {
     }
 
     @Override
-    public void renderContents(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractContents(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         Matrix3x2fStack pose = gui.pose();
         int width = getWidth();
         int height = getHeight();

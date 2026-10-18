@@ -2,7 +2,7 @@ package org.figuramc.figura.model.rendertasks;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.Identifier;
 import org.figuramc.figura.avatar.Avatar;
@@ -49,30 +49,28 @@ public class SpriteTask extends RenderTask {
     }
 
     @Override
-    public void render(PoseStack poseStack, MultiBufferSource buffer, int light, int overlay) {
+    public void render(PoseStack poseStack, SubmitNodeCollector buffer, int light, int overlay) {
         if (a == 0) return;
         poseStack.scale(-1, -1, 1);
 
         // prepare variables
-        Matrix4f pose = poseStack.last().pose();
-        Matrix3f normal = poseStack.last().normal();
-
         int newLight = this.customization.light != null ? this.customization.light : light;
         int newOverlay = this.customization.overlay != null ? this.customization.overlay : overlay;
 
         // setup texture render
-        VertexConsumer consumer = buffer.getBuffer(renderType.get(texture));
-
-        // create vertices
-        for (Vertex v : vertices) {
-            consumer.addVertex(pose, v.x, v.y, v.z)
-                    .setColor(r, g, b, a)
-                    .setUv(v.u, v.v)
-                    .setOverlay(newOverlay)
-                    .setLight(newLight)
-                    .setNormal(poseStack.last(), v.nx, v.ny, v.nz)
-                    .setLineWidth(1.0F);
-        }
+        List<Vertex> snapshot = vertices.stream().map(Vertex::copy).toList();
+        int red = r, green = g, blue = b, alpha = a;
+        buffer.submitCustomGeometry(poseStack, renderType.get(texture), (pose, consumer) -> {
+            for (Vertex v : snapshot) {
+                consumer.addVertex(pose.pose(), v.x, v.y, v.z)
+                        .setColor(red, green, blue, alpha)
+                        .setUv(v.u, v.v)
+                        .setOverlay(newOverlay)
+                        .setLight(newLight)
+                        .setNormal(pose, v.nx, v.ny, v.nz)
+                        .setLineWidth(1.0F);
+            }
+        });
     }
 
     @Override

@@ -1,9 +1,10 @@
 package org.figuramc.figura.gui.widgets.avatar;
 
-import net.minecraft.util.Util;
+import com.mojang.blaze3d.Blaze3D;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FontDescription;
@@ -54,10 +55,10 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
         });
         context.addAction(FiguraText.of("gui.context.open_folder"), null, button -> {
             try {
-                Util.getPlatform().openUri(avatar.getFSPath().toUri());
+                Blaze3D.openUri(avatar.getFSPath().toUri());
             } catch (Exception e) {
                 FiguraMod.debug("failed to open avatar folder: ", e.getMessage());
-                Util.getPlatform().openUri(LocalAvatarFetcher.getLocalAvatarDirectory().toUri());
+                Blaze3D.openUri(LocalAvatarFetcher.getLocalAvatarDirectory().toUri());
             }
         });
         context.addAction(FiguraText.of("gui.context.copy_path"), null, button -> {
@@ -67,11 +68,11 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         if (!isVisible() || !this.button.isVisible())
             return;
 
-        super.render(gui, mouseX, mouseY, delta);
+        super.extractRenderState(gui, mouseX, mouseY, delta);
 
         if (favourite) {
             Font font = Minecraft.getInstance().font;
@@ -79,7 +80,7 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
             int x = this.getX() + this.getWidth() - width;
             int y = this.getY() + 2;
 
-            gui.drawString(font, FAVOURITE, x, y, UIHelper.adjustColor(0xFFFFFF), false);
+            gui.text(font, FAVOURITE, x, y, UIHelper.adjustColor(0xFFFFFF), false);
 
             if (mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + font.lineHeight)
                 UIHelper.setTooltip(FiguraText.of("gui.favorited").append(" ").append(FAVOURITE));
@@ -98,7 +99,7 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
             return true;
 
         // context menu on right click
-        if (button == 1) {
+        if (button == InputConstants.MOUSE_BUTTON_RIGHT) {
             context.setX((int) mouseX);
             context.setY((int) mouseY);
             context.setVisible(true);

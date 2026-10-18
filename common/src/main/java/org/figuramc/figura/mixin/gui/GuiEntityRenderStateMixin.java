@@ -1,8 +1,8 @@
 package org.figuramc.figura.mixin.gui;
 
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
-import net.minecraft.client.gui.render.state.pip.GuiEntityRenderState;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.state.gui.pip.GuiEntityRenderState;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import org.figuramc.figura.ducks.GuiEntityRenderStateExtension;
 import org.figuramc.figura.model.rendering.EntityRenderMode;
 import org.spongepowered.asm.mixin.Mixin;

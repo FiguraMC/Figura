@@ -10,7 +10,7 @@ import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.commands.FiguraCommands;
 import org.figuramc.figura.utils.FiguraClientCommandSource;
 
-@EventBusSubscriber(modid = FiguraMod.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
+@EventBusSubscriber(modid = FiguraMod.MOD_ID, value = Dist.CLIENT)
 public class FiguraCommandsNeoForge {
     @SuppressWarnings({"unchecked", "rawtypes"})
     @SubscribeEvent

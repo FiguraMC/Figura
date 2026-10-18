@@ -1,12 +1,12 @@
 package org.figuramc.figura.model.rendering.texture;
 
-import com.mojang.blaze3d.pipeline.BlendFunction;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.systems.GpuDevice;
+import com.mojang.renderpearl.api.pipeline.BlendFunction;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.device.GpuDevice;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.FilterMode;
+import com.mojang.renderpearl.api.textures.FilterMode;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.renderpearl.api.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderPipelines;
 
@@ -26,12 +26,12 @@ import java.util.function.Function;
 public enum FiguraRenderTypes {
     NONE(null),
 
-    CUTOUT(RenderTypes::entityCutoutNoCull),
-    CUTOUT_CULL(RenderTypes::entityCutout),
+    CUTOUT(RenderTypes::entityCutout),
+    CUTOUT_CULL(RenderTypes::entityCutoutCull),
     CUTOUT_EMISSIVE_SOLID(resourceLocation -> FiguraRenderType.CUTOUT_EMISSIVE_SOLID.apply(resourceLocation, true)),
 
     TRANSLUCENT(RenderTypes::entityTranslucent),
-    TRANSLUCENT_CULL(RenderTypes::itemEntityTranslucentCull),
+    TRANSLUCENT_CULL(RenderTypes::entityTranslucentCull),
 
     EMISSIVE(RenderTypes::eyes),
     EMISSIVE_SOLID(resourceLocation -> RenderTypes.beaconBeam(resourceLocation, false)),
@@ -41,8 +41,8 @@ public enum FiguraRenderTypes {
     END_GATEWAY(t -> RenderTypes.endGateway(), false),
     TEXTURED_PORTAL(FiguraRenderType.TEXTURED_PORTAL),
 
-    GLINT(t -> RenderTypes.entityGlint(), false, false),
-    GLINT2(t -> RenderTypes.glint(), false, false),
+    GLINT(t -> FiguraRenderType.TEXTURED_GLINT.apply(net.minecraft.client.renderer.feature.ItemFeatureRenderer.ENCHANTED_GLINT_ARMOR), false, false),
+    GLINT2(t -> FiguraRenderType.ITEM_GLINT, false, false),
     TEXTURED_GLINT(FiguraRenderType.TEXTURED_GLINT, true, false),
 
     LINES(t -> RenderTypes.lines(), false),
@@ -86,9 +86,8 @@ public enum FiguraRenderTypes {
 
         public static final RenderType SOLID = create(
                 "figura_solid",
-                RenderSetup.builder(FiguraRenderPipelines.FIGURA_SOLID).bufferSize(256)
+                RenderSetup.builder(FiguraRenderPipelines.FIGURA_SOLID)
                         .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
-                        .setOutputTarget(OutputTarget.ITEM_ENTITY_TARGET)
                         .setOutline(RenderSetup.OutlineProperty.NONE)
                         .createRenderSetup()
         );
@@ -97,7 +96,6 @@ public enum FiguraRenderTypes {
                 (texture, affectsOutline) ->
                         create("figura_cutout_emissive_solid",
                                 RenderSetup.builder(RenderPipelines.BEACON_BEAM_TRANSLUCENT)
-                                        .bufferSize(256)
                                         .withTexture("Sampler0", texture)
                                         .affectsCrumbling()
                                         .sortOnUpload()
@@ -112,7 +110,6 @@ public enum FiguraRenderTypes {
                 texture -> create(
                         "figura_textured_portal",
                         RenderSetup.builder(RenderPipelines.END_GATEWAY)
-                                .bufferSize(256)
                                 .withTexture("Sampler0", texture)
                                 .withTexture("Sampler1", texture)
                                 .setOutline(RenderSetup.OutlineProperty.NONE)
@@ -124,7 +121,6 @@ public enum FiguraRenderTypes {
                 texture -> create(
                         "figura_blurry",
                         RenderSetup.builder(RenderPipelines.ENTITY_TRANSLUCENT)
-                                .bufferSize(256)
                                 .affectsCrumbling()
                                 .sortOnUpload()
                                 .useLightmap()
@@ -145,16 +141,21 @@ public enum FiguraRenderTypes {
                 texture -> create(
                         "figura_textured_glint_direct",
                         RenderSetup.builder(RenderPipelines.GLINT)
-                                .bufferSize(256)
                                 .withTexture("Sampler0", texture)
                                 .setTextureTransform(TextureTransform.ENTITY_GLINT_TEXTURING)
                                 .createRenderSetup()
                 )
         );
+
+        public static final RenderType ITEM_GLINT = create("figura_item_glint",
+                RenderSetup.builder(RenderPipelines.GLINT)
+                        .withTexture("Sampler0", net.minecraft.client.renderer.feature.ItemFeatureRenderer.ENCHANTED_GLINT_ITEM)
+                        .setTextureTransform(TextureTransform.GLINT_TEXTURING)
+                        .createRenderSetup());
     }
 
     public static class FiguraRenderPipelines extends RenderPipelines {
-        protected static RenderPipeline.Snippet FIGURA_SOLID_SNIPPET = RenderPipeline.builder(MATRICES_FOG_SNIPPET, GLOBALS_SNIPPET).withVertexShader("core/rendertype_lines").withFragmentShader("core/rendertype_lines").withColorWrite(true).withDepthWrite(true).withBlend(BlendFunction.TRANSLUCENT).withCull(false).withVertexFormat(DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.QUADS).buildSnippet();
+        protected static RenderPipeline.Snippet FIGURA_SOLID_SNIPPET = RenderPipeline.builder(MATRICES_FOG_SNIPPET).withVertexShader("core/rendertype_lines").withFragmentShader("core/rendertype_lines").withColorTargetState(new com.mojang.renderpearl.api.pipeline.ColorTargetState(BlendFunction.TRANSLUCENT)).withDepthStencilState(com.mojang.renderpearl.api.pipeline.DepthStencilState.DEFAULT).withCull(false).withVertexBinding(0, DefaultVertexFormat.POSITION_COLOR_NORMAL_LINE_WIDTH).withPrimitiveTopology(com.mojang.renderpearl.api.pipeline.PrimitiveTopology.QUADS).buildSnippet();
 
         public static RenderPipeline FIGURA_SOLID = register(RenderPipeline.builder(FIGURA_SOLID_SNIPPET).withLocation(new FiguraIdentifier("pipeline/solid")).build());
     }

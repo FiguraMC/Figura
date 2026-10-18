@@ -1,9 +1,10 @@
 package org.figuramc.figura.gui.widgets;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -85,7 +86,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
 
     private void createPanelButton(Screen panel, PanelIcon icon, boolean toggled, int x, int width) {
         // create button
-        PanelButton button = new PanelButton(x, getY(), width, getHeight() - 4, panel.getTitle(), icon, this, bx -> Minecraft.getInstance().setScreen(panel));
+        PanelButton button = new PanelButton(x, getY(), width, getHeight() - 4, panel.getTitle(), icon, this, bx -> Minecraft.getInstance().gui.setScreen(panel));
         button.shouldHaveBackground(false);
         if (toggled) this.selected = button;
 
@@ -95,10 +96,10 @@ public class PanelSelectorWidget extends AbstractContainerElement {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         UIHelper.blitSliced(gui, getX(), getY(), selected.getX() - getX(), getHeight() - 4, BACKGROUND);
         UIHelper.blitSliced(gui, selected.getX() + selected.getWidth(), getY(), getWidth() - selected.getX() - selected.getWidth(), getHeight() - 4, BACKGROUND);
-        super.render(gui, mouseX, mouseY, delta);
+        super.extractRenderState(gui, mouseX, mouseY, delta);
     }
 
     public boolean cycleTab(int keyCode) {
@@ -116,11 +117,11 @@ public class PanelSelectorWidget extends AbstractContainerElement {
 
     private int getNextPanel(int keyCode) {
         // numbers
-        if (keyCode >= 49 && keyCode <= 57)
-            return keyCode - 49;
+        if (keyCode >= InputConstants.KEY_1 && keyCode <= InputConstants.KEY_9)
+            return keyCode - InputConstants.KEY_1;
 
         // tab
-        if (keyCode == 258) {
+        if (keyCode == InputConstants.KEY_TAB) {
             // get current button
             int index = buttons.indexOf(selected);
 
@@ -160,8 +161,8 @@ public class PanelSelectorWidget extends AbstractContainerElement {
         }
 
         @Override
-        public void renderContents(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-            super.renderContents(gui, mouseX, mouseY, delta);
+        public void extractContents(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
+            super.extractContents(gui, mouseX, mouseY, delta);
             boolean iconOnly = iconsOnly();
 
             if (iconOnly && this.isMouseOver(mouseX, mouseY))
@@ -169,16 +170,15 @@ public class PanelSelectorWidget extends AbstractContainerElement {
         }
 
         @Override
-        protected void renderTexture(GuiGraphics gui, float delta) {
+        protected void renderTexture(GuiGraphicsExtractor gui, float delta) {
             UIHelper.blitSliced(gui, getX(), getY(), getWidth(), getHeight(), isSelected() ? 24f : 0f, this.isHoveredOrFocused() ? 24f : 0f, 24, 24, 48, 48, TEXTURE);
 
-            UIHelper.enableBlend();
             int size = getTextureSize();
             gui.blit(RenderPipelines.GUI_TEXTURED, texture, getX() + (iconsOnly() ? (getWidth() - size) / 2 : 2), getY() + (getHeight() - size) / 2 + (!isSelected() ? 2 : 0),  u, v, size, size, regionSize, regionSize, textureWidth, textureHeight);
         }
 
         @Override
-        protected void renderText(GuiGraphics gui, float delta) {
+        protected void renderText(GuiGraphicsExtractor gui, float delta) {
             if (iconsOnly())
                 return;
 

@@ -1,6 +1,7 @@
 package org.figuramc.figura.ducks;
 
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.SubmitNodeStorage;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import org.apache.commons.lang3.function.TriFunction;
 import org.figuramc.figura.avatar.Avatar;
@@ -15,7 +16,10 @@ interface QuadFunction<A, B, C, D, R> {
 }
 
 public interface NodeCollectorExtension {
-    <S extends EntityRenderState> void submitFiguraModel(Avatar avatar, S renderState, TriFunction<Avatar, S, MultiBufferSource, Void> renderer);
+    default void figura$setStorage(SubmitNodeStorage storage) {
+    }
+
+    <S extends EntityRenderState> void submitFiguraModel(Avatar avatar, S renderState, TriFunction<Avatar, S, SubmitNodeCollector, Void> renderer);
 
     List<FiguraSubmission> getFiguraSubmissions();
 }

@@ -1,6 +1,6 @@
 package org.figuramc.figura.gui;
 
-import com.mojang.blaze3d.opengl.GlStateManager;
+import com.mojang.renderpearl.backend.opengl.GlStateManager;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -8,7 +8,7 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -79,7 +79,7 @@ public class PopupMenu {
     private static Entity entity;
     private static UUID id;
 
-    public static void render(GuiGraphics gui) {
+    public static void extractRenderState(GuiGraphicsExtractor gui) {
         if (!isEnabled()) return;
 
         if (entity == null) {
@@ -117,13 +117,11 @@ public class PopupMenu {
         // background
         int width = LENGTH * 18;
 
-        UIHelper.enableBlend();
         int frame = Configs.REDUCED_MOTION.value ? 0 : (int) ((FiguraMod.ticks / 5f) % 4);
         gui.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND, width / -2, -24, 0, frame * 26, width, 26, width, 26, width, 104);
 
         // icons
         pose.translate(0f, 0f);
-        UIHelper.enableBlend();
         for (int i = 0; i < LENGTH; i++)
             gui.blit(RenderPipelines.GUI_TEXTURED, ICONS, width / -2 + (18 * i), -24, 18 * i, i == index ? 18 : 0, 18, 18, 18, 18, width, 36);
 
@@ -159,7 +157,7 @@ public class PopupMenu {
         pose.translate(0f, 0f);
 
         UIHelper.renderOutlineText(gui, font, permissionName, -font.width(permissionName) / 2, -54, 0xFFFFFF, 0x202020);
-        gui.drawString(font, title, -width + 4, -12, UIHelper.adjustColor(0xFFFFFF));
+        gui.text(font, title, -width + 4, -12, UIHelper.adjustColor(0xFFFFFF));
 
         if (error)
             UIHelper.renderOutlineText(gui, font, ERROR_WARN, -font.width(ERROR_WARN) / 2, 0, 0xFFFFFF, 0x202020);

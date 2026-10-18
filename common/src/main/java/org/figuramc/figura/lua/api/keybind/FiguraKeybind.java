@@ -10,6 +10,7 @@ import org.figuramc.figura.lua.docs.LuaFieldDoc;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
+import org.figuramc.figura.utils.IOUtils;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.Varargs;
@@ -91,8 +92,8 @@ public class FiguraKeybind {
     public static boolean set(List<FiguraKeybind> bindings, InputConstants.Key key, boolean pressed, int modifiers) {
         boolean overrided = false;
         for (FiguraKeybind keybind : List.copyOf(bindings)) {
-            if (keybind.key == key && keybind.enabled && (keybind.gui || Minecraft.getInstance().screen == null))
-                overrided = keybind.setDown(pressed, modifiers) || overrided;
+            if (keybind.key == key && keybind.enabled && (keybind.gui || Minecraft.getInstance().gui.screen() == null))
+                overrided = keybind.setDown(pressed, IOUtils.toLegacyModifiers(modifiers)) || overrided;
         }
         return overrided;
     }
@@ -105,8 +106,8 @@ public class FiguraKeybind {
     public static void updateAll(List<FiguraKeybind> bindings) {
         for (FiguraKeybind keybind : bindings) {
             int value = keybind.key.getValue();
-            if (keybind.enabled && keybind.key.getType() == InputConstants.Type.KEYSYM && value != InputConstants.UNKNOWN.getValue())
-                keybind.setDown(InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), value), -1);
+            if (keybind.enabled && keybind.key.getType() == InputConstants.Type.KEYBOARD && value != InputConstants.UNKNOWN.getValue())
+                keybind.setDown(InputConstants.isKeyDown(value), -1);
         }
     }
 
@@ -205,13 +206,13 @@ public class FiguraKeybind {
     @LuaWhitelist
     @LuaMethodDoc("keybind.get_id")
     public int getID() {
-        return this.key.getValue();
+        return IOUtils.toLegacyInputCode(this.key);
     }
 
     @LuaWhitelist
     @LuaMethodDoc("keybind.is_pressed")
     public boolean isPressed() {
-        return (this.gui || Minecraft.getInstance().screen == null) && this.isDown;
+        return (this.gui || Minecraft.getInstance().gui.screen() == null) && this.isDown;
     }
 
     @LuaWhitelist

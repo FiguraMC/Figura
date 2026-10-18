@@ -25,7 +25,7 @@ public class EntryPointManagerImpl {
         Class<?> annotationClass = nameToAnnotationClass.get(name);
         if (annotationClass != null) {
             Type annotationType = Type.getType(annotationClass);
-            List<ModFileScanData> modFileScanDataList = ModList.get().getAllScanData();
+            List<ModFileScanData> modFileScanDataList = ModList.getAllScanData();
             Set<String> pluginClassNames = new LinkedHashSet<>();
             for (ModFileScanData scanData : modFileScanDataList) {
                 Iterable<ModFileScanData.AnnotationData> annotations = scanData.getAnnotations();

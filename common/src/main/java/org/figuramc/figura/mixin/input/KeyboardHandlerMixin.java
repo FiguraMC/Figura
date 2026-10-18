@@ -1,6 +1,7 @@
 package org.figuramc.figura.mixin.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.sdl.SDLKeyboard;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
@@ -11,6 +12,7 @@ import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.lua.api.keybind.FiguraKeybind;
+import org.figuramc.figura.utils.IOUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -37,7 +39,7 @@ public class KeyboardHandlerMixin {
         if (avatar == null || avatar.luaRuntime == null)
             return;
 
-        if (avatar.keyPressEvent(event.key(), action, event.modifiers()) && (this.minecraft.mouseHandler.isMouseGrabbed() || this.minecraft.screen == null)) {
+        if (avatar.keyPressEvent(IOUtils.toLegacyInputCode(InputConstants.getKey(event)), action, IOUtils.toLegacyModifiers(event.modifiers())) && (this.minecraft.mouseHandler.isMouseGrabbed() || this.minecraft.gui.screen() == null)) {
             ci.cancel();
             return;
         }
@@ -50,8 +52,11 @@ public class KeyboardHandlerMixin {
 
     @Inject(method = "charTyped", at = @At("HEAD"))
     private void charTyped(long window, CharacterEvent characterEvent, CallbackInfo ci) {
+        if (window != this.minecraft.getWindow().handle())
+            return;
+
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (avatar != null)
-            avatar.charTypedEvent(Character.toString(characterEvent.codepoint()), characterEvent.modifiers(), characterEvent.codepoint());
+            avatar.charTypedEvent(Character.toString(characterEvent.codepoint()), IOUtils.toLegacyModifiers(SDLKeyboard.SDL_GetModState()), characterEvent.codepoint());
     }
 }

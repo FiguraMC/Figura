@@ -1,8 +1,8 @@
 package org.figuramc.figura.model.rendertasks;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.LuaNotNil;
@@ -38,14 +38,14 @@ public abstract class RenderTask {
         this.customization.visible = true;
     }
 
-    public void render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
+    public void render(PartCustomization.PartCustomizationStack stack, SubmitNodeCollector buffer, int light, int overlay) {
         customization.recalculate();
         stack.push(customization);
         PoseStack poseStack = stack.peek().copyIntoGlobalPoseStack();
         render(poseStack, buffer, light, overlay);
         stack.pop();
     }
-    public abstract void render(PoseStack stack, MultiBufferSource buffer, int light, int overlay);
+    public abstract void render(PoseStack stack, SubmitNodeCollector buffer, int light, int overlay);
     public abstract int getComplexity();
     public boolean shouldRender() {
         return customization.visible;
@@ -97,7 +97,7 @@ public abstract class RenderTask {
     @LuaMethodDoc("render_task.get_light")
     public FiguraVec2 getLight() {
         Integer light = customization.light;
-        return light == null ? null : FiguraVec2.of(LightTexture.block(light), LightTexture.sky(light));
+        return light == null ? null : FiguraVec2.of(LightCoordsUtil.block(light), LightCoordsUtil.sky(light));
     }
 
     @LuaWhitelist
@@ -121,7 +121,7 @@ public abstract class RenderTask {
         }
 
         FiguraVec2 lightVec = LuaUtils.parseVec2("setLight", blockLight, skyLight);
-        customization.light = LightTexture.pack((int) lightVec.x, (int) lightVec.y);
+        customization.light = LightCoordsUtil.pack((int) lightVec.x, (int) lightVec.y);
         return this;
     }
 

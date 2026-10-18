@@ -1,40 +1,44 @@
 package org.figuramc.figura.mixin.neoforge;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import net.neoforged.neoforge.client.ClientHooks;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.Sheets;
-import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
-import net.minecraft.client.renderer.entity.state.PlayerRenderState;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.item.equipment.EquipmentAsset;
 import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
-import net.neoforged.neoforge.client.ClientHooks;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.compat.GeckoLibCompat;
 import org.figuramc.figura.ducks.FiguraEntityRenderStateExtension;
+import org.figuramc.figura.ducks.FiguraSubmitCallBackExtension;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
 import org.figuramc.figura.mixin.render.layers.EquipmentLayerRendererAccessor;
 import org.figuramc.figura.mixin.render.layers.HumanoidArmorLayerAccessor;
@@ -52,13 +56,12 @@ import java.util.Optional;
 
 @Mixin(value = HumanoidArmorLayer.class, priority = 900)
 public abstract class HumanoidArmorLayerMixinNeoForge<S extends HumanoidRenderState, M extends HumanoidModel<S>, A extends HumanoidModel<S>> extends RenderLayer<S, M> implements HumanoidArmorLayerAccessor<S, M, A> {
-    @Shadow @Final private A innerModel;
-    @Shadow @Final private A outerModel;
     @Shadow @Final private EquipmentLayerRenderer equipmentRenderer;
 
-    @Shadow protected abstract void renderArmorPiece(PoseStack poseStack, MultiBufferSource multiBufferSource, ItemStack itemStack, EquipmentSlot equipmentSlot, int i, A humanoidModel);
-
     @Shadow protected abstract A getArmorModel(S humanoidRenderState, EquipmentSlot equipmentSlot);
+
+    @Shadow
+    protected abstract void renderArmorPiece(PoseStack matrices, SubmitNodeCollector submitNodeCollector, ItemStack stack, EquipmentSlot armorSlot, int light, S state);
 
     @Unique
     private boolean figura$renderingVanillaArmor;
@@ -70,63 +73,77 @@ public abstract class HumanoidArmorLayerMixinNeoForge<S extends HumanoidRenderSt
         super(context);
     }
 
-    @Inject(at = @At(value = "HEAD"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/renderer/entity/state/HumanoidRenderState;FF)V")
-    public void setAvatar(PoseStack matrices, MultiBufferSource vertexConsumers, int i, S humanoidRenderState, float f, float g, CallbackInfo ci) {
+    @Inject(at = @At(value = "HEAD"), method = "submit(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;ILnet/minecraft/client/renderer/entity/state/HumanoidRenderState;FF)V")
+    public void setAvatar(PoseStack matrices, SubmitNodeCollector submitNodeCollector, int i, S humanoidRenderState, float f, float g, CallbackInfo ci) {
         figura$avatar = AvatarManager.getAvatar(humanoidRenderState);
     }
 
-    @Inject(at = @At(value = "INVOKE", shift = At.Shift.AFTER, ordinal = 3, target = "Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;renderArmorPiece(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/EquipmentSlot;ILnet/minecraft/client/model/HumanoidModel;)V"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/renderer/entity/state/HumanoidRenderState;FF)V")
-    public void onRenderEnd(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, S humanoidRenderState, float f, float g, CallbackInfo ci) {
+    @Inject(at = @At("TAIL"), method = "submit(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;ILnet/minecraft/client/renderer/entity/state/HumanoidRenderState;FF)V")
+    public void onRenderEnd(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int i, S humanoidRenderState, float f, float g, CallbackInfo ci) {
         if (figura$avatar == null) return;
 
-        figura$tryRenderArmorPart(EquipmentSlot.HEAD,  this::figura$helmetRenderer, poseStack, humanoidRenderState, multiBufferSource, i, ParentType.HelmetPivot);
-        figura$tryRenderArmorPart(EquipmentSlot.CHEST, this::figura$chestplateRenderer, poseStack, humanoidRenderState, multiBufferSource, i, ParentType.LeftShoulderPivot, ParentType.ChestplatePivot, ParentType.RightShoulderPivot);
-        figura$tryRenderArmorPart(EquipmentSlot.LEGS,  this::figura$leggingsRenderer, poseStack, humanoidRenderState, multiBufferSource, i, ParentType.LeftLeggingPivot, ParentType.RightLeggingPivot, ParentType.LeggingsPivot);
-        figura$tryRenderArmorPart(EquipmentSlot.FEET,  this::figura$bootsRenderer, poseStack, humanoidRenderState, multiBufferSource, i, ParentType.LeftBootPivot, ParentType.RightBootPivot);
+        figura$tryRenderArmorPart(EquipmentSlot.HEAD,  this::figura$helmetRenderer, poseStack, humanoidRenderState, submitNodeCollector, i, ParentType.HelmetPivot);
+        figura$tryRenderArmorPart(EquipmentSlot.CHEST, this::figura$chestplateRenderer, poseStack, humanoidRenderState, submitNodeCollector, i, ParentType.LeftShoulderPivot, ParentType.ChestplatePivot, ParentType.RightShoulderPivot);
+        figura$tryRenderArmorPart(EquipmentSlot.LEGS,  this::figura$leggingsRenderer, poseStack, humanoidRenderState, submitNodeCollector, i, ParentType.LeftLeggingPivot, ParentType.RightLeggingPivot, ParentType.LeggingsPivot);
+        figura$tryRenderArmorPart(EquipmentSlot.FEET,  this::figura$bootsRenderer, poseStack, humanoidRenderState, submitNodeCollector, i, ParentType.LeftBootPivot, ParentType.RightBootPivot);
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;usesInnerModel(Lnet/minecraft/world/entity/EquipmentSlot;)Z"), method = "renderArmorPiece")
-    public void onRenderArmorPiece(PoseStack matrices, MultiBufferSource vertexConsumers, ItemStack stack, EquipmentSlot equipmentSlot, int light, A humanoidModel, CallbackInfo ci) {
+    @Unique
+    private void addFiguraCallbacks(PoseStack matrices, SubmitNodeCollector submitNodeCollector, ItemStack stack, EquipmentSlot equipmentSlot, int light, S state, CallbackInfo ci) {
         if (figura$avatar == null) return;
+        Avatar localAvatar = figura$avatar;
+        A humanoidModel = this.getArmorModel(state, equipmentSlot);
 
-        VanillaPart part = RenderUtils.partFromSlot(figura$avatar, equipmentSlot);
-        if (part != null) {
-            part.save(humanoidModel);
-            part.preTransform(humanoidModel);
-            part.posTransform(humanoidModel);
-        }
+        var extension = (FiguraSubmitCallBackExtension)humanoidModel;
+        extension.figura$addPreRenderingCallback((poseStack, nodeCollector) -> {
+            VanillaPart part = RenderUtils.partFromSlot(localAvatar, equipmentSlot);
+            if (part != null) {
+                part.save(humanoidModel);
+                part.preTransform(humanoidModel);
+                part.posTransform(humanoidModel);
+            }
+            return true;
+        });
+
+        extension.figura$addPostRenderingCallback(() -> {
+            VanillaPart part = RenderUtils.partFromSlot(localAvatar, equipmentSlot);
+            if (part != null)
+                part.restore(humanoidModel);
+        });
     }
 
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;setPartVisibility(Lnet/minecraft/client/model/HumanoidModel;Lnet/minecraft/world/entity/EquipmentSlot;)V", shift = At.Shift.AFTER), method = "renderArmorPiece", cancellable = true)
-    public void renderArmorPieceHijack(PoseStack matrices, MultiBufferSource vertexConsumers, ItemStack stack, EquipmentSlot armorSlot, int light, A model, CallbackInfo ci) {
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer;renderLayers(Lnet/minecraft/client/resources/model/EquipmentClientInfo$LayerType;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/client/model/Model;Ljava/lang/Object;Lnet/minecraft/world/item/ItemStack;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;II)V"), method = "renderArmorPiece", cancellable = true)
+    public void renderArmorPieceHijack(PoseStack matrices, SubmitNodeCollector submitNodeCollector, ItemStack stack, EquipmentSlot armorSlot, int light, S state, CallbackInfo ci, @Local A humanoidModel) {
         if (figura$avatar == null) return;
 
         if (!figura$renderingVanillaArmor) {
             ci.cancel();
+            return;
         }
+        figura$setPartVisibility(humanoidModel, armorSlot);
+        addFiguraCallbacks(matrices, submitNodeCollector, stack, armorSlot, light, state, ci);
     }
 
-
-    @Inject(at = @At("RETURN"), method = "renderArmorPiece")
-    public void postRenderArmorPiece(PoseStack matrices, MultiBufferSource vertexConsumers, ItemStack stack, EquipmentSlot equipmentSlot, int light, A humanoidModel, CallbackInfo ci) {
-        if (figura$avatar == null) return;
-
-        VanillaPart part = RenderUtils.partFromSlot(figura$avatar, equipmentSlot);
-        if (part != null)
-            part.restore(humanoidModel);
+    @com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation(method = "renderArmorPiece",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer;renderLayers(Lnet/minecraft/client/resources/model/EquipmentClientInfo$LayerType;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/client/model/Model;Ljava/lang/Object;Lnet/minecraft/world/item/ItemStack;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;II)V"))
+    private <R> void figura$snapshotArmorLayers(EquipmentLayerRenderer renderer, EquipmentClientInfo.LayerType type,
+            ResourceKey<EquipmentAsset> asset, net.minecraft.client.model.Model<? super R> model, R state,
+            ItemStack item, PoseStack pose, SubmitNodeCollector collector, int light, int outline,
+            com.llamalad7.mixinextras.injector.wrapoperation.Operation<Void> original) {
+        org.figuramc.figura.model.rendering.nodeRenderer.FiguraFeatureRenderer.withModelCallbacks(
+                model, state, collector, pose,
+                () -> original.call(renderer, type, asset, model, state, item, pose, collector, light, outline));
     }
-
     @Unique
-    private void figura$tryRenderArmorPart(EquipmentSlot slot, FiguraArmorPartRenderer<S, A> renderer, PoseStack vanillaPoseStack, S state, MultiBufferSource vertexConsumers, int light, ParentType... parentTypes) {
+    private void figura$tryRenderArmorPart(EquipmentSlot slot, FiguraArmorPartRenderer<S, A> renderer, PoseStack vanillaPoseStack, S state, SubmitNodeCollector submitNodeCollector, int light, ParentType... parentTypes) {
         if (slot == null) return; // ?
-        Integer id = state instanceof PlayerRenderState playerRenderState ? playerRenderState.id : ((FiguraEntityRenderStateExtension)state).figura$getEntityId();
+        Integer id = state instanceof AvatarRenderState playerRenderState ? playerRenderState.id : ((FiguraEntityRenderStateExtension)state).figura$getEntityId();
         if (id == null) return;
-
         ItemStack itemStack = ((LivingEntity)(Minecraft.getInstance().level.getEntity(id))).getItemBySlot(slot);
 
         // Make sure the item in the equipment slot is actually a piece of armor
-        if ((itemStack.getItem() instanceof ArmorItem armorItem && armorItem.components().has(DataComponents.EQUIPPABLE) && armorItem.components().get(DataComponents.EQUIPPABLE).slot() == slot)) {
+        if ((itemStack.getItem() instanceof Item armorItem && armorItem.components().has(DataComponents.EQUIPPABLE) && armorItem.components().get(DataComponents.EQUIPPABLE).slot() == slot && armorItem.components().has(DataComponents.ATTRIBUTE_MODIFIERS) && armorItem.components().get(DataComponents.ATTRIBUTE_MODIFIERS).modifiers().stream().anyMatch(attribute -> attribute.attribute() == Attributes.ARMOR))) {
             A armorModel = getArmorModel(state, slot);
 
             // Bones have to be their defaults to prevent issues with clipping
@@ -163,7 +180,7 @@ public abstract class HumanoidArmorLayerMixinNeoForge<S extends HumanoidRenderSt
                         renderedPivot = figura$avatar.pivotPartRender(parentType, stack -> {
                             stack.pushPose();
                             figura$prepareArmorRender(stack);
-                            renderer.renderArmorPart(stack, vertexConsumers, light, armorModel, itemStack, slot, parentType);
+                            renderer.renderArmorPart(stack, submitNodeCollector, light, armorModel, itemStack, slot, parentType);
                             stack.popPose();
                         });
                     }
@@ -175,7 +192,7 @@ public abstract class HumanoidArmorLayerMixinNeoForge<S extends HumanoidRenderSt
             // As a fallback, render armor the vanilla way
             if (allFailed) {
                 figura$renderingVanillaArmor = true;
-                renderArmorPiece(vanillaPoseStack, vertexConsumers, itemStack, slot, light, armorModel);
+                renderArmorPiece(vanillaPoseStack, submitNodeCollector, itemStack, slot, light, state);
                 figura$renderingVanillaArmor = false;
             }
         }
@@ -186,76 +203,76 @@ public abstract class HumanoidArmorLayerMixinNeoForge<S extends HumanoidRenderSt
     @Unique
     private void figura$prepareArmorRender(PoseStack stack) {
         stack.scale(16, 16, 16);
-        stack.mulPose(Axis.XP.rotationDegrees(180f));
-        stack.mulPose(Axis.YP.rotationDegrees(180f));
+        stack.rotate(Axis.XP.rotationDegrees(180f));
+        stack.rotate(Axis.YP.rotationDegrees(180f));
     }
 
     @Unique
-    private void figura$helmetRenderer(PoseStack poseStack, MultiBufferSource vertexConsumers, int light, A model, ItemStack itemStack, EquipmentSlot armorSlot, ParentType parentType) {
+    private void figura$helmetRenderer(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int light, A model, ItemStack itemStack, EquipmentSlot armorSlot, ParentType parentType) {
         if (parentType == ParentType.HelmetPivot) {
-            figura$renderArmorPart(model.head, poseStack, vertexConsumers, light, itemStack, armorSlot);
-            figura$renderArmorPart(model.hat, poseStack, vertexConsumers, light, itemStack, armorSlot);
+            figura$renderArmorPart(model.head, poseStack, submitNodeCollector, light, itemStack, armorSlot);
+            figura$renderArmorPart(model.hat, poseStack, submitNodeCollector, light, itemStack, armorSlot);
         }
     }
 
     @Unique
-    private void figura$chestplateRenderer(PoseStack poseStack, MultiBufferSource vertexConsumers, int light, A model, ItemStack itemStack, EquipmentSlot armorSlot, ParentType parentType) {
+    private void figura$chestplateRenderer(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int light, A model, ItemStack itemStack, EquipmentSlot armorSlot, ParentType parentType) {
         if (parentType == ParentType.ChestplatePivot) {
-            figura$renderArmorPart(model.body, poseStack, vertexConsumers, light, itemStack, armorSlot);
+            figura$renderArmorPart(model.body, poseStack, submitNodeCollector, light, itemStack, armorSlot);
         }
 
         if (parentType == ParentType.LeftShoulderPivot) {
             poseStack.pushPose();
             poseStack.translate(-6 / 16f, 0f, 0f);
-            figura$renderArmorPart(model.leftArm, poseStack, vertexConsumers, light, itemStack, armorSlot);
+            figura$renderArmorPart(model.leftArm, poseStack, submitNodeCollector, light, itemStack, armorSlot);
             poseStack.popPose();
         }
 
         if (parentType == ParentType.RightShoulderPivot) {
             poseStack.pushPose();
             poseStack.translate(6 / 16f, 0f, 0f);
-            figura$renderArmorPart(model.rightArm, poseStack, vertexConsumers, light, itemStack, armorSlot);
+            figura$renderArmorPart(model.rightArm, poseStack, submitNodeCollector, light, itemStack, armorSlot);
             poseStack.popPose();
         }
     }
 
     @Unique
-    private void figura$leggingsRenderer(PoseStack poseStack, MultiBufferSource vertexConsumers, int light, A model, ItemStack itemStack, EquipmentSlot armorSlot, ParentType parentType) {
+    private void figura$leggingsRenderer(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int light, A model, ItemStack itemStack, EquipmentSlot armorSlot, ParentType parentType) {
         if (parentType == ParentType.LeggingsPivot) {
             poseStack.pushPose();
             poseStack.translate(0, -12 / 16f, 0);
-            figura$renderArmorPart(model.body, poseStack, vertexConsumers, light, itemStack, armorSlot);
+            figura$renderArmorPart(model.body, poseStack, submitNodeCollector, light, itemStack, armorSlot);
             poseStack.popPose();
         }
 
         if (parentType == ParentType.LeftLeggingPivot) {
             poseStack.pushPose();
             poseStack.translate(-2 / 16f, -12 / 16f, 0);
-            figura$renderArmorPart(model.leftLeg, poseStack, vertexConsumers, light, itemStack, armorSlot);
+            figura$renderArmorPart(model.leftLeg, poseStack, submitNodeCollector, light, itemStack, armorSlot);
             poseStack.popPose();
         }
 
         if (parentType == ParentType.RightLeggingPivot) {
             poseStack.pushPose();
             poseStack.translate(2 / 16f, -12 / 16f, 0);
-            figura$renderArmorPart(model.rightLeg, poseStack, vertexConsumers, light, itemStack, armorSlot);
+            figura$renderArmorPart(model.rightLeg, poseStack, submitNodeCollector, light, itemStack, armorSlot);
             poseStack.popPose();
         }
     }
 
     @Unique
-    private void figura$bootsRenderer(PoseStack poseStack, MultiBufferSource vertexConsumers, int light, A model, ItemStack itemStack, EquipmentSlot armorSlot, ParentType parentType) {
+    private void figura$bootsRenderer(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int light, A model, ItemStack itemStack, EquipmentSlot armorSlot, ParentType parentType) {
         if (parentType == ParentType.LeftBootPivot) {
             poseStack.pushPose();
             poseStack.translate(-2 / 16f, -24 / 16f, 0);
-            figura$renderArmorPart(model.leftLeg, poseStack, vertexConsumers, light, itemStack, armorSlot);
+            figura$renderArmorPart(model.leftLeg, poseStack, submitNodeCollector, light, itemStack, armorSlot);
             poseStack.popPose();
         }
 
         if (parentType == ParentType.RightBootPivot) {
             poseStack.pushPose();
             poseStack.translate(2 / 16f, -24 / 16f, 0);
-            figura$renderArmorPart(model.rightLeg, poseStack, vertexConsumers, light, itemStack, armorSlot);
+            figura$renderArmorPart(model.rightLeg, poseStack, submitNodeCollector, light, itemStack, armorSlot);
             poseStack.popPose();
         }
     }
@@ -264,14 +281,14 @@ public abstract class HumanoidArmorLayerMixinNeoForge<S extends HumanoidRenderSt
     // Similar to vanilla's renderArmorModel, but it renders each part individually, instead of the whole model at once.
     // Could be optimized by calculating the tint, overlays, and trims beforehand instead of re-calculating for each ModelPart, but it's not super important.
     @Unique
-    private void figura$renderArmorPart(ModelPart modelPart, PoseStack poseStack, MultiBufferSource vertexConsumers, int light, ItemStack itemStack, EquipmentSlot armorSlot) {
+    private void figura$renderArmorPart(ModelPart modelPart, PoseStack poseStack, SubmitNodeCollector nodeCollector, int light, ItemStack itemStack, EquipmentSlot armorSlot) {
         boolean hasGlint = itemStack.hasFoil();
 
         modelPart.visible = true;
         modelPart.xRot = 0;
         modelPart.yRot = 0;
         modelPart.zRot = 0;
-        EquipmentClientInfo.LayerType layerType = this.usesInnerModel(armorSlot) ? EquipmentClientInfo.LayerType.HUMANOID_LEGGINGS : EquipmentClientInfo.LayerType.HUMANOID;
+        EquipmentClientInfo.LayerType layerType = this.figura$usesInnerModel(armorSlot) ? EquipmentClientInfo.LayerType.HUMANOID_LEGGINGS : EquipmentClientInfo.LayerType.HUMANOID;
         Equippable equippable = itemStack.get(DataComponents.EQUIPPABLE);
 
         if (equippable == null)
@@ -285,34 +302,66 @@ public abstract class HumanoidArmorLayerMixinNeoForge<S extends HumanoidRenderSt
 
         IClientItemExtensions extensions = IClientItemExtensions.of(itemStack);
         int i = extensions.getDefaultDyeColor(itemStack);
+        int layerIndex = 0;
+        int order = 0;
 
-        // need to recreate the custom rendering patches for neo, blegh
-        int idx = 0;
         for(EquipmentClientInfo.Layer layer : list) {
-            int k = extensions.getArmorLayerTintColor(itemStack, layer, idx, i);
+            int k = extensions.getArmorLayerTintColor(itemStack, layer, layerIndex++, i);
 
             if (k != 0) {
                 Identifier normalArmorResource = ((EquipmentLayerRendererAccessor)this.equipmentRenderer).layerTextureLookup().apply(new EquipmentLayerRenderer.LayerTextureKey(layerType, layer));
                 normalArmorResource = ClientHooks.getArmorTexture(itemStack, layerType, layer, normalArmorResource);
-                VertexConsumer vertexConsumer = ItemRenderer.getArmorFoilBuffer(vertexConsumers, RenderType.armorCutoutNoCull(normalArmorResource), hasGlint);
-
-                modelPart.render(poseStack, vertexConsumer, light, OverlayTexture.NO_OVERLAY, k);
+                ((FiguraSubmitCallBackExtension) (Object) modelPart).figura$addPreRenderingCallback((collector, pose) -> true);
+                RenderType armorType = hasGlint ? RenderTypes.armorCutoutNoCullGlint(normalArmorResource)
+                        : RenderTypes.armorCutoutNoCull(normalArmorResource);
+                nodeCollector.order(order++).submitModelPart(modelPart, poseStack, armorType, light, OverlayTexture.NO_OVERLAY, null, k, 0);
                 hasGlint = false;
             }
-            idx++;
         }
 
         ArmorTrim trim = itemStack.get(DataComponents.TRIM);
         if (trim != null) {
-            TextureAtlasSprite textureAtlasSprite = ((EquipmentLayerRendererAccessor)equipmentRenderer).trimSpriteLookup()
-                    .apply(new EquipmentLayerRenderer.TrimSpriteKey(trim, layerType, location.get()));
+            net.minecraft.client.resources.palette.PalettedTextureManager.Handle textureAtlasSprite = ((EquipmentLayerRendererAccessor)equipmentRenderer).trimTextureLookup()
+                    .apply(new EquipmentLayerRenderer.TrimTextureKey(trim, layerType, ((EquipmentLayerRendererAccessor)equipmentRenderer).figura$getAssetsManager().get(location.get())));
 
-            VertexConsumer trimConsumer = textureAtlasSprite.wrap(vertexConsumers.getBuffer(Sheets.armorTrimsSheet(false)));
-            modelPart.render(poseStack, trimConsumer, light, OverlayTexture.NO_OVERLAY, -1);
+            RenderType renderType = RenderTypes.armorTrim(textureAtlasSprite.textureLocation(), trim.pattern().value().decal());
+            ((FiguraSubmitCallBackExtension) (Object) modelPart).figura$addPreRenderingCallback((collector, pose) -> true);
+            nodeCollector.order(order++).submitModelPart(modelPart, poseStack, renderType, light, OverlayTexture.NO_OVERLAY, textureAtlasSprite, -1, 0);
+            if (itemStack.hasFoil()) {
+                ((FiguraSubmitCallBackExtension) (Object) modelPart).figura$addPreRenderingCallback((collector, pose) -> true);
+                nodeCollector.order(order).submitModelPart(modelPart, poseStack, RenderTypes.trimmedArmorGlint(),
+                        light, OverlayTexture.NO_OVERLAY, null, -1, 0);
+            }
         }
+    }
 
-        if (hasGlint) {
-            modelPart.render(poseStack, vertexConsumers.getBuffer(RenderType.armorEntityGlint()), light, OverlayTexture.NO_OVERLAY, -1);
+    @Unique
+    protected void figura$setPartVisibility(A bipedModel, EquipmentSlot slot) {
+        bipedModel.head.visible = false;
+        bipedModel.hat.visible = false;
+        bipedModel.body.visible = false;
+        bipedModel.leftArm.visible = false;
+        bipedModel.rightArm.visible = false;
+        bipedModel.leftLeg.visible = false;
+        bipedModel.rightLeg.visible = false;
+        switch (slot) {
+            case HEAD:
+                bipedModel.head.visible = true;
+                bipedModel.hat.visible = true;
+                break;
+            case CHEST:
+                bipedModel.body.visible = true;
+                bipedModel.rightArm.visible = true;
+                bipedModel.leftArm.visible = true;
+                break;
+            case LEGS:
+                bipedModel.body.visible = true;
+                bipedModel.rightLeg.visible = true;
+                bipedModel.leftLeg.visible = true;
+                break;
+            case FEET:
+                bipedModel.rightLeg.visible = true;
+                bipedModel.leftLeg.visible = true;
         }
     }
 }

@@ -1,4 +1,4 @@
-accessWidener v2 named
+accessWidener v2 official
 
 accessible class net/minecraft/world/level/biome/Biome$ClimateSettings
 accessible class net/minecraft/client/gui/font/providers/BitmapProvider$Glyph
@@ -6,22 +6,21 @@ accessible class net/minecraft/client/gui/font/FontSet$SelectedGlyphs
 
 accessible method net/minecraft/client/renderer/rendertype/RenderType <init> (Ljava/lang/String;Lnet/minecraft/client/renderer/rendertype/RenderSetup;)V
 
-accessible class net/minecraft/client/gui/render/state/GuiTextRenderState
-extendable class net/minecraft/client/gui/render/state/GuiTextRenderState
+accessible class net/minecraft/client/renderer/state/gui/GuiTextRenderState
+extendable class net/minecraft/client/renderer/state/gui/GuiTextRenderState
 
 accessible class net/minecraft/client/gui/Font$PreparedTextBuilder
 accessible field net/minecraft/client/gui/Font$PreparedTextBuilder x F
 accessible field net/minecraft/client/gui/Font$PreparedTextBuilder y F
 
-accessible class net/minecraft/client/gui/GuiGraphics$ScissorStack
+accessible class net/minecraft/client/gui/GuiGraphicsExtractor$ScissorStack
 accessible class net/minecraft/client/StringSplitter$WidthLimitedCharSink
 
-accessible field net/minecraft/client/renderer/RenderPipelines GLOBALS_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/renderer/RenderPipelines MATRICES_FOG_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/renderer/RenderPipelines FOG_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/renderer/RenderPipelines LINES_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
+accessible field net/minecraft/client/renderer/RenderPipelines GLOBALS_SNIPPET Lcom/mojang/renderpearl/api/pipeline/RenderPipeline$Snippet;
+accessible field net/minecraft/client/renderer/RenderPipelines MATRICES_FOG_SNIPPET Lcom/mojang/renderpearl/api/pipeline/RenderPipeline$Snippet;
+accessible field net/minecraft/client/renderer/RenderPipelines LINES_SNIPPET Lcom/mojang/renderpearl/api/pipeline/RenderPipeline$Snippet;
 
-accessible method net/minecraft/client/renderer/RenderPipelines register (Lcom/mojang/blaze3d/pipeline/RenderPipeline;)Lcom/mojang/blaze3d/pipeline/RenderPipeline;
+accessible method net/minecraft/client/renderer/RenderPipelines register (Lcom/mojang/renderpearl/api/pipeline/RenderPipeline;)Lcom/mojang/renderpearl/api/pipeline/RenderPipeline;
 
 accessible class net/minecraft/util/datafix/fixes/ItemStackComponentizationFix$ItemStackData
 accessible method net/minecraft/util/datafix/fixes/ItemStackComponentizationFix fixItemStack (Lnet/minecraft/util/datafix/fixes/ItemStackComponentizationFix$ItemStackData;Lcom/mojang/serialization/Dynamic;)V
@@ -35,9 +34,13 @@ accessible method net/minecraft/resources/Identifier <init> (Ljava/lang/String;L
 accessible class net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer$LayerTextureKey
 accessible method net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer$LayerTextureKey <init> (Lnet/minecraft/client/resources/model/EquipmentClientInfo$LayerType;Lnet/minecraft/client/resources/model/EquipmentClientInfo$Layer;)V
 
-accessible class net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer$TrimSpriteKey
-accessible method net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer$TrimSpriteKey <init> (Lnet/minecraft/world/item/equipment/trim/ArmorTrim;Lnet/minecraft/client/resources/model/EquipmentClientInfo$LayerType;Lnet/minecraft/resources/ResourceKey;)V
+accessible class net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer$TrimTextureKey
+accessible method net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer$TrimTextureKey <init> (Lnet/minecraft/world/item/equipment/trim/ArmorTrim;Lnet/minecraft/client/resources/model/EquipmentClientInfo$LayerType;Lnet/minecraft/client/resources/model/EquipmentClientInfo;)V
 
 accessible class net/minecraft/client/gui/components/SubtitleOverlay$Subtitle
 accessible class net/minecraft/client/particle/ParticleResources$MutableSpriteSet
-accessible class net/minecraft/client/resources/model/AtlasManager$AtlasEntry
+accessible method net/minecraft/client/renderer/rendertype/RenderType create (Ljava/lang/String;Lnet/minecraft/client/renderer/rendertype/RenderSetup;)Lnet/minecraft/client/renderer/rendertype/RenderType;
+
+accessible field net/minecraft/client/renderer/blockentity/state/BlockEntityRenderState blockState Lnet/minecraft/world/level/block/state/BlockState;
+accessible field net/minecraft/client/model/geom/ModelPart cubes Ljava/util/List;
+accessible field net/minecraft/client/model/geom/ModelPart children Ljava/util/Map;

@@ -1,7 +1,7 @@
 package org.figuramc.figura.gui.widgets;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -48,7 +48,7 @@ public class SwitchButton extends Button {
     }
 
     @Override
-    protected void renderText(GuiGraphics gui, float delta) {
+    protected void renderText(GuiGraphicsExtractor gui, float delta) {
         // draw text
         Component text = this.toggled && underline ? getMessage().copy().withStyle(ChatFormatting.UNDERLINE) : getMessage();
         int x = getX() + 1;
@@ -63,14 +63,13 @@ public class SwitchButton extends Button {
     }
 
     @Override
-    protected void renderDefaultTexture(GuiGraphics gui, float delta) {
+    protected void renderDefaultTexture(GuiGraphicsExtractor gui, float delta) {
         if (!defaultTexture) {
             super.renderDefaultTexture(gui, delta);
             return;
         }
 
         // set texture
-        UIHelper.enableBlend();
         int x = getX();
         int y = getY();
 

@@ -9,10 +9,10 @@ import net.minecraft.client.CloudStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.multiplayer.ServerData;
-import net.minecraft.client.resources.model.AtlasManager;
+import net.minecraft.client.resources.model.sprite.AtlasManager;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.core.Registry;
 import net.minecraft.core.UUIDUtil;
@@ -163,19 +163,19 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.get_chunk_statistics")
     public static String getChunkStatistics() {
-        return Minecraft.getInstance().levelRenderer.getSectionStatistics();
+        return Minecraft.getInstance().levelExtractor.sectionStatistics();
     }
 
     @LuaWhitelist
     @LuaMethodDoc("client.get_entity_statistics")
     public static String getEntityStatistics() {
-        return Minecraft.getInstance().levelRenderer.getEntityStatistics();
+        return Minecraft.getInstance().levelExtractor.entityStatistics();
     }
 
     @LuaWhitelist
     @LuaMethodDoc("client.get_sound_statistics")
     public static String getSoundStatistics() {
-        return Minecraft.getInstance().getSoundManager().getDebugString();
+        return Minecraft.getInstance().getSoundManager().getChannelDebugString();
     }
 
     @LuaWhitelist
@@ -196,10 +196,10 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.get_current_effect")
     public static String getCurrentEffect() {
-        if (Minecraft.getInstance().gameRenderer.currentPostEffect() == null)
+        if (Minecraft.getInstance().gameRenderer.spectatedEntityPostEffect() == null)
             return null;
 
-        return Minecraft.getInstance().gameRenderer.currentPostEffect().toString();
+        return Minecraft.getInstance().gameRenderer.spectatedEntityPostEffect().toString();
     }
 
     @LuaWhitelist
@@ -235,7 +235,7 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.is_hud_enabled")
     public static boolean isHudEnabled() {
-        return Minecraft.renderNames();
+        return !Minecraft.getInstance().gui.hud.isHidden();
     }
 
     @LuaWhitelist
@@ -286,14 +286,14 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.get_camera_pos")
     public static FiguraVec3 getCameraPos() {
-        Vec3 pos = Minecraft.getInstance().gameRenderer.getMainCamera().position();
+        Vec3 pos = Minecraft.getInstance().gameRenderer.mainCamera().position();
         return FiguraVec3.fromVec3(pos);
     }
 
     @LuaWhitelist
     @LuaMethodDoc("client.get_camera_rot")
     public static FiguraVec3 getCameraRot() {
-        var quaternion = Minecraft.getInstance().gameRenderer.getMainCamera().rotation();
+        var quaternion = Minecraft.getInstance().gameRenderer.mainCamera().rotation();
         Vector3f vec = new Vector3f();
         quaternion.getEulerAnglesYXZ(vec);
         double f = 180d / Math.PI;
@@ -312,7 +312,7 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.get_camera_dir")
     public static FiguraVec3 getCameraDir() {
-        return FiguraVec3.fromVec3f(Minecraft.getInstance().gameRenderer.getMainCamera().forwardVector());
+        return FiguraVec3.fromVec3f(Minecraft.getInstance().gameRenderer.mainCamera().forwardVector());
     }
 
     @LuaWhitelist
@@ -596,21 +596,21 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.get_actionbar")
     public static Component getActionbar() {
-        Gui gui = Minecraft.getInstance().gui;
+        Hud gui = Minecraft.getInstance().gui.hud;
         return ((GuiAccessor) gui).getActionbarTime() > 0 ? ((GuiAccessor) gui).getActionbar() : null;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("client.get_title")
     public static Component getTitle() {
-        Gui gui = Minecraft.getInstance().gui;
+        Hud gui = Minecraft.getInstance().gui.hud;
         return ((GuiAccessor) gui).getTime() > 0 ? ((GuiAccessor) gui).getTitle() : null;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("client.get_subtitle")
     public static Component getSubtitle() {
-        Gui gui = Minecraft.getInstance().gui;
+        Hud gui = Minecraft.getInstance().gui.hud;
         return ((GuiAccessor) gui).getTime() > 0 ? ((GuiAccessor) gui).getSubtitle() : null;
     }
 
@@ -627,10 +627,10 @@ public class ClientAPI {
         // sidebars for different team colours
         assert Minecraft.getInstance().player != null;
         PlayerTeam playerTeam = scoreboard.getPlayersTeam(Minecraft.getInstance().player.getScoreboardName());
-        if (playerTeam != null) {
-            int id = playerTeam.getColor().getId();
+        if (playerTeam != null && playerTeam.getColor().isPresent()) {
+            int id = playerTeam.getColor().get().ordinal();
             if (id >= 0) {
-                objectives.put("sidebar_team_" + playerTeam.getColor().getName(), scoreboard.getDisplayObjective(DisplaySlot.BY_ID.apply(3 + id)));
+                objectives.put("sidebar_team_" + playerTeam.getColor().get().getSerializedName(), scoreboard.getDisplayObjective(DisplaySlot.BY_ID.apply(3 + id)));
             }
         }
 
@@ -694,7 +694,7 @@ public class ClientAPI {
     @LuaMethodDoc("client.get_tab_list")
     public static Map<String, Object> getTabList() {
         Map<String, Object> map = new HashMap<>();
-        PlayerTabOverlayAccessor accessor = (PlayerTabOverlayAccessor) Minecraft.getInstance().gui.getTabList();
+        PlayerTabOverlayAccessor accessor = (PlayerTabOverlayAccessor) Minecraft.getInstance().gui.hud.getTabList();
 
         // header
         Component header = accessor.getHeader();

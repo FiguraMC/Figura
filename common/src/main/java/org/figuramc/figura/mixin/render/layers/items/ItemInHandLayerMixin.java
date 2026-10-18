@@ -7,9 +7,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.block.model.ItemTransform;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.resources.model.cuboid.ItemTransform;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
@@ -62,7 +62,7 @@ public abstract class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M e
         if (av.pivotPartRender(left ? ParentType.LeftItemPivot : ParentType.RightItemPivot, stack -> {
             final float s = 16f;
             stack.scale(s, s, s);
-            stack.mulPose(Axis.XP.rotationDegrees(-90f));
+            stack.rotate(Axis.XP.rotationDegrees(-90f));
             // Must do this bs manually
             if (((FiguraItemStackRenderStateExtension)itemStackRenderState).figura$getItemStack().getItem() instanceof BlockItem bl && bl.getBlock() instanceof AbstractSkullBlock) {
                 Entity entity = AvatarManager.getEntity(state);

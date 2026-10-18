@@ -9,7 +9,9 @@ public class FiguraModMetadataImpl extends FiguraModMetadata {
     private final IModInfo modInfo;
     protected FiguraModMetadataImpl(String modID) {
         super(modID);
-        this.modInfo = ModList.get().getModContainerById(modID).get().getModInfo();
+        // Debug screen initialization can access Figura before Forge creates mod containers.
+        this.modInfo = ModList.getMods().stream().filter(info -> info.getModId().equals(modID))
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("Unknown mod: " + modID));
     }
 
     public static FiguraModMetadata getMetadataForMod(String modID) {

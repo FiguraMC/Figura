@@ -2,7 +2,7 @@ package org.figuramc.figura.gui;
 
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import org.figuramc.figura.avatar.Avatar;
@@ -16,14 +16,14 @@ public class PaperDoll {
 
     private static Long lastActivityTime = 0L;
 
-    public static void render(GuiGraphics gui, boolean force) {
+    public static void extractRenderState(GuiGraphicsExtractor gui, boolean force) {
         Minecraft minecraft = Minecraft.getInstance();
         LivingEntity entity = minecraft.getCameraEntity() instanceof LivingEntity e ? e : null;
         Avatar avatar;
 
         if ((!Configs.HAS_PAPERDOLL.value && !force) ||
                 entity == null ||
-                !Minecraft.renderNames() ||
+                !!Minecraft.getInstance().gui.hud.isHidden() ||
                 minecraft.debugEntries.isOverlayVisible() ||
                 (Configs.FIRST_PERSON_PAPERDOLL.value && !minecraft.options.getCameraType().isFirstPerson() && !force) ||
                 entity.isSleeping())

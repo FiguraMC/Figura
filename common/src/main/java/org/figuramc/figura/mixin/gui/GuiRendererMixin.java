@@ -2,15 +2,15 @@ package org.figuramc.figura.mixin.gui;
 
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import net.minecraft.client.GuiMessage;
+import net.minecraft.client.multiplayer.chat.GuiMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.render.GuiRenderer;
 import net.minecraft.client.gui.render.pip.GuiEntityRenderer;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
-import net.minecraft.client.gui.render.state.GuiRenderState;
-import net.minecraft.client.gui.render.state.pip.GuiEntityRenderState;
-import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.state.gui.GuiRenderState;
+import net.minecraft.client.renderer.state.gui.pip.GuiEntityRenderState;
+import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
@@ -23,7 +23,9 @@ import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Group;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 
@@ -37,16 +39,31 @@ public class GuiRendererMixin {
     FiguraGuiEntityRenderer figura$paperDollRenderer;
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void initializePaperDollRenderer(GuiRenderState guiRenderState, MultiBufferSource.BufferSource bufferSource, SubmitNodeCollector submitNodeCollector, FeatureRenderDispatcher featureRenderDispatcher, List<PictureInPictureRenderer<?>> list, CallbackInfo ci) {
-        figura$paperDollRenderer = new FiguraGuiEntityRenderer(bufferSource, Minecraft.getInstance().getEntityRenderDispatcher());
+    private void initializePaperDollRenderer(CallbackInfo ci) {
+        figura$paperDollRenderer = new FiguraGuiEntityRenderer(Minecraft.getInstance().getEntityRenderDispatcher());
     }
 
-    @Inject(method = "preparePictureInPictureState", at = @At("HEAD"), cancellable = true)
+    @Group(name = "figura$paperDoll", min = 1)
+    @Inject(method = "preparePictureInPictureState(Lnet/minecraft/client/renderer/state/gui/pip/PictureInPictureRenderState;I)V", at = @At("HEAD"), cancellable = true, require = 0)
     private <T extends PictureInPictureRenderState> void renderPaperDoll(T pictureInPictureRenderState, int i, CallbackInfo ci) {
-        if (pictureInPictureRenderState instanceof GuiEntityRenderStateExtension extension && (extension.getRenderMode() != null && extension.getRenderMode() == EntityRenderMode.PAPERDOLL)) {
-            figura$paperDollRenderer.prepare((GuiEntityRenderState) pictureInPictureRenderState, this.renderState, i);
+        if (figura$preparePaperDoll(pictureInPictureRenderState, i))
             ci.cancel();
+    }
+
+    @Group(name = "figura$paperDoll", min = 1)
+    @Inject(method = "preparePictureInPictureState(Lnet/minecraft/client/renderer/state/gui/pip/PictureInPictureRenderState;IZ)Z", at = @At("HEAD"), cancellable = true, require = 0)
+    private <T extends PictureInPictureRenderState> void renderPaperDollNeoForge(T state, int scale, boolean firstPass, CallbackInfoReturnable<Boolean> cir) {
+        if (figura$preparePaperDoll(state, scale))
+            cir.setReturnValue(true);
+    }
+
+    @Unique
+    private boolean figura$preparePaperDoll(PictureInPictureRenderState pictureInPictureRenderState, int i) {
+        if (pictureInPictureRenderState instanceof GuiEntityRenderStateExtension extension && (extension.getRenderMode() != null && extension.getRenderMode() == EntityRenderMode.PAPERDOLL)) {
+            figura$paperDollRenderer.prepare((GuiEntityRenderState) pictureInPictureRenderState, this.renderState, Minecraft.getInstance().gameRenderer.featureRenderDispatcher(), i);
+            return true;
         }
+        return false;
     }
 
 

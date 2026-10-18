@@ -3,7 +3,7 @@ package org.figuramc.figura.gui.widgets.lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -34,7 +34,7 @@ public class AvatarWizardList extends AbstractList {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         int x = getX();
         int y = getY();
         int width = getWidth();
@@ -87,12 +87,12 @@ public class AvatarWizardList extends AbstractList {
                 continue;
 
             // category
-            gui.drawCenteredString(font, entry.getKey(), x + width / 2, y + yOffset + 4, UIHelper.adjustColor(0xFFFFFF));
+            gui.centeredText(font, entry.getKey(), x + width / 2, y + yOffset + 4, UIHelper.adjustColor(0xFFFFFF));
             yOffset = newY;
         }
 
         // children
-        super.render(gui, mouseX, mouseY, delta);
+        super.extractRenderState(gui, mouseX, mouseY, delta);
 
         // reset scissor
         gui.disableScissor();
@@ -155,15 +155,15 @@ public class AvatarWizardList extends AbstractList {
         }
 
         @Override
-        public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+        public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
             if (!isVisible()) return;
-            super.render(gui, mouseX, mouseY, delta);
+            super.extractRenderState(gui, mouseX, mouseY, delta);
 
             Font font = Minecraft.getInstance().font;
             MutableComponent name = this.name.copy();
             if (!this.getField().getValue().isBlank())
                 name.setStyle(FiguraMod.getAccentColor());
-            gui.drawString(font, name, getX() - getWidth() - 8, (int) (getY() + (getHeight() - font.lineHeight) / 2f), UIHelper.adjustColor(0xFFFFFF));
+            gui.text(font, name, getX() - getWidth() - 8, (int) (getY() + (getHeight() - font.lineHeight) / 2f), UIHelper.adjustColor(0xFFFFFF));
         }
 
         @Override
@@ -191,7 +191,7 @@ public class AvatarWizardList extends AbstractList {
         }
 
         @Override
-        protected void renderDefaultTexture(GuiGraphics gui, float delta) {
+        protected void renderDefaultTexture(GuiGraphicsExtractor gui, float delta) {
             // button
             Matrix3x2fStack pose = gui.pose();
             pose.pushMatrix();
@@ -201,13 +201,13 @@ public class AvatarWizardList extends AbstractList {
         }
 
         @Override
-        protected void renderText(GuiGraphics gui, float delta) {
+        protected void renderText(GuiGraphicsExtractor gui, float delta) {
             // name
             Font font = Minecraft.getInstance().font;
             MutableComponent name = getMessage().copy();
             if (this.isToggled())
                 name.withStyle(FiguraMod.getAccentColor());
-            gui.drawString(font, name, getX() - getWidth() - 8, (int) (getY() + (getHeight() - font.lineHeight) / 2f), UIHelper.adjustColor(0xFFFFFF));
+            gui.text(font, name, getX() - getWidth() - 8, (int) (getY() + (getHeight() - font.lineHeight) / 2f), UIHelper.adjustColor(0xFFFFFF));
         }
 
         @Override

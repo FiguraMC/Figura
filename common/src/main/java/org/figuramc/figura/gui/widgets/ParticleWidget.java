@@ -1,7 +1,7 @@
 package org.figuramc.figura.gui.widgets;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -43,7 +43,7 @@ public class ParticleWidget implements FiguraWidget, FiguraTickable, FiguraRemov
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         if (!visible || removed)
             return;
 

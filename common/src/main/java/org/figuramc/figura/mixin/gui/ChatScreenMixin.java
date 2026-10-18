@@ -1,6 +1,6 @@
 package org.figuramc.figura.mixin.gui;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.ChatScreen;
 import org.figuramc.figura.FiguraMod;
@@ -31,8 +31,8 @@ public class ChatScreenMixin {
         return s;
     }
 
-    @Inject(at = @At("HEAD"), method = "render")
-    private void render(GuiGraphics guiGraphics, int i, int j, float f, CallbackInfo ci) {
+    @Inject(at = @At("HEAD"), method = "extractRenderState")
+    private void render(GuiGraphicsExtractor guiGraphics, int i, int j, float f, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (avatar == null || avatar.luaRuntime == null)
             return;

@@ -7,7 +7,7 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.CapeLayer;
@@ -121,7 +121,7 @@ public abstract class CapeLayerMixin extends RenderLayer<AvatarRenderState, Play
         float finalS = s;
         float finalQ = q;
 
-        FiguraSubmitCallBackExtension submitCallBackExtension = (FiguraSubmitCallBackExtension) (Object) realCloak;
+        FiguraSubmitCallBackExtension submitCallBackExtension = (FiguraSubmitCallBackExtension) (Object) model;
 
         submitCallBackExtension.figura$addPreRenderingCallback((multiBufferSource, poseStack) -> {
             // rot
@@ -149,8 +149,11 @@ public abstract class CapeLayerMixin extends RenderLayer<AvatarRenderState, Play
         PoseStack poseStack = new PoseStack();
         poseStack.pushPose();
         poseStack.last().set(pose.last());
+        var capturedCloakPose = fakeCloak.storePose();
 
         ((NodeCollectorExtension)submitNodeCollector).submitFiguraModel(avatar, playerRenderState, (avatar, renderState, multiBufferSource) -> {
+            model.setupAnim(playerRenderState);
+            fakeCloak.loadPose(capturedCloakPose);
             // rot
             fakeCloak.setRotation(
                     (float) Math.toRadians(6f + finalR / 2f + finalQ),
@@ -166,7 +169,12 @@ public abstract class CapeLayerMixin extends RenderLayer<AvatarRenderState, Play
                     part.preTransform(model);
             }
 
-            avatar.capeRender(entity, multiBufferSource, poseStack, renderState.lightCoords, tickDelta, fakeCloak);
+            try {
+                avatar.capeRender(entity, multiBufferSource, poseStack, renderState.lightCoords, tickDelta, fakeCloak);
+            } finally {
+                if (avatar.luaRuntime != null)
+                    avatar.luaRuntime.vanilla_model.CAPE.restore(model);
+            }
             return null;
 
         });

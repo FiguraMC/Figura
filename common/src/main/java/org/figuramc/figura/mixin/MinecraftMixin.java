@@ -35,9 +35,8 @@ public abstract class MinecraftMixin {
     @Shadow @Final public MouseHandler mouseHandler;
     @Shadow @Final public Options options;
     @Shadow public LocalPlayer player;
-    @Shadow public Entity cameraEntity;
+    @Shadow public abstract Entity getCameraEntity();
 
-    @Shadow public abstract void setScreen(@Nullable Screen screen);
 
     @Unique
     private boolean scriptMouseUnlock = false;
@@ -56,7 +55,7 @@ public abstract class MinecraftMixin {
 
         // reload avatar button
         if (Configs.WARDROBE_BUTTON.keyBind.consumeClick())
-            this.setScreen(new WardrobeScreen(null));
+            Minecraft.getInstance().gui.setScreen(new WardrobeScreen(null));
 
         // action wheel button
         Boolean wheel = null;
@@ -89,7 +88,7 @@ public abstract class MinecraftMixin {
                 if (this.player != null && target instanceof Player && !target.isInvisibleTo(this.player)) {
                     PopupMenu.setEntity(target);
                 } else if (!this.options.getCameraType().isFirstPerson()) {
-                    PopupMenu.setEntity(this.cameraEntity);
+                    PopupMenu.setEntity(this.getCameraEntity());
                 }
             }
         } else if (PopupMenu.isEnabled()) {
@@ -115,14 +114,6 @@ public abstract class MinecraftMixin {
             ActionWheel.hotbarKeyPressed(i);
     }
 
-    @Inject(at = @At("HEAD"), method = "setScreen")
-    private void setScreen(Screen screen, CallbackInfo ci) {
-        if (ActionWheel.isEnabled())
-            ActionWheel.setEnabled(false);
-
-        if (PopupMenu.isEnabled())
-            PopupMenu.run();
-    }
 
     @Inject(at = @At("RETURN"), method = "clearClientLevel")
     private void clearLevel(Screen screen, CallbackInfo ci) {
@@ -151,5 +142,16 @@ public abstract class MinecraftMixin {
         FiguraMod.pushProfiler(FiguraMod.MOD_ID);
         FiguraMod.tick();
         FiguraMod.popProfiler();
+    }
+    @Mixin(net.minecraft.client.gui.Gui.class)
+    public static abstract class GuiMixin {
+        @Inject(at = @At("HEAD"), method = "setScreen")
+        private void setScreen(Screen screen, CallbackInfo ci) {
+            if (ActionWheel.isEnabled())
+                ActionWheel.setEnabled(false);
+
+            if (PopupMenu.isEnabled())
+                PopupMenu.run();
+        }
     }
 }

@@ -1,10 +1,10 @@
 package org.figuramc.figura.model;
 
-import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.renderpearl.api.buffers.GpuBuffer;
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.systems.CommandEncoder;
+import com.mojang.renderpearl.api.commands.CommandEncoder;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.GpuTexture;
+import com.mojang.renderpearl.api.textures.GpuTexture;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -38,42 +38,64 @@ public class TextureCustomization {
     }
 
     public FiguraTexture getTexture(Avatar avatar, FiguraTextureSet textureSet) {
-        if (avatar.render == null) return null;
+        if (avatar.renderer == null) return null;
 
         Identifier resourceLocation = textureSet.getOverrideTexture(avatar.owner, this);
+        if (resourceLocation == null) return null;
         String name = resourceLocation.toString();
         if (avatar.renderer.customTextures.containsKey(name)) {
             return avatar.renderer.customTextures.get(name);
         }
 
-        // is there a way to check if an atlas exists without getAtlas? cause that is the only thing that will cause an error, and try catch blocks can be pricy
-        try {
-            // will throw an error if the resource location is not a texture atlas, ignored anyway
-            AbstractTexture atlas = Minecraft.getInstance().getTextureManager().getTexture(resourceLocation);
-            if (!(atlas instanceof TextureAtlas))
-                throw new LuaError("Resource is not a texture atlas: " + resourceLocation);
-
+        AbstractTexture atlas = Minecraft.getInstance().getTextureManager().getTexture(resourceLocation);
+        if (atlas instanceof TextureAtlas) {
             GpuTexture atlasGpuTexture = atlas.getTexture();
             TextureAtlasAccessor atlasAccessor = (TextureAtlasAccessor) atlas;
-            NativeImage nativeImage = new NativeImage(atlasAccessor.figura$getWidth(), atlasAccessor.figura$getHeight(), false);
             int width = atlasAccessor.figura$getWidth();
             int height = atlasAccessor.figura$getHeight();
-
-            CommandEncoder encoder = RenderSystem.getDevice().createCommandEncoder();
-            GpuBuffer gpuBuffer = RenderSystem.getDevice().createBuffer(() -> "Atlas Read Buffer", 9, width * height * atlasGpuTexture.getFormat().pixelSize());
-            encoder.copyTextureToBuffer(atlasGpuTexture, gpuBuffer, 0, () -> {
-                try (GpuBuffer.MappedView readView = encoder.mapBuffer(gpuBuffer, true, false)) {
-                    for (int k = 0; k < height; k++) {
-                        for (int l = 0; l < width; l++) {
-                            int m = readView.data().getInt((l + k * width) * atlasGpuTexture.getFormat().pixelSize());
-                            nativeImage.setPixelABGR(l, height - k - 1, m | 0xFF000000);
+            var textureMap = avatar.renderer.customTextures;
+            NativeImage nativeImage = new NativeImage(width, height, false);
+            GpuBuffer gpuBuffer = null;
+            FiguraTexture result = null;
+            boolean scheduled = false;
+            try {
+                gpuBuffer = RenderSystem.getDevice().createBuffer(() -> "Atlas Read Buffer", 9, (long) width * height * atlasGpuTexture.getFormat().blockSize());
+                result = avatar.registerTexture(name, nativeImage, false);
+                GpuBuffer readBuffer = gpuBuffer;
+                FiguraTexture texture = result;
+                CommandEncoder encoder = RenderSystem.getDevice().createCommandEncoder();
+                encoder.copyTextureToBuffer(atlasGpuTexture, readBuffer, 0, () -> {
+                    try {
+                        if (nativeImage.isClosed())
+                            return;
+                        try (com.mojang.renderpearl.api.buffers.GpuBufferSlice.MappedView readView = readBuffer.map(true, false)) {
+                            for (int k = 0; k < height; k++) {
+                                for (int l = 0; l < width; l++) {
+                                    int m = readView.data().getInt((l + k * width) * atlasGpuTexture.getFormat().blockSize());
+                                    nativeImage.setPixelABGR(l, height - k - 1, m | 0xFF000000);
+                                }
+                            }
                         }
+                        texture.update();
+                    } finally {
+                        readBuffer.close();
+                    }
+                }, 0);
+                scheduled = true;
+                return texture;
+            } finally {
+                if (!scheduled) {
+                    if (gpuBuffer != null)
+                        gpuBuffer.close();
+                    if (result != null) {
+                        textureMap.remove(name, result);
+                        result.close();
+                    } else {
+                        nativeImage.close();
                     }
                 }
-                gpuBuffer.close();
-            }, 0);
-            return avatar.registerTexture(name, nativeImage, false);
-        } catch (Exception ignored) {}
+            }
+        }
         try {
             Optional<Resource> resource = Minecraft.getInstance().getResourceManager().getResource(resourceLocation);
             // if the string is a valid resourceLocation but does not point to a valid resource, missingno

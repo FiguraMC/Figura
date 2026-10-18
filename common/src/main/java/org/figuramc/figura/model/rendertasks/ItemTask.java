@@ -2,7 +2,7 @@ package org.figuramc.figura.model.rendertasks;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -40,18 +40,20 @@ public class ItemTask extends RenderTask {
     }
 
     @Override
-    public void render(PoseStack poseStack, MultiBufferSource buffer, int light, int overlay) {
+    public void render(PoseStack poseStack, SubmitNodeCollector buffer, int light, int overlay) {
         poseStack.scale(-16, 16, -16);
 
         LivingEntity entity = owner.renderer.entity instanceof LivingEntity living ? living : null;
         int newLight = this.customization.light != null ? this.customization.light : light;
         int newOverlay = this.customization.overlay != null ? this.customization.overlay : overlay;
         int seed = entity != null ? entity.getId() + displayMode.ordinal() : 0;
-        RenderUtils.renderStatic(
-                entity, item, displayMode,
-                poseStack,
-                newLight, newOverlay
-        );
+        var state = new net.minecraft.client.renderer.item.ItemStackRenderState();
+        Minecraft client = Minecraft.getInstance();
+        if (entity != null)
+            client.getItemModelResolver().updateForLiving(state, item, displayMode, entity);
+        else
+            client.getItemModelResolver().updateForTopItem(state, item, displayMode, client.level, null, seed);
+        state.submit(poseStack, buffer, newLight, newOverlay, 0);
     }
 
     @Override
@@ -85,8 +87,8 @@ public class ItemTask extends RenderTask {
     public ItemTask setItem(Object item) {
         this.item = LuaUtils.parseItemStack("item", item);
         Minecraft client = Minecraft.getInstance();
-        RandomSource random = client.level != null ? client.level.random : RandomSource.create();
-        cachedComplexity = ((FiguraItemRendererExtension)client.getItemRenderer()).figura$getModelComplexity(this.item, random);
+        RandomSource random = client.level != null ? client.level.getRandom() : RandomSource.create();
+        cachedComplexity = ((FiguraItemRendererExtension)client.getItemModelResolver()).figura$getModelComplexity(this.item, random);
         return this;
     }
 

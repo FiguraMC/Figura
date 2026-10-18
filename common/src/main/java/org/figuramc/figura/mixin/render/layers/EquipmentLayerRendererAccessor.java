@@ -1,7 +1,6 @@
 package org.figuramc.figura.mixin.render.layers;
 
 import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.EquipmentAssetManager;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.resources.Identifier;
@@ -19,11 +18,11 @@ public interface EquipmentLayerRendererAccessor {
     @Accessor("layerTextureLookup")
     Function<EquipmentLayerRenderer.LayerTextureKey, Identifier> layerTextureLookup();
 
-    @Accessor("trimSpriteLookup")
-    Function<EquipmentLayerRenderer.TrimSpriteKey, TextureAtlasSprite> trimSpriteLookup();
+    @Accessor("trimTextureLookup")
+    Function<EquipmentLayerRenderer.TrimTextureKey, net.minecraft.client.resources.palette.PalettedTextureManager.Handle> trimTextureLookup();
 
     @Invoker("getColorForLayer")
-    static int getColorForLayer(EquipmentClientInfo.Layer layer, int i) {
+    static int figura$getColorForLayer(EquipmentClientInfo.Layer layer, int i) {
         throw new AssertionError();
     }
 }

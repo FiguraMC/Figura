@@ -118,7 +118,7 @@ public class FiguraLuaPrinter {
 
         owner.errorText = TextUtils.replaceTabs(Component.literal(message).withStyle(ColorUtils.Colors.LUA_ERROR.style));
 
-        if ((owner.entityType == EntityType.PLAYER && !Configs.LOG_OTHERS.value && !FiguraMod.isLocal(owner.owner)) || owner.permissions.getCategory() == Permissions.Category.BLOCKED)
+        if ((owner.entityType == net.minecraft.world.entity.EntityTypes.PLAYER && !Configs.LOG_OTHERS.value && !FiguraMod.isLocal(owner.owner)) || owner.permissions.getCategory() == Permissions.Category.BLOCKED)
             return;
 
         chatQueue.offer(component); // bypass the char limit filter

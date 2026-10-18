@@ -338,7 +338,7 @@ public abstract class ConfigType<T> {
         public NetworkFilterConfig(String name, Category category) {
             super(name, category, () -> {
                 Minecraft mc = Minecraft.getInstance();
-                mc.setScreen(new NetworkFilterScreen(mc.screen));
+                mc.gui.setScreen(new NetworkFilterScreen(mc.gui.screen()));
             });
         }
         public ArrayList<NetworkingAPI.Filter> getFilters() {

@@ -31,6 +31,6 @@ public class SubtitleOverlayMixin implements SubtitleOverlayAccessor {
                 return;
             }
         }
-        this.subtitles.add(new SubtitleOverlay.Subtitle(text, volume, pos));
+        this.subtitles.add(new SubtitleOverlay.Subtitle(text, volume, pos, sound.isLooping()));
     }
 }

@@ -1,5 +1,5 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "8.1.1"
+    id "com.gradleup.shadow" version "9.2.2"
 }
 
 architectury {
@@ -11,8 +11,7 @@ loom {
     accessWidenerPath = project(":common").loom.accessWidenerPath
 
     forge {
-        convertAccessWideners = true
-        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
+        convertAccessWideners = false
 
         mixinConfig "figura-common.mixins.json"
         mixinConfig "figura.mixins.json"
@@ -23,18 +22,15 @@ configurations {
     common
     shadowCommon // Don't use shadow from the shadow plugin since it *excludes* files.
     compileClasspath.extendsFrom common
-    runtimeClasspath.extendsFrom common
+    // The transformer supplies common at runtime; the raw jar causes duplicate modules on Forge.
     developmentForge.extendsFrom common
 }
 
-dependencies {
-    mappings loom.layered {
-        officialMojangMappings()
-    }
+tasks.matching { it.name == "prepareArchitecturyTransformer" }.configureEach {
+    dependsOn project(":common").tasks.named("jar")
+}
 
-    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.3.6"))
-    implementation(include("io.github.llamalad7:mixinextras-forge:0.3.6"))
-    
+dependencies {
     // Libraries
     include(forgeRuntimeLibrary("com.github.FiguraMC.luaj:luaj-core:$luaj-figura"))
     include(forgeRuntimeLibrary("com.github.FiguraMC.luaj:luaj-jse:$luaj-figura"))
@@ -45,10 +41,9 @@ dependencies {
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
 
     if (rootProject.run_with_geckolib == "true") {
-        modRuntimeOnly("software.bernie.geckolib:geckolib-forge-$geckolib_version")
-        forgeRuntimeLibrary(group: 'com.eliotlash.mclib', name: 'mclib', version: "${mclib_version}")
+        runtimeOnly("com.geckolib:geckolib-forge-$geckolib_version")
     }
-    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    common(project(":common")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 }
 
@@ -71,14 +66,14 @@ shadowJar {
     exclude "architectury.common.json"
 
     configurations = [project.configurations.shadowCommon]
-    archiveClassifier.set "dev-shadow"
-}
-
-remapJar {
-    input.set shadowJar.archiveFile
-    dependsOn shadowJar
     archiveClassifier.set "minecraftforge-mc"
 }
+
+net.fabricmc.loom.configuration.IncludeConfigurations.nestJars(
+    project, tasks.named("shadowJar", Jar), configurations.named("include")
+)
+
+loom.getForge().convertAccessWideners(tasks.named("shadowJar", Jar), "figura.accesswidener")
 
 jar {
     archiveClassifier.set "dev"
@@ -101,8 +96,8 @@ publishing {
         maven(MavenPublication) {
             artifactId = "${project.archivesBaseName}-${project.name}"
             version = project.version
-            artifact(remapJar) {
-                builtBy remapJar
+            artifact(shadowJar) {
+                builtBy shadowJar
                 classifier ''
             }
             artifact(sourcesJar) {
@@ -129,15 +124,4 @@ void setupRepositories(RepositoryHandler repositories) {
 
 configurations.configureEach {
     resolutionStrategy.force("net.sf.jopt-simple:jopt-simple:5.0.4")
-}
-
-// From the Forge MDK's buildscript, this is temporary until arch loom does it for us
-// Merge the resources and classes into the same directory.
-// This is done because java expects modules to be in a single directory.
-// And if we have it in multiple we have to do performance intensive hacks like having the UnionFileSystem
-// This will eventually be migrated to ForgeGradle so modders don't need to manually do it. But that is later.
-sourceSets.each {
-    def dir = layout.buildDirectory.dir("sourcesSets/$it.name")
-    it.output.resourcesDir = dir
-    it.java.destinationDirectory = dir
 }

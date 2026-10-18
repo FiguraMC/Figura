@@ -1,8 +1,9 @@
 package org.figuramc.figura.gui.screens;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.input.KeyEvent;
@@ -81,8 +82,8 @@ public class PermissionsScreen extends AbstractPanelScreen {
         // permission slider and list
         slider = new SliderWidget(middle + 2, (int) (entityWidget.getY() + entityWidget.getHeight() + lineHeight * 1.5 + 20), listWidth, 11, 1d, 5, true) {
             @Override
-            public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-                super.renderWidget(gui, mouseX, mouseY, delta);
+            public void extractWidgetRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
+                super.extractWidgetRenderState(gui, mouseX, mouseY, delta);
 
                 PermissionPack selectedPack = playerList.selectedEntry.getPack();
                 MutableComponent text = selectedPack.getCategoryName();
@@ -110,7 +111,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
                 }
                 color = UIHelper.adjustColor(color);
 
-                gui.drawString(font, info, x, y, color);
+                gui.text(font, info, x, y, color);
             }
         };
         permissionsList = new PermissionsList(middle + 2, height, listWidth, height - 54);
@@ -184,7 +185,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         // set entity to render
         AbstractPermPackElement entity = playerList.selectedEntry;
         Level world = Minecraft.getInstance().level;
@@ -207,11 +208,11 @@ public class PermissionsScreen extends AbstractPanelScreen {
         this.precisePermissions.setY((int) resetYPrecise);
 
         // render
-        super.render(gui, mouseX, mouseY, delta);
+        super.extractRenderState(gui, mouseX, mouseY, delta);
     }
 
     @Override
-    public void renderOverlays(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void renderOverlays(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         if (dragged != null && dragged.dragged)
             dragged.renderDragged(gui, mouseX, mouseY, delta);
 
@@ -227,7 +228,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
     @Override
     public boolean keyPressed(KeyEvent keyEvent) {
         // yeet ESC key press for collapsing the card list
-        if (keyEvent.key() == 256 && expandButton.isToggled()) {
+        if (keyEvent.key() == InputConstants.KEY_ESCAPE && expandButton.isToggled()) {
             expandButton.onPress(keyEvent);
             return true;
         }
@@ -242,7 +243,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
 
         double mouseX = mouseButtonEvent.x();
         double mouseY = mouseButtonEvent.y();
-        if (mouseButtonEvent.button() == 0 && playerList.selectedEntry instanceof PlayerPermPackElement element && element.isMouseOver(mouseX, mouseY)) {
+        if (mouseButtonEvent.button() == InputConstants.MOUSE_BUTTON_LEFT && playerList.selectedEntry instanceof PlayerPermPackElement element && element.isMouseOver(mouseX, mouseY)) {
             dragged = element;
             element.anchorX = (int) mouseX;
             element.anchorY = (int) mouseY;

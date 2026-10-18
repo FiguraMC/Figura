@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[53,)"
+loaderVersion = "[66,)"
 issueTrackerURL = "https://github.com/FiguraMC/Figura/issues"
 license = "Polyform-Noncommercial-1.0.0"
 displayURL = "https://github.com/FiguraMC/Figura"
@@ -21,14 +21,14 @@ assets_version="${assets_version}"
 [[dependencies.figura]]
 modId = "forge"
 mandatory = true
-versionRange = "[53,)"
+versionRange = "[66,)"
 ordering = "NONE"
 side = "CLIENT"
 
 [[dependencies.figura]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[${minecraft_version},)"
+versionRange = "[${minecraft_version},26.4)"
 ordering = "NONE"
 side = "CLIENT"
 

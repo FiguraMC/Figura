@@ -13,7 +13,7 @@ import net.minecraft.world.phys.Vec3;
 public interface AABBInvoker {
     @Intrinsic
     @Invoker("getDirection")
-    public static Direction getDirection(AABB box, Vec3 intersectingVector, double[] traceDistanceResult, @Nullable Direction approachDirection, double deltaX, double deltaY, double deltaZ) {
+    public static Direction figura$getDirection(AABB box, Vec3 intersectingVector, double[] traceDistanceResult, @Nullable Direction approachDirection, double deltaX, double deltaY, double deltaZ) {
         throw new AssertionError();
     }
 }

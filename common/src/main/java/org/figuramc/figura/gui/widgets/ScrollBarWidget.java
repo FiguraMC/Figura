@@ -1,7 +1,8 @@
 package org.figuramc.figura.gui.widgets;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.KeyEvent;
@@ -49,7 +50,7 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
         if (!this.isActive() || !this.isHoveredOrFocused() || !this.isMouseOver(mouseButtonEvent.x(), mouseButtonEvent.y()))
             return false;
 
-        if (mouseButtonEvent.button() == 0) {
+        if (mouseButtonEvent.button() == InputConstants.MOUSE_BUTTON_LEFT) {
             double mouseX = mouseButtonEvent.x();
             double mouseY = mouseButtonEvent.y();
             // jump to pos when not clicking on head
@@ -70,7 +71,7 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
 
     @Override
     public boolean mouseReleased(MouseButtonEvent mouseButtonEvent) {
-        if (mouseButtonEvent.button() == 0 && isScrolling) {
+        if (mouseButtonEvent.button() == InputConstants.MOUSE_BUTTON_LEFT && isScrolling) {
             isScrolling = false;
             return true;
         }
@@ -123,8 +124,9 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
         if (!this.isActive()) return false;
 
         int keyCode = keyEvent.key();
-        if (keyCode > 261 && keyCode < 266) {
-            scroll((keyCode % 2 == 0 ? 1 : -1) * (vertical ? getHeight() : getWidth()) * 0.05d * scrollRatio);
+        if (keyCode == InputConstants.KEY_DOWN || keyCode == InputConstants.KEY_UP || keyCode == InputConstants.KEY_LEFT || keyCode == InputConstants.KEY_RIGHT) {
+            boolean positive = keyCode == InputConstants.KEY_DOWN || keyCode == InputConstants.KEY_RIGHT;
+            scroll((positive ? 1 : -1) * (vertical ? getHeight() : getWidth()) * 0.05d * scrollRatio);
             return true;
         }
 
@@ -149,14 +151,13 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
     }
 
     @Override
-    public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         if (!isVisible())
             return;
 
         isHovered = this.isMouseOver(mouseX, mouseY);
 
         // render the scroll
-        UIHelper.enableBlend();
         int x = getX();
         int y = getY();
         int width = getWidth();

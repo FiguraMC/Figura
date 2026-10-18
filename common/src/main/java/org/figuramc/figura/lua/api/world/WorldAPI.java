@@ -165,7 +165,7 @@ public class WorldAPI {
             return list;
 
         BlockPos.betweenClosedStream(min, max).forEach(blockPos -> {
-            BlockPos pos = new BlockPos(blockPos);
+            BlockPos pos = blockPos.immutable();
             list.add(new BlockStateAPI(world.getBlockState(pos), pos));
         });
         return list;
@@ -288,7 +288,7 @@ public class WorldAPI {
         value = "world.get_time_of_day"
     )
     public static double getTimeOfDay(double delta) {
-        return getCurrentWorld().getDayTime() + delta;
+        return getCurrentWorld().getOverworldClockTime() + delta;
     }
 
     @LuaWhitelist
@@ -303,7 +303,7 @@ public class WorldAPI {
             value = "world.get_day_time"
     )
     public static double getDayTime(double delta) {
-        return (getCurrentWorld().getDayTime() + delta) % 24000;
+        return (getCurrentWorld().getOverworldClockTime() + delta) % 24000;
     }
 
     @LuaWhitelist
@@ -318,7 +318,7 @@ public class WorldAPI {
             value = "world.get_day"
     )
     public static double getDay(double delta) {
-        return Math.floor((getCurrentWorld().getDayTime() + delta) / 24000);
+        return Math.floor((getCurrentWorld().getOverworldClockTime() + delta) / 24000);
     }
 
     @LuaWhitelist
