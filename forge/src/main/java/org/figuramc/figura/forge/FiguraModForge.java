@@ -10,7 +10,6 @@ public class FiguraModForge {
     // dummy empty mod class, we are client only
     public FiguraModForge() {
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> FiguraModClientForge::initClient);
-        DistExecutor.safeRunWhenOn(Dist.DEDICATED_SERVER, () -> FiguraModServerForge::initServer);
         ForgeNetworking.init();
     }
 }

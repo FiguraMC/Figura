@@ -31,9 +31,15 @@ dependencies {
     implementation("com.neovisionaries:nv-websocket-client:$nv_websocket")
 
     // Mods
-    modCompileOnly ("software.bernie.geckolib:geckolib-fabric-$geckolib_version") {
+    modCompileOnly("software.bernie.geckolib:geckolib-fabric-$geckolib_version") {
         exclude group: "net.fabricmc"
     }
+
+    // Access to fsb-api provided by JiJ of full FSB on downstream projects
+    def suffix = fsb_snapshot == "true" ? "-SNAPSHOT" : ""
+    compileOnly("org.figuramc.fsb:fsb-api:$fsb$suffix") { transitive = false }
+    compileOnly("org.figuramc.fsb:fsb-server-api:$fsb$suffix") { transitive = false }
+    modCompileOnly("org.figuramc.fsb:fsb-common-intermediary:$fsb+$minecraft_version$suffix") { transitive = false }
 
     implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.3.6"))
 
@@ -43,9 +49,6 @@ dependencies {
 
     // Test compile only is used to mount sources on an IDE without overriding vanilla classes with Optifine's
     testCompileOnly fileTree(dir: "$rootProject.projectDir/libs", include: '*.jar')
-
-    common(project(path: ":server-common")) { transitive false }
-    shadowCommon(project(path: ":server-common")) { transitive false }
 }
 
 publishing {

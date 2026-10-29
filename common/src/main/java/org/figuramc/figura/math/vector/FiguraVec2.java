@@ -10,6 +10,8 @@ import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
 
+import java.util.function.UnaryOperator;
+
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Vector2",
@@ -420,6 +422,12 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2, FiguraMat2> {
     public FiguraVec2 applyFunc(@LuaNotNil LuaFunction function) {
         x = function.call(LuaValue.valueOf(x), LuaValue.valueOf(1)).todouble();
         y = function.call(LuaValue.valueOf(y), LuaValue.valueOf(2)).todouble();
+        return this;
+    }
+
+    public FiguraVec2 applyFunc(UnaryOperator<Double> function) {
+        x = function.apply(x);
+        y = function.apply(y);
         return this;
     }
 

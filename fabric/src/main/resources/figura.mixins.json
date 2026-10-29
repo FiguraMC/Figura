@@ -6,9 +6,6 @@
   "client": [
     "CommandSuggestionsMixinFabric"
   ],
-  "server": [
-    "MinecraftServerMixin"
-  ],
   "mixins": [
   ],
   "injectors": {

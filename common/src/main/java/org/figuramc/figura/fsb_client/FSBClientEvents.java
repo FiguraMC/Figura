@@ -1,0 +1,32 @@
+package org.figuramc.figura.fsb_client;
+
+import net.minecraft.client.Minecraft;
+import org.figuramc.fsb2.api.config.ServerIdentification;
+import org.figuramc.fsb2.api.utils.EventSystem;
+
+public class FSBClientEvents extends EventSystem {
+    @Override
+    protected void enqueue(Runnable action) {
+        Minecraft.getInstance().execute(action);
+    }
+
+    private FSBClientEvents() {
+    }
+
+    public static final FSBClientEvents INSTANCE = new FSBClientEvents();
+
+    public static class ServerID extends Event {
+        public final ServerIdentification ident;
+        public final String ip;
+        public final String displayName;
+
+        public ServerID(ServerIdentification ident, String ip, String displayName) {
+            this.ident = ident;
+            this.ip = ip;
+            this.displayName = displayName;
+        }
+    }
+
+    public ReturnableEventBus<ServerID, ClientSession, ConnectionPolicyManager.ConnectionPolicy> SERVER_CONNECTED = new ReturnableEventBus<>();
+    public EventBus<ServerID, ClientSession> SERVER_RECONFIGURED = new EventBus<>();
+}

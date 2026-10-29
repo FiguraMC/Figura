@@ -1,6 +1,0 @@
-FetchOwnerAvatarsPacket
-UploadAvatarPacket
-AvatarDataPacket +
-FetchAvatarPacket +
-FetchUserdataPacket +
-Handshake +

@@ -1,6 +1,6 @@
 plugins {
 	id "architectury-plugin" version "3.4-SNAPSHOT"
-	id "dev.architectury.loom" version "1.6-SNAPSHOT" apply false
+	id "dev.architectury.loom" version "1.13-SNAPSHOT" apply false
 }
 
 architectury {
@@ -27,6 +27,8 @@ rootProject.mod_projects.split(",").each { project(":$it") {
 			}
 		}
 		maven { url 'https://maven.maxhenkel.de/repository/public' }
+		mavenLocal()
+//		maven { url 'https://penguinencounter.github.io/mvn/snapshots' } // fsb2
 	}
 
 	dependencies {

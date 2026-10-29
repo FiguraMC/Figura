@@ -34,7 +34,7 @@ dependencies {
     include(implementation("org.chenliang.oggus:oggus:1.2.0"))
     include(implementation("org.concentus:Concentus:1.0-SNAPSHOT"))
 
-    include(modImplementation('me.lucko:fabric-permissions-api:0.3.1'))
+    include(modImplementation('me.lucko:fabric-permissions-api:0.3.1') { transitive = false })
 
     if(rootProject.run_on_quilt == "false") {
         modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
@@ -71,12 +71,18 @@ dependencies {
     if (rootProject.run_with_geckolib == "true")
         modRuntimeOnly("software.bernie.geckolib:geckolib-fabric-$geckolib_version")
 
+    // FSB embedded
+    def suffix = fsb_snapshot == "true" ? "-SNAPSHOT" : ""
+    // Sum of parts in compile path
+    implementation("org.figuramc.fsb:fsb-api:$fsb$suffix") { transitive = false }
+    implementation("org.figuramc.fsb:fsb-server-api:$fsb$suffix") { transitive = false }
+    modImplementation("org.figuramc.fsb:fsb-common-intermediary:$fsb+$minecraft_version$suffix") { transitive = false }
+    modImplementation("org.figuramc.fsb:fsb-fabric:$fsb+$minecraft_version-fabric$suffix:component") { transitive = false }
+    // Fat jar at runtime
+    include("org.figuramc.fsb:fsb-fabric:$fsb+$minecraft_version-fabric$suffix")
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
-
-    common(project(path: ":server-common")) { transitive false }
-    shadowCommon(project(path: ":server-common")) { transitive false }
 }
 
 
