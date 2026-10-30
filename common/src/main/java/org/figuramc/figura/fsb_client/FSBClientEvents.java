@@ -2,9 +2,10 @@ package org.figuramc.figura.fsb_client;
 
 import net.minecraft.client.Minecraft;
 import org.figuramc.fsb2.api.config.ServerIdentification;
-import org.figuramc.fsb2.api.utils.EventSystem;
+import org.figuramc.fsb2.api.utils.DeferredEventSystem;
+import org.figuramc.fsb2.api.utils.ImmediateEventSystem;
 
-public class FSBClientEvents extends EventSystem {
+public class FSBClientEvents extends DeferredEventSystem {
     @Override
     protected void enqueue(Runnable action) {
         Minecraft.getInstance().execute(action);
@@ -15,7 +16,7 @@ public class FSBClientEvents extends EventSystem {
 
     public static final FSBClientEvents INSTANCE = new FSBClientEvents();
 
-    public static class ServerID extends Event {
+    public static class ServerID extends ImmediateEventSystem.Event {
         public final ServerIdentification ident;
         public final String ip;
         public final String displayName;

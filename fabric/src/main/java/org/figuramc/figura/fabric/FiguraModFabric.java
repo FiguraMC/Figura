@@ -24,7 +24,5 @@ public class FiguraModFabric extends FiguraMod implements ClientModInitializer {
         getResourceListeners().forEach(figuraResourceListener -> managerHelper.registerReloadListener((FiguraResourceListenerImpl)figuraResourceListener));
 
         ClientPlayNetworking.registerGlobalReceiver(FSBClient.PACKET_ID, FSBClientPacketHandler::dispatchFabric);
-
-
     }
 }

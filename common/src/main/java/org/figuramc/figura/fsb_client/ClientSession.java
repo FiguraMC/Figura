@@ -88,7 +88,7 @@ public class ClientSession extends ProtocolSession {
         if (state != StateMachine.HANDSHAKE) return;
         serverData = packet.serverId;
         // TODO: Prompt user
-        FSBClientEvents.INSTANCE.SERVER_CONNECTED.dispatch(new ServerID(serverData, srvIP, srvName))
+        FSBClientEvents.INSTANCE.SERVER_CONNECTED.dispatch(new ServerID(serverData, srvIP, srvName), this)
                 .thenAccept(policy -> {
                     if (policy == null) {
                         logger.warn("SERVER_CONNECTED event dispatch resulted in no result. defaulting to ASK, but one or more of your addons is broken");
