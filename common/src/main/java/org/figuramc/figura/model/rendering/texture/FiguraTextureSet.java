@@ -28,7 +28,7 @@ public class FiguraTextureSet {
     public void clean() {
         for (FiguraTexture texture : textures) {
             if (texture != null)
-                texture.close();
+                texture.unload();
         }
     }
 
