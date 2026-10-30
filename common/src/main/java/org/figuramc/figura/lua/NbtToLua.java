@@ -78,13 +78,17 @@ public class NbtToLua {
 
         CompoundTag tag = new CompoundTag();
         DynamicOps<Tag> dynamicOps = WorldAPI.getCurrentWorld().registryAccess().createSerializationContext(NbtOps.INSTANCE);
-        components.forEach(typedDataComponent -> {
-            Optional<Tag> optional = typedDataComponent.encodeValue(dynamicOps).result();
-            ResourceLocation resourceLocation = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(typedDataComponent.type());
-            if (optional.isPresent() && resourceLocation != null){
-                tag.put(resourceLocation.toString(), optional.get());
-            }
-        });
+        try {
+            components.forEach(typedDataComponent -> {
+                Optional<Tag> optional = typedDataComponent.encodeValue(dynamicOps).result();
+                ResourceLocation resourceLocation = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(typedDataComponent.type());
+                if (optional.isPresent() && resourceLocation != null){
+                    tag.put(resourceLocation.toString(), optional.get());
+                }
+            });
+        } catch (Exception e) {
+            return tag;
+        }
 
         return tag;
     }
