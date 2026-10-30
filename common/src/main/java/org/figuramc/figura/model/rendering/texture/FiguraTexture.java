@@ -107,7 +107,13 @@ public class FiguraTexture extends SimpleTexture {
             backup.close();
 
         this.releaseId();
-        ((TextureManagerAccessor) Minecraft.getInstance().getTextureManager()).getByPath().remove(this.location);
+    }
+
+    public void unload() {
+        if (registered) {
+            ((TextureManagerAccessor) Minecraft.getInstance().getTextureManager()).getByPath().remove(this.location);
+        }
+        this.close();
     }
 
     public void uploadIfDirty() {
