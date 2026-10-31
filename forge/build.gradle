@@ -58,10 +58,10 @@ dependencies {
     // Sum of parts in compile path
     implementation("org.figuramc.fsb:fsb-api:$fsb$suffix") { transitive = false }
     implementation("org.figuramc.fsb:fsb-server-api:$fsb$suffix") { transitive = false }
-    modImplementation("org.figuramc.fsb:fsb-common-intermediary:$fsb+$minecraft_version$suffix") { transitive = false }
-    modImplementation("org.figuramc.fsb:fsb-forge:$fsb+$minecraft_version-forge$suffix:component") { transitive = false }
+    modImplementation("org.figuramc.fsb.common:fsb-common-intermediary:$fsb+$minecraft_version$suffix") { transitive = false }
+    modImplementation("org.figuramc.fsb.forge:fsb-forge:$fsb+$minecraft_version$suffix:component") { transitive = false }
     // Fat jar at runtime
-    include("org.figuramc.fsb:fsb-forge:$fsb+$minecraft_version-forge$suffix")
+    include("org.figuramc.fsb.forge:fsb-forge:$fsb+$minecraft_version$suffix")
 }
 
 processResources {

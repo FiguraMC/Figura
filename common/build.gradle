@@ -32,7 +32,7 @@ dependencies {
     def suffix = fsb_snapshot == "true" ? "-SNAPSHOT" : ""
     compileOnly("org.figuramc.fsb:fsb-api:$fsb$suffix") { transitive = false }
     compileOnly("org.figuramc.fsb:fsb-server-api:$fsb$suffix") { transitive = false }
-    modCompileOnly("org.figuramc.fsb:fsb-common-intermediary:$fsb+$minecraft_version$suffix") { transitive = false }
+    modCompileOnly("org.figuramc.fsb.common:fsb-common-intermediary:$fsb+$minecraft_version$suffix") { transitive = false }
 
     implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.3.6"))
 
