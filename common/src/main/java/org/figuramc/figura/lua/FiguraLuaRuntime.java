@@ -20,6 +20,7 @@ import org.figuramc.figura.lua.api.ping.PingAPI;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaModelAPI;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.PathUtils;
+import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.*;
 import org.luaj.vm2.compiler.LuaC;
 import org.luaj.vm2.lib.*;
@@ -289,7 +290,7 @@ public class FiguraLuaRuntime {
                 if (val.isfunction()) {
                     ld = new FuncStream(val.checkfunction());
                 } else if (val.isstring()) {
-                    ld = new ByteArrayInputStream(val.checkstring().m_bytes);
+                    ld = val.checkstring().toInputStream();
                 } else {
                     throw new LuaError("chunk source is neither a string nor function");
                 }
@@ -326,30 +327,42 @@ public class FiguraLuaRuntime {
         // Class that creates input stream from 
         private static class FuncStream extends InputStream {
             private final LuaFunction function;
-            // start at the end of empty string so next index will get first result
-            private String string = "";
-            private int index = 0;
+            private @Nullable InputStream upstream = null;
+            private boolean closed = false;
+            private boolean eof = false;
 
             public FuncStream(LuaFunction function) {
                 this.function = function;
             }
 
             @Override
-            public int read() {
-                // if next index is out of bounds
-                if (++index >= string.length()) {
-                    // reset index
-                    index = 0;
-                    // fetch next functon value
-                    Varargs result = function.invoke();
-                    // check if we hit the end, that is nil, no value or empty string
-                    if (!result.isstring(1) || result.arg1().length() < 1)
-                        return -1;
-                    // get string from result of calling function
-                    string = new String(result.checkstring(1).m_bytes, StandardCharsets.UTF_8);
+            public int read() throws IOException {
+                if (closed) throw new IOException("it's closed");
+                if (eof) return -1;
+                if (upstream != null) {
+                    int result = upstream.read();
+                    if (result != -1) return result;
+                    upstream.close();
+                    upstream = null;
                 }
-                // return next index
-                return string.charAt(index);
+                // Get something new
+                Varargs result = function.invoke();
+                // nil or empty -> done
+                if (!result.isstring(1) || result.arg1().length() < 1) {
+                    eof = true;
+                    return -1;
+                }
+                upstream = result.checkstring(1).toInputStream();
+                return read();
+            }
+
+            @Override
+            public void close() throws IOException {
+                closed = true;
+                if (upstream != null) {
+                    upstream.close();
+                    upstream = null;
+                }
             }
         }
     };
