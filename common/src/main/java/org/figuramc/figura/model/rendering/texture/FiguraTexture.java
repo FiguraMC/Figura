@@ -4,6 +4,9 @@ import com.mojang.blaze3d.pipeline.RenderCall;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.datafixers.util.Pair;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.resources.ResourceLocation;
@@ -23,17 +26,24 @@ import org.figuramc.figura.mixin.render.TextureManagerAccessor;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.LuaUtils;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaFunction;
-import org.luaj.vm2.LuaValue;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.luaj.vm2.*;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.system.MemoryUtil;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.nio.file.Path;
 import java.util.Base64;
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.UUID;
+import java.util.function.BiFunction;
+import java.util.function.IntUnaryOperator;
 
+@SuppressWarnings("resource")
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Texture",
@@ -56,6 +66,8 @@ public class FiguraTexture extends SimpleTexture {
     private final NativeImage texture;
     private NativeImage backup;
     private boolean isClosed = false;
+
+    private TextureOverflowStrategy textureOverflowStrategy = TextureOverflowStrategy.ERROR;
 
     public FiguraTexture(Avatar owner, String name, byte[] data) {
         super(new FiguraIdentifier("avatar_tex/" + owner.owner + "/" + UUID.randomUUID()));
@@ -92,7 +104,8 @@ public class FiguraTexture extends SimpleTexture {
     }
 
     @Override
-    public void load(ResourceManager manager) throws IOException {}
+    public void load(ResourceManager manager) throws IOException {
+    }
 
     @Override
     public void close() {
@@ -108,6 +121,10 @@ public class FiguraTexture extends SimpleTexture {
 
         this.releaseId();
         ((TextureManagerAccessor) Minecraft.getInstance().getTextureManager()).getByPath().remove(this.location);
+    }
+
+    private void assertOpen() {
+        if (isClosed) throw new LuaError("This texture is closed");
     }
 
     public void uploadIfDirty() {
@@ -149,10 +166,12 @@ public class FiguraTexture extends SimpleTexture {
         return image;
     }
 
+    @LuaWhitelist
     public int getWidth() {
         return texture.getWidth();
     }
 
+    @LuaWhitelist
     public int getHeight() {
         return texture.getHeight();
     }
@@ -166,7 +185,13 @@ public class FiguraTexture extends SimpleTexture {
 
 
     private FiguraVec4 parseColor(String method, Object r, Double g, Double b, Double a) {
-        return LuaUtils.parseVec4(method, r, g, b, a, 0, 0, 0, 1);
+        FiguraVec4 vec4 = LuaUtils.parseVec4(method, r, g, b, a, 0, 0, 0, 1);
+        return FiguraVec4.of(
+                clamp01(vec4.x),
+                clamp01(vec4.y),
+                clamp01(vec4.z),
+                clamp01(vec4.w)
+        );
     }
 
     @LuaWhitelist
@@ -187,6 +212,14 @@ public class FiguraTexture extends SimpleTexture {
         return FiguraVec2.of(getWidth(), getHeight());
     }
 
+    public FiguraVec4 getActualPixel(int x, int y) {
+        try {
+            return ColorUtils.abgrToRGBA(texture.getPixelRGBA(x, y));
+        } catch (Exception e) {
+            throw new LuaError(e.getMessage());
+        }
+    }
+
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
@@ -195,8 +228,24 @@ public class FiguraTexture extends SimpleTexture {
             ),
             value = "texture.get_pixel")
     public FiguraVec4 getPixel(int x, int y) {
+        assertOpen();
+        Pair<Integer, Integer> actual = mapCoordinates(x, y);
+        if (actual == null) throw new LuaError(String.format(
+                "(%d, %d) is out of bounds on %dx%d texture",
+                x, y, getWidth(), getHeight()
+        ));
+        return getActualPixel(actual.getFirst(), actual.getSecond());
+    }
+
+    public FiguraTexture setActualPixel(int x, int y, int color) {
+        return setActualPixel(x, y, color, true);
+    }
+
+    public FiguraTexture setActualPixel(int x, int y, int color, boolean makeBackup) {
         try {
-            return ColorUtils.abgrToRGBA(texture.getPixelRGBA(x, y));
+            if (makeBackup) backupImage();
+            texture.setPixelRGBA(x, y, color);
+            return this;
         } catch (Exception e) {
             throw new LuaError(e.getMessage());
         }
@@ -221,18 +270,74 @@ public class FiguraTexture extends SimpleTexture {
             aliases = "pixel",
             value = "texture.set_pixel")
     public FiguraTexture setPixel(int x, int y, Object r, Double g, Double b, Double a) {
-        try {
-            backupImage();
-            texture.setPixelRGBA(x, y, ColorUtils.rgbaToIntABGR(parseColor("setPixel", r, g, b, a)));
-            return this;
-        } catch (Exception e) {
-            throw new LuaError(e.getMessage());
-        }
+        assertOpen();
+        int color = ColorUtils.rgbaToIntABGR(parseColor("setPixel", r, g, b, a));
+        Pair<Integer, Integer> actual = mapCoordinates(x, y);
+        if (actual == null) return this;
+        return setActualPixel(actual.getFirst(), actual.getSecond(), color);
     }
 
     @LuaWhitelist
     public FiguraTexture pixel(int x, int y, Object r, Double g, Double b, Double a) {
         return setPixel(x, y, r, g, b, a);
+    }
+
+    /**
+     * Performs "linear" resizing, also called "no filter" or "nearest". Returns a new texture.
+     * For imperfect downscaling (i.e. segments not on pixel edges) may not produce equivalent results to
+     * e.g. whatever image processing program you use due to weighting 'partial' pixels equivalent to 'full' pixels
+     * when downscaling
+     */
+    @LuaWhitelist
+    @LuaMethodDoc(
+            value = "texture.resize",
+            overloads = @LuaMethodOverload(
+                    argumentNames = {"outputName", "width", "height"},
+                    argumentTypes = {String.class, Integer.class, Integer.class}
+            )
+    )
+    public FiguraTexture resize(String outputName, int targetWidth, int targetHeight) {
+        assertOpen();
+        // float imprecision strikes again (+/- to prevent rounding to the next number when you're approximately equal)
+        final double EPSILON = 1e-6;
+
+        NativeImage internal = new NativeImage(targetWidth, targetHeight, false);
+        try {
+            internal.fillRect(0, 0, targetWidth, targetHeight, 0);
+            int srcWidth = getWidth(), srcHeight = getHeight();
+            for (int outputX = 0; outputX < targetWidth; outputX++) {
+                for (int outputY = 0; outputY < targetHeight; outputY++) {
+                    // map the output pixels onto the input pixels
+                    int inputX_low = (int) Math.floor((double) outputX / targetWidth * srcWidth + EPSILON);
+                    int inputX_high = (int) Math.ceil((double) (outputX + 1) / targetWidth * srcWidth - EPSILON);
+                    int inputY_low = (int) Math.floor((double) outputY / targetHeight * srcHeight + EPSILON);
+                    int inputY_high = (int) Math.ceil((double) (outputY + 1) / targetHeight * srcHeight - EPSILON);
+
+                    // compute average color on corresponding source pixels
+                    int count = 0;
+                    double r = 0, g = 0, b = 0, a = 0;
+                    for (int inputX = inputX_low; inputX < inputX_high; inputX++) {
+                        for (int inputY = inputY_low; inputY < inputY_high; inputY++) {
+                            FiguraVec4 color = getActualPixel(inputX, inputY);
+                            r += color.x;
+                            g += color.y;
+                            b += color.z;
+                            a += color.w;
+                            count += 1;
+                        }
+                    }
+                    r /= count;
+                    g /= count;
+                    b /= count;
+                    a /= count;
+                    internal.setPixelRGBA(outputX, outputY, ColorUtils.rgbaToIntABGR(FiguraVec4.of(r, g, b, a)));
+                }
+            }
+            return owner.registerTexture(outputName, internal, false);
+        } catch (Exception e) {
+            internal.close();
+            throw e;
+        }
     }
 
     @LuaWhitelist
@@ -252,13 +357,465 @@ public class FiguraTexture extends SimpleTexture {
                     )
             },
             value = "texture.fill")
-    public FiguraTexture fill(int x, int y, int width, int height, Object r, Double g, Double b, Double a) {
+    public FiguraTexture fill(Integer x,
+                              Integer y,
+                              Integer width,
+                              Integer height,
+                              Object r,
+                              Double g,
+                              Double b,
+                              Double a) {
+        assertOpen();
+        if (x == null) x = 0;
+        if (y == null) y = 0;
+        if (width == null) width = texture.getWidth();
+        if (height == null) height = texture.getHeight();
+
+        int color = ColorUtils.rgbaToIntABGR(parseColor("fill", r, g, b, a));
+        // texture.fillRect just does these loops for us, so we can extract them to add the mapping
+        NativeImage rollback = copy();
         try {
             backupImage();
-            texture.fillRect(x, y, width, height, ColorUtils.rgbaToIntABGR(parseColor("fill", r, g, b, a)));
+            for (int i = x; i < x + width; i++) {
+                for (int j = y; j < y + height; j++) {
+                    Pair<Integer, Integer> actual = mapCoordinates(i, j);
+                    if (actual == null) continue;
+                    // don't make a copy of the image each time, though
+                    setActualPixel(actual.getFirst(), actual.getSecond(), color, false);
+                }
+            }
             return this;
         } catch (Exception e) {
-            throw new LuaError(e.getMessage());
+            texture.copyFrom(rollback);
+            throw e;
+        } finally {
+            rollback.close();
+        }
+    }
+
+    public enum BlendMode {
+        SOURCE("source"),
+        NORMAL("normal"),
+        OUT("out"),
+        IN("in"),
+        ATOP("atop"),
+        XOR("xor");
+
+        public final String name;
+        public static final HashMap<String, BlendMode> NAMES = new HashMap<>();
+
+        BlendMode(String name) {
+            this.name = name;
+        }
+
+        static {
+            EnumSet<BlendMode> allMembers = EnumSet.allOf(BlendMode.class);
+            for (BlendMode mode : allMembers) {
+                NAMES.put(mode.name, mode);
+            }
+        }
+    }
+
+    @SuppressWarnings("ClassCanBeRecord")
+    public static class BlitOptions {
+
+        public final FiguraTexture source;
+        public final int x;
+        public final int y;
+        public final int sourceX;
+        public final int sourceY;
+        public final int width;
+        public final int height;
+        public final BlendMode mode;
+
+        public BlitOptions(FiguraTexture source, int x, int y, int sourceX, int sourceY, int width, int height,
+                           BlendMode mode) {
+            this.source = source;
+            this.x = x;
+            this.y = y;
+            this.sourceX = sourceX;
+            this.sourceY = sourceY;
+            this.width = width;
+            this.height = height;
+            this.mode = mode;
+        }
+
+        public static class Builder {
+            private FiguraTexture source = null;
+            private int x = 0;
+            private int y = 0;
+            private int sourceX = 0;
+            private int sourceY = 0;
+            private boolean isWidthConfigured = false;
+            private int width;
+            private boolean isHeightConfigured = false;
+            private int height;
+            private BlendMode mode = BlendMode.NORMAL;
+
+            public Builder() {
+            }
+
+            public Builder from(FiguraTexture source) {
+                if (!isWidthConfigured) width = source.getWidth();
+                if (!isHeightConfigured) height = source.getHeight();
+                this.source = source;
+                return this;
+            }
+
+            public Builder mode(BlendMode mode) {
+                this.mode = mode;
+                return this;
+            }
+
+            public void setProperty(String property, LuaValue value) {
+                switch (property) {
+                    case "source": {
+                        FiguraTexture texture = (FiguraTexture) value.checkuserdata(FiguraTexture.class);
+                        from(texture);
+                        break;
+                    }
+                    case "x":
+                        x = value.checkint();
+                        break;
+                    case "y":
+                        y = value.checkint();
+                        break;
+                    case "sourceX":
+                        sourceX = value.checkint();
+                        break;
+                    case "sourceY":
+                        sourceY = value.checkint();
+                        break;
+                    case "width": {
+                        width = value.checkint();
+                        isWidthConfigured = true;
+                        break;
+                    }
+                    case "height": {
+                        height = value.checkint();
+                        isHeightConfigured = true;
+                        break;
+                    }
+                    case "mode": {
+                        BlendMode m = BlendMode.NAMES.get(value.checkjstring());
+                        if (m == null) throw new LuaError("Unknown blending mode '" + value.checkjstring() + "'.");
+                        mode = m;
+                    }
+                }
+            }
+
+            public BlitOptions build() {
+                if (source == null) throw new LuaError("No source specified for blit operation");
+                return new BlitOptions(
+                        source, x, y, sourceX, sourceY, width, height, mode
+                );
+            }
+        }
+
+        public static BlitOptions fromTable(LuaTable table) {
+            Builder b = new Builder();
+            LuaValue k = LuaValue.NIL;
+            while (true) {
+                Varargs var = table.next(k);
+                if ((k = var.arg1()).isnil()) break;
+                if (k.isstring()) {
+                    LuaValue val = table.get(k);
+                    b.setProperty(k.checkjstring(), val);
+                }
+            }
+            return b.build();
+        }
+    }
+
+    public static FiguraVec4 composeColors(FiguraVec4 target, FiguraVec4 source, BlendMode mode, boolean makeCopy) {
+        if (makeCopy) {
+            target = target.copy();
+            source = source.copy();
+        }
+        // Premultiply...
+        double targetW = target.w;
+        double sourceW = source.w;
+
+        target.scale(targetW);
+        target.w = targetW;
+
+        source.scale(sourceW);
+        source.w = sourceW;
+        double sFactor;
+        double tFactor;
+
+        // Choose which operator to use
+        // Special thanks: https://ciechanow.ski/alpha-compositing/
+        switch (mode) {
+            case SOURCE:
+                sFactor = 1.0;
+                tFactor = 0.0;
+                break;
+            case NORMAL:
+                sFactor = 1.0;
+                tFactor = 1 - sourceW;
+                break;
+            case OUT:
+                sFactor = 1.0 - targetW;
+                tFactor = 0.0;
+                break;
+            case XOR:
+                sFactor = 1.0 - targetW;
+                tFactor = 1.0 - sourceW;
+                break;
+            case IN:
+                sFactor = targetW;
+                tFactor = 0.0;
+                break;
+            case ATOP:
+                sFactor = targetW;
+                tFactor = 1.0 - sourceW;
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+
+        source.scale(sFactor);
+        target.scale(tFactor);
+        target.add(source);
+
+        // ...un-premultiply.
+        return FiguraVec4.of(
+                target.x / target.w,
+                target.y / target.w,
+                target.z / target.w,
+                target.w
+        );
+    }
+
+    public FiguraTexture blit(BlitOptions options) {
+        FiguraTexture source = options.source;
+        assertOpen();
+        source.assertOpen();
+        try (NativeImage flip = copy()) {
+            backupImage();
+            for (int x = 0; x < options.width; x++) {
+                for (int y = 0; y < options.height; y++) {
+                    int tX = options.x + x, tY = options.y + y;
+                    int sX = options.sourceX + x, sY = options.sourceY + y;
+                    Pair<Integer, Integer> real = mapCoordinates(tX, tY);
+                    if (real == null) continue;
+                    FiguraVec4 sColorTrue = source.getPixel(sX, sY);
+                    FiguraVec4 tColorTrue = getActualPixel(real.getFirst(), real.getSecond());
+                    flip.setPixelRGBA(
+                            real.getFirst(), real.getSecond(), ColorUtils.rgbaToIntABGR(
+                                    composeColors(tColorTrue, sColorTrue, options.mode, false)
+                            )
+                    );
+                }
+            }
+            texture.copyFrom(flip);
+            return this;
+        }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            value = "texture.blit",
+            overloads = @LuaMethodOverload(
+                    argumentTypes = {LuaTable.class},
+                    argumentNames = {"options"}
+            )
+    )
+    public FiguraTexture blit(LuaTable options) {
+        return blit(BlitOptions.fromTable(options));
+    }
+
+    // credit: Wikipedia contributors, http://members.chello.at/easyfilter/bresenham.html
+    private void lineReal(int x0, int y0, int x1, int y1, FiguraVec4 color, BlendMode mode) {
+        int colorInt = ColorUtils.rgbaToIntABGR(color);
+        boolean compositionRequired = color.w < 1.0 || mode != BlendMode.NORMAL;
+        int dx = Math.abs(x1 - x0);
+        int sx = x0 < x1 ? 1 : -1;
+        int dy = -Math.abs(y1 - y0);
+        int sy = y0 < y1 ? 1 : -1;
+        int error = dx + dy;
+        while (true) {
+            Pair<Integer, Integer> actual = mapCoordinates(x0, y0);
+            if (actual != null) {
+                int thisColor = colorInt;
+                if (compositionRequired) {
+                    thisColor = ColorUtils.rgbaToIntABGR(composeColors(
+                            getActualPixel(actual.getFirst(), actual.getSecond()),
+                            color,
+                            mode,
+                            false
+                    ));
+                }
+                setActualPixel(actual.getFirst(), actual.getSecond(), thisColor, false);
+            }
+            if (x0 == x1 && y0 == y1) break;
+            int error2 = error * 2;
+            if (error2 >= dy) {
+                error = error + dy;
+                x0 = x0 + sx;
+            }
+            if (error2 <= dx) {
+                error = error + dx;
+                y0 = y0 + sy;
+            }
+        }
+    }
+
+    private void setPixelMix(int x, int y, FiguraVec4 color, BlendMode mode) {
+        Pair<Integer, Integer> actual = mapCoordinates(x, y);
+        if (actual == null) return;
+        FiguraVec4 baseColor = getActualPixel(actual.getFirst(), actual.getSecond());
+        int colorId = ColorUtils.rgbaToIntABGR(composeColors(
+                baseColor,
+                color,
+                mode,
+                false
+        ));
+        setActualPixel(actual.getFirst(), actual.getSecond(), colorId, false);
+    }
+
+    private static double fractional(double x) {
+        return x - Math.floor(x);
+    }
+
+    private static double rFractional(double x) {
+        return 1.0 - fractional(x);
+    }
+
+    private static FiguraVec4 opacity(FiguraVec4 base, double factor) {
+        FiguraVec4 clone = base.copy();
+        clone.w *= factor;
+        return clone;
+    }
+
+    // https://en.wikipedia.org/wiki/Xiaolin_Wu%27s_line_algorithm, Wikipedia contributors
+    private void aaLineReal(int x0, int y0, int x1, int y1, FiguraVec4 color, BlendMode mode) {
+        boolean isSteep = Math.abs(y1 - y0) > Math.abs(x1 - x0);
+        // Shuffle variables
+        if (isSteep) {
+            int swap = x0;
+            //noinspection SuspiciousNameCombination
+            x0 = y0;
+            y0 = swap;
+            swap = x1;
+            //noinspection SuspiciousNameCombination
+            x1 = y1;
+            y1 = swap;
+        }
+        if (x0 > x1) {
+            int swap = x0;
+            x0 = x1;
+            x1 = swap;
+            swap = y0;
+            y0 = y1;
+            y1 = swap;
+        }
+
+        int dx = x1 - x0;
+        int dy = y1 - y0;
+        double gradient;
+
+        if (dx == 0) {
+            gradient = 1.0;
+        } else {
+            gradient = (double) dy / dx;
+        }
+
+        // First endpoint
+        double xend = x0;
+        double yend = y0 + gradient * (xend - x0);
+        double xgap = rFractional(x0 + 0.5);
+        int xpxl1 = (int) Math.round(xend);
+        int ypxl1 = (int) Math.floor(yend);
+        if (isSteep) {
+            setPixelMix(ypxl1, xpxl1, opacity(color, rFractional(yend) * xgap), mode);
+            setPixelMix(ypxl1 + 1, xpxl1, opacity(color, fractional(yend) * xgap), mode);
+        } else {
+            setPixelMix(xpxl1, ypxl1, opacity(color, rFractional(yend) * xgap), mode);
+            setPixelMix(xpxl1, ypxl1 + 1, opacity(color, fractional(yend) * xgap), mode);
+        }
+
+        // First Y intersection
+        double intery = yend + gradient;
+
+        // Second endpoint
+        xend = x1;
+        yend = y1 + gradient * (xend - x1);
+        xgap = fractional(x1 + 0.5);
+        int xpxl2 = (int) Math.round(xend);
+        int ypxl2 = (int) Math.floor(yend);
+        if (isSteep) {
+            setPixelMix(ypxl2, xpxl2, opacity(color, rFractional(yend) * xgap), mode);
+            setPixelMix(ypxl2 + 1, xpxl2, opacity(color, fractional(yend) * xgap), mode);
+        } else {
+            setPixelMix(xpxl2, ypxl2, opacity(color, rFractional(yend) * xgap), mode);
+            setPixelMix(xpxl2, ypxl2, opacity(color, rFractional(yend) * xgap), mode);
+        }
+
+        if (isSteep) {
+            for (int x = xpxl1 + 1; x < xpxl2; x++) {
+                //noinspection SuspiciousNameCombination
+                setPixelMix((int) Math.floor(intery), x, opacity(color, rFractional(intery)), mode);
+                //noinspection SuspiciousNameCombination
+                setPixelMix((int) Math.floor(intery) + 1, x, opacity(color, fractional(intery)), mode);
+                intery += gradient;
+            }
+        } else {
+            for (int x = xpxl1 + 1; x < xpxl2; x++) {
+                setPixelMix(x, (int) Math.floor(intery), opacity(color, rFractional(intery)), mode);
+                setPixelMix(x, (int) Math.floor(intery) + 1, opacity(color, fractional(intery)), mode);
+                intery += gradient;
+            }
+        }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            value = "texture.line",
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentNames = {"xy0", "xy1", "color"},
+                            argumentTypes = {FiguraVec2.class, FiguraVec2.class, FiguraVec4.class}
+                    ),
+                    @LuaMethodOverload(
+                            argumentNames = {"xy0", "xy1", "color", "antialias"},
+                            argumentTypes = {FiguraVec2.class, FiguraVec2.class, FiguraVec4.class, Boolean.class}
+                    ),
+                    @LuaMethodOverload(
+                            argumentNames = {"xy0", "xy1", "color", "antialias", "blendMode"},
+                            argumentTypes = {FiguraVec2.class, FiguraVec2.class, FiguraVec4.class, Boolean.class, String.class}
+                    )
+            }
+    )
+    public FiguraTexture line(
+            FiguraVec2 xy0,
+            FiguraVec2 xy1,
+            FiguraVec4 color,
+            @Nullable Boolean antialias,
+            String blend
+    ) {
+        assertOpen();
+        boolean antialiasActual = (antialias != null) && antialias;
+        BlendMode blendActual = BlendMode.NORMAL;
+        if (blend != null) {
+            blendActual = BlendMode.NAMES.get(blend);
+            if (blendActual == null) throw new LuaError(String.format("Unknown blending mode '%s'.", blend));
+        }
+        NativeImage rollback = copy();
+        try {
+            backupImage();
+            if (antialiasActual) {
+                aaLineReal((int) xy0.x, (int) xy0.y, (int) xy1.x, (int) xy1.y, color, blendActual);
+            } else {
+                lineReal((int) xy0.x, (int) xy0.y, (int) xy1.x, (int) xy1.y, color, blendActual);
+            }
+            return this;
+        } catch (Exception e) {
+            texture.copyFrom(rollback);
+            throw e;
+        } finally {
+            rollback.close();
         }
     }
 
@@ -272,6 +829,7 @@ public class FiguraTexture extends SimpleTexture {
     @LuaWhitelist
     @LuaMethodDoc("texture.restore")
     public FiguraTexture restore() {
+        assertOpen();
         if (modified) {
             this.texture.copyFrom(backup);
             this.modified = false;
@@ -282,6 +840,7 @@ public class FiguraTexture extends SimpleTexture {
     @LuaWhitelist
     @LuaMethodDoc("texture.save")
     public String save() {
+        assertOpen();
         try {
             return Base64.getEncoder().encodeToString(texture.asByteArray());
         } catch (Exception e) {
@@ -297,43 +856,462 @@ public class FiguraTexture extends SimpleTexture {
             ),
             value = "texture.apply_func"
     )
-    public FiguraTexture applyFunc(int x, int y, int width, int height, @LuaNotNil LuaFunction function) {
-        for (int i = y; i < y + height; i++) {
-            for (int j = x; j < x + width; j++) {
-                FiguraVec4 color = getPixel(j, i);
-                LuaValue result = function.call(owner.luaRuntime.typeManager.javaToLua(color).arg1(), LuaValue.valueOf(j), LuaValue.valueOf(i));
-                if (!result.isnil() && result.isuserdata(FiguraVec4.class))
-                    setPixel(j, i, result.checkuserdata(FiguraVec4.class), null, null, null);
+    public FiguraTexture applyFunc(Integer x,
+                                   Integer y,
+                                   Integer width,
+                                   Integer height,
+                                   @LuaNotNil LuaFunction function) {
+        assertOpen();
+        if (x == null) x = 0;
+        if (y == null) y = 0;
+        if (width == null) width = texture.getWidth();
+        if (height == null) height = texture.getHeight();
+
+        NativeImage rollback = copy();
+        try {
+            backupImage();
+            for (int i = y; i < y + height; i++) {
+                for (int j = x; j < x + width; j++) {
+                    Pair<Integer, Integer> actual = mapCoordinates(j, i);
+                    if (actual == null) continue;
+                    int actualX = actual.getFirst(), actualY = actual.getSecond();
+                    FiguraVec4 color = getActualPixel(actualX, actualY);
+                    LuaValue result = function.call(
+                            owner.luaRuntime.typeManager.javaToLua(color).arg1(),
+                            LuaValue.valueOf(j),
+                            LuaValue.valueOf(i)
+                    );
+                    if (!result.isnil() && result.isuserdata(FiguraVec4.class)) {
+                        FiguraVec4 userdata = (FiguraVec4) result.checkuserdata(FiguraVec4.class);
+                        userdata = FiguraVec4.of(
+                                clamp01(userdata.x),
+                                clamp01(userdata.y),
+                                clamp01(userdata.z),
+                                clamp01(userdata.w)
+                        );
+                        int newColor = ColorUtils.rgbaToIntABGR(userdata);
+                        setActualPixel(actualX, actualY, newColor, false);
+                    }
+                }
             }
+            return this;
+        } catch (Exception e) {
+            texture.copyFrom(rollback);
+            throw e;
+        } finally {
+            rollback.close();
         }
-        return this;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
-                    argumentTypes = {Integer.class, Integer.class, Integer.class, Integer.class, FiguraMat4.class, Boolean.class},
-                    argumentNames = {"x", "y", "width", "height", "matrix", "clip"}
+                    argumentTypes = {Integer.class, Integer.class, Integer.class, Integer.class, FiguraMat4.class},
+                    argumentNames = {"x", "y", "width", "height", "matrix"}
             ),
             value = "texture.apply_matrix"
     )
-    public FiguraTexture applyMatrix(int x, int y, int width, int height, @LuaNotNil FiguraMat4 matrix, boolean clip) {
-        for (int i = y; i < y + height; i++) {
-            for (int j = x; j < x + width; j++) {
-                FiguraVec4 color = getPixel(j, i);
-                color.transform(matrix);
+    public FiguraTexture applyMatrix(Integer x,
+                                     Integer y,
+                                     Integer width,
+                                     Integer height,
+                                     @LuaNotNil FiguraMat4 matrix) {
+        assertOpen();
+        if (x == null) x = 0;
+        if (y == null) y = 0;
+        if (width == null) width = texture.getWidth();
+        if (height == null) height = texture.getHeight();
 
-                if (clip) {
+        NativeImage rollback = copy();
+        try {
+            backupImage();
+            for (int i = y; i < y + height; i++) {
+                for (int j = x; j < x + width; j++) {
+                    Pair<Integer, Integer> actual = mapCoordinates(j, i);
+                    if (actual == null) continue;
+                    int actualX = actual.getFirst(), actualY = actual.getSecond();
+                    FiguraVec4 color = getActualPixel(actualX, actualY);
+                    color.transform(matrix);
+
                     color.x = Math.max(0, Math.min(color.x, 1));
                     color.y = Math.max(0, Math.min(color.y, 1));
                     color.z = Math.max(0, Math.min(color.z, 1));
                     color.w = Math.max(0, Math.min(color.w, 1));
-                }
 
-                setPixel(j, i, color, null, null, null);
+                    setActualPixel(actualX, actualY, ColorUtils.rgbaToIntABGR(color), false);
+                }
+            }
+            return this;
+        } catch (Exception e) {
+            texture.copyFrom(rollback);
+            throw e;
+        } finally {
+            rollback.close();
+        }
+    }
+
+    private static final HashMap<String, TextureOverflowStrategy> name2OverflowStrategy = new HashMap<>();
+
+    public enum TextureOverflowStrategy {
+        ERROR("error"),
+        IGNORE("ignore", "discard"),
+        WRAP("wrap"),
+        MIRROR("mirror"),
+        CLAMP("clamp");
+
+        public final String primaryName;
+
+        TextureOverflowStrategy(String... names) {
+            for (String name : names)
+                name2OverflowStrategy.put(name, this);
+            if (names.length == 0) throw new IllegalArgumentException("at least one name should be specified");
+            primaryName = names[0];
+        }
+    }
+
+    private @Nullable Pair<Integer, Integer> mapCoordinates(int x, int y) throws LuaError {
+        int width = getWidth(), height = getHeight();
+        if (x >= 0 && x < width && y >= 0 && y < height) return Pair.of(x, y);
+        switch (textureOverflowStrategy) {
+            case ERROR:
+                throw new LuaError(String.format(
+                        "(%d, %d) is out of bounds on %dx%d texture",
+                        x, y, width, height
+                ));
+            case IGNORE:
+                return null;
+            case WRAP:
+                return Pair.of(
+                        Math.floorMod(x, width),
+                        Math.floorMod(y, height)
+                );
+            case MIRROR: // but first, we need to talk about parallel universes
+                int puX = Math.floorDiv(x, width), puY = Math.floorDiv(y, height);
+                // if the original image is PU(0, 0), odd numbered PUs are flipped on one or both axes
+                boolean isXFlipped = Math.floorMod(puX, 2) == 1, isYFlipped = Math.floorMod(puY, 2) == 1;
+                int localX = Math.floorMod(x, width), localY = Math.floorMod(y, height);
+                if (isXFlipped) localX = (width - 1) - localX;
+                if (isYFlipped) localY = (height - 1) - localY;
+                return Pair.of(localX, localY);
+            case CLAMP: // redirect out-of-bounds requests to the closest edge or corner
+                return Pair.of(
+                        Math.max(Math.min(x, width - 1), 0),
+                        Math.max(Math.min(y, height - 1), 0)
+                );
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    // Mathematical area operations
+
+    private static double clamp01(double n) {
+        if (n < 0) return 0;
+        if (n > 1) return 1;
+        return n;
+    }
+
+    private FiguraTexture mathApply(@NotNull FiguraTexture other,
+                                    BiFunction<FiguraVec4, FiguraVec4, FiguraVec4> transform,
+                                    int x,
+                                    int y,
+                                    int w,
+                                    int h) {
+        backupImage();
+        NativeImage rollback = copy();
+        try {
+            for (int curX = x; curX < x + w; curX++) {
+                for (int curY = y; curY < y + h; curY++) {
+                    Pair<Integer, Integer> actualCoordinates = mapCoordinates(curX, curY);
+                    if (actualCoordinates == null) continue;
+                    int actualX = actualCoordinates.getFirst(), actualY = actualCoordinates.getSecond();
+                    FiguraVec4 colorB;
+                    try {
+                        colorB = other.getPixel(curX, curY);
+                    } catch (Exception e) {
+                        if (curX != actualX || curY != actualY)
+                            throw new LuaError(String.format(
+                                    "source texture: %s",
+                                    e.getMessage()
+                            ));
+                        throw new LuaError(String.format(
+                                "source texture: %s",
+                                e.getMessage()
+                        ));
+                    }
+                    try {
+                        FiguraVec4 colorA = ColorUtils.abgrToRGBA(texture.getPixelRGBA(actualX, actualY));
+                        FiguraVec4 result = transform.apply(colorA, colorB);
+                        result = FiguraVec4.of(
+                                clamp01(result.x),
+                                clamp01(result.y),
+                                clamp01(result.z),
+                                clamp01(result.w)
+                        );
+                        texture.setPixelRGBA(actualX, actualY, ColorUtils.rgbaToIntABGR(result));
+                    } catch (Exception e) {
+                        if (curX != actualX || curY != actualY)
+                            throw new LuaError(String.format(
+                                    "While writing pixel at actual(%d, %d) / virtual(%d, %d): %s",
+                                    actualX, actualY,
+                                    curX, curY,
+                                    e.getMessage()
+                            ));
+                        throw new LuaError(String.format(
+                                "While writing pixel at (%d, %d): %s",
+                                actualX, actualY, e.getMessage()
+                        ));
+                    }
+                }
+            }
+            return this;
+        } catch (Exception e) {
+            texture.copyFrom(rollback);
+            throw e;
+        } finally {
+            rollback.close();
+        }
+    }
+
+    private static final BiFunction<FiguraVec4, FiguraVec4, FiguraVec4> opMultiply = FiguraVec4::times;
+    private static final BiFunction<FiguraVec4, FiguraVec4, FiguraVec4> opDivide = FiguraVec4::dividedBy;
+    private static final BiFunction<FiguraVec4, FiguraVec4, FiguraVec4> opAdd = FiguraVec4::plus;
+    private static final BiFunction<FiguraVec4, FiguraVec4, FiguraVec4> opSubtract = FiguraVec4::minus;
+
+    private FiguraTexture mathFunction(@NotNull FiguraTexture other,
+                                       Integer x,
+                                       Integer y,
+                                       Integer w,
+                                       Integer h,
+                                       BiFunction<FiguraVec4, FiguraVec4, FiguraVec4> transform) {
+        assertOpen();
+        other.assertOpen();
+        if (x == null) x = 0;
+        if (y == null) y = 0;
+        if (w == null) w = texture.getWidth();
+        if (h == null) h = texture.getHeight();
+        return mathApply(other, transform, x, y, w, h);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            value = "texture._math_op",
+            overloads = @LuaMethodOverload(
+                    argumentNames = {"other", "x", "y", "w", "h"},
+                    argumentTypes = {FiguraTexture.class, Integer.class, Integer.class, Integer.class, Integer.class}
+            )
+    )
+    public FiguraTexture multiply(@LuaNotNil @NotNull FiguraTexture other, Integer x, Integer y, Integer w, Integer h) {
+        return mathFunction(other, x, y, w, h, opMultiply);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            value = "texture._math_op",
+            overloads = @LuaMethodOverload(
+                    argumentNames = {"other", "x", "y", "w", "h"},
+                    argumentTypes = {FiguraTexture.class, Integer.class, Integer.class, Integer.class, Integer.class}
+            )
+    )
+    public FiguraTexture divide(@LuaNotNil @NotNull FiguraTexture other, Integer x, Integer y, Integer w, Integer h) {
+        return mathFunction(other, x, y, w, h, opDivide);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            value = "texture._math_op",
+            overloads = @LuaMethodOverload(
+                    argumentNames = {"other", "x", "y", "w", "h"},
+                    argumentTypes = {FiguraTexture.class, Integer.class, Integer.class, Integer.class, Integer.class}
+            )
+    )
+    public FiguraTexture add(@LuaNotNil @NotNull FiguraTexture other, Integer x, Integer y, Integer w, Integer h) {
+        return mathFunction(other, x, y, w, h, opAdd);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            value = "texture._math_op",
+            overloads = @LuaMethodOverload(
+                    argumentNames = {"other", "x", "y", "w", "h"},
+                    argumentTypes = {FiguraTexture.class, Integer.class, Integer.class, Integer.class, Integer.class}
+            )
+    )
+    public FiguraTexture subtract(@LuaNotNil @NotNull FiguraTexture other, Integer x, Integer y, Integer w, Integer h) {
+        return mathFunction(other, x, y, w, h, opSubtract);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            value = "texture.invert",
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentNames = {"x", "y", "w", "h"},
+                            argumentTypes = {Integer.class, Integer.class, Integer.class, Integer.class}
+                    ),
+                    @LuaMethodOverload(
+                            argumentNames = {"x", "y", "w", "h", "invertAlpha"},
+                            argumentTypes = {Integer.class, Integer.class, Integer.class, Integer.class, Boolean.class}
+                    )
+            }
+    )
+    public FiguraTexture invert(Integer x, Integer y, Integer w, Integer h, Boolean invertAlpha) {
+        assertOpen();
+        if (x == null) x = 0;
+        if (y == null) y = 0;
+        if (w == null) w = texture.getWidth();
+        if (h == null) h = texture.getHeight();
+
+        boolean invertAlpha_real = (invertAlpha != null && invertAlpha);
+        backupImage();
+        NativeImage rollback = copy();
+        try {
+            for (int i = x; i < x + w; i++) {
+                for (int j = y; j < y + h; j++) {
+                    Pair<Integer, Integer> actual = mapCoordinates(i, j);
+                    if (actual == null) continue;
+                    int realX = actual.getFirst(), realY = actual.getSecond();
+                    FiguraVec4 current = getActualPixel(realX, realY);
+                    FiguraVec4 inverted = FiguraVec4.of(
+                            1 - current.x,
+                            1 - current.y,
+                            1 - current.z,
+                            invertAlpha_real ? 1 - current.w : current.w
+                    );
+                    setActualPixel(realX, realY, ColorUtils.rgbaToIntABGR(inverted), false);
+                }
+            }
+            return this;
+        } catch (Exception e) {
+            texture.copyFrom(rollback);
+            throw e;
+        } finally {
+            rollback.close();
+        }
+    }
+
+    // Color mapping
+    private static IntUnaryOperator getPalleteMapFunction(int[] from, int[] to) {
+        if (from.length != to.length) throw new IllegalArgumentException(String.format(
+                "Pallete mapping between different sizes (%d vs %d)", from.length, to.length));
+        Int2IntMap mapping = new Int2IntOpenHashMap(from.length);
+        for (int i = 0; i < from.length; i++) {
+            int fromVal = from[i];
+            if (fromVal >>> 24 /* alpha */ != 0) {
+                mapping.put(fromVal & 0xffffff /* transparent */, to[i]);
             }
         }
+        return (in) -> {
+            int trns = in >>> 24;
+            if (trns == 0) return in;
+            int normalized = in & 0xffffff;
+            int replacement = mapping.getOrDefault(normalized, in | 0xff000000);
+            int newAlpha = replacement >>> 24;
+            return ((trns * (newAlpha / 255)) << 24) | (replacement & 0xffffff);
+        };
+    }
+
+    private static void nativeFastApply(NativeImage img, IntUnaryOperator fn) {
+        if (img.format() != NativeImage.Format.RGBA)
+            throw new IllegalArgumentException("Native image isn't RGBA for function application");
+        img.checkAllocated();
+        int size = img.getWidth() * img.getHeight();
+        IntBuffer liveAccess = MemoryUtil.memIntBuffer(img.pixels, size);
+        for (int i = 0; i < size; i++) {
+            liveAccess.put(i, fn.applyAsInt(liveAccess.get(i)));
+        }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            value = "texture.remap_colors",
+            overloads = @LuaMethodOverload(
+                    argumentNames = {"from", "to"},
+                    argumentTypes = {LuaTable.class, LuaTable.class}
+            )
+    )
+    public FiguraTexture remapColors(LuaTable from, LuaTable to) {
+        assertOpen();
+        // Expect a sequence-like `from`
+        int size = from.length();
+        if (size != to.length()) throw new LuaError("remapColors: from and to tables are different lengths");
+
+        int[] mappedFrom = new int[size];
+        int[] mappedTo = new int[size];
+        for (int i = 0; i < size; i++) {
+            FiguraVec4 fromV;
+            LuaValue fromLua = from.get(i + 1);
+
+            if (fromLua.isuserdata(FiguraVec4.class)) fromV = (FiguraVec4) fromLua.checkuserdata(FiguraVec4.class);
+            else if (fromLua.isuserdata(FiguraVec3.class))
+                fromV = ((FiguraVec3) fromLua.checkuserdata(FiguraVec3.class)).augmented(1.0);
+            else throw new LuaError(String.format(
+                        "remapColors: 'from' table should only contain Vector3s or Vector4s, instead found a %s at index %d",
+                        fromLua.isuserdata() ? fromLua.checkuserdata().getClass().getSimpleName() : fromLua.typename(),
+                        i + 1
+                ));
+            mappedFrom[i] = ColorUtils.rgbaToIntABGR(fromV);
+
+            FiguraVec4 toV;
+            LuaValue toLua = to.get(i + 1);
+
+            if (toLua.isuserdata(FiguraVec4.class)) toV = (FiguraVec4) toLua.checkuserdata(FiguraVec4.class);
+            else if (toLua.isuserdata(FiguraVec3.class))
+                toV = ((FiguraVec3) toLua.checkuserdata(FiguraVec3.class)).augmented(1.0);
+            else throw new LuaError(String.format(
+                        "remapColors: 'to' table should only contain Vector3s or Vector4s, instead found a %s at index %d",
+                        toLua.isuserdata() ? toLua.checkuserdata().getClass().getSimpleName() : toLua.typename(),
+                        i + 1
+                ));
+            mappedTo[i] = ColorUtils.rgbaToIntABGR(toV);
+        }
+
+        IntUnaryOperator mapper = getPalleteMapFunction(mappedFrom, mappedTo);
+        nativeFastApply(texture, mapper);
         return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            value = "texture.set_overflow_mode",
+            overloads = @LuaMethodOverload(
+                    argumentNames = {"mode"},
+                    argumentTypes = {String.class}
+            )
+    )
+    public FiguraTexture setOverflowMode(@LuaNotNil @NotNull String mode) {
+        if (!name2OverflowStrategy.containsKey(mode)) {
+            int i = 0;
+            StringBuilder options = new StringBuilder();
+            for (String k : name2OverflowStrategy.keySet()) {
+                if (i++ > 0) options.append(", ");
+                options.append("'").append(k).append("'");
+            }
+            throw new LuaError(String.format(
+                    "Unknown overflow mode '%s'\n(valid modes are: " + options + ")",
+                    mode
+            ));
+        }
+        textureOverflowStrategy = name2OverflowStrategy.get(mode);
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("texture.get_overflow_mode")
+    public String getOverflowMode() {
+        return textureOverflowStrategy.primaryName;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            value = "texture.new_copy",
+            overloads = @LuaMethodOverload(
+                    argumentNames = "name",
+                    argumentTypes = String.class
+            )
+    )
+    public FiguraTexture newCopy(String name) {
+        return owner.registerTexture(name, copy(), false);
     }
 
     @LuaWhitelist
