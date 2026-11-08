@@ -96,7 +96,9 @@
     "sound.ChannelHandleMixin",
     "sound.SoundEngineMixin",
     "sound.SoundManagerAccessor",
-    "sound.SubtitleOverlayMixin"
+    "sound.SubtitleOverlayMixin",
+    "sound.OggAudioStreamMixin",
+    "sound.OutputConcatAccessor"
   ],
   "server": [
   ],
