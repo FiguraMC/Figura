@@ -10,6 +10,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.core.Registry;
 import net.minecraft.core.UUIDUtil;
@@ -36,24 +37,19 @@ import org.figuramc.figura.lua.docs.FiguraListDocs;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
-import org.figuramc.figura.math.matrix.FiguraMat4;
 import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.mixin.gui.GuiAccessor;
 import org.figuramc.figura.mixin.gui.PlayerTabOverlayAccessor;
 import org.figuramc.figura.mixin.render.ModelManagerAccessor;
 import org.figuramc.figura.utils.*;
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.glfw.GLFW;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.FloatBuffer;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Supplier;
@@ -97,7 +93,7 @@ public class ClientAPI {
     @LuaMethodDoc("client.get_fps")
     public static int getFPS() {
         String s = getFPSString();
-        if (s.length() == 0)
+        if (s.isEmpty())
             return 0;
         return Integer.parseInt(s.split(" ")[0]);
     }
@@ -183,10 +179,11 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.get_current_effect")
     public static String getCurrentEffect() {
-        if (Minecraft.getInstance().gameRenderer.currentEffect() == null)
+        PostChain postEffect = Minecraft.getInstance().gameRenderer.currentEffect();
+        if (postEffect == null)
             return null;
 
-        return Minecraft.getInstance().gameRenderer.currentEffect().getName();
+        return postEffect.getName();
     }
 
     @LuaWhitelist
@@ -899,12 +896,10 @@ public class ClientAPI {
         List<String> emojis = new ArrayList<>();
 
         if (category == null)
-            Emojis.getCategoryNames().forEach(name -> {
-                Emojis.getCategory(name).getLookup().getNames().stream().forEach(emojis::add);
-            });
+            Emojis.getCategoryNames().forEach(name -> emojis.addAll(Emojis.getCategory(name).getLookup().getNames()));
         else {
             try {
-                Emojis.getCategory(category).getLookup().getNames().stream().forEach(emojis::add);
+                emojis.addAll(Emojis.getCategory(category).getLookup().getNames());
             } catch (Exception e) {
                 throw new LuaError("\"" + category + "\" is not a valid emoji category");
             }
