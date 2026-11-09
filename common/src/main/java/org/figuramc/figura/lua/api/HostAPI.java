@@ -549,14 +549,22 @@ public class HostAPI {
 
         return list;
     }
+
+    private long lastStatsReqTime = 0L;
+
     @LuaWhitelist
     @LuaMethodDoc(
             value = "host.update_statistics",
             aliases = "updateStats"
     )
     public void updateStatistics() {
-        this.minecraft.getConnection().send(new ServerboundClientCommandPacket(ServerboundClientCommandPacket.Action.REQUEST_STATS)); // in theory, this cant nullptr; if it does, ill fix later
+        if (lastStatsReqTime == FiguraMod.ticks) return;
+        lastStatsReqTime = FiguraMod.ticks;
+        ClientPacketListener conn = this.minecraft.getConnection();
+        if (conn != null)
+            conn.send(new ServerboundClientCommandPacket(ServerboundClientCommandPacket.Action.REQUEST_STATS));
     }
+
     @LuaWhitelist
     public void updateStats() {updateStatistics();}
 
