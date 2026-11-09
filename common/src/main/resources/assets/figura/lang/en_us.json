@@ -81,6 +81,8 @@
     "figura.permissions.value.offscreen_rendering.tooltip": "Toggles if the Avatar should render even when you (the viewer) are not looking at them, ie behind you",
     "figura.permissions.value.cancel_sounds": "Cancel Sounds",
     "figura.permissions.value.cancel_sounds.tooltip": "Toggles if the Avatar can stop any sound from playing via the ON_PLAY_SOUND event",
+    "figura.permissions.value.global_sounds": "Global Sounds",
+    "figura.permissions.value.global_sounds.tooltip": "Toggles if the Avatar can play sounds that can be heard from any distance (stereo sounds)",
     "figura.permissions.value.custom_render_layer": "Custom Render Layers",
     "figura.permissions.value.custom_render_layer.tooltip": "Toggles if the Avatar can create its own Render Layers, allowing for custom GLSL code (shaders)",
     "figura.permissions.value.custom_sounds": "Custom Sounds",

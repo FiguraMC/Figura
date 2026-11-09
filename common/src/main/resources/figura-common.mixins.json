@@ -94,6 +94,7 @@
     "render.renderers.StuckArrowsFeatureRendererMixin",
     "render.renderers.TridentRendererMixin",
     "sound.ChannelHandleMixin",
+    "sound.SoundBufferAccessor",
     "sound.SoundEngineMixin",
     "sound.SoundManagerAccessor",
     "sound.SubtitleOverlayMixin",
