@@ -1294,7 +1294,6 @@
     "figura.docs.model_part.set_primary_render_type": "Sets the current primary render type of this model part\nNil by default, meaning the part copies the primary render type of its parent during rendering\nCheck the docs enum command for all render types",
     "figura.docs.model_part.set_secondary_render_type": "Sets the current secondary render type of this model part\nNil by default, meaning the part copies the secondary render type of its parent during rendering\nCheck the docs enum command for all render types",
     "figura.docs.model_part.shading": "Sets the shading of this part\nIf true, the part will be shaded, otherwise it won't",
-    "figura.docs.model_part.no_shading": "Inverse of shading(boolean), disables shading if true, otherwise enables it",
     "figura.docs.model_part.get_primary_texture": "Gets the primary texture of this part\nReturns two values, first being the override type, second being the value, if any.",
     "figura.docs.model_part.get_primary_defined_textures": "Gets the primary textures of this part\nReturns a table of each texture for the specified face.",
     "figura.docs.model_part.set_primary_texture": "Sets the primary texture override of this part\nCheck the TextureType types in the list docs\nIf using \"resource\", the second parameter should indicate the path to the Minecraft texture you want to use\nIf using \"custom\", the second parameter should indicate a texture object",
