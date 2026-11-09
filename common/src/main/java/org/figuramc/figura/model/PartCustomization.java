@@ -312,10 +312,10 @@ public class PartCustomization {
         return secondaryRenderType;
     }
 
-    public void shade(boolean shade) {
+    public void shade(Boolean shade) {
         this.shade = shade;
     }
-    public boolean isShaded() {
+    public Boolean isShaded() {
         return shade;
     }
 

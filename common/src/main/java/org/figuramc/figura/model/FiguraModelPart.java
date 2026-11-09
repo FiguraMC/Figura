@@ -729,13 +729,13 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             aliases = "shade",
             value = "model_part.shading"
     )
-    public FiguraModelPart shading(boolean bool) {
+    public FiguraModelPart shading(Boolean bool) {
         this.customization.shade(bool);
         return this;
     }
 
     @LuaWhitelist
-    public FiguraModelPart shade(boolean bool) {
+    public FiguraModelPart shade(Boolean bool) {
         return shading(bool);
     }
 
