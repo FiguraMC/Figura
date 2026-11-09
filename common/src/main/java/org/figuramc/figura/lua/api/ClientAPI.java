@@ -862,7 +862,7 @@ public class ClientAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("host.get_chat_width")
+    @LuaMethodDoc("client.get_chat_width")
     public static Double getChatWidth() {
         // 0 -> 40
         // 1 -> 320
