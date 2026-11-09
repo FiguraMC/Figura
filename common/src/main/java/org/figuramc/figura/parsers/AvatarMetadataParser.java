@@ -32,17 +32,17 @@ public class AvatarMetadataParser {
         // If you break this I will steal your kneecaps
         
         // https://stackoverflow.com/questions/28411032/java-regex-remove-comments
-        String regex = "((['\\\"])(?:(?!\\2|\\\\).|\\\\.)*\\2)|\\/\\/[^\\n]*|\\/\\*(?:[^*]|\\*(?!\\/))*\\*\\/";
+        String regex = "((['\"])(?:(?!\\2|\\\\).|\\\\.)*\\2)|//[^\\n]*|/\\*(?:[^*]|\\*(?!/))*\\*/";
         
         // regex101's codegen <3
         Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
         Matcher matcher = pattern.matcher(json);
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         while (matcher.find()) {
             String match = matcher.group();
-            Boolean matchedString = match.startsWith("\"") || match.startsWith("'");
+            boolean matchedString = match.startsWith("\"") || match.startsWith("'");
             matcher.appendReplacement(sb, matchedString ? Matcher.quoteReplacement(match) : "");
         }
         matcher.appendTail(sb);
