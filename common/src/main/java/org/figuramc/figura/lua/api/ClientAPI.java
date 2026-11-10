@@ -905,11 +905,12 @@ public class ClientAPI {
             throw new LuaError("\"" + alias + "\" is not a valid emoji");
 
         // Basic information
+        String unicode = emoji.getString();
         ResourceLocation font = emoji.getStyle().getFont();
         EmojiContainer container = Emojis.getCategoryByFont(font);
 
         map.put("name", alias);
-        map.put("char", emoji.getString());
+        map.put("char", unicode);
         map.put("font", font.toString());
 
         // Metadata
@@ -925,8 +926,18 @@ public class ClientAPI {
             map.put("color", metadata.defaultColor);
         }
 
-        // Texture
-        // map.put("charsheet", Emojis.getCharSheet(resource.toString()));
+        // Texture UV
+        List<String> sheet = Emojis.getCharSheet(font.toString());
+
+        for (int y = 0; y < sheet.size(); y++) {
+            if (!sheet.get(y).contains(unicode))
+                continue;
+
+            int x = sheet.get(y).indexOf(unicode);
+            map.put("uv", FiguraVec2.of(x, y).multiply(8, 8));
+
+            break;
+        }
 
         return map;
     }
