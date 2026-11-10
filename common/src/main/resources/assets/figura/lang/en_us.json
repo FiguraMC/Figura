@@ -196,6 +196,7 @@
     "figura.gui.new_version.tooltip": "A new version of Figura is available! %s\nClick to download it in your browser!",
     "figura.gui.old_version.tooltip": "Are you a time traveler? The latest version is %s",
     "figura.gui.clear": "Clear",
+    "figura.gui.copy_short": "Copy",
     "figura.gui.copy_c2a": "Click to copy to clipboard",
     "figura.gui.copied": "Copied to clipboard!",
     "figura.gui.not_available_yet": "Not available yet",

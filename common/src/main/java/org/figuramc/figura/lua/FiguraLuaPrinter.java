@@ -1,16 +1,14 @@
 package org.figuramc.figura.lua;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.*;
 import net.minecraft.world.entity.EntityType;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.ColorUtils;
+import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.TextUtils;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.VarArgFunction;
@@ -106,13 +104,30 @@ public class FiguraLuaPrinter {
             } catch (Exception ignored) {}
         }
 
+        owner.errorText = TextUtils.replaceTabs(Component.literal(message).withStyle(ColorUtils.Colors.LUA_ERROR.style));
+
         MutableComponent component = Component.empty()
                 .append(Component.literal("[error] ").withStyle(ColorUtils.Colors.LUA_ERROR.style))
                 .append(Component.literal(owner.entityName))
                 .append(Component.literal(" : " + message).withStyle(ColorUtils.Colors.LUA_ERROR.style))
-                .append(Component.literal("\n"));
+                .append(Component.literal("\n"))
+                .append(Component.literal("[ ")
+                        .withStyle(Style.EMPTY
+                                .withColor(ChatFormatting.YELLOW)
+                                .withUnderlined(true)
+                                .withClickEvent(new ClickEvent(
+                                        ClickEvent.Action.COPY_TO_CLIPBOARD,
+                                        "[script error]:\n" + owner.errorText.getString()
+                                ))
+                                .withHoverEvent(new HoverEvent(
+                                        HoverEvent.Action.SHOW_TEXT,
+                                        FiguraText.of("gui.copy_c2a").withStyle(ChatFormatting.YELLOW)
+                                ))
+                        )
+                        .append(FiguraText.of("gui.copy_short"))
+                        .append(" ]")
+                );
 
-        owner.errorText = TextUtils.replaceTabs(Component.literal(message).withStyle(ColorUtils.Colors.LUA_ERROR.style));
 
         if ((owner.entityType == EntityType.PLAYER && !Configs.LOG_OTHERS.value && !FiguraMod.isLocal(owner.owner)) || owner.permissions.getCategory() == Permissions.Category.BLOCKED)
             return;
