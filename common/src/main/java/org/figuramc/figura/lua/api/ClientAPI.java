@@ -17,6 +17,7 @@ import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.sounds.SoundSource;
@@ -899,7 +900,7 @@ public class ClientAPI {
     @LuaMethodDoc("client.get_emoji")
     public static Map<String, Object> getEmoji(String alias) {
         Map<String, Object> map = new HashMap<>();
-        MutableComponent emoji = Emojis.getEmoji(alias, null);
+        MutableComponent emoji = Emojis.getEmoji(alias, Style.EMPTY);
 
         if (emoji == null)
             throw new LuaError("\"" + alias + "\" is not a valid emoji");
