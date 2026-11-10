@@ -920,11 +920,14 @@ public class ClientAPI {
 
         if (metadata != null) {
             // Animated emojis
-            map.put("framecount", metadata.frames);
-            map.put("frametime", metadata.frameTime);
+            if (metadata.frames > 1) {
+                map.put("framecount", metadata.frames);
+                map.put("frametime", metadata.frameTime);
+            }
 
             // Colorable emojis
-            map.put("color", metadata.defaultColor);
+            if (metadata.canBeColored)
+                map.put("color", "#" + ColorUtils.rgbToHex(ColorUtils.intToRGB(metadata.defaultColor)));
         }
 
         // Texture UV
