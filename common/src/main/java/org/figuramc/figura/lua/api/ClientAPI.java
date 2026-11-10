@@ -885,27 +885,61 @@ public class ClientAPI {
         return Math.floor(20 + 160 * Minecraft.getInstance().options.chatHeightUnfocused().get());
     }
 
+    // @LuaWhitelist
+    // @LuaMethodDoc(
+    //         overloads = {
+    //                 @LuaMethodOverload(argumentTypes = String.class, argumentNames = "category"),
+    //         },
+    //         value = "client.get_emojis"
+    // )
+    // public static List<String> getEmojis(String category) {
+    //     List<String> emojis = new ArrayList<>();
+
+    //     if (category == null)
+    //         Emojis.getCategoryNames().forEach(name -> emojis.addAll(Emojis.getCategory(name).getLookup().getNames()));
+    //     else {
+    //         try {
+    //             emojis.addAll(Emojis.getCategory(category).getLookup().getNames());
+    //         } catch (Exception e) {
+    //             throw new LuaError("\"" + category + "\" is not a valid emoji category");
+    //         }
+    //     }
+
+    //     return emojis;
+    // }
+
+    /*
+     * What is an emoji to Lua?
+     * An emoji is a table of key value pairs:
+     * 
+     * char: string - The emoji's unicode character
+     * font: string - The literal font resource path
+     * category: string
+     * uv: Vector2 - The calculated UV on the texture
+     * framecount: integer
+     * frametime: integer
+     */
+
+    /*
+     * client.getEmoji(alias: string) -> table
+     * client.getEmojiAliases(category: string?) -> string[]
+     */
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_emoji")
+    public static void getEmoji(String alias) {
+
+    }
+
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaMethodOverload(argumentTypes = String.class, argumentNames = "category"),
             },
-            value = "client.get_emojis"
+            value = "client.get_emoji_aliases"
     )
-    public static List<String> getEmojis(String category) {
-        List<String> emojis = new ArrayList<>();
+    public static void getEmojiAliases(String category) {
 
-        if (category == null)
-            Emojis.getCategoryNames().forEach(name -> emojis.addAll(Emojis.getCategory(name).getLookup().getNames()));
-        else {
-            try {
-                emojis.addAll(Emojis.getCategory(category).getLookup().getNames());
-            } catch (Exception e) {
-                throw new LuaError("\"" + category + "\" is not a valid emoji category");
-            }
-        }
-
-        return emojis;
     }
 
     @Override
