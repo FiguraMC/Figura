@@ -892,7 +892,7 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.has_emoji")
     public static boolean hasEmoji(String alias) {
-        MutableComponent emoji = Emojis.getEmoji(alias, null);
+        MutableComponent emoji = Emojis.getEmoji(alias, Style.EMPTY);
         return emoji != null;
     }
 
