@@ -30,6 +30,7 @@ import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.ducks.GameRendererAccessor;
 import org.figuramc.figura.font.EmojiContainer;
+import org.figuramc.figura.font.EmojiMetadata;
 import org.figuramc.figura.font.Emojis;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
@@ -903,28 +904,27 @@ public class ClientAPI {
         if (emoji == null)
             throw new LuaError("\"" + alias + "\" is not a valid emoji");
 
-        /*
-         * What is an emoji to Lua?
-         * An emoji is a table of key value pairs:
-         * 
-         * char: string - The emoji's unicode character
-         * font: string - The literal font resource path
-         * category: string
-         * uv: Vector2 - The calculated UV on the texture
-         * framecount: integer
-         * frametime: integer
-         */
+        // Basic information
 
         ResourceLocation font = emoji.getStyle().getFont();
-        EmojiContainer category = Emojis.getCategoryByFont(font);
+        EmojiContainer container = Emojis.getCategoryByFont(font);
+
+        int x = 0;
+        int y = 0;
 
         map.put("char", emoji.getString());
         map.put("font", font.toString());
-        map.put("category", category.name);
-        // map.put("uv", null);
-        // map.put("width", metadata.width);
-        // map.put("framecount", metadata.frames);
-        // map.put("frametime", metadata.frameTime);
+        map.put("uv", FiguraVec2.of(x, y));
+
+        // Animated emojis
+
+        int codepoint = emoji.getString().codePointAt(0);
+        EmojiMetadata metadata = container.getLookup().getMetadata(codepoint);
+
+        if (metadata != null) {
+            map.put("framecount", metadata.frames);
+            map.put("frametime", metadata.frameTime);
+        }
 
         return map;
     }
@@ -933,7 +933,7 @@ public class ClientAPI {
     @LuaMethodDoc("client.get_emoji_categories")
     public static List<String> getEmojiCategories() {
         List<String> categories = new ArrayList<>();
-        Emojis.getCategoryNames().forEach(name -> categories.add(name));
+        Emojis.getCategoryNames().stream().sorted().forEach(name -> categories.add(name));
         return categories;
     }
 
