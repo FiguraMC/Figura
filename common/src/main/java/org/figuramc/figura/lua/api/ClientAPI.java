@@ -916,14 +916,18 @@ public class ClientAPI {
         map.put("font", font.toString());
         map.put("uv", FiguraVec2.of(x, y));
 
-        // Animated emojis
+        // Metadata
 
         int codepoint = emoji.getString().codePointAt(0);
         EmojiMetadata metadata = container.getLookup().getMetadata(codepoint);
 
         if (metadata != null) {
+            // Animated emojis
             map.put("framecount", metadata.frames);
             map.put("frametime", metadata.frameTime);
+
+            // Colorable emojis
+            map.put("color", metadata.defaultColor);
         }
 
         return map;
