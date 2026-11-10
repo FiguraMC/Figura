@@ -7,7 +7,7 @@ architectury {
 	minecraft = rootProject.minecraft_version
 }
 
-rootProject.mod_projects.split(",").each { project(":$it") {
+subprojects {
 	apply plugin: "dev.architectury.loom"
 
 	loom {
