@@ -16,6 +16,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.sounds.SoundSource;
@@ -885,27 +886,50 @@ public class ClientAPI {
         return Math.floor(20 + 160 * Minecraft.getInstance().options.chatHeightUnfocused().get());
     }
 
-    /*
-     * What is an emoji to Lua?
-     * An emoji is a table of key value pairs:
-     * 
-     * char: string - The emoji's unicode character
-     * font: string - The literal font resource path
-     * category: string
-     * uv: Vector2 - The calculated UV on the texture
-     * framecount: integer
-     * frametime: integer
-     */
-
-    /*
-     * client.getEmoji(alias: string) -> table
-     * client.getEmojiAliases(category: string?) -> string[]
-     */
+    @LuaWhitelist
+    @LuaMethodDoc("client.has_emoji")
+    public static boolean hasEmoji(String alias) {
+        MutableComponent emoji = Emojis.getEmoji(alias, null);
+        return emoji != null;
+    }
 
     @LuaWhitelist
     @LuaMethodDoc("client.get_emoji")
-    public static void getEmoji(String alias) {
+    public static Map<String, Object> getEmoji(String alias) {
+        Map<String, Object> map = new HashMap<>();
+        MutableComponent emoji = Emojis.getEmoji(alias, null);
 
+        if (emoji == null)
+            throw new LuaError("\"" + alias + "\" is not a valid emoji");
+
+        /*
+         * What is an emoji to Lua?
+         * An emoji is a table of key value pairs:
+         * 
+         * char: string - The emoji's unicode character
+         * font: string - The literal font resource path
+         * category: string
+         * uv: Vector2 - The calculated UV on the texture
+         * framecount: integer
+         * frametime: integer
+         */
+
+        map.put("char", null);
+        map.put("font", null);
+        map.put("category", null);
+        map.put("uv", null);
+        map.put("framecount", null);
+        map.put("frametime", null);
+
+        return map;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_emoji_categories")
+    public static List<String> getEmojiCategories() {
+        List<String> categories = new ArrayList<>();
+        Emojis.getCategoryNames().forEach(name -> categories.add(name));
+        return categories;
     }
 
     @LuaWhitelist
