@@ -4,11 +4,12 @@ import com.mojang.blaze3d.audio.Channel;
 import com.mojang.blaze3d.audio.Library;
 import com.mojang.blaze3d.audio.SoundBuffer;
 import net.minecraft.client.resources.sounds.Sound;
+import net.minecraft.client.sounds.AudioStream;
 import net.minecraft.client.sounds.ChannelAccess;
 import net.minecraft.client.sounds.SoundBufferLibrary;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
-
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.lua.LuaWhitelist;
@@ -16,10 +17,14 @@ import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.math.vector.FiguraVec3;
+import org.figuramc.figura.mixin.sound.SoundBufferAccessor;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.LuaUtils;
 import org.figuramc.figura.utils.TextUtils;
 import org.luaj.vm2.LuaError;
+
+import javax.sound.sampled.AudioFormat;
+import java.io.IOException;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -43,6 +48,8 @@ public class LuaSound {
     private boolean loop = false;
     private Component subtitleText;
     private String subtitle;
+
+    private Boolean isStereo = null;
 
     public LuaSound(SoundBuffer buffer, String id, Avatar owner) {
         this(null, buffer, id, Component.literal(id), owner);
@@ -90,6 +97,14 @@ public class LuaSound {
         }
 
         owner.noPermissions.remove(Permissions.SOUNDS);
+
+        if (isStereo()) {
+            if (owner.permissions.get(Permissions.GLOBAL_SOUNDS) != 1) {
+                owner.noPermissions.add(Permissions.GLOBAL_SOUNDS);
+                return this;
+            }
+            owner.noPermissions.remove(Permissions.GLOBAL_SOUNDS);
+        }
 
         // if we still have a handle reference but the handle has been released, remove the reference
         // This occurs when sounds naturally stops
@@ -399,6 +414,30 @@ public class LuaSound {
     @LuaWhitelist
     public LuaSound subtitle(String subtitle) {
         return setSubtitle(subtitle);
+    }
+
+    @LuaWhitelist
+    public boolean isStereo() {
+        if (isStereo != null) return isStereo;
+        AudioFormat fmt;
+        if (buffer != null) {
+            fmt = ((SoundBufferAccessor) buffer).figura$getFormat();
+        } else {
+            SoundBufferLibrary lib = SoundAPI.getSoundEngine().figura$getSoundBuffers();
+            if (sound.shouldStream()) {
+                try (AudioStream strm = lib.getStream(sound.getPath(), false).join()) {
+                    fmt = strm.getFormat();
+                } catch (IOException e) {
+                    FiguraMod.LOGGER.error("Failed to obtain stream for sound {}", sound, e);
+                    return false;
+                }
+            } else {
+                SoundBuffer buf = lib.getCompleteBuffer(sound.getPath()).join();
+                fmt = ((SoundBufferAccessor) buf).figura$getFormat();
+            }
+        }
+        isStereo = fmt.getChannels() >= 2;
+        return isStereo;
     }
 
     @Override
