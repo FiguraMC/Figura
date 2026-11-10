@@ -98,6 +98,10 @@ public class LuaSound {
 
         owner.noPermissions.remove(Permissions.SOUNDS);
 
+        // if there is no sound data, exit early
+        if (buffer == null && sound == null)
+            return this;
+
         if (isStereo()) {
             if (owner.permissions.get(Permissions.GLOBAL_SOUNDS) != 1) {
                 owner.noPermissions.add(Permissions.GLOBAL_SOUNDS);
@@ -118,10 +122,6 @@ public class LuaSound {
             this.playing = true;
             return this;
         }
-
-        // if there is no sound data, exit early
-        if (buffer == null && sound == null)
-            return this;
 
         float vol = calculateVolume();
         // if nobody can hear you scream, are you really screaming? No.
