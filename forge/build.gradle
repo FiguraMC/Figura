@@ -37,8 +37,8 @@ dependencies {
     implementation(include("io.github.llamalad7:mixinextras-forge:0.3.6"))
     
     // Libraries
-    include(forgeRuntimeLibrary("com.github.FiguraMC.luaj:luaj-core:$luaj-figura"))
-    include(forgeRuntimeLibrary("com.github.FiguraMC.luaj:luaj-jse:$luaj-figura"))
+    include(forgeRuntimeLibrary("com.github.FiguraMC.luaj:luaj-core:$luaj"))
+    include(forgeRuntimeLibrary("com.github.FiguraMC.luaj:luaj-jse:$luaj"))
     include(forgeRuntimeLibrary("com.neovisionaries:nv-websocket-client:$nv_websocket"))
 
     include(forgeRuntimeLibrary("org.chenliang.oggus:oggus:1.2.0"))
