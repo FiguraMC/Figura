@@ -29,6 +29,7 @@ import net.minecraft.world.scores.Scoreboard;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.ducks.GameRendererAccessor;
+import org.figuramc.figura.font.EmojiContainer;
 import org.figuramc.figura.font.Emojis;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
@@ -914,12 +915,16 @@ public class ClientAPI {
          * frametime: integer
          */
 
-        map.put("char", null);
-        map.put("font", null);
-        map.put("category", null);
-        map.put("uv", null);
-        map.put("framecount", null);
-        map.put("frametime", null);
+        ResourceLocation font = emoji.getStyle().getFont();
+        EmojiContainer category = Emojis.getCategoryByFont(font);
+
+        map.put("char", emoji.getString());
+        map.put("font", font.toString());
+        map.put("category", category.name);
+        // map.put("uv", null);
+        // map.put("width", metadata.width);
+        // map.put("framecount", metadata.frames);
+        // map.put("frametime", metadata.frameTime);
 
         return map;
     }
