@@ -1,7 +1,9 @@
 package org.figuramc.figura.font;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
@@ -20,6 +22,7 @@ public class Emojis {
 
     private static final Map<String, EmojiContainer> EMOJIS = new HashMap<>();
     private static final Map<String, EmojiContainer> SHORTCUT_LOOKUP = new HashMap<>();
+    private static final Map<String, List<String>> CHAR_SHEETS = new HashMap<>();
 
     public static final char DELIMITER = ':';
     public static final char ESCAPE = '\\';
@@ -47,6 +50,38 @@ public class Emojis {
 
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("Failed to load {} emojis", name, e);
+            }
+        }
+
+        // Store emoji character sheets
+        for (Map.Entry<ResourceLocation, Resource> fonts : manager.listResources("font", location -> location.getNamespace().equals(FiguraMod.MOD_ID) && location.getPath().endsWith(".json")).entrySet()) {
+            ResourceLocation location = fonts.getKey();
+            String[] split = location.getPath().split("/", 2);
+
+            if (split.length <= 1)
+                continue;
+
+            String name = split[1].substring(0, split[1].length() - 5);
+
+            // open the resource as json
+            try (InputStream stream = fonts.getValue().open()) {
+                // add character sheet
+                JsonObject json = JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonObject();
+                JsonArray providers = json.get("providers").getAsJsonArray();
+                
+                providers.forEach(o -> {
+                    JsonObject provider = o.getAsJsonObject();
+                    if (provider.get("type").getAsString().equals("bitmap")) {
+                        JsonArray chars = provider.get("chars").getAsJsonArray();
+
+                        List<String> rows = new ArrayList<>();
+                        chars.forEach(row -> rows.add(row.getAsString()));
+                        CHAR_SHEETS.put("figura:" + name, rows);
+                    }
+                });
+
+            } catch (Exception e) {
+                FiguraMod.LOGGER.error("Failed to load {} font", name, e);
             }
         }
 
@@ -87,6 +122,10 @@ public class Emojis {
 
     public static EmojiContainer getCategory(String key) {
         return EMOJIS.get(key);
+    }
+
+    public static List<String> getCharSheet(String key) {
+        return CHAR_SHEETS.get(key);
     }
 
     public static boolean hasCategory(String key) {

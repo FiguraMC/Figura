@@ -905,19 +905,14 @@ public class ClientAPI {
             throw new LuaError("\"" + alias + "\" is not a valid emoji");
 
         // Basic information
-
         ResourceLocation font = emoji.getStyle().getFont();
         EmojiContainer container = Emojis.getCategoryByFont(font);
 
-        int x = 0;
-        int y = 0;
-
+        map.put("name", alias);
         map.put("char", emoji.getString());
         map.put("font", font.toString());
-        map.put("uv", FiguraVec2.of(x, y));
 
         // Metadata
-
         int codepoint = emoji.getString().codePointAt(0);
         EmojiMetadata metadata = container.getLookup().getMetadata(codepoint);
 
@@ -929,6 +924,9 @@ public class ClientAPI {
             // Colorable emojis
             map.put("color", metadata.defaultColor);
         }
+
+        // Texture
+        // map.put("charsheet", Emojis.getCharSheet(resource.toString()));
 
         return map;
     }
