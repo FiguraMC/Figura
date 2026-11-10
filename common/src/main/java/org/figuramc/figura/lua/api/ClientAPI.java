@@ -920,13 +920,10 @@ public class ClientAPI {
 
         if (category == null)
             Emojis.getCategoryNames().forEach(name -> emojis.addAll(Emojis.getCategory(name).getLookup().getNames()));
-        else {
-            try {
-                emojis.addAll(Emojis.getCategory(category).getLookup().getNames());
-            } catch (Exception e) {
-                throw new LuaError("\"" + category + "\" is not a valid emoji category");
-            }
-        }
+        else if (Emojis.hasCategory(category))
+            emojis.addAll(Emojis.getCategory(category).getLookup().getNames());
+        else
+            throw new LuaError("\"" + category + "\" is not a valid emoji category");
 
         return emojis;
     }
