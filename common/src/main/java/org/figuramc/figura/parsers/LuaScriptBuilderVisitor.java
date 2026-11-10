@@ -56,7 +56,7 @@ public class LuaScriptBuilderVisitor extends Visitor {
 
     private void pushScope(NameScope scope) {
         a: for (Variable variable : scope.namedVariables.values())
-            if(variable.isLocal()) {
+            if (variable.isLocal()) {
                 for (Variable var : vars.keySet().stream().sorted(Comparator.comparing(var -> var.name)).toList()) {
                     if (var == variable) continue a;
                     if (var.name.equals(variable.name)) {
@@ -85,14 +85,14 @@ public class LuaScriptBuilderVisitor extends Visitor {
     public void visit(Block block) {
         boolean thisStandalone = blockStandalone;
         blockStandalone = true;
-        if(thisStandalone)
+        if (thisStandalone)
             newlineIfName("do");
         try (ScopedBody b = new ScopedBody(block.scope)) {
             if (block.stats != null)
                 for (Stat element : block.stats)
                     element.accept(this);
         }
-        if(thisStandalone)
+        if (thisStandalone)
             newlineIfName("end");
     }
 
@@ -166,7 +166,7 @@ public class LuaScriptBuilderVisitor extends Visitor {
     public void visit(Stat.LocalAssign stat) {
         newlineIfName("local");
         visitNames(stat.names);
-        if(stat.values != null)
+        if (stat.values != null)
             builder.append('=');
         visitExps(stat.values);
     }
@@ -289,23 +289,153 @@ public class LuaScriptBuilderVisitor extends Visitor {
         exp.rhs.accept(this);
     }
 
+    /**
+     * Returns the number of bytes that the next UTF-8 character is, or 0 if the next byte isn't valid.
+     */
+    private int validateEncoding(byte[] next, int offset) {
+        byte lead = next[offset];
+        if ((lead & 0x80) == 0) return 1;               // 0_______ = ascii
+        if ((lead & 0xC0) == 0x80) return 0;            // 10______ = continuation byte
+        int span;
+        if ((lead & 0x20) == 0) span = 2;               // 110_____
+        else if ((lead & 0x10) == 0) span = 3;          // 1110____
+        else if ((lead & 0x08) == 0) span = 4;          // 11110___
+        else return 0;
+        if ((next.length - offset) < span) return 0;           // not enough runway
+        for (int i = 1; i < span; i++) {
+            if ((next[offset + i] & 0xC0) != 0x80) return 0; // broken continuation character
+        }
+        return span;
+    }
+
+    private String esc(byte c, boolean isNextADigit) {
+        switch (c) {
+            // they're OCTAL escapes, not DECIMAL
+            case '\7':
+                return "\\a";
+            case '\b':
+                return "\\b";
+            case '\f':
+                return "\\f";
+            case '\n':
+                return "\\n";
+            case '\r':
+                return "\\r";
+            case '\t':
+                return "\\t";
+            case '\13':
+                return "\\v";
+            case '\\':
+                return "\\\\";
+            case '\'':
+                return "\\'";
+            case '"':
+                return "\\\"";
+            default: {
+                int cc = c < 0 ? 256 + c : c;
+                if (isNextADigit) return String.format("\\%03d", cc);
+                return String.format("\\%d", cc);
+            }
+        }
+    }
+
+    // makes an optimially sized string source text
+    private String packageString(byte[] content) {
+        StringBuilder singleQuoted = new StringBuilder().append("'");
+        StringBuilder doubleQuoted = new StringBuilder().append("\"");
+        BitSet matchingEndBrackets = new BitSet();
+        // If we can't round-trip the string, then using long strings is a no-go.
+        boolean isLongCapable = Arrays.equals(
+                content,
+                new String(content, StandardCharsets.UTF_8).getBytes(StandardCharsets.UTF_8)
+        );
+
+        int extensions = 0;
+        boolean longBracket = false;
+        for (int i = 0; i < content.length; i++) {
+            byte c = content[i];
+            boolean isNextADigit = i + 1 < content.length && content[i + 1] >= '0' && content[i + 1] <= '9';
+            switch (c) {
+                case '\'':
+                    singleQuoted.append("\\'");
+                    doubleQuoted.append("'");
+                    break;
+                case '"':
+                    singleQuoted.append("\"");
+                    doubleQuoted.append("\\\"");
+                    break;
+
+                case '\r':
+                    isLongCapable = false; // \r is converted to \n
+                case '\n':
+                case '\\': {
+                    String esc = esc(c, isNextADigit);
+                    singleQuoted.append(esc);
+                    doubleQuoted.append(esc);
+                    break;
+                }
+
+                default: {
+                    // Try to get more Valid UTF-8 Characters. Or give up and escape it.
+                    int validUntil = validateEncoding(content, i);
+                    if (validUntil == 0) {
+                        String esc = esc(c, isNextADigit);
+                        singleQuoted.append(esc);
+                        doubleQuoted.append(esc);
+                        break;
+                    }
+                    String codepoint = new String(content, i, validUntil, StandardCharsets.UTF_8);
+                    singleQuoted.append(codepoint);
+                    doubleQuoted.append(codepoint);
+                    i += validUntil - 1;
+                    break;
+                }
+            }
+            if (isLongCapable) {
+                if (c == ']') {
+                    if (longBracket) {
+                        matchingEndBrackets.set(extensions);
+                    } else {
+                        longBracket = true;
+                    }
+                    extensions = 0; // could also count for a ']]' in situations like ]=]]
+                } else if (c == '=') {
+                    if (longBracket) {
+                        extensions++;
+                    }
+                } else {
+                    longBracket = false;
+                }
+            }
+        }
+        singleQuoted.append("'");
+        doubleQuoted.append("\"");
+        int equals = matchingEndBrackets.nextClearBit(0);
+        String longS;
+        if (isLongCapable)
+            longS = "[" + "=".repeat(equals) + "["
+                    + (content.length > 0 && content[0] == '\n' ? "\n" : "") // A leading newline is ignored, so we have to add one.
+                    + new String(content, StandardCharsets.UTF_8)
+                    + "]" + "=".repeat(equals) + "]";
+        else longS = "!!!";
+        String singleS = singleQuoted.toString();
+        String doubleS = doubleQuoted.toString();
+
+        int longL = longS.length();
+        int singleL = singleS.length();
+        int doubleL = doubleS.length();
+
+        if (isLongCapable && longL < singleL && longL < doubleL) return longS;
+        if (singleL < doubleL) return singleS;
+        return doubleS;
+    }
+
     @Override
     public void visit(Exp.Constant exp) {
         LuaValue value = exp.value;
         if (value instanceof LuaString str) {
-            String input = new String(str.m_bytes, str.m_offset, str.m_length, StandardCharsets.UTF_8);
-            int sdq = 0;
-            for (char c : input.toCharArray()) {
-                if (c == '\'') sdq--;
-                if (c == '\"') sdq++;
-            }
-            char quote = sdq <= 0 ? '"' : '\'';
-            input = input.replaceAll("\\r(?=\\n)", "");
-            input = input.replaceAll("\\r", "\n");
-            input = input.replaceAll("\\\\", "\\\\\\\\");
-            input = input.replaceAll("\\n", "\\\\n");
-            input = input.replaceAll(String.valueOf(quote), "\\\\" + quote);
-            builder.append(quote).append(input).append(quote);
+            byte[] input = Arrays.copyOfRange(str.m_bytes, str.m_offset, str.m_length);
+            builder.append(packageString(input));
         } else
             spaceIfName(String.valueOf(value));
     }
