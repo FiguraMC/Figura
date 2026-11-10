@@ -76,13 +76,22 @@ public class WardrobeScreen extends AbstractPanelScreen {
         int buttY = entity.getY() + entity.getHeight() + 4;
 
         // upload
-        addRenderableWidget(upload = new Button(buttX - 48, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/upload.png"), 72, 24, FiguraText.of("gui.wardrobe.upload.tooltip"), button -> {
+        addRenderableWidget(upload = new UploadButton(buttX - 48, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/upload.png"), 72, 24, FiguraText.of("gui.wardrobe.upload.tooltip"), button -> {
             Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
             try {
                 LocalAvatarLoader.loadAvatar(null, null);
             } catch (Exception ignored) {}
             NetworkStuff.uploadAvatar(avatar);
             AvatarList.selectedEntry = null;
+        }, disabledButton -> {
+            Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
+            boolean isErrorBlockingUpload = NetworkStuff.canUpload() && !AvatarManager.localUploaded && avatar != null && avatar.scriptError && !Configs.ALLOW_UPLOADING_ERRORED_AVATARS.value;
+            if (isErrorBlockingUpload) {
+                Minecraft.getInstance().keyboardHandler.setClipboard("[script error]:\n" + avatar.errorText.getString());
+                FiguraToast.sendToast(FiguraText.of("gui.copied"), FiguraToast.ToastType.DEFAULT);
+                return true;
+            }
+            return false;
         }));
         upload.setActive(false);
 
@@ -105,9 +114,9 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
         StatusWidget statusWidget = new StatusWidget(entity.getX() + entity.getWidth() - 64, 0, 64);
         statusWidget.setY(entity.getY() - statusWidget.getHeight() - 4);
-        addRenderableOnly(statusWidget);
+        addRenderableWidget(statusWidget);
 
-        addRenderableOnly(new LoadingErrorWidget(statusWidget.getX() - 18, statusWidget.getY(), 14));
+        addRenderableWidget(new LoadingErrorWidget(statusWidget.getX() - 18, statusWidget.getY(), 14));
 
         // -- bottom -- // 
 
@@ -253,9 +262,11 @@ public class WardrobeScreen extends AbstractPanelScreen {
                         && (!avatar.scriptError || Configs.ALLOW_UPLOADING_ERRORED_AVATARS.value));
         boolean isErrorBlockingUpload = avatar != null && avatar.scriptError && !Configs.ALLOW_UPLOADING_ERRORED_AVATARS.value;
         upload.setTooltip(
-                isErrorBlockingUpload
+                (isErrorBlockingUpload
                         ? FiguraText.of("gui.wardrobe.upload.errored", avatar.errorText).withStyle(ChatFormatting.RED)
+                            .append("\n\n").append(FiguraText.of("gui.copy_c2a").withStyle(ChatFormatting.YELLOW))
                         : FiguraText.of("gui.wardrobe.upload.tooltip")
+                )
         );
         delete.setActive(NetworkStuff.isConnected() && AvatarManager.localUploaded);
 
