@@ -965,7 +965,7 @@ public class ClientAPI {
         List<String> emojis = new ArrayList<>();
 
         if (category == null)
-            Emojis.getCategoryNames().forEach(name -> emojis.addAll(Emojis.getCategory(name).getLookup().getNames()));
+            Emojis.getCategoryNames().stream().sorted().forEach(name -> emojis.addAll(Emojis.getCategory(name).getLookup().getNames()));
         else if (Emojis.hasCategory(category))
             emojis.addAll(Emojis.getCategory(category).getLookup().getNames());
         else
