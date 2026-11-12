@@ -2,12 +2,14 @@ package org.figuramc.figura.font;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.FiguraResourceListener;
 import org.figuramc.figura.utils.TextUtils;
 
@@ -35,13 +37,24 @@ public class Emojis {
             if (split.length <= 1)
                 continue;
 
+            Optional<Resource> font_resource = manager.getResource(new FiguraIdentifier("font/emoji_" + split[1]));
             String name = split[1].substring(0, split[1].length() - 5);
+
+            JsonObject font = null;
+
+            // open font json
+            try (InputStream stream = font_resource.get().open()) {
+                font = JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonObject();
+            } catch (Exception e) {
+                FiguraMod.LOGGER.error("Failed to load {} font", name, e);
+            }
 
             // open the resource as json
             try (InputStream stream = emojis.getValue().open()) {
                 // add emoji
                 JsonObject json = JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonObject();
-                EmojiContainer container = new EmojiContainer(name, json);
+
+                EmojiContainer container = new EmojiContainer(name, json, font);
                 EMOJIS.put(name, container);
                 container.getLookup().getShortcuts().forEach(shortcut -> SHORTCUT_LOOKUP.put(shortcut, container));
 
