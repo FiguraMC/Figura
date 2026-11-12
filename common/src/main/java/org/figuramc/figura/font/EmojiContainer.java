@@ -7,6 +7,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.font.providers.EmojiBitmapProvider;
+import org.figuramc.figura.font.providers.EmojiSpaceProvider;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.JsonUtils;
@@ -38,7 +40,7 @@ public class EmojiContainer {
     private final EmojiUnicodeLookup lookup = new EmojiUnicodeLookup();
     private final String blacklist;
 
-    public EmojiContainer(String containerName, JsonObject data) {
+    public EmojiContainer(String containerName, JsonObject data, @Nullable JsonObject font) {
         this.name = containerName;
         this.font = new FiguraIdentifier("emoji_" + containerName);
         this.blacklist = data.get("blacklist").getAsString();
@@ -85,6 +87,39 @@ public class EmojiContainer {
                     String[] arr = new String[validAliases.size()];
                     lookup.putShortcuts(validAliases.toArray(arr), curUnicode);
                 }
+            }
+        }
+
+        if (font == null)
+            return;
+
+        JsonArray providers = font.get("providers").getAsJsonArray();
+        for (int i = 0; i < providers.size(); i++) {
+            JsonObject provider = providers.get(i).getAsJsonObject();
+
+            String type = provider.get("type").getAsString();
+            switch (type) {
+                case "bitmap":
+                    JsonArray chars = provider.get("chars").getAsJsonArray();
+                    String file = provider.get("file").getAsString();
+                    int ascent = provider.get("ascent").getAsInt();
+
+                    for (int y = 0; y < chars.size(); y++) {
+                        String row = chars.get(y).getAsString();
+                        for (int x = 0; x < row.length(); x++) {
+                            lookup.putProvider(row.codePointAt(x), new EmojiBitmapProvider(type, file, ascent, x, y));
+                        }
+                    }
+                    break;
+
+                case "space":
+                    for (Map.Entry<String, JsonElement> advance : provider.get("advances").getAsJsonObject().entrySet()) {
+                        lookup.putProvider(advance.getKey().codePointAt(0), new EmojiSpaceProvider(type, advance.getValue().getAsInt()));
+                    }
+                    break;
+            
+                default:
+                    break;
             }
         }
     }

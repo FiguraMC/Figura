@@ -1,5 +1,6 @@
 package org.figuramc.figura.font;
 
+import org.figuramc.figura.font.providers.EmojiProvider;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -8,6 +9,7 @@ public class EmojiUnicodeLookup {
     private final Map<String, String> unicodeLookup = new HashMap<>(); // <EmojiName, Unicode>
     private final Map<String, String[]> reverseUnicodeLookup = new HashMap<>(); // <Unicode, EmojiNames[]>
     private final Map<Integer, EmojiMetadata> metadataLookup = new HashMap<>(); // <Codepoint, EmojiMetadata>
+    private final Map<Integer, EmojiProvider> providerLookup = new HashMap<>(); // <Codepoint, EmojiProvider>
     private final Map<String, String> shortcutLookup = new HashMap<>(); // <Shortcut, Unicode>
     private final Map<String, String[]> reverseShortcutLookup = new HashMap<>(); // <Unicode, Shortcut[]>
 
@@ -29,6 +31,10 @@ public class EmojiUnicodeLookup {
         metadataLookup.put(codepoint, metadata);
     }
 
+    public void putProvider(int codepoint, EmojiProvider provider) {
+        providerLookup.put(codepoint, provider);
+    }
+
     public Collection<String> getNames() {
         return unicodeLookup.keySet();
     }
@@ -47,6 +53,10 @@ public class EmojiUnicodeLookup {
 
     public @Nullable EmojiMetadata getMetadata(int codepoint) {
         return metadataLookup.getOrDefault(codepoint, null);
+    }
+
+    public @Nullable EmojiProvider getProvider(int codepoint) {
+        return providerLookup.getOrDefault(codepoint, null);
     }
 
     public @Nullable String getUnicode(String emojiAlias) {
