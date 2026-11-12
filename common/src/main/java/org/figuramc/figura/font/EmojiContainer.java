@@ -102,13 +102,11 @@ public class EmojiContainer {
                 case "bitmap":
                     JsonArray chars = provider.get("chars").getAsJsonArray();
                     String file = provider.get("file").getAsString();
-                    int ascent = provider.get("ascent").getAsInt();
-                    int height = provider.get("height").getAsInt();
 
                     for (int y = 0; y < chars.size(); y++) {
                         String row = chars.get(y).getAsString();
                         for (int x = 0; x < row.length(); x++) {
-                            lookup.putProvider(row.codePointAt(x), new EmojiBitmapProvider(type, x, y, file, ascent, height));
+                            lookup.putProvider(row.codePointAt(x), new EmojiBitmapProvider(type, x, y, file));
                         }
                     }
                     break;
