@@ -934,9 +934,6 @@ public class ClientAPI {
             // Colorable emojis
             if (metadata.canBeColored)
                 map.put("color", "#" + ColorUtils.rgbToHex(ColorUtils.intToRGB(metadata.defaultColor)));
-
-            // Miscellaneous
-            map.put("width", metadata.width);
         }
 
         // Provider
@@ -945,11 +942,15 @@ public class ClientAPI {
         if (provider != null) {
             map.put("type", provider.type);
 
+            // Assume Figura emojis will be 8x8 and won't use the width/height font
+            // definitions. Too much effort to go further with this as it's unlikely anybody
+            // will ever use those fields
+
             // Bitmaps
             if (provider instanceof EmojiBitmapProvider bitmap) {
                 String[] split = bitmap.file.split(":");
                 map.put("texture", split[0] + ":textures/" + split[1]);
-                map.put("uv", FiguraVec2.of(bitmap.x * bitmap.ascent, bitmap.y * bitmap.ascent));
+                map.put("uv", FiguraVec2.of(bitmap.x * 8, bitmap.y * 8));
             }
 
             // Spaces
