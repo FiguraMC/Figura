@@ -5,20 +5,26 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.sounds.SoundEvents;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.backend2.NetworkStuff;
+import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.MathUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListener {
+public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListener, NarratableEntry {
 
     public static final String STATUS_INDICATORS = "-*/+";
     public static final List<String> STATUS_NAMES = List.of("size", "texture", "script", "backend");
@@ -38,6 +44,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
     private int width, height;
     private boolean visible = true;
     private boolean background = true;
+    protected int hover = -1;
 
     public StatusWidget(int x, int y, int width) {
         this(x, y, width, STATUS_NAMES.size());
@@ -96,14 +103,17 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         // text and tooltip
         double spacing = (double) width / count;
         double hSpacing = spacing * 0.5;
+        hover = -1;
         for (int i = 0; i < count; i++) {
             int xx = (int) (x + spacing * i + hSpacing);
 
             Component text = getStatusIcon(i);
             gui.drawString(font, text, xx - font.width(text) / 2, y + (background ? 3 : 0), 0xFFFFFF);
 
-            if (hovered && mouseX >= xx - hSpacing && mouseX < xx + hSpacing && mouseY >= y && mouseY < y + font.lineHeight + (background ? 3 : 0))
+            if (hovered && mouseX >= xx - hSpacing && mouseX < xx + hSpacing && mouseY >= y && mouseY < y + font.lineHeight + (background ? 3 : 0)) {
                 UIHelper.setTooltip(getTooltipFor(i));
+                hover = i;
+            }
         }
     }
 
@@ -128,11 +138,13 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
 
         // script error
         if (i == 2 && color == 1 && scriptError != null)
-            text.append("\n\n").append(FiguraText.of("gui.status.reason")).append("\n• ").append(scriptError);
+            text.append("\n\n").append(FiguraText.of("gui.status.reason")).append("\n• ").append(scriptError)
+                    .append("\n\n").append(FiguraText.of("gui.copy_c2a").withStyle(ChatFormatting.YELLOW));
 
         // get backend disconnect reason
         if (i == 3 && disconnectedReason != null)
-            text.append("\n\n").append(FiguraText.of("gui.status.reason")).append("\n• ").append(disconnectedReason);
+            text.append("\n\n").append(FiguraText.of("gui.status.reason")).append("\n• ").append(disconnectedReason)
+                    .append("\n\n").append(FiguraText.of("gui.copy_c2a").withStyle(ChatFormatting.YELLOW));
 
         return text;
     }
@@ -148,6 +160,27 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
         return UIHelper.isMouseOver(getX(), getY(), getWidth(), getHeight(), mouseX, mouseY);
+    }
+
+    protected void afterCopy() {
+        FiguraToast.sendToast(FiguraText.of("gui.copied"), FiguraToast.ToastType.DEFAULT);
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (hover == -1) return false;
+        if (hover == 2 && scriptError != null) {
+            Minecraft.getInstance().keyboardHandler.setClipboard("[script error]:\n" + scriptError.getString());
+            afterCopy();
+            return true;
+        }
+        if (hover == 3 && disconnectedReason != null) {
+            Minecraft.getInstance().keyboardHandler.setClipboard("[backend error]:\n" + disconnectedReason.getString());
+            afterCopy();
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -206,5 +239,14 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
     @Override
     public int getHeight() {
         return height;
+    }
+
+    @Override
+    public @NotNull NarrationPriority narrationPriority() {
+        return NarrationPriority.NONE;
+    }
+
+    @Override
+    public void updateNarration(@NotNull NarrationElementOutput builder) {
     }
 }
