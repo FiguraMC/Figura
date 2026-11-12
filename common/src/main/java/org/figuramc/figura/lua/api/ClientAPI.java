@@ -928,6 +928,9 @@ public class ClientAPI {
             // Colorable emojis
             if (metadata.canBeColored)
                 map.put("color", "#" + ColorUtils.rgbToHex(ColorUtils.intToRGB(metadata.defaultColor)));
+
+            // Miscellaneous
+            map.put("width", metadata.width);
         }
 
         // Texture UV
