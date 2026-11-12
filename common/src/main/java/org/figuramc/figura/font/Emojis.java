@@ -33,10 +33,10 @@ public class Emojis {
         for (Map.Entry<ResourceLocation, Resource> emojis : manager.listResources("emojis", location -> location.getNamespace().equals(FiguraMod.MOD_ID) && location.getPath().endsWith(".json")).entrySet()) {
             ResourceLocation location = emojis.getKey();
             String[] split = location.getPath().split("/", 2);
-            
+
             if (split.length <= 1)
                 continue;
-            
+
             Optional<Resource> font_resource = manager.getResource(new FiguraIdentifier("font/emoji_" + split[1]));
             String name = split[1].substring(0, split[1].length() - 5);
 
