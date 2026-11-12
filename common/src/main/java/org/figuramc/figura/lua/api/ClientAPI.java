@@ -32,7 +32,11 @@ import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.ducks.GameRendererAccessor;
 import org.figuramc.figura.font.EmojiContainer;
 import org.figuramc.figura.font.EmojiMetadata;
+import org.figuramc.figura.font.EmojiUnicodeLookup;
 import org.figuramc.figura.font.Emojis;
+import org.figuramc.figura.font.providers.EmojiBitmapProvider;
+import org.figuramc.figura.font.providers.EmojiProvider;
+import org.figuramc.figura.font.providers.EmojiSpaceProvider;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
@@ -907,16 +911,18 @@ public class ClientAPI {
 
         // Basic information
         String unicode = emoji.getString();
+        int codepoint = unicode.codePointAt(0);
+
         ResourceLocation font = emoji.getStyle().getFont();
         EmojiContainer container = Emojis.getCategoryByFont(font);
+        EmojiUnicodeLookup lookup = container.getLookup();
 
         map.put("name", alias);
         map.put("char", unicode);
         map.put("font", font.toString());
 
         // Metadata
-        int codepoint = unicode.codePointAt(0);
-        EmojiMetadata metadata = container.getLookup().getMetadata(codepoint);
+        EmojiMetadata metadata = lookup.getMetadata(codepoint);
 
         if (metadata != null) {
             // Animated emojis
@@ -933,17 +939,22 @@ public class ClientAPI {
             map.put("width", metadata.width);
         }
 
-        // Texture UV
-        List<String> sheet = Emojis.getCharSheet(font.toString());
+        // Provider
+        EmojiProvider provider = lookup.getProvider(codepoint);
 
-        for (int y = 0; y < sheet.size(); y++) {
-            if (!sheet.get(y).contains(unicode))
-                continue;
+        if (provider != null) {
+            map.put("type", provider.type);
 
-            int x = sheet.get(y).indexOf(unicode);
-            map.put("uv", FiguraVec2.of(x * 8, y * 8));
+            // Bitmaps
+            if (provider instanceof EmojiBitmapProvider bitmap) {
+                String[] split = bitmap.file.split(":");
+                map.put("texture", split[0] + ":textures/" + split[1]);
+                map.put("uv", FiguraVec2.of(bitmap.x * bitmap.ascent, bitmap.y * bitmap.ascent));
+            }
 
-            break;
+            // Spaces
+            if (provider instanceof EmojiSpaceProvider space)
+                map.put("advance", space.advance);
         }
 
         return map;
