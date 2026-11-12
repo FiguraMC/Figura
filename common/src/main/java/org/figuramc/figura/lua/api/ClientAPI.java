@@ -934,10 +934,17 @@ public class ClientAPI {
         }
 
         // Texture UV
-        int index = codepoint - Emojis.PRIVATE_OFFSET;
-        int width = Emojis.getSheetWidth(font.toString());
+        List<String> sheet = Emojis.getCharSheet(font.toString());
 
-        map.put("uv", FiguraVec2.of(index % width, index / width).multiply(8, 8));
+        for (int y = 0; y < sheet.size(); y++) {
+            if (!sheet.get(y).contains(unicode))
+                continue;
+
+            int x = sheet.get(y).indexOf(unicode);
+            map.put("uv", FiguraVec2.of(x * 8, y * 8));
+
+            break;
+        }
 
         return map;
     }
