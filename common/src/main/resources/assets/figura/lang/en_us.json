@@ -982,7 +982,7 @@
     "figura.docs.client.get_focused_chat_height": "Returns the focused chat height in pixels",
     "figura.docs.client.get_unfocused_chat_height": "Returns the unfocused chat height in pixels",
     "figura.docs.client.has_emoji": "Returns if the specific emoji exists",
-    "figura.docs.client.get_emoji": "Returns a table of key value pairs with information about an emoji",
+    "figura.docs.client.get_emoji": "Returns a table of key value pairs with information about an emoji.\n  - name (string): This emoji's alias\n  - char (string): This emoji's unicode character\n  - font (string): This emoji's font\n  - type (string): This emoji's provider type, either 'bitmap' or 'space'\nSome additional fields may be available given the emoji's type:\n  - texture (string): For bitmap emojis, this emoji's texture resource path\n  - uv (Vector2): For bitmap emojis, this emoji's UV position on the texture\n  - framecount (integer): For animated emojis, this emoji's frame count\n  - frametime (integer): For animated emojis, this emoji's frametime in ticks\n  - color (string): For colorable emojis, this emoji's default color\n  - advance (integer): For space emojis, this emoji's advance",
     "figura.docs.client.get_emoji_categories": "Returns a list of all emoji categories",
     "figura.docs.client.get_emoji_aliases": "Returns a table containing all Figura emoji aliases\nIf a category string is provided, returns aliases from just that category\nSee the `emoji_categories` enum for a list of valid categories",
     "figura.docs.config": "A global API used to save and load avatar data between game sessions",
