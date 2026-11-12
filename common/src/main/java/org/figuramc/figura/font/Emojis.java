@@ -22,10 +22,11 @@ public class Emojis {
 
     private static final Map<String, EmojiContainer> EMOJIS = new HashMap<>();
     private static final Map<String, EmojiContainer> SHORTCUT_LOOKUP = new HashMap<>();
-    private static final Map<String, List<String>> CHAR_SHEETS = new HashMap<>();
+    private static final Map<String, Integer> CHARSHEET_WIDTHS = new HashMap<>();
 
     public static final char DELIMITER = ':';
     public static final char ESCAPE = '\\';
+    public static final int PRIVATE_OFFSET = 57344;
 
     // listener to load emojis from the resource pack
     public static final FiguraResourceListener RESOURCE_LISTENER = FiguraResourceListener.createResourceListener("emojis", manager -> {
@@ -74,9 +75,7 @@ public class Emojis {
                     if (provider.get("type").getAsString().equals("bitmap")) {
                         JsonArray chars = provider.get("chars").getAsJsonArray();
 
-                        List<String> rows = new ArrayList<>();
-                        chars.forEach(row -> rows.add(row.getAsString()));
-                        CHAR_SHEETS.put("figura:" + name, rows);
+                        CHARSHEET_WIDTHS.put("figura:" + name, chars.get(0).getAsString().length());
                     }
                 });
 
@@ -124,8 +123,8 @@ public class Emojis {
         return EMOJIS.get(key);
     }
 
-    public static List<String> getCharSheet(String key) {
-        return CHAR_SHEETS.get(key);
+    public static int getSheetWidth(String font) {
+        return CHARSHEET_WIDTHS.get(font);
     }
 
     public static boolean hasCategory(String key) {

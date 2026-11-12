@@ -915,7 +915,7 @@ public class ClientAPI {
         map.put("font", font.toString());
 
         // Metadata
-        int codepoint = emoji.getString().codePointAt(0);
+        int codepoint = unicode.codePointAt(0);
         EmojiMetadata metadata = container.getLookup().getMetadata(codepoint);
 
         if (metadata != null) {
@@ -931,17 +931,10 @@ public class ClientAPI {
         }
 
         // Texture UV
-        List<String> sheet = Emojis.getCharSheet(font.toString());
+        int index = codepoint - Emojis.PRIVATE_OFFSET;
+        int width = Emojis.getSheetWidth(font.toString());
 
-        for (int y = 0; y < sheet.size(); y++) {
-            if (!sheet.get(y).contains(unicode))
-                continue;
-
-            int x = sheet.get(y).indexOf(unicode);
-            map.put("uv", FiguraVec2.of(x, y).multiply(8, 8));
-
-            break;
-        }
+        map.put("uv", FiguraVec2.of(index % width, index / width).multiply(8, 8));
 
         return map;
     }
