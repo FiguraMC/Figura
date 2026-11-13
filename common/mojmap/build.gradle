@@ -11,8 +11,8 @@ dependencies {
 	mappings loom.officialMojangMappings()
 
 	// Libraries
-	implementation("com.github.FiguraMC.luaj:luaj-core:$luaj-figura")
-	implementation("com.github.FiguraMC.luaj:luaj-jse:$luaj-figura")
+	implementation("com.github.FiguraMC.luaj:luaj-core:$luaj")
+	implementation("com.github.FiguraMC.luaj:luaj-jse:$luaj")
 	implementation("com.neovisionaries:nv-websocket-client:$nv_websocket")
 }
 
