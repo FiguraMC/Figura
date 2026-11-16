@@ -136,8 +136,7 @@ public class FiguraListDocs {
             add(mode.name);
     }};
     private static final LinkedHashSet<String> EMOJI_CATEGORIES = new LinkedHashSet<>() {{
-        for (String name : Emojis.getCategoryNames())
-            add(name);
+        Emojis.getCategoryNames().stream().sorted().forEach(name -> add(name));
     }};
 
     public enum ListDoc {

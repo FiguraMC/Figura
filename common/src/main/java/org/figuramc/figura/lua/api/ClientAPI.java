@@ -16,6 +16,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.sounds.SoundSource;
@@ -28,7 +30,13 @@ import net.minecraft.world.scores.Scoreboard;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.ducks.GameRendererAccessor;
+import org.figuramc.figura.font.EmojiContainer;
+import org.figuramc.figura.font.EmojiMetadata;
+import org.figuramc.figura.font.EmojiUnicodeLookup;
 import org.figuramc.figura.font.Emojis;
+import org.figuramc.figura.font.providers.EmojiBitmapProvider;
+import org.figuramc.figura.font.providers.EmojiProvider;
+import org.figuramc.figura.font.providers.EmojiSpaceProvider;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
@@ -886,24 +894,97 @@ public class ClientAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("client.has_emoji")
+    public static boolean hasEmoji(String alias) {
+        MutableComponent emoji = Emojis.getEmoji(alias, Style.EMPTY);
+        return emoji != null;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_emoji")
+    public static Map<String, Object> getEmoji(String alias) {
+        Map<String, Object> map = new HashMap<>();
+        MutableComponent emoji = Emojis.getEmoji(alias, Style.EMPTY);
+
+        if (emoji == null)
+            throw new LuaError("\"" + alias + "\" is not a valid emoji");
+
+        // Basic information
+        String unicode = emoji.getString();
+        int codepoint = unicode.codePointAt(0);
+
+        ResourceLocation font = emoji.getStyle().getFont();
+        EmojiContainer container = Emojis.getCategoryByFont(font);
+        EmojiUnicodeLookup lookup = container.getLookup();
+
+        map.put("name", alias);
+        map.put("char", unicode);
+        map.put("font", font.toString());
+
+        // Metadata
+        EmojiMetadata metadata = lookup.getMetadata(codepoint);
+
+        if (metadata != null) {
+            // Animated emojis
+            if (metadata.frames > 1) {
+                map.put("framecount", metadata.frames);
+                map.put("frametime", metadata.frameTime);
+            }
+
+            // Colorable emojis
+            if (metadata.canBeColored)
+                map.put("color", "#" + ColorUtils.rgbToHex(ColorUtils.intToRGB(metadata.defaultColor)));
+        }
+
+        // Provider
+        EmojiProvider provider = lookup.getProvider(codepoint);
+
+        if (provider != null) {
+            map.put("type", provider.type);
+
+            // Assume Figura emojis will be 8x8 and won't use the width/height font
+            // definitions. Too much effort to go further with this as it's unlikely anybody
+            // will ever use those fields
+
+            // Bitmaps
+            if (provider instanceof EmojiBitmapProvider bitmap) {
+                String[] split = bitmap.file.split(":");
+                map.put("texture", split[0] + ":textures/" + split[1]);
+                map.put("uv", FiguraVec2.of(bitmap.x * 8, bitmap.y * 8));
+            }
+
+            // Spaces
+            if (provider instanceof EmojiSpaceProvider space)
+                map.put("advance", space.advance);
+        }
+
+        return map;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_emoji_categories")
+    public static List<String> getEmojiCategories() {
+        List<String> categories = new ArrayList<>();
+        Emojis.getCategoryNames().stream().sorted().forEach(name -> categories.add(name));
+        return categories;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaMethodOverload(argumentTypes = String.class, argumentNames = "category"),
             },
-            value = "client.get_emojis"
+            value = "client.get_emoji_aliases"
     )
-    public static List<String> getEmojis(String category) {
+    public static List<String> getEmojiAliases(String category) {
         List<String> emojis = new ArrayList<>();
 
         if (category == null)
-            Emojis.getCategoryNames().forEach(name -> emojis.addAll(Emojis.getCategory(name).getLookup().getNames()));
-        else {
-            try {
-                emojis.addAll(Emojis.getCategory(category).getLookup().getNames());
-            } catch (Exception e) {
-                throw new LuaError("\"" + category + "\" is not a valid emoji category");
-            }
-        }
+            Emojis.getCategoryNames().stream().sorted().forEach(name -> emojis.addAll(Emojis.getCategory(name).getLookup().getNames()));
+        else if (Emojis.hasCategory(category))
+            emojis.addAll(Emojis.getCategory(category).getLookup().getNames());
+        else
+            throw new LuaError("\"" + category + "\" is not a valid emoji category");
 
         return emojis;
     }
