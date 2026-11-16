@@ -26,8 +26,8 @@ dependencies {
     }
 
     // Libraries
-    include(implementation("com.github.FiguraMC.luaj:luaj-core:$luaj-figura"))
-    include(implementation("com.github.FiguraMC.luaj:luaj-jse:$luaj-figura"))
+    include(implementation("com.github.FiguraMC.luaj:luaj-core:$luaj"))
+    include(implementation("com.github.FiguraMC.luaj:luaj-jse:$luaj"))
     include(implementation("com.neovisionaries:nv-websocket-client:$nv_websocket"))
     include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.3.6")))
 
