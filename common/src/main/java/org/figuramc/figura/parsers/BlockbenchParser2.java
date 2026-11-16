@@ -36,6 +36,8 @@ public class BlockbenchParser2 {
                                        String locatedWithin,
                                        @Nullable LoadOptions options) throws Exception {
         try {
+            if (json.startsWith("<lz>"))
+                throw new Exception("is a Blockbench backup file. Open and re-save the file in Blockbench to finish restoring the model.");
             BlockbenchCommonTypes.ModelFormat model = GSON.fromJson(json, BlockbenchCommonTypes.ModelFormat.class);
 
             boolean validFormat = model.modelFormat.equals("free") || model.modelFormat.contains(FiguraMod.MOD_ID);
