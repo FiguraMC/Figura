@@ -135,7 +135,7 @@ public class Avatar {
     // limits
     public int animationComplexity;
     public final Instructions complexity;
-    public final Instructions init, render, worldRender, tick, worldTick, animation;
+    public final Instructions init, preRender, render, worldRender, tick, worldTick, animation;
     public final Map<String, Instructions> customInstructions = new HashMap<>();
     public final RefilledNumber particlesRemaining, soundsRemaining;
     private Avatar(UUID owner, EntityType<?> type, String name) {
@@ -145,6 +145,7 @@ public class Avatar {
         this.permissions = type == EntityType.PLAYER ? PermissionManager.get(owner) : PermissionManager.getMobPermissions(owner);
         this.complexity = new Instructions(permissions.get(Permissions.COMPLEXITY));
         this.init = new Instructions(permissions.get(Permissions.INIT_INST));
+        this.preRender = new Instructions(permissions.get(Permissions.RENDER_INST));
         this.render = new Instructions(permissions.get(Permissions.RENDER_INST));
         this.worldRender = new Instructions(permissions.get(Permissions.WORLD_RENDER_INST));
         this.tick = new Instructions(permissions.get(Permissions.TICK_INST));
@@ -294,6 +295,7 @@ public class Avatar {
             return;
 
         render.reset(permissions.get(Permissions.RENDER_INST));
+        render.use(permissions.get(Permissions.RENDER_INST) - preRender.remaining);
         worldRender.reset(permissions.get(Permissions.WORLD_RENDER_INST));
         run("WORLD_RENDER", worldRender, delta);
     }
@@ -390,6 +392,12 @@ public class Avatar {
             renderer.allowMatrixUpdate = false;
 
         run("POST_WORLD_RENDER", worldRender.post(), delta);
+    }
+
+    public void preRenderEvent(float delta) {
+        preRender.reset(permissions.get(Permissions.RENDER_INST));
+        if (loaded && luaRuntime != null && luaRuntime.getUser() != null)
+            run("PRE_RENDER", preRender, delta, renderMode.name());
     }
 
     public boolean skullRenderEvent(float delta, BlockStateAPI block, ItemStackAPI item, EntityAPI<?> entity, String mode) {
